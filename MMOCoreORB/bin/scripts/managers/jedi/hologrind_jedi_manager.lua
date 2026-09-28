@@ -4,7 +4,7 @@ local ObjectManager = require("managers.object.object_manager")
 jediManagerName = "HologrindJediManager"
 
 NUMBEROFPROFESSIONSTOMASTER = 6
-MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON = NUMBEROFPROFESSIONSTOMASTER - 2
+MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON = NUMBEROFPROFESSIONSTOMASTER - 2 -- Set to 0 if you want all visible
 
 HologrindJediManager = JediManager:new {
 	screenplayName = jediManagerName,
@@ -140,6 +140,7 @@ function HologrindJediManager:awardJediStatusAndSkill(pCreatureObject)
 	end
 
 	awardSkill(pCreatureObject, "force_title_jedi_novice")
+	awardSkill(pCreatureObject, "force_title_jedi_rank_01")
 	PlayerObject(pGhost):setJediState(1)
 end
 
@@ -216,6 +217,7 @@ function HologrindJediManager:sendHolocronMessage(pCreatureObject)
 			if not PlayerObject(pGhost):hasBadge(professions[i]) then
 				local professionText = self:getProfessionStringIdFromBadgeNumber(professions[i])
 				CreatureObject(pCreatureObject):sendSystemMessageWithTO("@jedi_spam:holocron_light_information", "@skl_n:" .. professionText)
+				break
 			end
 		end
 

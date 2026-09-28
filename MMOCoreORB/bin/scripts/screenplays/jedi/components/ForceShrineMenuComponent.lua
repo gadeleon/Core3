@@ -36,11 +36,33 @@ function ForceShrineMenuComponent:doMeditate(pObject, pPlayer)
 		KnightTrials:resetCompletedTrialsToStart(pPlayer)
 	end
 
-	if (not CreatureObject(pPlayer):hasSkill("force_title_jedi_rank_02") and CreatureObject(pPlayer):hasScreenPlayState(32, "VillageJediProgression")) then
+	if (not CreatureObject(pPlayer):hasSkill("force_title_jedi_rank_02") and CreatureObject(pPlayer):hasSkill("force_title_jedi_rank_01")) then
 		local currentTrial = JediTrials:getCurrentTrial(pPlayer)
+    	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
 		if (not JediTrials:isOnPadawanTrials(pPlayer)) then
-			PadawanTrials:startPadawanTrials(pObject, pPlayer)
+			-- PadawanTrials:startPadawanTrials(pObject, pPlayer)
+            awardSkill(pPlayer, "force_title_jedi_rank_02")
+            PlayerObject(pGhost):setJediState(2)
+            writeScreenPlayData(pPlayer, "PadawanTrials", "completedTrials", 1)
+
+            CreatureObject(pPlayer):playEffect("clienteffect/trap_electric_01.cef", "")
+            CreatureObject(pPlayer):playMusicMessage("sound/music_become_jedi.snd")
+
+            local pInventory = SceneObject(pPlayer):getSlottedObject("inventory")
+
+            if (pInventory == nil or SceneObject(pInventory):isContainerFullRecursive()) then
+                CreatureObject(pPlayer):sendSystemMessage("@jedi_spam:inventory_full_jedi_robe")
+            else
+                local pInventory = CreatureObject(pPlayer):getSlottedObject("inventory")
+                local pItem = giveItem(pInventory, "object/tangible/wearables/robe/robe_jedi_padawan.iff", -1)
+            end
+			local sui = SuiMessageBox.new("JediTrials", "emptyCallback") -- No callback
+    		sui.setTitle("@jedi_trials:padawan_trials_title")
+    		sui.setPrompt("@jedi_trials:padawan_trials_completed")
+    		sui.sendTo(pPlayer)
+		    sendMail("system", "@jedi_spam:welcome_subject", "@jedi_spam:welcome_body", CreatureObject(pPlayer):getFirstName())
+
 		elseif (currentTrial == 0) then
 			PadawanTrials:startNextPadawanTrial(pObject, pPlayer)
 		else

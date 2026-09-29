@@ -150,16 +150,40 @@ public:
 
 		} else if (command == "setxpmodifier") {
 			if (!tokenizer.hasMoreTokens()) {
+				sendXpModifierStatus(player, playerManager);
+				return 0;
+			}
+
+			String value;
+			tokenizer.getStringToken(value);
+
+			if (value.toLowerCase() == "reset") {
+				playerManager->resetExperienceMultiplier();
+
+				player->sendSystemMessage("Experience multiplier reset to " + String::valueOf(playerManager->getExperienceMultiplier()) + "x.");
+				return 0;
+			}
+
+			float multiplier = Float::valueOf(value);
+			float hours = 0;
+
+			if (tokenizer.hasMoreTokens())
+				hours = tokenizer.getFloatToken();
+
+			if (multiplier <= 0 || hours < 0) {
 				sendSyntax(player);
 				return 1;
 			}
 
-			float multiplier = tokenizer.getFloatToken();
-
-			playerManager->setExperienceMultiplier(multiplier);
+			playerManager->setExperienceMultiplier(multiplier, hours);
 
 			StringBuffer message;
 			message << "Experience now increased by " << multiplier << "x";
+
+			if (hours > 0)
+				message << " for " << hours << " hour(s), then back to " << playerManager->getDefaultExperienceMultiplier() << "x.";
+			else
+				message << " until reboot.";
 
 			player->sendSystemMessage(message.toString());
 
@@ -174,11 +198,25 @@ public:
 
 	static void sendSyntax(CreatureObject* player) {
 		if (player != nullptr) {
-			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value]");
+			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value|reset] [hours]");
 			player->sendSystemMessage("Syntax: /server playermanager [listjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [list_frsjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [listadmins]");
 		}
+	}
+
+	static void sendXpModifierStatus(CreatureObject* player, PlayerManager* playerManager) {
+		StringBuffer message;
+		message << "Experience multiplier: " << playerManager->getExperienceMultiplier() << "x (default " << playerManager->getDefaultExperienceMultiplier() << "x)";
+
+		int secondsLeft = playerManager->getExperienceMultiplierSecondsLeft();
+
+		if (secondsLeft > 0)
+			message << ", resets in " << (secondsLeft / 3600) << "h " << ((secondsLeft % 3600) / 60) << "m.";
+		else
+			message << ", no timer.";
+
+		player->sendSystemMessage(message.toString());
 	}
 
 	static String dumpCOV(ZoneServer* zoneServer, uint64 oid, bool showAll) {

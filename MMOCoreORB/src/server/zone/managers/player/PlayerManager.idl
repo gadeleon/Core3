@@ -110,6 +110,16 @@ class PlayerManager extends Observer implements Logger {
 	private float globalExpMultiplier;
 	private float groupExpMultiplier;
 
+	// Lua configured value, restored when a timed or manual override ends
+	private transient float defaultGlobalExpMultiplier;
+
+	@dereferenced
+	private transient Time expMultiplierResetTime;
+
+	// Bumped on every change so an older timer does not undo a newer override
+	private transient int expMultiplierGeneration;
+	private transient boolean expMultiplierTimed;
+
 	@dereferenced
 	private transient ReadWriteLock onlineMapMutex;
 
@@ -219,7 +229,28 @@ class PlayerManager extends Observer implements Logger {
 	@local
 	public native void awardBadge(PlayerObject ghost, final Badge badge);
 
-	public native void setExperienceMultiplier(float globalMultiplier);
+	/**
+	 * Changes the global experience multiplier until reboot.
+	 * @param durationHours when greater than 0, the Lua configured multiplier is restored after this many hours
+	 */
+	public native void setExperienceMultiplier(float globalMultiplier, float durationHours = 0);
+
+	public native void resetExperienceMultiplier();
+
+	public native void resetExperienceMultiplierIfCurrent(int generation);
+
+	public float getExperienceMultiplier() {
+		return globalExpMultiplier;
+	}
+
+	public float getDefaultExperienceMultiplier() {
+		return defaultGlobalExpMultiplier;
+	}
+
+	/**
+	 * @return seconds until a timed multiplier is reset, or 0 when no timer is running
+	 */
+	public native int getExperienceMultiplierSecondsLeft();
 	public native int awardExperience(CreatureObject player, final string xpType, int amount, boolean sendSystemMessage = true, float localMultiplier = 1.0f, boolean applyModifiers = true, boolean spaceBonus = false);
 
 	@local @dereferenced

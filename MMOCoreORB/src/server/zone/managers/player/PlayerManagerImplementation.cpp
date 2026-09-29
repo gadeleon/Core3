@@ -252,6 +252,9 @@ void PlayerManagerImplementation::loadLuaConfig() {
 	groupExpMultiplier = lua->getGlobalFloat("groupExpMultiplier");
 
 	globalExpMultiplier = lua->getGlobalFloat("globalExpMultiplier");
+	defaultGlobalExpMultiplier = globalExpMultiplier;
+	expMultiplierGeneration = 0;
+	expMultiplierTimed = false;
 
 	baseStoredCreaturePets = lua->getGlobalInt("baseStoredCreaturePets");
 	baseStoredFactionPets = lua->getGlobalInt("baseStoredFactionPets");
@@ -2587,8 +2590,52 @@ void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, const Badge* b
 	}
 }
 
-void PlayerManagerImplementation::setExperienceMultiplier(float globalMultiplier) {
+void PlayerManagerImplementation::setExperienceMultiplier(float globalMultiplier, float durationHours) {
 	globalExpMultiplier = globalMultiplier;
+
+	int generation = ++expMultiplierGeneration;
+	expMultiplierTimed = durationHours > 0;
+
+	info(true) << "Global experience multiplier set to " << globalMultiplier << (expMultiplierTimed ? " for " + String::valueOf(durationHours) + " hours" : " until reboot");
+
+	if (!expMultiplierTimed)
+		return;
+
+	uint64 durationMs = (uint64)(durationHours * 60.f * 60.f * 1000.f);
+
+	expMultiplierResetTime.updateToCurrentTime();
+	expMultiplierResetTime.addMiliTime(durationMs);
+
+	ManagedReference<PlayerManager*> playerManager = _this.getReferenceUnsafeStaticCast();
+
+	Core::getTaskManager()->scheduleTask([playerManager, generation] {
+		playerManager->resetExperienceMultiplierIfCurrent(generation);
+	}, "ResetExperienceMultiplierTask", durationMs);
+}
+
+void PlayerManagerImplementation::resetExperienceMultiplierIfCurrent(int generation) {
+	if (generation != expMultiplierGeneration)
+		return;
+
+	resetExperienceMultiplier();
+}
+
+void PlayerManagerImplementation::resetExperienceMultiplier() {
+	globalExpMultiplier = defaultGlobalExpMultiplier;
+
+	++expMultiplierGeneration;
+	expMultiplierTimed = false;
+
+	info(true) << "Global experience multiplier reset to " << globalExpMultiplier;
+}
+
+int PlayerManagerImplementation::getExperienceMultiplierSecondsLeft() {
+	if (!expMultiplierTimed)
+		return 0;
+
+	int64 msLeft = expMultiplierResetTime.miliDifference() * -1;
+
+	return msLeft > 0 ? (int)(msLeft / 1000) : 0;
 }
 
 /*

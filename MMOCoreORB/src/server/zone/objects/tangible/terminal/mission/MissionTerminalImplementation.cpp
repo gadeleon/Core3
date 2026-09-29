@@ -12,6 +12,7 @@
 #include "server/zone/managers/city/CityManager.h"
 #include "server/zone/managers/city/CityRemoveAmenityTask.h"
 #include "server/zone/objects/player/sessions/SlicingSession.h"
+#include "server/zone/managers/mission/MissionDirection.h"
 
 void MissionTerminalImplementation::fillObjectMenuResponse(ObjectMenuResponse* menuResponse, CreatureObject* player) {
 	TerminalImplementation::fillObjectMenuResponse(menuResponse, player);
@@ -27,6 +28,18 @@ void MissionTerminalImplementation::fillObjectMenuResponse(ObjectMenuResponse* m
 		menuResponse->addRadialMenuItemToRadialID(73, 75, 3, "@city/city:east"); // East
 		menuResponse->addRadialMenuItemToRadialID(73, 76, 3, "@city/city:south"); // South
 		menuResponse->addRadialMenuItemToRadialID(73, 77, 3, "@city/city:west"); // West
+	}
+
+	// Terminals whose missions pick a map location (destroy, recon) can be filtered by direction.
+	if (isGeneralTerminal() || isScoutTerminal() || isImperialTerminal() || isRebelTerminal()) {
+		String current = MissionDirection::getName(MissionDirection::getDirection(player));
+
+		menuResponse->addRadialMenuItem(150, 3, "Mission Direction: " + current);
+		menuResponse->addRadialMenuItemToRadialID(150, 151, 3, "Any");
+		menuResponse->addRadialMenuItemToRadialID(150, 152, 3, "North");
+		menuResponse->addRadialMenuItemToRadialID(150, 153, 3, "East");
+		menuResponse->addRadialMenuItemToRadialID(150, 154, 3, "South");
+		menuResponse->addRadialMenuItemToRadialID(150, 155, 3, "West");
 	}
 }
 
@@ -76,6 +89,18 @@ int MissionTerminalImplementation::handleObjectMenuSelect(CreatureObject* player
 
 		CityManager* cityManager = getZoneServer()->getCityManager();
 		cityManager->alignAmenity(city, player, _this.getReferenceUnsafeStaticCast(), selectedID - 74);
+
+		return 0;
+
+	} else if (selectedID >= 151 && selectedID <= 155) {
+		int direction = selectedID - 151;
+
+		MissionDirection::setDirection(player, direction);
+
+		if (direction == MissionDirection::ANY)
+			player->sendSystemMessage("Missions will be offered in any direction.");
+		else
+			player->sendSystemMessage("Missions will be offered to the " + String(MissionDirection::getName(direction)) + ". Refresh the terminal to see new missions.");
 
 		return 0;
 	}

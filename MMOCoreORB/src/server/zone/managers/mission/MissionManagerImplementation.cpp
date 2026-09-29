@@ -6,6 +6,7 @@
  */
 
 #include "server/zone/managers/mission/MissionManager.h"
+#include "server/zone/managers/mission/MissionDirection.h"
 #include "server/zone/objects/tangible/terminal/mission/MissionTerminal.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/ai/AiAgent.h"
@@ -871,7 +872,7 @@ void MissionManagerImplementation::randomizeGenericDestroyMission(CreatureObject
 
 		int distance = destroyMissionBaseDistance + destroyMissionDifficultyDistanceFactor * difficultyLevel;
 		distance += System::random(destroyMissionRandomDistance) + System::random(destroyMissionDifficultyRandomDistance * difficultyLevel);
-		startPos = player->getWorldCoordinate((float)distance, (float)System::random(360), false);
+		startPos = MissionDirection::getMissionCoordinate(player, (float)distance);
 
 		if (zone->isWithinBoundaries(startPos)) {
 			float height = zone->getHeight(startPos.getX(), startPos.getY());
@@ -1635,7 +1636,7 @@ void MissionManagerImplementation::randomizeGenericReconMission(CreatureObject* 
 
 	int maximumNumberOfTries = 20;
 	while (!foundPosition && maximumNumberOfTries-- > 0) {
-		position = player->getWorldCoordinate(System::random(3000) + 1000, (float)System::random(360), false);
+		position = MissionDirection::getMissionCoordinate(player, System::random(3000) + 1000);
 
 		//Check if it is a position where you can build and away from any travel points.
 		if (playerZone->getPlanetManager()->isBuildingPermittedAt(position.getX(), position.getY(), nullptr)) {

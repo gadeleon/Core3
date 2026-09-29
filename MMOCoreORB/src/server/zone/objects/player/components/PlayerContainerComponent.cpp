@@ -10,6 +10,7 @@
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/FactionStatus.h"
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
+#include "server/zone/objects/tangible/wearables/WearableObject.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/ZoneServer.h"
@@ -64,7 +65,7 @@ int PlayerContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject
 			}
 		}
 
-		if (object->isWearableObject()) {
+		if (object->isWearableObject() && !cast<WearableObject*>(object)->isIgnoringCertifications()) {
 			if (tanoData != nullptr) {
 				const Vector<String>& skillsRequired = tanoData->getCertificationsRequired();
 

@@ -44,7 +44,9 @@ public:
 
 		String rankRequired = robe->getSkillRequired();
 
-		if (!rankRequired.isEmpty() && rankRequired != "force_title_jedi_rank_02") {
+		if (robe->isIgnoringCertifications()) {
+			alm->insertAttribute("jedi_rank_required", "None");
+		} else if (!rankRequired.isEmpty() && rankRequired != "force_title_jedi_rank_02") {
 			alm->insertAttribute("jedi_rank_required", "@skl_n:" + rankRequired);
 		}
 
@@ -58,6 +60,17 @@ public:
 		if (skills->contains("jedi_force_power_max")) {
 			int mod = skills->get("jedi_force_power_max");
 			alm->insertAttribute("jedi_robe_power", "+" + String::valueOf(mod));
+		}
+
+		// Skill mods added to this robe, e.g. by /object grindingjedi
+		const auto wearableMods = robe->getWearableSkillMods();
+
+		for (int i = 0; i < wearableMods->size(); ++i) {
+			const String& key = wearableMods->elementAt(i).getKey();
+			int value = wearableMods->elementAt(i).getValue();
+
+			if (value > 0)
+				alm->insertAttribute("cat_skill_mod_bonus.@stat_n:" + key, value);
 		}
 	}
 };

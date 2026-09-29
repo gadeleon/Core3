@@ -30,6 +30,9 @@
  * Families whose schematics have no target template (mandalorian, bounty_hunter) are not really
  * craftable. Those pieces are created straight from the armor template, like the Death Watch Bunker
  * does, so legal mode keeps the template stats.
+ *
+ * /object grindingjedi uses the same flow with a Jedi robe picker first. Robes are always no-trade.
+ * Every generated item skips the template's required skills/ranks when equipped.
  */
 
 class GrindingArmorRequest : public Object {
@@ -37,6 +40,9 @@ public:
 	String family;
 	String slot;
 	bool superMode = false;
+
+	// Set for /object grindingjedi, empty for armor
+	String robeTemplate;
 
 	Vector<String> slots;
 	Vector<String> mods;
@@ -69,9 +75,18 @@ public:
 
 	static void sendSyntax(CreatureObject* creature);
 
+	/**
+	 * Opens the Jedi robe picker for /object grindingjedi.
+	 */
+	static bool handleJediCommand(CreatureObject* creature);
+	static void sendRobeBox(CreatureObject* creature, GrindingArmorRequest* request);
+
+	static const Vector<String>& getRobes();
+
 private:
 	static const Vector<String>& getFamilies();
 	static const Vector<String>& getSlots();
+	static const Vector<String>& getJediMods();
 
 	static String getSchematicPath(const String& family, const String& slot);
 	static String getArmorTemplatePath(const String& family, const String& slot);
@@ -122,6 +137,41 @@ public:
 			if (!request->mods.contains(mod))
 				request->mods.add(mod);
 		}
+
+		GrindingArmor::sendModBox(creature, request);
+	}
+};
+
+class GrindingJediRobeSuiCallback : public SuiCallback {
+	Reference<GrindingArmorRequest*> request;
+
+public:
+	GrindingJediRobeSuiCallback(ZoneServer* serv, GrindingArmorRequest* req) : SuiCallback(serv), request(req) {
+	}
+
+	void run(CreatureObject* creature, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
+		if (!suiBox->isListBox() || request == nullptr)
+			return;
+
+		if (cancelPressed) {
+			creature->sendSystemMessage("Grinding Jedi robe generation cancelled.");
+			return;
+		}
+
+		if (args->size() < 1)
+			return;
+
+		int index = Integer::valueOf(args->get(0).toString());
+		const Vector<String>& robes = GrindingArmor::getRobes();
+
+		if (index < 0 || index >= robes.size()) {
+			GrindingArmor::sendRobeBox(creature, request);
+			return;
+		}
+
+		request->robeTemplate = "object/tangible/wearables/robe/" + robes.get(index) + ".iff";
 
 		GrindingArmor::sendModBox(creature, request);
 	}
@@ -179,6 +229,47 @@ inline const Vector<String>& GrindingArmor::getSlots() {
 	}
 
 	return slots;
+}
+
+inline const Vector<String>& GrindingArmor::getRobes() {
+	static Vector<String> robes;
+
+	if (robes.size() == 0) {
+		const char* names[] = {"robe_jedi_padawan", "robe_jedi_light_s01", "robe_jedi_light_s02", "robe_jedi_light_s03", "robe_jedi_light_s04", "robe_jedi_light_s05",
+				"robe_jedi_dark_s01", "robe_jedi_dark_s02", "robe_jedi_dark_s03", "robe_jedi_dark_s04", "robe_jedi_dark_s05", "robe_jedi_test"};
+
+		for (const char* name : names)
+			robes.add(name);
+	}
+
+	return robes;
+}
+
+inline const Vector<String>& GrindingArmor::getJediMods() {
+	static Vector<String> mods;
+
+	if (mods.size() == 0) {
+		// Listed above the armor attachment mods in the grindingjedi picker.
+		const char* names[] = {
+				// Lightsaber combat
+				"onehandlightsaber_accuracy", "onehandlightsaber_speed", "twohandlightsaber_accuracy", "twohandlightsaber_speed",
+				"polearmlightsaber_accuracy", "polearmlightsaber_speed", "saber_block", "lightsaber_toughness",
+				// Force
+				"jedi_force_power_max", "jedi_force_power_regen", "jedi_toughness", "jedi_state_defense", "force_defense",
+				"forcelightning_accuracy", "forceknockdown_accuracy",
+				// Force powers, permanent while worn
+				"force_armor", "force_shield", "force_absorb", "force_feedback",
+				// Force ranks
+				"force_control_light", "force_control_dark", "force_manipulation_light", "force_manipulation_dark", "force_power_light", "force_power_dark",
+				// Jedi crafting and utility
+				"force_assembly", "force_experimentation", "force_repair_bonus", "force_failure_reduction", "force_luck", "force_persuade",
+				"force_vehicle_control", "force_vehicle_speed"};
+
+		for (const char* name : names)
+			mods.add(name);
+	}
+
+	return mods;
 }
 
 inline String GrindingArmor::getSchematicPath(const String& family, const String& slot) {
@@ -309,6 +400,47 @@ inline bool GrindingArmor::handleCommand(CreatureObject* creature, StringTokeniz
 	return true;
 }
 
+inline bool GrindingArmor::handleJediCommand(CreatureObject* creature) {
+	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
+
+	if (ghost == nullptr)
+		return false;
+
+	Reference<GrindingArmorRequest*> request = new GrindingArmorRequest();
+	request->family = "jedi_robe";
+	request->slots.add("robe");
+
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_MODS);
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_COLOR);
+
+	sendRobeBox(creature, request);
+
+	return true;
+}
+
+inline void GrindingArmor::sendRobeBox(CreatureObject* creature, GrindingArmorRequest* request) {
+	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
+
+	if (ghost == nullptr)
+		return;
+
+	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETWOBUTTON);
+	box->setPromptTitle("Grinding Jedi Robe");
+	box->setPromptText("Choose a robe. Generated robes can be worn without the Force rank and are no-trade.");
+	box->setOkButton(true, "@ok");
+	box->setCancelButton(true, "@ui:cancel");
+
+	const Vector<String>& robes = getRobes();
+
+	for (int i = 0; i < robes.size(); ++i)
+		box->addMenuItem(robes.get(i));
+
+	box->setCallback(new GrindingJediRobeSuiCallback(creature->getZoneServer(), request));
+
+	ghost->addSuiBox(box);
+	creature->sendMessage(box->generateMessage());
+}
+
 inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorRequest* request) {
 	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
 	ManagedReference<LootManager*> lootManager = creature->getZoneServer()->getLootManager();
@@ -316,19 +448,30 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 	if (ghost == nullptr || lootManager == nullptr)
 		return;
 
+	bool jedi = !request->robeTemplate.isEmpty();
+
 	StringBuffer prompt;
-	prompt << "Family: " << request->family;
-	prompt << "\nSlot: " << (request->slot.isEmpty() ? "full set" : request->slot);
-	bool craftable = request->slots.size() > 0 && isCraftable(getSchematicPath(request->family, request->slots.get(0)));
 
-	prompt << "\nMode: ";
-
-	if (request->superMode)
-		prompt << "super (99% resists, no trade)";
-	else if (craftable)
-		prompt << "legal (100% experimentation)";
+	if (jedi)
+		prompt << "Robe: " << request->robeTemplate.subString(request->robeTemplate.lastIndexOf('/') + 1, request->robeTemplate.lastIndexOf('.'));
 	else
-		prompt << "legal (template stats, not craftable)";
+		prompt << "Family: " << request->family;
+
+	if (!jedi) {
+		prompt << "\nSlot: " << (request->slot.isEmpty() ? "full set" : request->slot);
+
+		bool craftable = request->slots.size() > 0 && isCraftable(getSchematicPath(request->family, request->slots.get(0)));
+
+		prompt << "\nMode: ";
+
+		if (request->superMode)
+			prompt << "super (99% resists, no trade)";
+		else if (craftable)
+			prompt << "legal (100% experimentation)";
+		else
+			prompt << "legal (template stats, not craftable)";
+	}
+
 	prompt << "\n\nChosen mods (+" << MOD_VALUE << " each): ";
 
 	if (request->mods.size() == 0)
@@ -341,7 +484,7 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		prompt << request->mods.get(i);
 	}
 
-	prompt << "\n\nSelect a mod and press Add. Press Done to generate the armor.";
+	prompt << "\n\nSelect a mod and press Add. Press Done to generate the " << (jedi ? "robe." : "armor.");
 
 	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETHREEBUTTON);
 	box->setPromptTitle("Grinding Armor");
@@ -351,10 +494,25 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 	box->setOtherButton(true, "@ui:done");
 	box->setCancelButton(true, "@ui:cancel");
 
+	Vector<String> available;
+
+	// Jedi mods go on top for robes, followed by the armor attachment mods.
+	if (jedi) {
+		const Vector<String>& jediMods = getJediMods();
+
+		for (int i = 0; i < jediMods.size(); ++i)
+			available.add(jediMods.get(i));
+	}
+
 	const SortedVector<String>* mods = lootManager->getLootableArmorAttachmentMods();
 
 	for (int i = 0; i < mods->size(); ++i) {
-		const String& mod = mods->get(i);
+		if (!available.contains(mods->get(i)))
+			available.add(mods->get(i));
+	}
+
+	for (int i = 0; i < available.size(); ++i) {
+		const String& mod = available.get(i);
 
 		if (request->mods.contains(mod) || SkillModManager::instance()->isWearableModDisabled(mod))
 			continue;
@@ -449,7 +607,9 @@ inline ManagedReference<TangibleObject*> GrindingArmor::createPiece(CreatureObje
 	String schematicPath = getSchematicPath(request->family, slot);
 	ManagedReference<TangibleObject*> prototype;
 
-	if (isCraftable(schematicPath))
+	if (!request->robeTemplate.isEmpty())
+		prototype = createTemplatePrototype(creature, request->robeTemplate);
+	else if (isCraftable(schematicPath))
 		prototype = createCraftedPrototype(creature, schematicPath);
 	else
 		prototype = createTemplatePrototype(creature, getArmorTemplatePath(request->family, slot));
@@ -463,6 +623,7 @@ inline ManagedReference<TangibleObject*> GrindingArmor::createPiece(CreatureObje
 	if (prototype->isWearableObject()) {
 		WearableObject* wearable = cast<WearableObject*>(prototype.get());
 		wearable->setMaxSockets(0);
+		wearable->setIgnoreCertifications(true);
 
 		for (int i = 0; i < request->mods.size(); ++i)
 			wearable->setWearableSkillMod(request->mods.get(i), MOD_VALUE);
@@ -489,6 +650,9 @@ inline ManagedReference<TangibleObject*> GrindingArmor::createPiece(CreatureObje
 		prototype->setConditionDamage(0, false);
 		prototype->setForceNoTrade(true);
 	}
+
+	if (!request->robeTemplate.isEmpty())
+		prototype->setForceNoTrade(true);
 
 	// Set Crafter name and generate serial number
 	String name = creature->getFirstName();
@@ -543,7 +707,7 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 	Reference<GrindingArmorColorRequest*> colorRequest = new GrindingArmorColorRequest();
 
 	StringBuffer log;
-	log << "/object grindingarmor " << request->family << " " << (request->slot.isEmpty() ? "full_set" : request->slot) << " " << (request->superMode ? "super" : "legal") << " mods:";
+	log << (request->robeTemplate.isEmpty() ? "/object grindingarmor " : "/object grindingjedi " + request->robeTemplate + " ") << request->family << " " << (request->slot.isEmpty() ? "full_set" : request->slot) << " " << (request->superMode ? "super" : "legal") << " mods:";
 
 	for (int i = 0; i < request->mods.size(); ++i)
 		log << " " << request->mods.get(i);

@@ -65,7 +65,7 @@ void ArmorObjectImplementation::notifyLoadFromDatabase() {
 	if (templateObject == nullptr)
 		return;
 
-	if (rating != LIGHT && templateObject->getClientTemplateFileName().contains("armor_bounty_hunter_"))
+	if (!uncappedResists && rating != LIGHT && templateObject->getClientTemplateFileName().contains("armor_bounty_hunter_"))
 		rating = LIGHT;
 }
 
@@ -294,7 +294,10 @@ float ArmorObjectImplementation::getTypeValue(int type, float value) const {
 		newValue = baseProtection + value;
 		newValue *= effectivenessSlice;
 
-		if(sliced && effectivenessSlice > 1) {
+		if (uncappedResists) {
+			if (newValue > 100)
+				newValue = 100;
+		} else if(sliced && effectivenessSlice > 1) {
 			if(newValue > 90)
 				newValue = 90;
 		} else {
@@ -494,6 +497,28 @@ float ArmorObjectImplementation::getAcid() const {
 float ArmorObjectImplementation::getLightSaber() const {
 	float value = getTypeValue(SharedWeaponObjectTemplate::LIGHTSABER, lightSaber);
 	return value - getConditionReduction(value);
+}
+
+void ArmorObjectImplementation::setUncappedResists(float value) {
+	uncappedResists = true;
+
+	specialResists = 0;
+	vulnerabilites = 0;
+	baseProtection = 0;
+	specialProtection = 0;
+	effectivenessSlice = 1;
+
+	kinetic = value;
+	energy = value;
+	electricity = value;
+	stun = value;
+	blast = value;
+	heat = value;
+	cold = value;
+	acid = value;
+	lightSaber = value;
+
+	setSliceable(false);
 }
 
 void ArmorObjectImplementation::setProtectionValue(int type, float value) {

@@ -41,6 +41,8 @@ class ArmorObject extends WearableObject {
 	protected float effectivenessSlice;
 	protected float encumbranceSlice;
 
+	protected boolean uncappedResists;
+
 	public static final int LIGHT = 0x1;
 	public static final int MEDIUM = 0x2;
 	public static final int HEAVY = 0x3;
@@ -69,6 +71,8 @@ class ArmorObject extends WearableObject {
 		specialResists = 0;
 		vulnerabilites = 0;
 		hitLocation = 0;
+
+		uncappedResists = false;
 
 		setSliceable(true);
 
@@ -134,6 +138,17 @@ class ArmorObject extends WearableObject {
 
 	public void setRating(int rate) {
 		rating = rate;
+	}
+
+	/**
+	 * Sets every resist to value and exempts it from the normal 80/90 resist cap.
+	 * Clears special resists and vulnerabilities. Used for admin generated armor.
+	 */
+	public native void setUncappedResists(float value);
+
+	@read
+	public boolean hasUncappedResists() {
+		return uncappedResists;
 	}
 
 	@read

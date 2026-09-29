@@ -10,6 +10,7 @@
 #include "server/zone/managers/crafting/CraftingManager.h"
 #include "server/zone/managers/crafting/ComponentMap.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
+#include "server/zone/objects/player/sui/callbacks/GrindingArmorSuiCallback.h"
 
 
 class ObjectCommand : public QueueCommand {
@@ -247,6 +248,9 @@ public:
 					creature->getZone()->transferObject(blueFrog, -1, true);
 
 				creature->info(true) << "/object characterbuilder " << " created oid: " << blueFrog->getObjectID() << " \"" << blueFrog->getDisplayedName() << "\" as " << creature->getWorldPosition() << " on " << creature->getZone()->getZoneName();
+			} else if (commandType.beginsWith("grindingarmor")) {
+				if (!GrindingArmor::handleCommand(creature, args))
+					return INVALIDPARAMETERS;
 			}
 
 		} catch (Exception& e) {
@@ -256,6 +260,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object createarealoot <loottemplate> [<range>] [<level>]");
 			creature->sendSystemMessage("SYNTAX: /object checklooted");
 			creature->sendSystemMessage("SYNTAX: /object characterbuilder");
+			creature->sendSystemMessage("SYNTAX: /object grindingarmor <family> [<slot>] [legal|super]");
 
 			return INVALIDPARAMETERS;
 		}

@@ -249,6 +249,12 @@ class LootManager extends ManagedService implements Logger {
 
 	@local
 	@read
+	public final SortedVector<string> getLootableArmorAttachmentMods() {
+		return lootableArmorAttachmentMods;
+	}
+
+	@local
+	@read
 	public final CrystalData getCrystalData(final string name) {
 		return crystalData.get(name);
 	}

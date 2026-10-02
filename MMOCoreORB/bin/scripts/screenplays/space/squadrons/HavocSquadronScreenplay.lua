@@ -282,10 +282,13 @@ inspect_viopa_rebel_1 = SpaceInspectScreenplay:new {
 	sideQuestName = "viopa_rebel_1",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 
-	inspectTargets = {"viopa_mission_1_shuttle"},
-	inspectCargo = "imperial_data",
-
-	targetLocation = {x = 1992, z = 800, y = 2716},
+	-- Screenplay Specific Variables
+	shipList = {"viopa_mission_1_shuttle"},
+	validSpawns = {
+		{spawnName = "viopa_rebel_1_shuttle", x = 2102, z = 1022, y = 2191},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "imperial_data",
 }
 
 registerScreenPlay("inspect_viopa_rebel_1", true)
@@ -764,10 +767,15 @@ inspect_corellia_rebel_tier3_2 = SpaceInspectScreenplay:new {
 	sideQuestName = "corellia_rebel_tier3_2_a",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 
-	inspectTargets = {"huttsmuggler"},
-	inspectCargo = "sector_recon_data",
-
-	targetLocation = {x = 4249, z = 2899, y = 3799},
+	-- Screenplay Specific Variables
+	shipList = {"huttsmuggler"},
+	validSpawns = {
+		{spawnName = "hutt_smuggler_01", x = 4249, z = 2899, y = 3799},
+		{spawnName = "hutt_smuggler_02", x = 4730, z = -2531, y = -3607},
+		{spawnName = "hutt_smuggler_route", x = -4266, z = 3939, y = -3918},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "sector_recon_data",
 }
 
 registerScreenPlay("inspect_corellia_rebel_tier3_2", true)

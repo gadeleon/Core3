@@ -15,10 +15,28 @@ local nextObjectID = 1000
 -- Backing store for the engine's getQuestStatus/setQuestStatus/removeQuestStatus (key -> string).
 Fakes.questStatus = {}
 
+-- Current fake time in ms; engine.lua replaces this with its event clock.
+Fakes.now = function() return 0 end
+
+-- Called by Fakes.destroy so the engine can drop observers registered on the object.
+Fakes.destroyHook = function(obj) end
+
 function Fakes.reset()
 	registry = {}
 	nextObjectID = 1000
 	Fakes.questStatus = {}
+end
+
+-- destroyObjectFromWorld: the object leaves the registry (getSceneObject(id) returns nil afterwards)
+-- and is flagged `destroyed` so tests can assert on it. Idempotent.
+function Fakes.destroy(obj)
+	if obj.destroyed then
+		return
+	end
+
+	obj.destroyed = true
+	registry[obj.objectID] = nil
+	Fakes.destroyHook(obj)
 end
 
 function Fakes.lookup(objectID)
@@ -66,7 +84,10 @@ function Fakes.newGhost(opts)
 		experience = opts.experience or {},
 		pilotTier = opts.pilotTier or 0,
 		factionStanding = {},
-		waypoints = {},
+		waypoints = {},         -- live waypoints (fake waypoint objects), oldest first
+		removedWaypoints = {},  -- waypoints removed through removeWaypoint
+		taskActive = {},        -- quest crc -> { [taskNumber] = true }
+		taskComplete = {},
 	}, FakeGhost)
 
 	for faction, standing in pairs(opts.factionStanding or {}) do
@@ -81,7 +102,40 @@ function FakeGhost:isJournalQuestActive(crc) return self.journalActive[crc] == t
 function FakeGhost:isJournalQuestComplete(crc) return self.journalComplete[crc] == true end
 function FakeGhost:activateJournalQuest(crc, notify) self.journalActive[crc] = true end
 function FakeGhost:completeJournalQuest(crc, notify) self.journalActive[crc] = nil; self.journalComplete[crc] = true end
-function FakeGhost:clearJournalQuest(crc, notify) self.journalActive[crc] = nil; self.journalComplete[crc] = nil end
+function FakeGhost:clearJournalQuest(crc, notify)
+	self.journalActive[crc] = nil
+	self.journalComplete[crc] = nil
+	self.taskActive[crc] = nil
+	self.taskComplete[crc] = nil
+end
+
+-- Journal tasks. Completing a task moves it from active to complete, like the server.
+function FakeGhost:activateJournalQuestTask(crc, task, notify)
+	self.taskActive[crc] = self.taskActive[crc] or {}
+	self.taskActive[crc][task] = true
+end
+
+function FakeGhost:completeJournalQuestTask(crc, task, notify)
+	if self.taskActive[crc] then
+		self.taskActive[crc][task] = nil
+	end
+
+	self.taskComplete[crc] = self.taskComplete[crc] or {}
+	self.taskComplete[crc][task] = true
+end
+
+function FakeGhost:clearJournalQuestTask(crc, task, notify)
+	if self.taskActive[crc] then
+		self.taskActive[crc][task] = nil
+	end
+
+	if self.taskComplete[crc] then
+		self.taskComplete[crc][task] = nil
+	end
+end
+
+function FakeGhost:isJournalQuestTaskActive(crc, task) return self.taskActive[crc] ~= nil and self.taskActive[crc][task] == true end
+function FakeGhost:isJournalQuestTaskComplete(crc, task) return self.taskComplete[crc] ~= nil and self.taskComplete[crc][task] == true end
 function FakeGhost:isSquadronType(t) return self.squadronType == t end
 function FakeGhost:setSquadronType(t) self.squadronType = t end
 function FakeGhost:getSquadronType() return self.squadronType end
@@ -93,9 +147,33 @@ function FakeGhost:increaseFactionStanding(faction, amount) self.factionStanding
 function FakeGhost:decreaseFactionStanding(faction, amount) self.factionStanding[faction] = (self.factionStanding[faction] or 0) - amount end
 function FakeGhost:setFactionStanding(faction, amount) self.factionStanding[faction] = amount end
 
-function FakeGhost:addWaypoint(planet, name, desc, x, y, color, active, notify, special, persistent)
-	self.waypoints[#self.waypoints + 1] = { planet = planet, name = name, x = x, y = y }
-	return #self.waypoints
+-- addWaypoint(planet, name, desc, x, z, y, color, active, notify, special[, persistent]), the order
+-- of LuaPlayerObject::addWaypoint (z is the height). The C++ binding returns nothing unless it gets
+-- 10 or 11 arguments, so the fake errors instead. Returns the new waypoint's object id.
+function FakeGhost:addWaypoint(...)
+	local n = select("#", ...)
+
+	if n ~= 10 and n ~= 11 then
+		error("harness: addWaypoint takes 10 or 11 arguments (planet, name, desc, x, z, y, color, active, notify, special[, persistent]); got " .. n, 2)
+	end
+
+	local planet, name, desc, x, z, y, color, active, notify, special, persistent = ...
+	local wp = Fakes.newWaypoint({ planet = planet, name = name, desc = desc, x = x, z = z, y = y, color = color,
+		active = active, notify = notify, special = special, persistent = persistent })
+
+	self.waypoints[#self.waypoints + 1] = wp
+	return wp.objectID
+end
+
+function FakeGhost:removeWaypoint(waypointID, notify)
+	for i, wp in ipairs(self.waypoints) do
+		if wp.objectID == waypointID then
+			table.remove(self.waypoints, i)
+			self.removedWaypoints[#self.removedWaypoints + 1] = wp
+			Fakes.destroy(wp)
+			return
+		end
+	end
 end
 
 ---------------------------------------------------------------------------------------------
@@ -112,6 +190,11 @@ FakeCreature.__index = FakeCreature
 -- completedQuests, pilotTier (number, default 0), factionStanding ({rebel = n}).
 -- questStatus: { ["<suffix>"] = value } stored as getQuestStatus("<objectID><suffix>"), the key
 -- shape the Havoc/CorSec handlers use (player object id first).
+-- parent: true or a name; the player stands in a fake building (root parent, not a ship).
+-- zone: name returned by getZoneName (default ""). ship: true or a Fakes.newShip option table; the
+-- player then sits in a fake player ship (getRootParent returns it, the ship's getPilot returns the
+-- player). Without a ship the player has no root parent, which SpaceHelpers:isInYacht treats as
+-- "not in a flyable ship".
 function Fakes.newCreature(opts)
 	opts = opts or {}
 
@@ -126,13 +209,34 @@ function Fakes.newCreature(opts)
 		music = {},
 		isNpc = opts.isNpc or false,
 		conversationSession = nil,
+		zone = opts.zone or "",
+		messageLog = {},     -- { t = ms, msg = string or fake StringIdChatParameter }
+		effects = {},        -- { t = ms, file = string } from playEffect
+		missionObjects = {}, -- ids from addSpaceMissionObject, oldest first
+		missionObjectLog = {}, -- { id, last } per addSpaceMissionObject call
+		removedMissionObjects = {},
+		removedMissionObjectLog = {}, -- { id, notify } per removeSpaceMissionObject call
+		datapad = nil,
 	}, FakeCreature)
 
 	if not c.isNpc then
 		c.ghost = opts.ghost or Fakes.newGhost(opts)
+		c.datapad = Fakes.newContainer({ objectName = "datapad" })
 	end
 
 	register(c)
+
+	if opts.parent then
+		-- Standing inside a building (a starport): the root parent is not a ship.
+		c.rootParent = Fakes.newContainer({ objectName = type(opts.parent) == "string" and opts.parent or "starport" })
+	end
+
+	if opts.ship then
+		local shipOpts = type(opts.ship) == "table" and opts.ship or {}
+		shipOpts.pilot = c
+		shipOpts.zone = shipOpts.zone or c.zone
+		c.rootParent = Fakes.newShip(shipOpts)
+	end
 
 	for suffix, value in pairs(opts.questStatus or {}) do
 		Fakes.questStatus[c.objectID .. suffix] = tostring(value)
@@ -176,6 +280,227 @@ end
 -- Accepts a plain string or a fake StringIdChatParameter (from LuaStringIdChatParameter:_getObject()).
 function FakeCreature:sendSystemMessage(msg)
 	self.messages[#self.messages + 1] = msg
+	self.messageLog[#self.messageLog + 1] = { t = Fakes.now(), msg = msg }
+end
+
+function FakeCreature:getZoneName() return self.zone end
+function FakeCreature:getRootParent() return self.rootParent end
+function FakeCreature:isShipObject() return false end
+function FakeCreature:isPlayerShip() return false end
+function FakeCreature:isActiveArea() return false end
+function FakeCreature:isMissionObject() return false end
+function FakeCreature:getSlottedObject(slot) if slot == "datapad" then return self.datapad end end
+
+-- A player inside a ship reports the ship's position, like the server's world position.
+function FakeCreature:getWorldPositionX() return self.rootParent and self.rootParent.x or 0 end
+function FakeCreature:getWorldPositionZ() return self.rootParent and self.rootParent.z or 0 end
+function FakeCreature:getWorldPositionY() return self.rootParent and self.rootParent.y or 0 end
+
+function FakeCreature:playEffect(file, arg)
+	self.effects[#self.effects + 1] = { t = Fakes.now(), file = file, arg = arg }
+end
+
+function FakeCreature:addSpaceMissionObject(id, last)
+	self.missionObjects[#self.missionObjects + 1] = id
+	self.missionObjectLog[#self.missionObjectLog + 1] = { id = id, last = last }
+end
+
+function FakeCreature:removeSpaceMissionObject(id, notify)
+	for i, v in ipairs(self.missionObjects) do
+		if v == id then
+			table.remove(self.missionObjects, i)
+			break
+		end
+	end
+
+	self.removedMissionObjects[#self.removedMissionObjects + 1] = id
+	self.removedMissionObjectLog[#self.removedMissionObjectLog + 1] = { id = id, notify = notify }
+end
+
+-- Datapad mission bookkeeping (SpaceHelpers:completeSpaceQuest / failSpaceQuest).
+function FakeCreature:removeQuestMission(crc) end
+function FakeCreature:failQuestMission(crc) end
+
+---------------------------------------------------------------------------------------------
+-- Space objects: ships, ship agents (AI ships), active areas, waypoints, datapad and missions.
+-- All of them answer the SceneObject methods production Lua may call on any object, because the
+-- wrappers forward every method to the fake regardless of wrapper type.
+---------------------------------------------------------------------------------------------
+
+local function sceneMethods(class)
+	function class:getObjectID() return self.objectID end
+	function class:getDisplayedName() return self.name or self.__kind end
+	function class:getObjectName() return self.objectName end
+	function class:getZoneName() return self.zone or "" end
+	function class:getRootParent() return nil end
+	function class:isPlayerCreature() return false end
+	function class:isShipObject() return false end
+	function class:isPlayerShip() return false end
+	function class:isActiveArea() return false end
+	function class:isMissionObject() return false end
+	function class:getWorldPositionX() return self.x or 0 end
+	function class:getWorldPositionZ() return self.z or 0 end
+	function class:getWorldPositionY() return self.y or 0 end
+	function class:getPositionX() return self.x or 0 end
+	function class:getPositionZ() return self.z or 0 end
+	function class:getPositionY() return self.y or 0 end
+	function class:destroyObjectFromWorld() Fakes.destroy(self) end
+end
+
+-- Ship (player ship or AI ship). opts: pilot (fake creature), objectName (default "player_ship";
+-- the yacht is "player_sorosuub_space_yacht"), zone, x, z, y, playerShip (default true),
+-- factionHash (default getHashCode("rebel")).
+-- Position is plain fields (x, z, y), set with ship:setPosition(x, z, y) or by assignment.
+-- getSpawnPointInFrontOfShip(min, max) is deterministic: { x + min, z + 7, y + max }. Each call is
+-- recorded in ship.spawnPointCalls as { min, max }.
+local FakeShip = { __kind = "ShipObject" }
+FakeShip.__index = FakeShip
+sceneMethods(FakeShip)
+
+function Fakes.newShip(opts)
+	opts = opts or {}
+
+	local s = setmetatable({
+		pilot = opts.pilot,
+		objectName = opts.objectName or "player_ship",
+		zone = opts.zone or "",
+		x = opts.x or 0, z = opts.z or 0, y = opts.y or 0,
+		playerShip = opts.playerShip ~= false,
+		factionHash = opts.factionHash or getHashCode("rebel"),
+		hyperspacing = false,
+		spawnPointCalls = {},
+	}, FakeShip)
+
+	return register(s)
+end
+
+function FakeShip:isShipObject() return true end
+function FakeShip:isPlayerShip() return self.playerShip end
+function FakeShip:getPilot() return self.pilot end
+function FakeShip:getPilotID() return self.pilot and self.pilot.objectID or 0 end
+function FakeShip:getShipFactionHash() return self.factionHash end
+function FakeShip:setHyperspacing(b) self.hyperspacing = b end
+function FakeShip:setPosition(x, z, y) self.x, self.z, self.y = x, z, y end
+
+function FakeShip:getSpawnPointInFrontOfShip(min, max)
+	self.spawnPointCalls[#self.spawnPointCalls + 1] = { min, max }
+	return { self.x + min, self.z + 7, self.y + max }
+end
+
+function FakeShip:getSpawnPointBehindShip(min, max)
+	self.spawnPointCalls[#self.spawnPointCalls + 1] = { -min, -max }
+	return { self.x - min, self.z + 7, self.y - max }
+end
+
+-- AI ship agent returned by spawnShipAgent. Extra opts: shipName, zone, x, z, y.
+local FakeAgent = setmetatable({ __kind = "ShipAiAgent" }, { __index = FakeShip })
+FakeAgent.__index = FakeAgent
+
+function Fakes.newShipAgent(opts)
+	opts = opts or {}
+
+	local a = setmetatable({
+		shipName = opts.shipName,
+		name = opts.shipName,
+		objectName = opts.shipName,
+		zone = opts.zone or "",
+		x = opts.x or 0, z = opts.z or 0, y = opts.y or 0,
+		playerShip = false,
+		factionHash = 0,
+		hyperspacing = false,
+		spawnPointCalls = {},
+		factionEnemies = {},   -- hashes from addSpaceFactionEnemy
+		engaged = {},          -- ships from engageShipTarget
+		isSquadronLeader = false,
+		squadronLeader = nil,  -- pointer given to assignToSquadron
+		missionOwner = nil,
+	}, FakeAgent)
+
+	return register(a)
+end
+
+function FakeAgent:setMissionOwner(pPlayer) self.missionOwner = pPlayer end
+function FakeAgent:getMissionOwnerID() return self.missionOwner and self.missionOwner.objectID or 0 end
+function FakeAgent:addSpaceFactionEnemy(hash) self.factionEnemies[#self.factionEnemies + 1] = hash end
+function FakeAgent:engageShipTarget(pShip) self.engaged[#self.engaged + 1] = pShip end
+function FakeAgent:createSquadron(formation) self.isSquadronLeader = true end
+function FakeAgent:assignToSquadron(pLeader) self.squadronLeader = pLeader end
+function FakeAgent:dropFromSquadron() self.squadronLeader = nil; self.isSquadronLeader = false end
+
+-- Active area returned by spawnSpaceActiveArea.
+local FakeArea = { __kind = "ActiveArea" }
+FakeArea.__index = FakeArea
+sceneMethods(FakeArea)
+
+function Fakes.newActiveArea(opts)
+	opts = opts or {}
+
+	return register(setmetatable({
+		zone = opts.zone, template = opts.template,
+		x = opts.x or 0, z = opts.z or 0, y = opts.y or 0, radius = opts.radius,
+	}, FakeArea))
+end
+
+function FakeArea:isActiveArea() return true end
+
+-- Waypoint object (fields planet, name, desc, x, z, y, color, active, notify, special, persistent).
+local FakeWaypoint = { __kind = "WaypointObject" }
+FakeWaypoint.__index = FakeWaypoint
+sceneMethods(FakeWaypoint)
+
+function Fakes.newWaypoint(opts)
+	return register(setmetatable(opts or {}, FakeWaypoint))
+end
+
+function FakeWaypoint:setQuestDetails(details) self.questDetails = details end
+
+-- Container (datapad) and mission objects created by giveItem.
+local FakeContainer = { __kind = "Container" }
+FakeContainer.__index = FakeContainer
+sceneMethods(FakeContainer)
+
+function Fakes.newContainer(opts)
+	opts = opts or {}
+	return register(setmetatable({ objectName = opts.objectName, items = {} }, FakeContainer))
+end
+
+function FakeContainer:getContainerObjectsSize() return #self.items end
+function FakeContainer:getContainerObject(i) return self.items[i + 1] end
+
+local FakeMission = { __kind = "MissionObject" }
+FakeMission.__index = FakeMission
+sceneMethods(FakeMission)
+
+function Fakes.newMission()
+	return register(setmetatable({ spaceDuty = false }, FakeMission))
+end
+
+function FakeMission:isMissionObject() return true end
+function FakeMission:isSpaceDutyMission() return self.spaceDuty end
+function FakeMission:setTypeCRC(crc) self.typeCRC = crc end
+function FakeMission:setQuestType(t) self.questType = t end
+function FakeMission:setQuestName(n) self.questName = n end
+function FakeMission:setMissionTitle(file, key) self.title = { file, key } end
+function FakeMission:setMissionDescription(file, key) self.description = { file, key } end
+function FakeMission:setCreatorName(n) self.creatorName = n end
+function FakeMission:setSpaceDutyMission() self.spaceDuty = true end
+function FakeMission:sendTo(pPlayer) self.sentTo = pPlayer end
+
+-- giveItem(pContainer, template, slot): mission objects get a FakeMission, anything else a plain
+-- container. The item is appended to the container's items.
+function Fakes.giveItem(pContainer, template, slot)
+	local item
+
+	if template:find("mission_object", 1, true) then
+		item = Fakes.newMission()
+	else
+		item = Fakes.newContainer({ objectName = template })
+	end
+
+	item.template = template
+	pContainer.items[#pContainer.items + 1] = item
+
+	return item
 end
 
 ---------------------------------------------------------------------------------------------

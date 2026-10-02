@@ -812,6 +812,9 @@ delivery_corellia_rebel_tier3_2_a = SpaceDeliveryScreenplay:new {
 registerScreenPlay("delivery_corellia_rebel_tier3_2_a", true)
 
 -- Mission 2 Side Quest B: Survival (Space Endor - Defend fleet from Imperial fighter wings)
+-- Havoc Tier 3 Mission 2b: Survival (Endor)
+-- Ported from SWG-Source: datatables/spacequest/survival/corellia_rebel_tier3_2_b.tab
+-- Trainer: Aqzow (tier 3)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-survival
 survival_corellia_rebel_tier3_2_b = SpaceSurvivalScreenplay:new {
 	className = "survival_corellia_rebel_tier3_2_b",
 
@@ -833,19 +836,23 @@ survival_corellia_rebel_tier3_2_b = SpaceSurvivalScreenplay:new {
 	parentQuestType = "delivery",
 	parentQuestName = "corellia_rebel_tier3_2_a",
 
-	survivalTime = 600,
-	survivalPoint = "space_endor:rebel_tier3_2_b_defend_point",
+	-- Screenplay Specific Variables (survival/corellia_rebel_tier3_2_b.tab)
+	transmissionPoint = {patrolPointName = "rebel_tier3_2_b_defend_point", x = -153, z = 3803, y = 3265},
+	totalTransmissionTime = 600,
+	timesToUpdateProgress = 10,
+	transmissionStartDelay = 10,
 	delayToFirstAttack = 5,
 
-	attackDelay = 100,
-
-	attackShips = {
-		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_interceptor_tier2", "imp_tie_bomber_tier2", "imp_tie_bomber_tier2", "imp_tie_bomber_tier2"},
-		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_interceptor_tier2", "imp_tie_fighter_tier2", "imp_tie_bomber_tier2", "imp_tie_bomber_tier2"},
-		{"imp_tie_fighter_tier2", "imp_tie_interceptor_tier2", "imp_tie_interceptor_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_interceptor_tier2"},
+	attackShipLists = {
 		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
-		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
+		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_interceptor_tier2"},
+		{"imp_tie_interceptor_tier2", "imp_tie_interceptor_tier2", "imp_tie_interceptor_tier2"},
+		{"imp_tie_bomber_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
+		{"imp_tie_bomber_tier2", "imp_tie_bomber_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
 	},
+
+	attackPeriod = 100,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("survival_corellia_rebel_tier3_2_b", true)
@@ -1193,7 +1200,9 @@ space_battle_corellia_rebel_tier3_4_c = SpaceBattleScreenplay:new {
 
 registerScreenPlay("space_battle_corellia_rebel_tier3_4_c", true)
 
--- Mission 4 Side Quest D: Survival (Space Endor - Guard fleet flank during hyperspace evacuation)
+-- Havoc Tier 3 Mission 4d: Survival (Endor)
+-- Ported from SWG-Source: datatables/spacequest/survival/corellia_rebel_tier3_4_d.tab
+-- Trainer: Aqzow (tier 3)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-survival
 survival_corellia_rebel_tier3_4_d = SpaceSurvivalScreenplay:new {
 	className = "survival_corellia_rebel_tier3_4_d",
 
@@ -1211,17 +1220,21 @@ survival_corellia_rebel_tier3_4_d = SpaceSurvivalScreenplay:new {
 	parentQuestType = "space_battle",
 	parentQuestName = "corellia_rebel_tier3_4_c",
 
-	survivalTime = 300,
-	survivalPoint = "space_endor:corellia_rebel_tier3_4_c_survival",
+	-- Screenplay Specific Variables (survival/corellia_rebel_tier3_4_d.tab)
+	transmissionPoint = {patrolPointName = "corellia_rebel_tier3_4_c_survival", x = -1600, z = -600, y = 2600},
+	totalTransmissionTime = 300,
+	timesToUpdateProgress = 5,
+	transmissionStartDelay = 10,
 	delayToFirstAttack = 5,
 
-	attackDelay = 60,
-
-	attackShips = {
-		{"imp_tie_fighter_tier3", "imp_tie_interceptor_tier3", "imp_tie_bomber_tier3"},
-		{"imp_tie_fighter_tier3", "imp_tie_interceptor_tier3", "imp_tie_bomber_tier3"},
-		{"imp_tie_fighter_tier3", "imp_tie_interceptor_tier3", "imp_tie_bomber_tier3"},
+	attackShipLists = {
+		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+		{"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3"},
+		{"imp_tie_bomber_tier3", "imp_tie_bomber_tier3", "imp_tie_bomber_tier3"},
 	},
+
+	attackPeriod = 60,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.RANDOM,
 }
 
 registerScreenPlay("survival_corellia_rebel_tier3_4_d", true)
@@ -1230,7 +1243,9 @@ registerScreenPlay("survival_corellia_rebel_tier3_4_d", true)
 	Tier 4 -- Arkon Main Missions (Dathomir/Dantooine/Endor - Black Sun vs Nym Pirates)
 ]]
 
--- Mission 1: Survival (Space Dathomir - Hold off Black Sun assault on Nym miners)
+-- Havoc Tier 4 Mission 1: Survival (Dathomir)
+-- Ported from SWG-Source: datatables/spacequest/survival/corellia_rebel_tier4_1.tab
+-- Trainer: Warvog Arkon (tier 4)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-survival
 survival_corellia_rebel_tier4_1 = SpaceSurvivalScreenplay:new {
 	className = "survival_corellia_rebel_tier4_1",
 
@@ -1251,18 +1266,22 @@ survival_corellia_rebel_tier4_1 = SpaceSurvivalScreenplay:new {
 	sideFailQuestType = "space_battle",
 	sideFailQuestName = "corellia_rebel_tier4_1_b",
 
-	survivalTime = 300,
-	survivalPoint = "space_dathomir:corellia_rebel_tier4_1_survival_point",
+	-- Screenplay Specific Variables (survival/corellia_rebel_tier4_1.tab)
+	transmissionPoint = {patrolPointName = "corellia_rebel_tier4_1_survival_point", x = 4297, z = -3146, y = 1944},
+	totalTransmissionTime = 300,
+	timesToUpdateProgress = 5,
+	transmissionStartDelay = 10,
 	delayToFirstAttack = 5,
 
-	attackDelay = 60,
-
-	attackShips = {
-		{"blacksun_fighter_s03_tier4", "blacksun_bomber_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4"},
+	attackShipLists = {
 		{"blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4"},
-		{"blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_marauder_tier4", "blacksun_vehement_tier4"},
-		{"blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4"},
+		{"blacksun_bomber_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4"},
+		{"blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_marauder_tier4", "blacksun_fighter_s03_tier4"},
+		{"blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_vehement_tier4", "blacksun_fighter_s03_tier4"},
 	},
+
+	attackPeriod = 60,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.RANDOM,
 }
 
 registerScreenPlay("survival_corellia_rebel_tier4_1", true)
@@ -1578,7 +1597,9 @@ space_battle_corellia_rebel_tier4_3_a = SpaceBattleScreenplay:new {
 
 registerScreenPlay("space_battle_corellia_rebel_tier4_3_a", true)
 
--- Mission 3 Side Quest B: Survival (Space Dathomir - Defend Rebel bombers retreat after failed station attack)
+-- Havoc Tier 4 Mission 3b: Survival (Dathomir)
+-- Ported from SWG-Source: datatables/spacequest/survival/corellia_rebel_tier4_3_b.tab
+-- Trainer: Warvog Arkon (tier 4, reached as failure split of mission 3)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-survival
 survival_corellia_rebel_tier4_3_b = SpaceSurvivalScreenplay:new {
 	className = "survival_corellia_rebel_tier4_3_b",
 
@@ -1596,19 +1617,22 @@ survival_corellia_rebel_tier4_3_b = SpaceSurvivalScreenplay:new {
 	parentQuestType = "space_battle",
 	parentQuestName = "corellia_rebel_tier4_3",
 
-	survivalTime = 480,
-	survivalPoint = "space_dathomir:corellia_rebel_tier4_3_b_survival",
+	-- Screenplay Specific Variables (survival/corellia_rebel_tier4_3_b.tab)
+	transmissionPoint = {patrolPointName = "corellia_rebel_tier4_3_b_survival", x = 3985, z = -6926, y = -5807},
+	totalTransmissionTime = 480,
+	timesToUpdateProgress = 8,
+	transmissionStartDelay = 10,
 	delayToFirstAttack = 5,
 
-	attackDelay = 45,
-
-	attackShips = {
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_advanced_tier4", "imp_tie_aggressor_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+	attackShipLists = {
+		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+		{"imp_tie_advanced_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+		{"imp_tie_aggressor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
 	},
+
+	attackPeriod = 45,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.RANDOM,
 }
 
 registerScreenPlay("survival_corellia_rebel_tier4_3_b", true)

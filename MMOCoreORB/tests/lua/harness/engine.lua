@@ -19,10 +19,16 @@ Engine.sharedMemory = {}          -- key -> value (readData/writeData etc.)
 Engine.calls = {}                 -- list of { fn = name, args = {...} } for engine side effects
 Engine.config = { jtlEnabled = true }
 Engine.creatureTemplates = {}     -- name -> creature template table (CreatureTemplates:addCreatureTemplate)
+Engine.clock = { now = 0, seq = 0, queue = {} } -- event clock, ms (see Engine.advance)
+Engine.observers = {}             -- registered observers (createObserver), see Engine.fireObservers
+Engine.spawnedShips = {}          -- fake agents returned by spawnShipAgent, in spawn order
+Engine.spawnedAreas = {}          -- fake areas returned by spawnSpaceActiveArea, in spawn order
 
 local function record(fn, ...)
-	Engine.calls[#Engine.calls + 1] = { fn = fn, args = table.pack(...) }
+	Engine.calls[#Engine.calls + 1] = { fn = fn, args = table.pack(...), t = Engine.clock.now }
 end
+
+Fakes.now = function() return Engine.clock.now end
 
 function Engine.callsTo(fn)
 	local out = {}
@@ -36,10 +42,28 @@ function Engine.callsTo(fn)
 	return out
 end
 
+-- Like callsTo, but each entry is { t = ms at the call, args = {...} }.
+function Engine.timedCallsTo(fn)
+	local out = {}
+
+	for _, c in ipairs(Engine.calls) do
+		if c.fn == fn then
+			out[#out + 1] = { t = c.t, args = c.args }
+		end
+	end
+
+	return out
+end
+
 function Engine.reset()
 	Engine.sharedMemory = {}
 	Engine.calls = {}
 	Engine.config = { jtlEnabled = true }
+	Engine.nextRandom = nil
+	Engine.clock = { now = 0, seq = 0, queue = {} }
+	Engine.observers = {}
+	Engine.spawnedShips = {}
+	Engine.spawnedAreas = {}
 	Fakes.reset()
 end
 
@@ -212,6 +236,46 @@ end
 memFns("")
 memFns("String")
 
+-- String vectors. The server stores strings, so numbers (object ids) come back as strings: callers
+-- must tonumber() them. read returns a copy ({} when absent).
+function writeStringVectorSharedMemory(key, tbl)
+	local copy = {}
+
+	for i, v in ipairs(tbl) do
+		copy[i] = tostring(v)
+	end
+
+	Engine.sharedMemory["StringVector:" .. key] = copy
+end
+
+function readStringVectorSharedMemory(key)
+	local copy = {}
+
+	for i, v in ipairs(Engine.sharedMemory["StringVector:" .. key] or {}) do
+		copy[i] = v
+	end
+
+	return copy
+end
+
+function deleteStringVectorSharedMemory(key)
+	Engine.sharedMemory["StringVector:" .. key] = nil
+end
+
+-- Every shared-memory key currently set, as a sorted list of "<kind>|<key>" (kind is "", "String",
+-- "Vector3" or "StringVector"), so tests can compare before/after snapshots and check key prefixes.
+function Engine.sharedMemoryKeys()
+	local keys = {}
+
+	for k in pairs(Engine.sharedMemory) do
+		local kind, key = k:match("^(%a*):(.*)$")
+		keys[#keys + 1] = kind .. "|" .. key
+	end
+
+	table.sort(keys)
+	return keys
+end
+
 function writeVector3SharedMemory(key, x, z, y)
 	Engine.sharedMemory["Vector3:" .. key] = { x, z, y }
 end
@@ -310,12 +374,257 @@ function skillManagerAwardSkill(pPlayer, skillName)
 	end
 end
 
+---------------------------------------------------------------------------------------------
+-- Event clock. createEvent records the call (as before) and queues it; nothing runs until a test
+-- calls H.advance(ms). Time starts at 0 on every H.reset().
+---------------------------------------------------------------------------------------------
+
 function createEvent(delay, screenplay, method, pObject, args)
+	if type(delay) ~= "number" or type(screenplay) ~= "string" or type(method) ~= "string" then
+		error(string.format("harness: createEvent(delay:number, screenplay:string, method:string, pObject, args) got (%s, %s, %s)",
+			type(delay), type(screenplay), type(method)), 2)
+	end
+
 	record("createEvent", delay, screenplay, method, pObject, args)
+
+	local c = Engine.clock
+	c.seq = c.seq + 1
+	c.queue[#c.queue + 1] = { due = c.now + delay, seq = c.seq, screenplay = screenplay, method = method, pObject = pObject, args = args }
 end
+
+local function runEvent(e)
+	local sp = rawget(_G, e.screenplay)
+
+	if sp == nil then
+		error(string.format("harness: event targets unknown screenplay global '%s' (method %s) at t=%dms", e.screenplay, e.method, Engine.clock.now), 0)
+	end
+
+	local fn = sp[e.method]
+
+	if type(fn) ~= "function" then
+		error(string.format("harness: event targets undefined method %s:%s at t=%dms", e.screenplay, e.method, Engine.clock.now), 0)
+	end
+
+	local ok, err = pcall(fn, sp, e.pObject, e.args)
+
+	if not ok then
+		error(string.format("harness: event %s:%s (created for t=%dms) failed: %s", e.screenplay, e.method, e.due, tostring(err)), 0)
+	end
+end
+
+-- Runs every event due within the next `ms` milliseconds, in due order (ties in creation order).
+-- While an event runs, Engine.clock.now is its due time, so events it creates are relative to it.
+-- Afterwards now = start + ms.
+function Engine.advance(ms)
+	local c = Engine.clock
+	local target = c.now + ms
+	local ran = 0
+
+	while true do
+		local best, bestIndex
+
+		for i, e in ipairs(c.queue) do
+			if e.due <= target and (best == nil or e.due < best.due or (e.due == best.due and e.seq < best.seq)) then
+				best, bestIndex = e, i
+			end
+		end
+
+		if best == nil then
+			break
+		end
+
+		table.remove(c.queue, bestIndex)
+
+		if best.due > c.now then
+			c.now = best.due
+		end
+
+		ran = ran + 1
+
+		if ran > 100000 then
+			error("harness: more than 100000 events in one advance; a timer is probably rescheduling itself with delay 0", 0)
+		end
+
+		runEvent(best)
+	end
+
+	c.now = target
+	return ran
+end
+
+-- Events still waiting: list of { due, screenplay, method, pObject, args }, soonest first.
+function Engine.pendingEvents()
+	local out = {}
+
+	for _, e in ipairs(Engine.clock.queue) do
+		out[#out + 1] = e
+	end
+
+	table.sort(out, function(a, b) if a.due ~= b.due then return a.due < b.due end return a.seq < b.seq end)
+	return out
+end
+
+---------------------------------------------------------------------------------------------
+-- Observers. createObserver registers (and still records the call); H.fireObservers runs the
+-- registered handlers like ObserverEventMap::notifyObservers: handler(screenplay, pObject, ...),
+-- a handler returning 1 is removed, any other number keeps it, and a non-number return is an
+-- error (the server logs "didnt return a valid value for a observer handler").
+---------------------------------------------------------------------------------------------
 
 function createObserver(eventType, screenplay, method, pObject, persistent)
 	record("createObserver", eventType, screenplay, method, pObject, persistent)
+
+	if pObject == nil then
+		return
+	end
+
+	Engine.observers[#Engine.observers + 1] = { type = eventType, sp = screenplay, method = method, obj = pObject }
+end
+
+local function matches(o, eventType, screenplay, method, pObject)
+	return o.type == eventType and o.sp == screenplay and o.method == method and o.obj == pObject
+end
+
+function hasObserver(eventType, screenplay, method, pObject)
+	for _, o in ipairs(Engine.observers) do
+		if matches(o, eventType, screenplay, method, pObject) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function dropObserver(eventType, screenplay, method, pObject)
+	record("dropObserver", eventType, screenplay, method, pObject)
+
+	for i = #Engine.observers, 1, -1 do
+		if matches(Engine.observers[i], eventType, screenplay, method, pObject) then
+			table.remove(Engine.observers, i)
+		end
+	end
+end
+
+-- Number of registrations matching (eventType, screenplay, method, pObject); use it to assert that
+-- an observer was registered exactly once.
+function Engine.observerCount(eventType, screenplay, method, pObject)
+	local n = 0
+
+	for _, o in ipairs(Engine.observers) do
+		if matches(o, eventType, screenplay, method, pObject) then
+			n = n + 1
+		end
+	end
+
+	return n
+end
+
+-- Registered observers on pObject, optionally of one event type: list of { type, sp, method }.
+function Engine.observersOn(pObject, eventType)
+	local out = {}
+
+	for _, o in ipairs(Engine.observers) do
+		if o.obj == pObject and (eventType == nil or o.type == eventType) then
+			out[#out + 1] = { type = o.type, sp = o.sp, method = o.method }
+		end
+	end
+
+	return out
+end
+
+function Engine.fireObservers(eventType, pObject, ...)
+	local args = table.pack(...)
+	local snapshot = {}
+
+	for _, o in ipairs(Engine.observers) do
+		if o.obj == pObject and o.type == eventType then
+			snapshot[#snapshot + 1] = o
+		end
+	end
+
+	for _, o in ipairs(snapshot) do
+		local stillThere = false
+
+		for _, live in ipairs(Engine.observers) do
+			if live == o then
+				stillThere = true
+				break
+			end
+		end
+
+		if stillThere then
+			local sp = rawget(_G, o.sp)
+
+			if sp == nil or type(sp[o.method]) ~= "function" then
+				error(string.format("harness: observer %s:%s is not defined", o.sp, o.method), 0)
+			end
+
+			local ret = sp[o.method](sp, pObject, table.unpack(args, 1, args.n))
+
+			if type(ret) ~= "number" then
+				error(string.format("harness: observer handler %s:%s returned %s; the server requires a number (1 removes the observer, 0 keeps it)", o.sp, o.method, type(ret)), 0)
+			end
+
+			if ret == 1 then
+				for i = #Engine.observers, 1, -1 do
+					if Engine.observers[i] == o then
+						table.remove(Engine.observers, i)
+					end
+				end
+			end
+		end
+	end
+end
+
+-- Destroying an object drops every observer registered on it.
+Fakes.destroyHook = function(obj)
+	record("destroyObjectFromWorld", obj)
+
+	for i = #Engine.observers, 1, -1 do
+		if Engine.observers[i].obj == obj then
+			table.remove(Engine.observers, i)
+		end
+	end
+end
+
+---------------------------------------------------------------------------------------------
+-- Space spawns and items
+---------------------------------------------------------------------------------------------
+
+-- spawnShipAgent(shipName, zone, x, z, y[, pTargetShip]) -> fake agent (nil if
+-- Engine.config.spawnFails is set, like the server when the ship can't be created).
+function spawnShipAgent(shipName, zone, x, z, y, pTarget)
+	if type(shipName) ~= "string" or type(zone) ~= "string" or type(x) ~= "number" or type(z) ~= "number" or type(y) ~= "number" then
+		error("harness: spawnShipAgent(shipName, zone, x, z, y[, pTargetShip]) got bad argument types", 2)
+	end
+
+	record("spawnShipAgent", shipName, zone, x, z, y, pTarget)
+
+	if Engine.config.spawnFails then
+		return nil
+	end
+
+	local agent = Fakes.newShipAgent({ shipName = shipName, zone = zone, x = x, z = z, y = y })
+	Engine.spawnedShips[#Engine.spawnedShips + 1] = agent
+	return agent
+end
+
+-- spawnSpaceActiveArea(zone, template, x, z, y, radius) -> fake area.
+function spawnSpaceActiveArea(zone, template, x, z, y, radius)
+	if type(zone) ~= "string" or type(template) ~= "string" or type(x) ~= "number" or type(z) ~= "number" or type(y) ~= "number" or type(radius) ~= "number" then
+		error("harness: spawnSpaceActiveArea(zone, template, x, z, y, radius) got bad argument types", 2)
+	end
+
+	record("spawnSpaceActiveArea", zone, template, x, z, y, radius)
+
+	local area = Fakes.newActiveArea({ zone = zone, template = template, x = x, z = z, y = y, radius = radius })
+	Engine.spawnedAreas[#Engine.spawnedAreas + 1] = area
+	return area
+end
+
+function giveItem(pContainer, template, slot)
+	record("giveItem", pContainer, template, slot)
+	return Fakes.giveItem(pContainer, template, slot)
 end
 
 function grantStarterShip(pPlayer, faction)

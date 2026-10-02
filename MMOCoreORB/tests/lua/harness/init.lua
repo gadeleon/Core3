@@ -24,6 +24,7 @@ local H = {
 H.newPlayer = Fakes.newPlayer
 H.newNpc = Fakes.newNpc
 H.questCrc = Fakes.questCrc
+H.newShip = Fakes.newShip
 
 local function fileExists(path)
 	local f = io.open(path, "r")
@@ -134,6 +135,95 @@ end
 
 function H.setQuestStatus(player, suffix, value)
 	setQuestStatus(player.objectID .. suffix, value)
+end
+
+---------------------------------------------------------------------------------------------
+-- Event clock, observers and space-event simulation
+---------------------------------------------------------------------------------------------
+
+-- Fake time in ms (0 after H.reset()). createEvent queues events; they run only inside H.advance.
+function H.now() return Engine.clock.now end
+
+-- Runs every event due within `ms` milliseconds, in due order (see Engine.advance).
+function H.advance(ms) return Engine.advance(ms) end
+
+-- Same, in seconds.
+function H.advanceSeconds(s) return Engine.advance(s * 1000) end
+
+-- Events not run yet, soonest first: list of { due, screenplay, method, pObject, args }.
+function H.pendingEvents() return Engine.pendingEvents() end
+
+-- hasObserver(type, screenplay, method, pObject) as production sees it.
+function H.hasObserver(eventType, screenplay, method, pObject) return hasObserver(eventType, screenplay, method, pObject) end
+
+-- Fires the observers of `eventType` registered on pObject: handler(screenplay, pObject, ...).
+function H.fireObservers(eventType, pObject, ...) return Engine.fireObservers(eventType, pObject, ...) end
+
+-- Switches the player to `zone` the way PlayerSpaceZoneComponent::switchZone does: ZONESWITCHED
+-- observers fire FIRST, while the player is still where they were (old zone, old root parent, for a
+-- launch from a starport that is the building); only then is the player moved. Observer handler:
+-- handler(screenplay, pPlayer, nil, getHashCode(zone)). Also use it with the zone the player is
+-- already in: a respawn after ship destruction is a same-zone switch.
+-- opts.ship: Fakes.newShip options (or true); after the observers ran, the player is put into a new
+-- ship in `zone` with that player as pilot (a launch). Without it, a ship the player already sits
+-- in simply follows to `zone`; a building parent is left alone.
+function H.zoneSwitch(player, zone, opts)
+	opts = opts or {}
+
+	Engine.fireObservers(ZONESWITCHED, player, nil, getHashCode(zone))
+
+	player.zone = zone
+
+	if opts.ship then
+		local shipOpts = type(opts.ship) == "table" and opts.ship or {}
+		shipOpts.pilot = player
+		shipOpts.zone = zone
+		player.rootParent = Fakes.newShip(shipOpts)
+	elseif player.rootParent and player.rootParent:isShipObject() then
+		player.rootParent.zone = zone
+	end
+end
+
+-- A ship enters an active area: ENTEREDAREA handler(screenplay, pArea, pShip).
+function H.enterArea(area, ship)
+	Engine.fireObservers(ENTEREDAREA, area, ship)
+end
+
+-- Destroys an AI ship: SHIPDESTROYED handler(screenplay, pShipAgent, pKillerShip) runs, then the
+-- agent leaves the world (getSceneObject(id) is nil, observers on it are gone). No-op for a ship
+-- that is already gone. Returns true if the ship was destroyed now.
+function H.destroyShip(agent, killer)
+	if agent.destroyed then
+		return false
+	end
+
+	Engine.fireObservers(SHIPDESTROYED, agent, killer)
+	Fakes.destroy(agent)
+	return true
+end
+
+-- Ships created by spawnShipAgent so far, in spawn order, and areas from spawnSpaceActiveArea.
+function H.spawnedShips() return Engine.spawnedShips end
+function H.spawnedAreas() return Engine.spawnedAreas end
+
+-- What a player was sent, oldest first: list of { t = ms, id = string, TO, TU, TT, DF, DI, plain =
+-- bool }. A plain string message has only id; a StringIdChatParameter message has its stringId as
+-- id and its params as fields.
+function H.messageLog(player)
+	local out = {}
+
+	for _, entry in ipairs(player.messageLog) do
+		local msg = entry.msg
+
+		if type(msg) == "string" then
+			out[#out + 1] = { t = entry.t, id = msg, plain = true }
+		else
+			out[#out + 1] = { t = entry.t, id = msg.stringId, TO = msg.params.TO, TU = msg.params.TU, TT = msg.params.TT,
+				DF = msg.params.DF, DI = msg.params.DI, plain = false }
+		end
+	end
+
+	return out
 end
 
 ---------------------------------------------------------------------------------------------

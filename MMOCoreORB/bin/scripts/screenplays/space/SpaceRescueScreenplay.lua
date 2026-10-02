@@ -137,6 +137,11 @@ function SpaceRescueScreenplay:pickTargetShip(playerID)
 	return self.targetShipType
 end
 
+-- True if setupRun announces the quest as in progress
+function SpaceRescueScreenplay:shouldSendInProgress(playerID)
+	return true
+end
+
 function SpaceRescueScreenplay:capturePhraseKey(playerID)
 	return "rescue_phase_2"
 end
@@ -239,7 +244,10 @@ function SpaceRescueScreenplay:setupRun(pPlayer)
 	-- Activate quest task 1
 	SpaceHelpers:activateSpaceQuestTask(pPlayer, self.questType, self.questName, 1, true)
 
-	SpaceHelpers:sendQuestProgess(pPlayer, self:messagePath("title"))
+	if (self:shouldSendInProgress(playerID)) then
+		SpaceHelpers:sendQuestProgess(pPlayer, self:messagePath("title"))
+	end
+
 	SpaceHelpers:sendQuestUpdate(pPlayer, self:messagePath("arrival_phase_1"))
 
 	createEvent(self.targetArrivalDelay * 1000, self.className, "warpTarget", pPlayer, self:getRunToken(playerID))

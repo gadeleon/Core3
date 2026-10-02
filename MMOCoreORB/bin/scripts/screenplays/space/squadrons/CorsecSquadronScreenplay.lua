@@ -1599,15 +1599,17 @@ destroy_duty_corellia_privateer_tier4_1 = SpaceDutyDestroyScreenplay:new {
 
 registerScreenPlay("destroy_duty_corellia_privateer_tier4_1", true)
 
+-- Rescue Duty (Space Dantooine - Escort crippled freighter to safety from Imperial attack)
 rescue_duty_corellia_privateer_tier4_1 = SpaceDutyRescueScreenplay:new {
 	className = "rescue_duty_corellia_privateer_tier4_1",
 
 	questName = "corellia_privateer_tier4_1",
 	questType = "rescue_duty",
 
-	questZone = "space_lok",
+	questZone = "space_dantooine",
 
-	creditReward = 0,
+	creditReward = 5000,
+	creditKillBonus = 300,
 
 	itemReward = {
 		--{species = {}, item = ""},
@@ -1616,8 +1618,26 @@ rescue_duty_corellia_privateer_tier4_1 = SpaceDutyRescueScreenplay:new {
 	sideQuest = false,
 	sideQuestType = "",
 
-	-- Screenplay Specific Variables
+	-- SWG rescue_duty/corellia_privateer_tier4_1.tab (unrotated order, rotated at run time)
+	recoveryPath = {
+		{patrolPointName = "corellia_privateer_tier4_rescue_duty_1", x = 2503, z = 3693, y = 2218},
+		{patrolPointName = "corellia_privateer_tier4_rescue_duty_2", x = 2514, z = 4958, y = 2580},
+		{patrolPointName = "corellia_privateer_tier4_rescue_duty_3", x = 2526, z = 6508, y = 3024},
+		{patrolPointName = "corellia_privateer_tier4_rescue_duty_4", x = 2571, z = 7483, y = 3435},
+		{patrolPointName = "corellia_privateer_tier4_rescue_duty_5", x = -9, z = 6461, y = 3254},
+	},
 
+	targetShipTypes = {"freighterheavy_tier4"},
+	targetArrivalDelay = 10,
+
+	attackShipLists = {
+		{"hutt_pirate_s02_tier4", "hutt_pirate_s02_tier4", "hutt_pirate_s02_tier4", "hutt_pirate_s02_tier4"},
+		{"hutt_bomber_s02_tier4", "hutt_bomber_s02_tier4", "hutt_bomber_s02_tier4", "hutt_bomber_s02_tier4"},
+		{"hutt_fighter_s02_tier4", "hutt_fighter_s02_tier4", "hutt_fighter_s02_tier4", "hutt_fighter_s02_tier4"},
+	},
+	attackPeriod = 90,
+	attackListType = 1, -- random
+	numResponses = 3,
 }
 
 registerScreenPlay("rescue_duty_corellia_privateer_tier4_1", true)

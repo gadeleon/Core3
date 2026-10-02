@@ -1918,25 +1918,27 @@ rescue_duty_corellia_rebel_tier4_1 = SpaceDutyRescueScreenplay:new {
 	sideQuest = false,
 	sideQuestType = "",
 
-	targetShips = {"reb_xwing_tier4", "reb_transport_tier4", "reb_ywing_tier4", "reb_ykl37r_tier4", "reb_freightermedium_tier4", "reb_freighterheavy_tier4", "reb_freighterlight_tier4"},
+	-- SWG rescue_duty/corellia_rebel_tier4_1.tab (unrotated order, rotated at run time)
+	targetShipTypes = {"reb_xwing_tier4", "reb_transport_tier4", "reb_ywing_tier4", "reb_ykl37r_tier4", "reb_freightermedium_tier4", "reb_freighterheavy_tier4", "reb_freighterlight_tier4"},
 
 	targetArrivalDelay = 3,
 
-	recoveryPoints = {
-		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_1", zoneName = "space_dantooine", radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_2", zoneName = "space_dantooine", radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_3", zoneName = "space_dantooine", radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_4", zoneName = "space_dantooine", radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_5", zoneName = "space_dantooine", radius = 250},
+	recoveryPath = {
+		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_1", x = -6498, z = 2434, y = 6490},
+		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_2", x = -6091, z = 1362, y = 6466},
+		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_3", x = -5424, z = 869, y = 5905},
+		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_4", x = -4674, z = 397, y = 5223},
+		{patrolPointName = "corellia_rebel_tier4_1_rescue_duty_5", x = -3889, z = -96, y = 4508},
 	},
 
-	attackDelay = 60,
-
-	attackShips = {
-		{"imp_lambda_shuttle_tier4", "imp_lambda_shuttle_tier4", "imp_lambda_shuttle_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_advanced_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_advanced_tier4"},
+	attackShipLists = {
+		{"imp_lambda_shuttle_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+		{"imp_lambda_shuttle_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
+		{"imp_lambda_shuttle_tier4", "imp_tie_advanced_tier4", "imp_tie_advanced_tier4"},
 	},
+	attackPeriod = 60,
+	attackListType = 1, -- random
+	numResponses = 5,
 }
 
 registerScreenPlay("rescue_duty_corellia_rebel_tier4_1", true)

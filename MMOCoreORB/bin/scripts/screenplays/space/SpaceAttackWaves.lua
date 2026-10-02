@@ -190,6 +190,8 @@ function SpaceAttackWaves:notifyAttackShipDestroyed(pShipAgent, pKillerShip)
 
 	writeData(liveKey, waveLive)
 
+	self:notifyAttackShipKilled(pPlayer, #remaining)
+
 	if (#remaining > 0) then
 		self:notifyTargetsRemaining(pPlayer, #remaining)
 	end
@@ -260,4 +262,8 @@ end
 
 -- Hook: called with the number of attack ships still alive after a kill. Hosts may override it.
 function SpaceAttackWaves:notifyTargetsRemaining(pPlayer, remaining)
+end
+
+-- Hook: called once per kill of a ship of the current run, with the number of attack ships still alive. Hosts may override it.
+function SpaceAttackWaves:notifyAttackShipKilled(pPlayer, remaining)
 end

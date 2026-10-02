@@ -1239,15 +1239,17 @@ survival_corellia_rebel_tier4_1 = SpaceSurvivalScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_rebel_taim_military_grade.iff"},
+	},
 
 	sideQuest = true,
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL,
 	sideQuestType = "space_battle",
 	sideQuestName = "corellia_rebel_tier4_1_a",
-	sideQuestType2 = "space_battle",
-	sideQuestName2 = "corellia_rebel_tier4_1_b",
-
-	-- sideQuestSplitType = "both",
+	sideFailQuestType = "space_battle",
+	sideFailQuestName = "corellia_rebel_tier4_1_b",
 
 	survivalTime = 300,
 	survivalPoint = "space_dathomir:corellia_rebel_tier4_1_survival_point",
@@ -1370,16 +1372,17 @@ assassinate_corellia_rebel_tier4_2 = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/droid_interface/ddi_mission_reward_rebel_novaldex_low_latency.iff"},
+	},
 
 	sideQuest = true,
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL,
 	sideQuestType = "delivery_no_pickup",
 	sideQuestName = "corellia_rebel_tier4_2_a",
-	sideQuestType2 = "rescue",
-	sideQuestName2 = "corellia_rebel_tier4_2_b",
-
-	-- sideQuestSplitType = "both",
+	sideFailQuestType = "rescue",
+	sideFailQuestName = "corellia_rebel_tier4_2_b",
 
 	arrivalDelay = 5,
 	failTimer = 20,
@@ -1487,15 +1490,17 @@ space_battle_corellia_rebel_tier4_3 = SpaceBattleScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/booster/bst_mission_reward_rebel_qualdex_halcyon.iff"},
+	},
 
 	sideQuest = true,
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL,
 	sideQuestType = "space_battle",
 	sideQuestName = "corellia_rebel_tier4_3_a",
-	sideQuestType2 = "survival",
-	sideQuestName2 = "corellia_rebel_tier4_3_b",
-
-	-- sideQuestSplitType = "both",
+	sideFailQuestType = "survival",
+	sideFailQuestName = "corellia_rebel_tier4_3_b",
 
 	battlePoint = "space_dathomir:corellia_rebel_tier4_3_battle_point",
 	allyArrivalDelay = 60,
@@ -1617,15 +1622,17 @@ recovery_corellia_rebel_tier4_4 = SpaceRecoveryScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 0,
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_rebel_incom_tricannon.iff"},
+	},
 
 	sideQuest = true,
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL,
 	sideQuestType = "assassinate",
 	sideQuestName = "corellia_rebel_tier4_4_a",
-	sideQuestType2 = "rescue",
-	sideQuestName2 = "corellia_rebel_tier4_4_b",
-
-	-- sideQuestSplitType = "both",
+	sideFailQuestType = "rescue",
+	sideFailQuestName = "corellia_rebel_tier4_4_b",
 
 	arrivalDelay = 10,
 	recoveryDelay = 30,
@@ -1826,7 +1833,7 @@ destroy_corellia_rebel_master = SpaceDestroyScreenplay:new {
 
 registerScreenPlay("destroy_corellia_rebel_master", true)
 
--- Aqzow Duty Missions
+-- Arkon Duty Missions
 
 -- Escort Duty (Space Dathomir - Escort Nym freighters carrying loot from Imperial outpost raid)
 escort_duty_corellia_rebel_tier4_1 = SpaceDutyEscortScreenplay:new {
@@ -2014,7 +2021,7 @@ HavocSquadronScreenplay = ScreenPlay:new {
 	TIER2_QUEST_STRING_DUTY_2 = {type = "recovery_duty", name = "viopa_rebel_7"},
 	TIER2_QUEST_STRING_DUTY_3 = {type = "escort_duty", name = "viopa_rebel_5"},
 
-	-- Tier 3 (Arkon)
+	-- Tier 3 (Aqzow)
 	TIER3_QUEST_STRING_1 = {type = "recovery", name = "corellia_rebel_tier3_1"},
 	TIER3_QUEST_STRING_1_SIDE1 = {type = "patrol", name = "patrol_corellia_rebel_tier3_1_A"},
 	TIER3_QUEST_STRING_1_SIDE2 = {type = "destroy_surpriseattack", name = "corellia_rebel_tier3_1_b"},
@@ -2034,19 +2041,19 @@ HavocSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_4_SIDE3 = {type = "space_battle", name = "corellia_rebel_tier3_4_c"},
 	TIER3_QUEST_STRING_4_SIDE4 = {type = "survival", name = "corellia_rebel_tier3_4_d"},
 
-	-- Tier 4 (Aqzow)
+	-- Tier 4 (Arkon)
 	TIER4_QUEST_STRING_1 = {type = "survival", name = "corellia_rebel_tier4_1"},
-	TIER4_QUEST_STRING_1_SIDE1 = {type = "space_battle", name = "space_battle_corellia_rebel_tier4_1_a"},
-	TIER4_QUEST_STRING_1_SIDE2 = {type = "space_battle", name = "space_battle_corellia_rebel_tier4_1_b"},
+	TIER4_QUEST_STRING_1_SIDE1 = {type = "space_battle", name = "corellia_rebel_tier4_1_a"},
+	TIER4_QUEST_STRING_1_SIDE2 = {type = "space_battle", name = "corellia_rebel_tier4_1_b"},
 	TIER4_QUEST_STRING_2 = {type = "assassinate", name = "corellia_rebel_tier4_2"},
-	TIER4_QUEST_STRING_2_SIDE1 = {type = "delivery_no_pickup", name = "delivery_no_pickup_corellia_rebel_tier4_2_a"},
-	TIER4_QUEST_STRING_2_SIDE2 = {type = "rescue", name = "rescue_corellia_rebel_tier4_2_b"},
+	TIER4_QUEST_STRING_2_SIDE1 = {type = "delivery_no_pickup", name = "corellia_rebel_tier4_2_a"},
+	TIER4_QUEST_STRING_2_SIDE2 = {type = "rescue", name = "corellia_rebel_tier4_2_b"},
 	TIER4_QUEST_STRING_3 = {type = "space_battle", name = "corellia_rebel_tier4_3"},
-	TIER4_QUEST_STRING_3_SIDE1 = {type = "space_battle", name = "space_battle_corellia_rebel_tier4_3_a"},
-	TIER4_QUEST_STRING_3_SIDE2 = {type = "survival", name = "survival_corellia_rebel_tier4_3_b"},
+	TIER4_QUEST_STRING_3_SIDE1 = {type = "space_battle", name = "corellia_rebel_tier4_3_a"},
+	TIER4_QUEST_STRING_3_SIDE2 = {type = "survival", name = "corellia_rebel_tier4_3_b"},
 	TIER4_QUEST_STRING_4 = {type = "recovery", name = "corellia_rebel_tier4_4"},
-	TIER4_QUEST_STRING_4_SIDE1 = {type = "assassinate", name = "assassinate_corellia_rebel_tier4_4_a"},
-	TIER4_QUEST_STRING_4_SIDE2 = {type = "rescue", name = "rescue_corellia_rebel_tier4_4_b"},
+	TIER4_QUEST_STRING_4_SIDE1 = {type = "assassinate", name = "corellia_rebel_tier4_4_a"},
+	TIER4_QUEST_STRING_4_SIDE2 = {type = "rescue", name = "corellia_rebel_tier4_4_b"},
 	TIER4_QUEST_STRING_4_SIDE3 = {type = "space_battle", name = "corellia_rebel_tier4_4_c"},
 	TIER4_QUEST_STRING_MASTER = {type = "destroy", name = "corellia_rebel_master"},
 	TIER4_QUEST_STRING_DUTY_1 = {type = "escort_duty", name = "corellia_rebel_tier4_1"},
@@ -2241,7 +2248,7 @@ function HavocSquadronScreenplay:resetArkonQuests(pPlayer)
 
 	local playerID = SceneObject(pPlayer):getObjectID()
 
-	removeQuestStatus(playerID .. "HavocSquadronScreenplay:StartedAqzow")
+	removeQuestStatus(playerID .. "HavocSquadronScreenplay:StartedArkon")
 
 	removeQuestStatus(playerID .. HavocSquadronScreenplay.TIER4_QUEST_STRING_1.name .. ":attempted")
 	removeQuestStatus(playerID .. HavocSquadronScreenplay.TIER4_QUEST_STRING_2.name .. ":attempted")

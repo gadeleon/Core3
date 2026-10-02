@@ -428,6 +428,7 @@ function Fakes.newShipAgent(opts)
 		spawnPointCalls = {},
 		factionEnemies = {},   -- hashes from addSpaceFactionEnemy
 		engaged = {},          -- ships from engageShipTarget
+		engageLog = {},        -- { t, target } per engageShipTarget call (space-quest-stub-space-battle)
 		isSquadronLeader = false,
 		squadronLeader = nil,  -- pointer given to assignToSquadron
 		missionOwner = nil,
@@ -453,7 +454,23 @@ end
 function FakeAgent:setMissionOwner(pPlayer) self.missionOwner = pPlayer end
 function FakeAgent:getMissionOwnerID() return self.missionOwner and self.missionOwner.objectID or 0 end
 function FakeAgent:addSpaceFactionEnemy(hash) self.factionEnemies[#self.factionEnemies + 1] = hash end
-function FakeAgent:engageShipTarget(pShip) self.engaged[#self.engaged + 1] = pShip end
+-- LuaShipAiAgent::engageShipTarget (LuaShipAiAgent.cpp:388-418) needs exactly one argument, a ship object;
+-- otherwise the server logs an error and ignores the call, so the fake raises. Every call is appended to
+-- `engaged` (ships, oldest first) and to `engageLog` ({ t = ms, target = ship }), space-quest-stub-space-battle.
+function FakeAgent:engageShipTarget(...)
+	if select("#", ...) ~= 1 then
+		error("engageShipTarget: exactly 1 argument (a ship object)", 2)
+	end
+
+	local pShip = ...
+
+	if type(pShip) ~= "table" or type(pShip.isShipObject) ~= "function" or not pShip:isShipObject() then
+		error("engageShipTarget: exactly 1 argument (a ship object)", 2)
+	end
+
+	self.engaged[#self.engaged + 1] = pShip
+	self.engageLog[#self.engageLog + 1] = { t = Fakes.now(), target = pShip }
+end
 function FakeAgent:createSquadron(formation) self.isSquadronLeader = true end
 function FakeAgent:assignToSquadron(pLeader) self.squadronLeader = pLeader end
 -- LuaShipAiAgent::setDockable / isDockable (space-docking-permission). test_harness_ship_dockable.lua

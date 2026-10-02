@@ -567,6 +567,52 @@ function H.spawners(zone)
 	return byName
 end
 
+-- The ship agent template table registered by ship_mobile/ships/<name>.lua (spaceFaction, enemyFactions,
+-- ...), or nil if the file does not exist or registers nothing. The file runs in a throwaway environment
+-- with a stub `ShipAgent:new` and `ShipAgentTemplates:addShipAgentTemplate`, so nothing leaks into _G.
+-- Engine constants it names that the harness does not define (ATTACKABLE, AIENABLED, ...) read as their own
+-- name, which is enough for the faction fields tests look at. Cached per name.
+local shipTemplateCache = {}
+
+function H.shipTemplate(name)
+	if shipTemplateCache[name] ~= nil then
+		return shipTemplateCache[name] or nil
+	end
+
+	local path = H.SCRIPTS .. "ship_mobile/ships/" .. name .. ".lua"
+
+	if not fileExists(path) then
+		shipTemplateCache[name] = false
+		return nil
+	end
+
+	local registered
+
+	local env = setmetatable({
+		ShipAgent = { new = function(_, o) return o or {} end },
+		ShipAgentTemplates = { addShipAgentTemplate = function(_, template, templateName)
+			if templateName == name then
+				registered = template
+			end
+		end },
+	}, { __index = function(_, k)
+		local v = rawget(_G, k)
+
+		if v ~= nil then
+			return v
+		end
+
+		return k
+	end })
+
+	local chunk, err = loadfile(path, "t", env)
+	assert(chunk, "H.shipTemplate(" .. name .. "): " .. tostring(err))
+	chunk()
+
+	shipTemplateCache[name] = registered or false
+	return registered
+end
+
 -- space_spawner.lua's squadron table: "squad_x" -> { formation, { shipName, ... } }.
 function H.squadrons()
 	H.loadScreenplay("space/spawning/space_spawner.lua")

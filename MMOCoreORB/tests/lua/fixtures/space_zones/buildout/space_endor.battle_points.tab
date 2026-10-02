@@ -1,0 +1,5 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.345495	0.246916	0.905354	-0.661143	-0.748716	-0.048105	1300.00	6340.00	2100.00	nav_name|4|corellia_rebel_tier3_3_b_battlepoint|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.200244	0.120325	0.972329	-0.352114	0.917284	-0.186029	1900.00	-5650.00	2550.00	nav_name|4|corellia_rebel_tier3_4_c_battlepoint|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.718958	0.099297	0.687925	-0.318970	-0.832231	0.453486	318.90	4729.83	4803.07	nav_name|4|corellia_rebel_tier4_4_c_battle_point|$|	script.space.quest_logic.quest_nav_point

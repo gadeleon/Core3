@@ -1,0 +1,3 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.573406	0.818923	0.023902	0.712721	-0.484232	-0.507492	4546.12	-1172.07	-1680.75	nav_name|4|rebel_tier3_1_d_space_battle|$|	script.space.quest_logic.quest_nav_point

@@ -189,6 +189,14 @@ world-spawned AI ship with the spawner's `<id>:SpawnerName:` key, `H.inspect(pla
 `cancelEvent(screenplay, method, pObject)` drops matching pending events; `readStringSharedMemory`/`writeStringSharedMemory`/
 `deleteStringSharedMemory` are the server's names for the string store (the older `...SharedMemoryString` spellings still work).
 
+`battle_scenario.lua` builds space battle scenarios (`B.fresh(name)`, `sc:setup()`, `sc:enter()`, `sc:allies()`, `sc:enemies()`,
+`sc:both()`, `sc:at(ms)`, `sc:kill(agent)`, `B.events`, `B.updates`, `B.pairing`, `B.withFields`, and `B.snapshotVm()` / `B.resetVm()`).
+Its oracle reads the `space_battle` `.tab` fixtures, the cut-down buildout extracts in `fixtures/space_zones/buildout/`
+(`<zone>.battle_points.tab`: the two header rows plus the battle nav point rows, made with `head -n 2` and `grep -F "nav_name|4|<name>|"`
+from the full SWG-Source file) and the patrol point files. `H.shipTemplate(name)` returns the table `ship_mobile/ships/<name>.lua`
+registers (no globals leak). `FakeAgent:engageShipTarget` raises unless it gets exactly one ship object, like the binding, and
+records `agent.engaged` (ships) and `agent.engageLog` (`{t, target}`).
+
 `survival_scenario.lua` (not a test file) is a worked example of a scenario builder on top of
 these: oracle values from fixtures, spies on every other quest, `sc:start()`, `sc:arrive()`,
 `sc:at(ms)`, message timeline helpers.

@@ -1,0 +1,4 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.649268	-0.176922	0.739696	0.691155	0.543152	-0.476750	5063.12	-816.12	-3364.88	nav_name|4|corellia_privateer_tier4_leg_3_space_battle_one|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.530081	0.844812	-0.072856	0.833879	0.503772	-0.225520	7512.20	-5651.57	1803.72	nav_name|4|corellia_privateer_tier4_leg_3_space_battle_two|$|	script.space.quest_logic.quest_nav_point

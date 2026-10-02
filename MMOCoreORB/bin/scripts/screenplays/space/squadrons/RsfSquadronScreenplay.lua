@@ -789,16 +789,26 @@ space_battle_naboo_privateer_tier3_2d = SpaceBattleScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 1,
 
-	-- Defend 3 RSF ships against Ay'Nat pirates in Corellia (per wiki)
-	battleLocation = {patrolPointName = "corellia_privateer_tier3_space_battle_1", x = 4500, y = 400, z = -1000},
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/naboo_privateer_tier3_2d.tab)
 
-	supportShipsDelay = 60,
-	enemyShipsDelay = 90,
+	battlePoint = {patrolPointName = "naboo_privateer_tier3_leg_2_space_battle", x = 6772, z = -2400, y = -6760, forward = {x = 0.041479, z = 0.877722, y = 0.477371}},
 
-	-- 3 RSF ships to defend (per wiki)
-	supportShips = {"rsf_ace_tier3", "rsf_ace_tier3", "rsf_stinger_tier3"},
-	-- 8 enemy vessels (per wiki)
-	enemyShips = {"aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_enforcer_tier3", "aynat_enforcer_tier3", "aynat_intimidator_tier3", "aynat_intimidator_tier3"},
+	damageMultiplier = 4,
+	allyArrivalDelay = 68,
+	enemyArrivalDelay = 104,
+	allyOriginDist = -500,
+	enemyOriginDist = 500,
+	allyArrivalDist = -250,
+	enemyArrivalDist = 250,
+
+	allyForce = {
+		"rsf_hunter_tier3", "rsf_stinger_tier3", "rsf_stinger_tier3",
+	},
+
+	enemyForce = {
+		"aynat_intimidator_tier3", "aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_vaporizer_tier3",
+		"aynat_vaporizer_tier3", "aynat_vaporizer_tier3", "aynat_viggo_tier3", "aynat_outlaw_tier3",
+	},
 }
 
 registerScreenPlay("space_battle_naboo_privateer_tier3_2d", true)
@@ -1074,16 +1084,26 @@ space_battle_naboo_privateer_tier3_4b = SpaceBattleScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 3,
 
-	-- Voria's Ember battle location in Lok
-	battleLocation = {patrolPointName = "lok_privateer_tier3_crystal_snake_battle", x = 3500, y = -2000, z = 1500},
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/naboo_privateer_tier3_4b.tab)
 
-	supportShipsDelay = 30,
-	enemyShipsDelay = 60,
+	battlePoint = {patrolPointName = "naboo_privateer_tier3_leg_4_space_battle", x = 4415, z = -572, y = 2266, forward = {x = 0.785999, z = -0.228293, y = 0.574532}},
 
-	-- Per wiki: 3 Tier 3 KSE Firespray RSF Hunter
-	supportShips = {"rsf_hunter_tier3", "rsf_hunter_tier3", "rsf_hunter_tier3"},
-	-- Per wiki: 2 Tier 3 Kihraxz Black Sun Fighter, 1 Tier 3 Ixiyen Black Sun Marauder, 1 Tier 4 Kihraxz Crystal Snake
-	enemyShips = {"blacksun_fighter_s01_tier3", "blacksun_fighter_s01_tier3", "blacksun_marauder_tier3", "blacksun_crystal_snake_tier3"},
+	damageMultiplier = 4,
+	allyArrivalDelay = 104,
+	enemyArrivalDelay = 155,
+	allyOriginDist = 550,
+	enemyOriginDist = -550,
+	allyArrivalDist = 250,
+	enemyArrivalDist = -250,
+
+	allyForce = {
+		"rsf_hunter_tier3", "rsf_hunter_tier3", "rsf_hunter_tier3",
+	},
+
+	enemyForce = {
+		"blacksun_crystal_snake_tier3", "blacksun_fighter_s01_tier3", "blacksun_fighter_s01_tier3", "blacksun_fighter_s02_tier3",
+		"blacksun_marauder_tier3",
+	},
 }
 
 registerScreenPlay("space_battle_naboo_privateer_tier3_4b", true)

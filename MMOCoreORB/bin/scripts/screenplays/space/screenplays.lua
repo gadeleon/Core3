@@ -105,6 +105,7 @@ includeFile("space/squadrons/RsfSquadronScreenplay.lua")
 includeFile("space/conversations/neutral/rsf_squadron/dingeConvoHandler.lua")
 includeFile("space/conversations/neutral/rsf_squadron/kaydineConvoHandler.lua")
 includeFile("space/conversations/neutral/rsf_squadron/duliosConvoHandler.lua")
+includeFile("space/conversations/neutral/rsf_squadron/imlerConvoHandler.lua")
 
 
 -- Rebel

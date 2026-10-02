@@ -1,3 +1,9 @@
+--[[
+	Havoc Squadron - Tier 4 (Warvog Arkon) - Trainer Mobile
+	SWG-Source: corellia_rebel_tier4.java
+	Feature: havoc-tier4-arkon
+]]
+
 warvog_arkon = Creature:new {
 	objectName = "@npc_spawner_n:warvog_arkon",
 	socialGroup = "rebel",
@@ -23,7 +29,7 @@ warvog_arkon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = AIENABLED + JTLINTERESTING,
+	optionsBitmask = AIENABLED + CONVERSABLE + JTLINTERESTING,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_rebel_tier4_warvog.iff"},
@@ -33,7 +39,7 @@ warvog_arkon = Creature:new {
 	-- Unarmed should be put on secondary unless the mobile doesn't use weapons, in which case "unarmed" should be put primary and "none" as secondary
 	primaryWeapon = "unarmed",
 	secondaryWeapon = "none",
-	conversationTemplate = "",
+	conversationTemplate = "arkon_convo",
 
 	-- primaryAttacks and secondaryAttacks should be separate skill groups specific to the weapon type listed in primaryWeapon and secondaryWeapon
 	-- Use merge() to merge groups in creatureskills.lua together. If a weapon is set to "none", set the attacks variable to empty brackets

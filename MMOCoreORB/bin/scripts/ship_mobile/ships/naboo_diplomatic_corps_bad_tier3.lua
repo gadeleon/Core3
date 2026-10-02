@@ -31,6 +31,8 @@ naboo_diplomatic_corps_bad_tier3 = ShipAgent:new {
 	conversationTemplate = "",
 	conversationMobile = "",
 	conversationMessage = "", --Too Far Message
+
+	cargoString = "encrypted_documents",
 }
 
 ShipAgentTemplates:addShipAgentTemplate(naboo_diplomatic_corps_bad_tier3, "naboo_diplomatic_corps_bad_tier3")

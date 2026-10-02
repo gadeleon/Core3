@@ -209,6 +209,28 @@ function H.dock(player, ship, cargoHash)
 	Engine.fireObservers(SHIPDOCKED, player, ship, cargoHash or 0)
 end
 
+-- The engine's inspect notify (ShipInspectTask.cpp:75): INSPECTEDSHIP fires on the inspecting player
+-- creature with (target ship, cargo hash). Mirrors H.dock; the caller pumps H.advance(0) afterwards.
+function H.inspect(player, ship, cargoHash)
+	Engine.fireObservers(INSPECTEDSHIP, player, ship, cargoHash or 0)
+end
+
+-- A world-spawned AI ship that did not come through spawnShipAgent, like a space spawner ship: registered
+-- (getSceneObject finds it), with the spawner's <agentID>:SpawnerName: key written when `spawner` is given
+-- (space_spawner.lua:393/473/537 writeStringData(agentID .. ":SpawnerName:", spawnName)).
+-- opts: shipName, cargo (cargoString), spawner (spawnName or nil for none), zone, x, z, y.
+function H.worldAgent(opts)
+	H.boot()
+
+	local agent = Fakes.newShipAgent({ shipName = opts.shipName, cargo = opts.cargo, zone = opts.zone, x = opts.x, z = opts.z, y = opts.y })
+
+	if opts.spawner ~= nil then
+		writeStringData(agent.objectID .. ":SpawnerName:", opts.spawner)
+	end
+
+	return agent
+end
+
 -- What ships taunted a player, oldest first: list of { t = ms, msg = string, ship = agent }.
 function H.tauntLog(player) return player.tauntLog end
 
@@ -513,6 +535,42 @@ function H.patrolPoints(zone)
 	end
 
 	return byName
+end
+
+-- The Core3 space spawner tables of a zone (screenplays/space/spawning/<zone>_spawner.lua, e.g. "space_lok"):
+-- spawnName -> the shipSpawns entry ({spawnName, spawnType, x, z, y, shipSpawns = {...}, ...}). Loads the
+-- zone file (and space_spawner.lua, which it extends) the first time; later calls reuse the result.
+local spawnerCache = {}
+
+function H.spawners(zone)
+	if spawnerCache[zone] ~= nil then
+		return spawnerCache[zone]
+	end
+
+	H.loadScreenplay("space/spawning/space_spawner.lua")
+	H.loadScreenplay("space/spawning/" .. zone .. "_spawner.lua")
+
+	local byName
+
+	for _, v in pairs(_G) do
+		if type(v) == "table" and rawget(v, "spaceZone") == zone and type(rawget(v, "shipSpawns")) == "table" then
+			byName = {}
+
+			for _, entry in ipairs(v.shipSpawns) do
+				byName[entry.spawnName] = entry
+			end
+		end
+	end
+
+	assert(byName ~= nil, "no spawner table with spaceZone = " .. tostring(zone) .. " defined by space/spawning/" .. zone .. "_spawner.lua")
+	spawnerCache[zone] = byName
+	return byName
+end
+
+-- space_spawner.lua's squadron table: "squad_x" -> { formation, { shipName, ... } }.
+function H.squadrons()
+	H.loadScreenplay("space/spawning/space_spawner.lua")
+	return SpaceSpawnerScreenPlay.squadronsShips
 end
 
 -- Reads tests/lua/fixtures/<rel> (an SWG-Source .tab copied byte for byte).

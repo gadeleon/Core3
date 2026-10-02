@@ -38,6 +38,8 @@ nym_cannon_ship = ShipAgent:new {
 	conversationTemplate = "",
 	conversationMobile = "",
 	conversationMessage = "", --Too Far Message
+
+	cargoString = "shipment_orders",
 }
 
 ShipAgentTemplates:addShipAgentTemplate(nym_cannon_ship, "nym_cannon_ship")

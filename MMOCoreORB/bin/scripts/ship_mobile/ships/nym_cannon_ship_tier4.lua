@@ -38,6 +38,8 @@ nym_cannon_ship_tier4 = ShipAgent:new {
 	conversationTemplate = "",
 	conversationMobile = "",
 	conversationMessage = "", --Too Far Message
+
+	cargoString = "shipment_orders",
 }
 
 ShipAgentTemplates:addShipAgentTemplate(nym_cannon_ship_tier4, "nym_cannon_ship_tier4")

@@ -852,10 +852,12 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 
 	-- Screenplay Specific Variables
-	inspectTargets = {"civshuttle"},
-	inspectCargo = "naboo_priv_tier3_diplomat_cargo",
-
-	targetLocation = {x = 2500, z = -1500, y = 1000},  -- Naboo space coordinates
+	shipList = {"naboo_diplomatic_corps_bad_tier3"},
+	validSpawns = {
+		{spawnName = "naboo_privateer_tier3_leg_3_inspect", x = 3151, z = 3183, y = 4026},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "encrypted_documents",
 }
 
 registerScreenPlay("inspect_naboo_privateer_tier3_3a", true)

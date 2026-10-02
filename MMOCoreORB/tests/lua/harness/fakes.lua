@@ -142,6 +142,9 @@ function FakeGhost:getSquadronType() return self.squadronType end
 function FakeGhost:getExperience(xpType) return self.experience[xpType] or 0 end
 function FakeGhost:getPilotTier() return self.pilotTier end
 function FakeGhost:incrementPilotTier() self.pilotTier = self.pilotTier + 1 end
+-- LuaPlayerObject::setPilotTier / resetPilotTier (the trainer reset functions call them; space-quest-inspect-cargo).
+function FakeGhost:setPilotTier(tier) self.pilotTier = tier end
+function FakeGhost:resetPilotTier() self.pilotTier = 0 end
 function FakeGhost:getFactionStanding(faction) return self.factionStanding[faction] or 0 end
 function FakeGhost:increaseFactionStanding(faction, amount) self.factionStanding[faction] = (self.factionStanding[faction] or 0) + amount end
 function FakeGhost:decreaseFactionStanding(faction, amount) self.factionStanding[faction] = (self.factionStanding[faction] or 0) - amount end
@@ -406,7 +409,7 @@ function FakeShip:getSpawnPointBehindShip(min, max)
 	return { self.x - min, self.z + 7, self.y - max }
 end
 
--- AI ship agent returned by spawnShipAgent. Extra opts: shipName, zone, x, z, y.
+-- AI ship agent returned by spawnShipAgent. Extra opts: shipName, zone, x, z, y, cargo (the cargoString).
 local FakeAgent = setmetatable({ __kind = "ShipAiAgent" }, { __index = FakeShip })
 FakeAgent.__index = FakeAgent
 
@@ -440,6 +443,8 @@ function Fakes.newShipAgent(opts)
 		escortCalls = 0,       -- setEscort() calls
 		escortSpeeds = {},     -- values given to setEscortSpeed
 		patrolPointTables = {},-- copies of the tables given to assignFixedPatrolPointsTable
+		cargo = opts.cargo or "", -- the ship's cargoString (setCargoString writes it; space-quest-inspect-cargo)
+		cargoStringCalls = {}, -- every string given to setCargoString, in order
 	}, FakeAgent)
 
 	return register(a)
@@ -520,6 +525,30 @@ function FakeAgent:assignFixedPatrolPointsTable(...)
 	self.callLog[#self.callLog + 1] = { name = "assignFixedPatrolPointsTable", args = table.pack(...) }
 end
 function FakeAgent:isDockable() return self.dockable end
+
+-- LuaShipAiAgent::getShipAgentTemplateName (space-quest-inspect-cargo): the ship_mobile template name the
+-- agent was spawned from (the fake's shipName). Only AI agents have it, a player ship does not.
+function FakeAgent:getShipAgentTemplateName() return self.shipName end
+
+-- LuaShipObject::setCargoString (space-quest-inspect-cargo): the binding refuses anything but exactly one
+-- argument (it logs 'Improper number of arguments' and does nothing), so the fake raises instead. There is
+-- NO getCargoString binding in LuaShipObject.cpp: tests read agent.cargo, production Lua cannot read it.
+function FakeAgent:setCargoString(...)
+	local n = select("#", ...)
+
+	if n ~= 1 then
+		error("harness: LuaShipObject::setCargoString takes exactly 1 argument (the binding logs 'Improper number of arguments' and does nothing); got " .. n, 2)
+	end
+
+	local s = ...
+
+	if type(s) ~= "string" then
+		error("harness: LuaShipObject::setCargoString takes a string; got " .. type(s), 2)
+	end
+
+	self.cargo = s
+	self.cargoStringCalls[#self.cargoStringCalls + 1] = s
+end
 -- LuaShipAiAgent::addSpaceFactionAlly / removeSpaceFactionEnemy / tauntPlayer (space-quest-stub-delivery).
 -- tauntPlayer is recorded on the agent and on the taunted player (player.tauntLog, see H.tauntLog).
 function FakeAgent:addSpaceFactionAlly(hash) self.factionAllies[#self.factionAllies + 1] = hash end

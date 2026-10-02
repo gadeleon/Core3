@@ -238,6 +238,13 @@ end
 memFns("")
 memFns("String")
 
+-- The server registers the string variants as read/write/deleteStringSharedMemory (DirectorManager.cpp),
+-- which is what screenplay.lua's readStringData/writeStringData/deleteStringData call. The first harness
+-- names them read/write/deleteSharedMemoryString; both spellings work and share one store.
+readStringSharedMemory = readSharedMemoryString
+writeStringSharedMemory = writeSharedMemoryString
+deleteStringSharedMemory = deleteSharedMemoryString
+
 -- String vectors. The server stores strings, so numbers (object ids) come back as strings: callers
 -- must tonumber() them. read returns a copy ({} when absent).
 function writeStringVectorSharedMemory(key, tbl)
@@ -434,6 +441,34 @@ function createEvent(delay, screenplay, method, pObject, args)
 	local c = Engine.clock
 	c.seq = c.seq + 1
 	c.queue[#c.queue + 1] = { due = c.now + delay, seq = c.seq, screenplay = screenplay, method = method, pObject = pObject, args = args }
+end
+
+-- cancelEvent(screenplay, method, pObject): DirectorManager::cancelEvent drops the pending events of that
+-- screenplay function on that object (exactly 3 arguments, a nil object cancels nothing).
+function cancelEvent(...)
+	local n = select("#", ...)
+
+	if n ~= 3 then
+		error("harness: cancelEvent(screenplay, method, pObject) takes exactly 3 arguments; got " .. n, 2)
+	end
+
+	local screenplay, method, pObject = ...
+
+	record("cancelEvent", screenplay, method, pObject)
+
+	if pObject == nil then
+		return
+	end
+
+	local queue = Engine.clock.queue
+
+	for i = #queue, 1, -1 do
+		local e = queue[i]
+
+		if e.screenplay == screenplay and e.method == method and e.pObject == pObject then
+			table.remove(queue, i)
+		end
+	end
 end
 
 local function runEvent(e)

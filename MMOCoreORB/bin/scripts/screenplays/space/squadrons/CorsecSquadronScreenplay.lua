@@ -373,11 +373,12 @@ inspect_corellia_privateer_15 = SpaceInspectScreenplay:new {
 	sideQuestType = "",
 
 	-- Screenplay Specific Variables
-
-	inspectTargets = {"nym_cannon_ship_tier2"},
-	inspectCargo = "shipment_orders",
-
-	targetLocation = {x = 3719, z = -2284, y = -1151},
+	shipList = {"nym_cannon_ship_tier2", "nym_cannon_ship_tier4", "nym_cannon_ship"},
+	validSpawns = {
+		{spawnName = "nyms_boys", x = 3719, z = -2284, y = -1151},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "shipment_orders",
 }
 
 registerScreenPlay("inspect_corellia_privateer_15", true)
@@ -728,11 +729,12 @@ inspect_corellia_privateer_tier3_2 = SpaceInspectScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 
 	-- Screenplay Specific Variables
-
-	inspectTargets = {"civshuttle_cor_tier3_pilot_capture"},
-	inspectCargo = "cor_priv_tier3_capture_pilot",
-
-	targetLocation = {x = -50, z = 1375, y = 1510},
+	shipList = {"civshuttle_cor_tier3_pilot_capture"},
+	validSpawns = {
+		{spawnName = "corellia_privateer_tier3_2_inspect", x = -50, z = 1375, y = 1510},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "cor_priv_tier3_capture_pilot",
 }
 
 registerScreenPlay("inspect_corellia_privateer_tier3_2", true)

@@ -737,13 +737,16 @@ inspect_corellia_privateer_tier3_2 = SpaceInspectScreenplay:new {
 
 registerScreenPlay("inspect_corellia_privateer_tier3_2", true)
 
+-- CorSec Tier 3 Mission 2a: Survival (Dathomir)
+-- Ported from SWG-Source: datatables/spacequest/survival/corellia_privateer_tier3_2_a.tab
+-- Trainer: Sgt Rhea (tier 3)  SWG-Source series: corellia_privateer  Slice: space-quest-stub-survival
 survival_corellia_privateer_tier3_2_a = SpaceSurvivalScreenplay:new {
 	className = "survival_corellia_privateer_tier3_2_a",
 
 	questName = "corellia_privateer_tier3_2_a",
 	questType = "survival",
 
-	questZone = "space_endor",
+	questZone = "space_dathomir",
 
 	creditReward = 0,
 
@@ -757,7 +760,22 @@ survival_corellia_privateer_tier3_2_a = SpaceSurvivalScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 4, -- Time in seconds to wait to trigger side quest
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (survival/corellia_privateer_tier3_2_a.tab)
+	transmissionPoint = {patrolPointName = "corellia_privateer_tier3_survival", x = 32, z = -5934, y = 4132},
+	totalTransmissionTime = 420,
+	timesToUpdateProgress = 2,
+	transmissionStartDelay = 60,
+	delayToFirstAttack = 30,
+
+	attackShipLists = {
+		{"blacksun_marauder_tier3", "blacksun_vehement_tier3", "blacksun_vehement_tier3"},
+		{"blacksun_aggressor_tier3", "blacksun_fighter_s02_tier3", "blacksun_fighter_s02_tier3"},
+		{"blacksun_bomber_s03_tier3", "blacksun_vehement_tier3", "blacksun_vehement_tier3"},
+		{"blacksun_bomber_s03_tier4", "blacksun_fighter_s01_tier3", "blacksun_fighter_s03_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("survival_corellia_privateer_tier3_2_a", true)
@@ -989,6 +1007,9 @@ assassinate_corellia_privateer_tier3_4 = SpaceAssassinateScreenplay:new {
 
 registerScreenPlay("assassinate_corellia_privateer_tier3_4", true)
 
+-- CorSec Tier 3 Mission 4a: Survival (Endor)
+-- Ported from SWG-Source: datatables/spacequest/survival/corellia_privateer_tier3_4_a.tab
+-- Trainer: Capt Turoldine (tier 4, but this is tier 3)  SWG-Source series: corellia_privateer  Slice: space-quest-stub-survival
 survival_corellia_privateer_tier3_4_a = SpaceSurvivalScreenplay:new {
 	className = "survival_corellia_privateer_tier3_4_a",
 
@@ -1008,7 +1029,22 @@ survival_corellia_privateer_tier3_4_a = SpaceSurvivalScreenplay:new {
 	sideQuestType = "",
 	sideQuestName = "",
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (survival/corellia_privateer_tier3_4_a.tab)
+	transmissionPoint = {patrolPointName = "corellia_privateer_tier3_endor_survival_1", x = 3250, z = 5631, y = 6980},
+	totalTransmissionTime = 420,
+	timesToUpdateProgress = 2,
+	transmissionStartDelay = 60,
+	delayToFirstAttack = 10,
+
+	attackShipLists = {
+		{"evil_raider_fighter_tier3", "evil_raider_fighter_tier3", "evil_raider_fighter_tier3", "evil_raider_fighter_tier3"},
+		{"evil_raider_cutthroat_tier3", "evil_raider_cutthroat_tier3", "evil_raider_cutthroat_tier3", "evil_raider_cutthroat_tier3"},
+		{"evil_raider_fighter_tier3", "evil_raider_fighter_tier3", "evil_raider_fighter_tier3", "evil_raider_fighter_tier3"},
+		{"evil_raider_cutthroat_tier3", "evil_raider_cutthroat_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("survival_corellia_privateer_tier3_4_a", true)

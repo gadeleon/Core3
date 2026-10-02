@@ -888,6 +888,9 @@ delivery_naboo_privateer_tier3_3b = SpaceDeliveryScreenplay:new {
 
 registerScreenPlay("delivery_naboo_privateer_tier3_3b", true)
 
+-- RSF Tier 3 Mission 3c: Survival (Lok)
+-- Ported from SWG-Source: datatables/spacequest/survival/naboo_privateer_tier3_3c.tab
+-- Trainer: Dulios (tier 3)  SWG-Source series: naboo_privateer  Slice: space-quest-stub-survival
 survival_naboo_privateer_tier3_3c = SpaceSurvivalScreenplay:new {
 	className = "survival_naboo_privateer_tier3_3c",
 
@@ -910,7 +913,23 @@ survival_naboo_privateer_tier3_3c = SpaceSurvivalScreenplay:new {
 	sideQuestType = "",
 	sideQuestName = "",
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (survival/naboo_privateer_tier3_3c.tab)
+	transmissionPoint = {patrolPointName = "naboo_privateer_tier3_leg_3_survival", x = -991, z = 1118, y = -1713},
+	totalTransmissionTime = 450,
+	timesToUpdateProgress = 9,
+	transmissionStartDelay = 10,
+	delayToFirstAttack = 25,
+
+	attackShipLists = {
+		{"blacksun_vehement_tier3", "blacksun_vehement_tier3", "blacksun_vehement_tier3"},
+		{"blacksun_fighter_s01_tier3", "blacksun_fighter_s01_tier3", "blacksun_fighter_s03_tier3", "blacksun_fighter_s03_tier3"},
+		{"blacksun_marauder_tier3", "blacksun_marauder_tier3", "blacksun_marauder_tier3"},
+		{"blacksun_bomber_s03_tier3", "blacksun_bomber_s03_tier3", "blacksun_fighter_s02_tier3", "blacksun_fighter_s02_tier3"},
+		{"blacksun_ace_s04_tier3", "blacksun_bomber_s03_tier3", "blacksun_bomber_s01_tier3"},
+	},
+
+	attackPeriod = 70,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.RANDOM,
 }
 
 registerScreenPlay("survival_naboo_privateer_tier3_3c", true)
@@ -1049,7 +1068,10 @@ space_battle_naboo_privateer_tier3_4b = SpaceBattleScreenplay:new {
 
 registerScreenPlay("space_battle_naboo_privateer_tier3_4b", true)
 
--- Lok survival - 3 waves of Black Sun attackers
+-- RSF Tier 3 Mission 4c: Survival Placeholder (Lok)
+-- No SWG-Source survival data; real SWG chain is destroy_surpriseattack 4c/4d/4e (D-3 override; see below).
+-- Trainer: Dulios (tier 3)  Slice: space-quest-stub-survival
+-- Note: override startQuest below; inherits data fields but does not run survival logic.
 survival_naboo_privateer_tier3_4c = SpaceSurvivalScreenplay:new {
 	className = "survival_naboo_privateer_tier3_4c",
 
@@ -1069,20 +1091,26 @@ survival_naboo_privateer_tier3_4c = SpaceSurvivalScreenplay:new {
 	sideQuestName = "naboo_privateer_tier3_4f",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 3,
-
-	-- Screenplay Specific Variables
-	survivalWaves = {
-		-- Wave 1: 3 Tier 3 Ixiyen Black Sun Marauder
-		{{count = 3, shipName = "blacksun_marauder_tier3"}},
-		-- Wave 2: 4 Tier 3 Ixiyen Black Sun Vehement
-		{{count = 4, shipName = "blacksun_vehement_tier3"}},
-		-- Wave 3: 1 Tier 2 Assault Gunboat Black Sun Devastator (using gunship)
-		{{count = 1, shipName = "blacksun_gunship_tier2"}},
-	},
-	waveDelay = 15,
 }
 
 registerScreenPlay("survival_naboo_privateer_tier3_4c", true)
+
+-- PLACEHOLDER until the RSF tier 3 reconciliation. This quest is a Core3 invention: SWG has no survival
+-- data for it (the real chain is destroy_surpriseattack 4c/4d/4e, then assassinate 4f), so it keeps the
+-- old behavior of completing half a second after it starts instead of running the survival logic.
+function survival_naboo_privateer_tier3_4c:startQuest(pPlayer, pNpc)
+	if (pPlayer == nil) then
+		return
+	end
+
+	if (pNpc == "") then
+		pNpc = nil
+	end
+
+	SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, false)
+
+	createEvent(500, self.className, "completeQuest", pPlayer, "true")
+end
 
 -- Lok final assassinate - destroy Black Sun operative (Krayt's Bane)
 assassinate_naboo_privateer_tier3_4f = SpaceAssassinateScreenplay:new {

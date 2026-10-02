@@ -60,6 +60,8 @@ function Engine.reset()
 	Engine.calls = {}
 	Engine.config = { jtlEnabled = true }
 	Engine.nextRandom = nil
+	Engine.randomQueues = {}
+	Engine.randomFixed = {}
 	Engine.clock = { now = 0, seq = 0, queue = {} }
 	Engine.observers = {}
 	Engine.spawnedShips = {}
@@ -321,7 +323,43 @@ end
 -- Deterministic: tests that care set Engine.nextRandom.
 Engine.nextRandom = nil
 
+-- Per-range draws: Engine.queueRandom(a, b, v1, v2, ...) makes the next calls of getRandomNumber(a, b)
+-- return v1, v2, ... in order (then the usual behavior); Engine.setRandom(a, b, v) makes every call
+-- of getRandomNumber(a, b) return v. Ranges win over Engine.nextRandom. Cleared by Engine.reset().
+Engine.randomQueues = {}
+Engine.randomFixed = {}
+
+local function rangeKey(a, b)
+	return tostring(a) .. "," .. tostring(b)
+end
+
+function Engine.queueRandom(a, b, ...)
+	local key = rangeKey(a, b)
+	local queue = Engine.randomQueues[key] or {}
+
+	for _, v in ipairs({ ... }) do
+		queue[#queue + 1] = v
+	end
+
+	Engine.randomQueues[key] = queue
+end
+
+function Engine.setRandom(a, b, value)
+	Engine.randomFixed[rangeKey(a, b)] = value
+end
+
 function getRandomNumber(a, b)
+	local key = rangeKey(a, b)
+	local queue = Engine.randomQueues[key]
+
+	if queue ~= nil and #queue > 0 then
+		return table.remove(queue, 1)
+	end
+
+	if Engine.randomFixed[key] ~= nil then
+		return Engine.randomFixed[key]
+	end
+
 	if Engine.nextRandom ~= nil then
 		return Engine.nextRandom
 	end

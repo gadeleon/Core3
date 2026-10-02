@@ -298,13 +298,35 @@ local function assertCleanFailure(label, quest, player)
 end
 
 -- AC-8e
+-- Revised by space-quest-rescue-duty (spec, Shared code changes 3): the duty rescue globals now hold valid data,
+-- so the "empty data" examples are synthetic tables with the same checks.
 function TestRescueEmptyData:test_the_unchanged_duty_rescue_quests_fail_cleanly_at_setup()
-	for _, g in ipairs({ "rescue_duty_corellia_rebel_tier4_1", "rescue_duty_corellia_privateer_tier4_1" }) do
+	local variants = {
+		rescueEmptyPath = { class = SpaceRescueScreenplay, questType = "rescue", fields = { recoveryPath = {}, targetShipType = "reb_diplomat_tier4" } },
+		rescueEmptyTarget = { class = SpaceRescueScreenplay, questType = "rescue", fields = { recoveryPath = { { patrolPointName = "p1", x = 1, z = 2, y = 3 } }, targetShipType = "" } },
+		dutyEmptyPath = { class = SpaceDutyRescueScreenplay, questType = "rescue_duty", fields = { recoveryPath = {}, targetShipTypes = { "reb_xwing_tier4" } } },
+		dutyEmptyTargets = { class = SpaceDutyRescueScreenplay, questType = "rescue_duty", fields = { recoveryPath = { { patrolPointName = "p1", x = 1, z = 2, y = 3 } }, targetShipTypes = {} } },
+	}
+
+	for variant, v in pairs(variants) do
 		H.reset()
 
-		local quest, player = startDuty(g)
+		local quest = v.class:new(v.fields)
 
-		assertCleanFailure(g, quest, player)
+		quest.className = "test_empty_" .. variant
+		quest.questName = "corellia_rebel_tier4_1"
+		quest.questType = v.questType
+		quest.questZone = "space_dantooine"
+		quest.attackShipLists = {}
+		quest.attackPeriod = 60
+		quest.attackListType = 1
+		quest.numResponses = 5
+		rawset(_G, quest.className, quest)
+
+		local player = H.newPlayer({ zone = "space_dantooine", ship = {}, pilot = "rebel" })
+
+		assertCleanFailure(variant, quest, player)
+		rawset(_G, quest.className, nil)
 	end
 end
 
@@ -335,8 +357,16 @@ function TestRescueEmptyData:test_a_rescue_quest_with_an_empty_path_or_an_empty_
 end
 
 -- AC-8e: a failed setup leaves nothing behind
+-- Revised by space-quest-rescue-duty (spec, Shared code changes 3): a synthetic empty duty replaces the duty global.
 function TestRescueEmptyData:test_a_failed_setup_leaves_no_observer_or_key()
-	local quest, player = startDuty("rescue_duty_corellia_rebel_tier4_1")
+	local quest = SpaceDutyRescueScreenplay:new {
+		className = "test_empty_duty_keys", questName = "corellia_rebel_tier4_1", questType = "rescue_duty", questZone = "space_dantooine",
+		recoveryPath = {}, targetShipTypes = {}, attackShipLists = {}, attackPeriod = 60, attackListType = 1, numResponses = 5,
+	}
+
+	rawset(_G, quest.className, quest)
+
+	local player = H.newPlayer({ zone = "space_dantooine", ship = {}, pilot = "rebel" })
 	local ok, err = pcall(function()
 		quest:startQuest(player, "")
 		H.advance(secs(120))
@@ -346,6 +376,7 @@ function TestRescueEmptyData:test_a_failed_setup_leaves_no_observer_or_key()
 	lu.assertFalse(H.hasObserver(ZONESWITCHED, quest.className, "enteredZone", player), "ZONESWITCHED observer dropped")
 	lu.assertFalse(H.hasObserver(SHIPDOCKED, quest.className, "notifyDocked", player), "no SHIPDOCKED observer")
 	lu.assertEquals(R.memoryKeys(), {}, "no shared-memory key")
+	rawset(_G, quest.className, nil)
 end
 
 ---------------------------------------------------------------------------------------------

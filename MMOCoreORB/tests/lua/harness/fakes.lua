@@ -217,6 +217,9 @@ function Fakes.newCreature(opts)
 		missionObjectLog = {}, -- { id, last } per addSpaceMissionObject call
 		removedMissionObjects = {},
 		removedMissionObjectLog = {}, -- { id, notify } per removeSpaceMissionObject call
+		bankCreditLog = {},  -- { t = ms, amount, notify } per addBankCredits call
+		bankCredits = 0,     -- sum of addBankCredits amounts
+		failedMissions = {}, -- quest crcs given to failQuestMission, in order
 		datapad = nil,
 	}, FakeCreature)
 
@@ -321,7 +324,15 @@ end
 
 -- Datapad mission bookkeeping (SpaceHelpers:completeSpaceQuest / failSpaceQuest).
 function FakeCreature:removeQuestMission(crc) end
-function FakeCreature:failQuestMission(crc) end
+function FakeCreature:failQuestMission(crc)
+	self.failedMissions[#self.failedMissions + 1] = crc
+end
+
+-- Bank credits (LuaCreatureObject::addBankCredits): every call is recorded in order.
+function FakeCreature:addBankCredits(amount, notify)
+	self.bankCreditLog[#self.bankCreditLog + 1] = { t = Fakes.now(), amount = amount, notify = notify }
+	self.bankCredits = self.bankCredits + amount
+end
 
 ---------------------------------------------------------------------------------------------
 -- Space objects: ships, ship agents (AI ships), active areas, waypoints, datapad and missions.

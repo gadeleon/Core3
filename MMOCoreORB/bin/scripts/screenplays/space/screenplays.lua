@@ -1,6 +1,7 @@
 -- Space Screenplays & Conversation Handlers
 
 includeFile("space/SpaceQuestLogic.lua")
+includeFile("space/SpaceAttackWaves.lua")
 includeFile("space/SpaceAssassinateScreenplay.lua")
 includeFile("space/SpaceBattleScreenplay.lua")
 includeFile("space/SpaceDeliveryScreenplay.lua")

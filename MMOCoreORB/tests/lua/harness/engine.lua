@@ -304,6 +304,12 @@ function getHashCode(s)
 	return h
 end
 
+-- logLua(level, message): the engine log used by utils/logger.lua. Recorded, not printed
+-- (H.Engine.callsTo("logLua") -> { level, message }).
+function logLua(level, message)
+	record("logLua", level, message)
+end
+
 function isJtlEnabled()
 	return Engine.config.jtlEnabled
 end

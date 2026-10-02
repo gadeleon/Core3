@@ -202,6 +202,16 @@ function H.destroyShip(agent, killer)
 	return true
 end
 
+-- The engine's post-finalize docking notify (ShipDockingTask::notifyObservers): SHIPDOCKED fires on the
+-- pilot creature with (target ship, cargo hash). Observers run synchronously, like the server's task.
+-- The caller pumps 0 ms events afterwards (H.advance(0)) if it wants deferred work to run.
+function H.dock(player, ship, cargoHash)
+	Engine.fireObservers(SHIPDOCKED, player, ship, cargoHash or 0)
+end
+
+-- What ships taunted a player, oldest first: list of { t = ms, msg = string, ship = agent }.
+function H.tauntLog(player) return player.tauntLog end
+
 -- Ships created by spawnShipAgent so far, in spawn order, and areas from spawnSpaceActiveArea.
 function H.spawnedShips() return Engine.spawnedShips end
 function H.spawnedAreas() return Engine.spawnedAreas end
@@ -282,7 +292,7 @@ end
 
 -- Quest-type base screenplays, in the same order as screenplays/space/screenplays.lua.
 local SPACE_QUEST_TYPES = {
-	"SpaceQuestLogic", "SpaceAssassinateScreenplay", "SpaceBattleScreenplay", "SpaceDeliveryScreenplay",
+	"SpaceQuestLogic", "SpaceAttackWaves", "SpaceAssassinateScreenplay", "SpaceBattleScreenplay", "SpaceDeliveryScreenplay",
 	"SpaceDeliveryNoPickupScreenplay", "SpaceDestroyScreenplay", "SpaceEscortScreenplay", "SpaceInspectScreenplay",
 	"SpacePatrolScreenplay", "SpaceRecoveryScreenplay", "SpaceRescueScreenplay", "SpaceSurpriseAttackScreenplay",
 	"SpaceSurvivalScreenplay", "SpaceDutyDestroyScreenplay", "SpaceDutyEscortScreenplay", "SpaceDutyPatrolScreenplay",
@@ -299,7 +309,13 @@ function H.loadSpaceQuestTypes()
 	questTypesLoaded = true
 
 	for _, name in ipairs(SPACE_QUEST_TYPES) do
-		H.loadScreenplay("space/" .. name .. ".lua")
+		-- SpaceAttackWaves is new in space-quest-stub-delivery. It is loaded once it exists (the harness
+		-- mirrors screenplays/space/screenplays.lua); test_space_attack_waves.lua asserts that it exists
+		-- and that screenplays.lua includes it, so the red phase of that feature stays readable instead of
+		-- breaking every test that loads the quest types.
+		if name ~= "SpaceAttackWaves" or fileExists(H.SCRIPTS .. "screenplays/space/SpaceAttackWaves.lua") then
+			H.loadScreenplay("space/" .. name .. ".lua")
+		end
 	end
 end
 

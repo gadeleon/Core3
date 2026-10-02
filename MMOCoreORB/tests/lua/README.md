@@ -105,6 +105,7 @@ end
 | `H.pendingEvents()` | Events not run yet, soonest first (`{due, screenplay, method, pObject, args}`) |
 | `H.hasObserver(...)` / `H.fireObservers(type, pObj, ...)` | Observer registry (see below) |
 | `H.zoneSwitch(player, zone)` / `H.enterArea(area, ship)` / `H.destroyShip(agent, killer)` | Fire `ZONESWITCHED` / `ENTEREDAREA` / `SHIPDESTROYED` like the server |
+| `H.dock(player, ship[, cargoHash])` / `H.tauntLog(player)` | Fire `SHIPDOCKED` on the player creature with `(ship, cargoHash)` like `ShipDockingTask::notifyObservers` (pump `H.advance(0)` afterwards for deferred work); taunts the player got from `ShipAiAgent:tauntPlayer`: `{t, msg, ship}` |
 | `H.newShip{...}` / `H.spawnedShips()` / `H.spawnedAreas()` | Fake ships; ships and areas created by `spawnShipAgent` / `spawnSpaceActiveArea` |
 | `H.messageLog(player)` | Everything `sendSystemMessage` got, with times: `{t, id, TO, DI, plain}` |
 | `H.Engine.timedCallsTo(fn)` | Like `callsTo`, entries are `{t = ms, args}` |
@@ -159,6 +160,15 @@ by driving fake time, not by calling timer callbacks by name.
   harness has one VM; `S.snapshotVm()` / `S.resetVm()` in `survival_scenario.lua` record and restore
   the numeric upvalues and scalar fields of a quest type to model "the next event ran elsewhere".
   Use it for any state that must survive in shared memory or game objects instead of Lua variables.
+
+Fake ship agents also record `addSpaceFactionAlly` (`factionAllies`), `removeSpaceFactionEnemy`
+(`removedFactionEnemies`), `tauntPlayer` (`taunts`) and `setDockable` (`dockableCalls`). `logLua` is recorded
+(`H.Engine.callsTo("logLua")`), not printed. `H.loadSpaceQuestTypes()` loads `SpaceAttackWaves` after
+`SpaceQuestLogic` once `screenplays/space/SpaceAttackWaves.lua` exists.
+
+`delivery_scenario.lua` builds delivery scenarios the same way (`D.fresh(type, name)`, `sc:start()`, `sc:arrive()`,
+`sc:at(ms)`, `sc:dock()`, `sc:atDock(ms)`, `D.events`, `D.taunts`, `D.attackWaves`, and `D.snapshotVm()` /
+`D.resetVm()` for the second-VM model). Set `H.Engine.nextRandom` after `D.fresh` (it calls `H.reset`).
 
 `survival_scenario.lua` (not a test file) is a worked example of a scenario builder on top of
 these: oracle values from fixtures, spies on every other quest, `sc:start()`, `sc:arrive()`,

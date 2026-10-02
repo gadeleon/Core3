@@ -211,6 +211,7 @@ function Fakes.newCreature(opts)
 		conversationSession = nil,
 		zone = opts.zone or "",
 		messageLog = {},     -- { t = ms, msg = string or fake StringIdChatParameter }
+		tauntLog = {},       -- { t = ms, msg, ship } from ShipAiAgent:tauntPlayer
 		effects = {},        -- { t = ms, file = string } from playEffect
 		missionObjects = {}, -- ids from addSpaceMissionObject, oldest first
 		missionObjectLog = {}, -- { id, last } per addSpaceMissionObject call
@@ -416,6 +417,9 @@ function Fakes.newShipAgent(opts)
 		missionOwner = nil,
 		dockable = false,      -- setDockable / isDockable
 		dockableCalls = {},    -- every value given to setDockable, in order
+		factionAllies = {},    -- hashes from addSpaceFactionAlly
+		removedFactionEnemies = {}, -- hashes from removeSpaceFactionEnemy
+		taunts = {},           -- { t, player, msg } from tauntPlayer
 	}, FakeAgent)
 
 	return register(a)
@@ -434,6 +438,21 @@ function FakeAgent:setDockable(b)
 	self.dockableCalls[#self.dockableCalls + 1] = self.dockable
 end
 function FakeAgent:isDockable() return self.dockable end
+-- LuaShipAiAgent::addSpaceFactionAlly / removeSpaceFactionEnemy / tauntPlayer (space-quest-stub-delivery).
+-- tauntPlayer is recorded on the agent and on the taunted player (player.tauntLog, see H.tauntLog).
+function FakeAgent:addSpaceFactionAlly(hash) self.factionAllies[#self.factionAllies + 1] = hash end
+function FakeAgent:removeSpaceFactionEnemy(hash) self.removedFactionEnemies[#self.removedFactionEnemies + 1] = hash end
+
+function FakeAgent:tauntPlayer(pPlayer, msg)
+	local entry = { t = Fakes.now(), player = pPlayer, msg = msg, ship = self }
+
+	self.taunts[#self.taunts + 1] = entry
+
+	if pPlayer ~= nil and pPlayer.tauntLog ~= nil then
+		pPlayer.tauntLog[#pPlayer.tauntLog + 1] = entry
+	end
+end
+
 function FakeAgent:dropFromSquadron() self.squadronLeader = nil; self.isSquadronLeader = false end
 
 -- Active area returned by spawnSpaceActiveArea.

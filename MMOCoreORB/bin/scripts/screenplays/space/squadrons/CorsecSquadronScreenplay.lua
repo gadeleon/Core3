@@ -780,6 +780,9 @@ survival_corellia_privateer_tier3_2_a = SpaceSurvivalScreenplay:new {
 
 registerScreenPlay("survival_corellia_privateer_tier3_2_a", true)
 
+-- CorSec Tier 3 Mission 2b: Delivery (Dathomir)
+-- Ported from SWG-Source: datatables/spacequest/delivery/corellia_privateer_tier3_2_b.tab
+-- Trainer: Ramna (tier 3)  SWG-Source series: corellia_privateer  Slice: space-quest-stub-delivery
 delivery_corellia_privateer_tier3_2_b = SpaceDeliveryScreenplay:new {
 	className = "delivery_corellia_privateer_tier3_2_b",
 
@@ -799,6 +802,21 @@ delivery_corellia_privateer_tier3_2_b = SpaceDeliveryScreenplay:new {
 	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
 
 	-- Screenplay Specific Variables
+
+	pickupShip = "corsec_lancer_tier4",
+	deliveryShip = "corsec_interceptor_tier3",
+
+	pickupPoint = {patrolPointName = "corellia_privateer_tier3_pickup", x = 6125, z = -2145, y = -4087},
+	deliveryPoint = {patrolPointName = "corellia_privateer_tier3_delivery", x = 4240, z = -2176, y = -7112},
+
+	attackShipLists = {
+		{"blacksun_fighter_s01_tier3", "blacksun_fighter_s02_tier3", "blacksun_fighter_s03_tier3"},
+		{"blacksun_bomber_s01_tier3", "blacksun_bomber_s02_tier3", "blacksun_bomber_s03_tier3"},
+		{"blacksun_marauder_tier3", "blacksun_marauder_tier3"},
+	},
+
+	attackPeriod = 50,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("delivery_corellia_privateer_tier3_2_b", true)
@@ -828,8 +846,9 @@ destroy_surpriseattack_corellia_privateer_tier3_2_c = SpaceSurpriseAttackScreenp
 
 registerScreenPlay("destroy_surpriseattack_corellia_privateer_tier3_2_c", true)
 
--- Mission 3
-
+-- CorSec Tier 3 Mission 3: Delivery (Dantooine)
+-- Ported from SWG-Source: datatables/spacequest/delivery/corellia_privateer_tier3_3.tab
+-- Trainer: Ramna (tier 3)  SWG-Source series: corellia_privateer  Slice: space-quest-stub-delivery
 delivery_corellia_privateer_tier3_3 = SpaceDeliveryScreenplay:new {
 	className = "delivery_corellia_privateer_tier3_3",
 
@@ -850,6 +869,17 @@ delivery_corellia_privateer_tier3_3 = SpaceDeliveryScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 
 	-- Screenplay Specific Variables
+
+	pickupShip = "corsec_interdiction_craft_tier3",
+	deliveryShip = "corsec_interdiction_craft_tier3",
+
+	pickupPoint = {patrolPointName = "corellia_privateer_tier3_pickup", x = 4170, z = -4074, y = -4613},
+	deliveryPoint = {patrolPointName = "corellia_privateer_tier3_delivery", x = 1633, z = -2059, y = -1925},
+
+	attackShipLists = {},
+
+	attackPeriod = 60,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("delivery_corellia_privateer_tier3_3", true)

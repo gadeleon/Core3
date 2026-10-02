@@ -1,6 +1,7 @@
 SpaceDeliveryNoPickupScreenplay = SpaceDeliveryScreenplay:new {
 	className = "SpaceDeliveryNoPickupScreenplay",
 
+	hasPickup = false,
 }
 
 registerScreenPlay("SpaceDeliveryNoPickupScreenplay", false)

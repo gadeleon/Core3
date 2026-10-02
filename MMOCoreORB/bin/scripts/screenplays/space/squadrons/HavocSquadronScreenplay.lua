@@ -772,7 +772,9 @@ inspect_corellia_rebel_tier3_2 = SpaceInspectScreenplay:new {
 
 registerScreenPlay("inspect_corellia_rebel_tier3_2", true)
 
--- Mission 2 Side Quest A: Delivery (Space Lok - Deliver data to Alliance fleet)
+-- Havoc Tier 3 Mission 2a: Delivery (Lok)
+-- Ported from SWG-Source: datatables/spacequest/delivery/corellia_rebel_tier3_2_a.tab
+-- Trainer: Aqzow (tier 3)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-delivery
 delivery_corellia_rebel_tier3_2_a = SpaceDeliveryScreenplay:new {
 	className = "delivery_corellia_rebel_tier3_2_a",
 
@@ -797,16 +799,17 @@ delivery_corellia_rebel_tier3_2_a = SpaceDeliveryScreenplay:new {
 	pickupShip = "reb_xwing_tier2",
 	deliveryShip = "reb_awing_tier3",
 
-	pickupPoint = "space_lok:rebel_tier3_2_a_meeting",
-	deliveryPoint = "space_lok:rebel_tier3_2_a_delivery",
+	pickupPoint = {patrolPointName = "rebel_tier3_2_a_meeting", x = -3000, z = -2000, y = -2600},
+	deliveryPoint = {patrolPointName = "rebel_tier3_2_a_delivery", x = 1000, z = -2000, y = -3452},
 
-	attackDelay = 70,
-
-	attackShips = {
-		{"imp_tie_fighter_tier2", "imp_tie_interceptor_tier2", "imp_tie_interceptor_tier2"},
-		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_interceptor_tier2"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier2", "imp_tie_interceptor_tier2"},
+	attackShipLists = {
+		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier3"},
+		{"imp_tie_interceptor_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
+		{"imp_tie_interceptor_tier2", "imp_tie_interceptor_tier2", "imp_tie_interceptor_tier2"},
 	},
+
+	attackPeriod = 70,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.RANDOM,
 }
 
 registerScreenPlay("delivery_corellia_rebel_tier3_2_a", true)
@@ -894,7 +897,9 @@ escort_corellia_rebel_tier3_2_c = SpaceEscortScreenplay:new {
 
 registerScreenPlay("escort_corellia_rebel_tier3_2_c", true)
 
--- Mission 3: Delivery (Space Endor - Meet Nym smuggler with intel data from Lok Alliance Navy)
+-- Havoc Tier 3 Mission 3: Delivery (Endor)
+-- Ported from SWG-Source: datatables/spacequest/delivery/corellia_rebel_tier3_3.tab
+-- Trainer: Aqzow (tier 3)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-delivery
 delivery_corellia_rebel_tier3_3 = SpaceDeliveryScreenplay:new {
 	className = "delivery_corellia_rebel_tier3_3",
 
@@ -913,16 +918,16 @@ delivery_corellia_rebel_tier3_3 = SpaceDeliveryScreenplay:new {
 	pickupShip = "nym_smuggler",
 	deliveryShip = "reb_gunboat_tier3",
 
-	pickupPoint = "space_endor:corellia_rebel_tier_3_3_pickup",
-	deliveryPoint = "space_endor:corellia_rebel_tier_3_3_deliver",
+	pickupPoint = {patrolPointName = "corellia_rebel_tier_3_3_pickup", x = -2200, z = -5200, y = 1300},
+	deliveryPoint = {patrolPointName = "corellia_rebel_tier_3_3_deliver", x = -2600, z = -300, y = 3200},
 
-	attackDelay = 80,
-
-	attackShips = {
-		{"imp_tie_fighter_tier3", "imp_tie_interceptor_tier3"},
-		{"imp_tie_fighter_tier3", "imp_tie_interceptor_tier3"},
-		{"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3"},
+	attackShipLists = {
+		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_interceptor_tier3"},
+		{"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3"},
 	},
+
+	attackPeriod = 80,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("delivery_corellia_rebel_tier3_3", true)
@@ -1423,7 +1428,9 @@ assassinate_corellia_rebel_tier4_2 = SpaceAssassinateScreenplay:new {
 
 registerScreenPlay("assassinate_corellia_rebel_tier4_2", true)
 
--- Mission 2 Side Quest A: Delivery No Pickup (Space Dathomir - Deliver Inquisitor wreck data)
+-- Havoc Tier 4 Mission 2a: Delivery No Pickup (Dathomir)
+-- Ported from SWG-Source: datatables/spacequest/delivery_no_pickup/corellia_rebel_tier4_2_a.tab
+-- Trainer: Warvog Arkon (tier 4)  SWG-Source series: corellia_rebel  Slice: space-quest-stub-delivery
 delivery_no_pickup_corellia_rebel_tier4_2_a = SpaceDeliveryNoPickupScreenplay:new {
 	className = "delivery_no_pickup_corellia_rebel_tier4_2_a",
 
@@ -1442,18 +1449,17 @@ delivery_no_pickup_corellia_rebel_tier4_2_a = SpaceDeliveryNoPickupScreenplay:ne
 	parentQuestName = "corellia_rebel_tier4_2",
 
 	deliveryShip = "rebel_smuggler_tier3",
-	deliveryPoint = "space_dathomir:corellia_rebel_tier4_2_a_delivery",
 
-	attackDelay = 45,
+	deliveryPoint = {patrolPointName = "corellia_rebel_tier4_2_a_delivery", x = 5242, z = 4462, y = -48},
 
-	attackShips = {
-		{"imp_tie_interceptor_tier4", "imp_tie_advanced_tier4", "imp_tie_fighter_tier4"},
-		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4"},
-		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier4"},
+	attackShipLists = {
+		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+		{"imp_tie_advanced_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
 	},
+
+	attackPeriod = 45,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.RANDOM,
 }
 
 registerScreenPlay("delivery_no_pickup_corellia_rebel_tier4_2_a", true)

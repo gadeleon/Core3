@@ -863,6 +863,10 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 
 registerScreenPlay("inspect_naboo_privateer_tier3_3a", true)
 
+-- RSF Tier 3 Mission 3b: Delivery (Lok)
+-- Ported from SWG-Source: datatables/spacequest/delivery/naboo_privateer_tier3_3b.tab
+-- Trainer: Dulios (tier 3)  SWG-Source series: naboo_privateer  Slice: space-quest-stub-delivery
+-- Note: SWG's trainer chain uses delivery_no_pickup for this quest (D-4/F-2); rename deferred to RSF tier 3 reconciliation.
 delivery_naboo_privateer_tier3_3b = SpaceDeliveryScreenplay:new {
 	className = "delivery_naboo_privateer_tier3_3b",
 
@@ -884,6 +888,23 @@ delivery_naboo_privateer_tier3_3b = SpaceDeliveryScreenplay:new {
 	sideQuestDelay = 4,
 
 	-- Screenplay Specific Variables
+
+	pickupShip = "rsf_defender",
+	deliveryShip = "rsf_fighter",
+
+	pickupPoint = {patrolPointName = "naboo_privateer_tier3_leg_3_deliver_pickup", x = -1198, z = -3563, y = 3275},
+	deliveryPoint = {patrolPointName = "naboo_privateer_tier3_leg_3_deliver_delivery", x = 2028, z = 540, y = -749},
+
+	attackShipLists = {
+		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
+		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
+		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
+		{"blacksungunship", "blacksungunship", "blacksungunship"},
+		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
+	},
+
+	attackPeriod = 48,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
 registerScreenPlay("delivery_naboo_privateer_tier3_3b", true)

@@ -7,6 +7,8 @@
 
 #include "SpaceQueueCommand.h"
 #include "server/zone/objects/ship/events/ShipDockingTask.h"
+#include "server/zone/objects/ship/events/ShipDockingPermission.h"
+#include "server/zone/objects/ship/ai/ShipAiAgent.h"
 
 class DockCommand : public SpaceQueueCommand {
 private:
@@ -55,6 +57,9 @@ public:
 			return GENERALERROR;
 		}
 
+		// Lock the target before reading its range, flag and owner
+		Locker tLock(targetShip, creature);
+
 		if (!isInRange(ship, targetShip, DOCKING_RANGE)) {
 			creature->sendSystemMessage("@space/cargo:dock_too_far");
 			return GENERALERROR;
@@ -65,7 +70,6 @@ public:
 			return GENERALERROR;
 		}
 
-		Locker tLock(targetShip, creature);
 		auto task = new ShipDockingTask(ship, targetShip);
 
 		if (task != nullptr) {
@@ -90,11 +94,16 @@ private:
 
 		auto ghost = pilot->getPlayerObject();
 
-		if (ghost != nullptr && ghost->hasGodMode()) { // for testing
-			return true;
-		}
+		auto agent = target->asShipAiAgent();
 
-		return false; // target->getDockingPermission(ship);
+		return ShipDockingPermission::isAllowed(
+			ghost != nullptr && ghost->hasGodMode(),
+			pilot->getObjectID(),
+			target->isShipAiAgent(),
+			agent != nullptr && agent->isDockable(),
+			agent != nullptr ? agent->getMissionOwnerID() : 0,
+			target->isShipDisabled(),
+			target->getCargoString());
 	}
 
 	void setDocking(ShipObject* ship, ShipObject* target) const {

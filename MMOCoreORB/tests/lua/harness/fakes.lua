@@ -414,6 +414,8 @@ function Fakes.newShipAgent(opts)
 		isSquadronLeader = false,
 		squadronLeader = nil,  -- pointer given to assignToSquadron
 		missionOwner = nil,
+		dockable = false,      -- setDockable / isDockable
+		dockableCalls = {},    -- every value given to setDockable, in order
 	}, FakeAgent)
 
 	return register(a)
@@ -425,6 +427,13 @@ function FakeAgent:addSpaceFactionEnemy(hash) self.factionEnemies[#self.factionE
 function FakeAgent:engageShipTarget(pShip) self.engaged[#self.engaged + 1] = pShip end
 function FakeAgent:createSquadron(formation) self.isSquadronLeader = true end
 function FakeAgent:assignToSquadron(pLeader) self.squadronLeader = pLeader end
+-- LuaShipAiAgent::setDockable / isDockable (space-docking-permission). test_harness_ship_dockable.lua
+-- checks that both names exist in LuaShipAiAgent.cpp's Methods table.
+function FakeAgent:setDockable(b)
+	self.dockable = b and true or false
+	self.dockableCalls[#self.dockableCalls + 1] = self.dockable
+end
+function FakeAgent:isDockable() return self.dockable end
 function FakeAgent:dropFromSquadron() self.squadronLeader = nil; self.isSquadronLeader = false end
 
 -- Active area returned by spawnSpaceActiveArea.

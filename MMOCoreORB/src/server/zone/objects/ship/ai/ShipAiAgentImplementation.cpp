@@ -389,6 +389,8 @@ void ShipAiAgentImplementation::initializeTransientMembers() {
 	movementState = OBLIVIOUS;
 	movementCount = 0;
 	movementTime = 0;
+
+	dockable = false;
 }
 
 void ShipAiAgentImplementation::notifyInsertToZone(Zone* zone) {
@@ -984,6 +986,10 @@ Vector3 ShipAiAgentImplementation::getInterceptPosition(ShipObject* target, floa
 }
 
 int ShipAiAgentImplementation::getTransformType() {
+	if (dockable) {
+		return SpaceTransformType::DOCK;
+	}
+
 	switch (movementState) {
 		case ShipAiAgent::OBLIVIOUS:
 		case ShipAiAgent::WATCHING:
@@ -1032,6 +1038,11 @@ int ShipAiAgentImplementation::getPatrolSizeMax() {
 }
 
 int ShipAiAgentImplementation::setDestination() {
+	if (dockable) {
+		setNextTransform();
+		return 0;
+	}
+
 	if (patrolPoints.size() > PATROLPOINTS_MAX) {
 		info() << "Patrol points have overflowed. Total points: " << patrolPoints.size();
 		clearPatrolPoints();
@@ -1079,6 +1090,18 @@ int ShipAiAgentImplementation::setDestination() {
 }
 
 void ShipAiAgentImplementation::setNextTransform() {
+	if (dockable) {
+		// Hold position: stay put, stop, and keep the current rotation
+		Locker locker(&targetMutex);
+
+		clearPatrolPoints();
+
+		shipTransform.setNextTransform(getPosition(), 0.f, SpaceTransformType::DOCK);
+		shipTransform.freezeRotation();
+		movementCount += 1;
+		return;
+	}
+
 	if (squadron != nullptr && (isSquadronTransform() || isSquadronLeader())) {
 		return setSquadronTransform();
 	}
@@ -1229,6 +1252,10 @@ int ShipAiAgentImplementation::getNextBehaviorInterval() {
 }
 
 bool ShipAiAgentImplementation::generatePatrol(int totalPoints, float distance, int pathShape) {
+	if (dockable) {
+		return false;
+	}
+
 	// info(true) << getDisplayedName() << " ID: " << getObjectID() << "  generatePatrol called with a state of " << getMovementState() << " and point size of = " << totalPoints << " Max Distance: " << distance;
 
 	auto zone = getZoneUnsafe();

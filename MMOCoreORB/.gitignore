@@ -50,3 +50,8 @@ build.out.prev
 bin/screenlog*
 compile_commands.json
 .env*
+
+# Lua test harness for scripted content: committed despite *test* and *.sh above
+!/tests/
+!/tests/lua/
+!/tests/lua/**

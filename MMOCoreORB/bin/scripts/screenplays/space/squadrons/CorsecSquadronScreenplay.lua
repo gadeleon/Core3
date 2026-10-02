@@ -1288,15 +1288,26 @@ space_battle_corellia_privateer_tier4_3a = SpaceBattleScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 1, -- Time in seconds to wait to trigger side quest
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_privateer_tier4_3a.tab)
 
-	battleLocation = {patrolPointName = "corellia_privateer_tier4_leg_3_space_battle_one", x = 5063, y = -816, z = -3364},
+	battlePoint = {patrolPointName = "corellia_privateer_tier4_leg_3_space_battle_one", x = 5063, z = -816, y = -3364, forward = {x = 0.691155, z = 0.543152, y = -0.476750}},
 
-	supportShipsDelay = 60,
-	enemyShipsDelay = 90,
+	damageMultiplier = 4,
+	allyArrivalDelay = 60,
+	enemyArrivalDelay = 90,
+	allyOriginDist = -400,
+	enemyOriginDist = 400,
+	allyArrivalDist = -250,
+	enemyArrivalDist = 250,
 
-	supportShips = {"corsec_interdiction_craft_tier4", "corsec_interdiction_craft_tier4", "corsec_interceptor_tier4", "corsec_interceptor_tier4"},
-	enemyShips = {"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_bomber_s01_tier4", "blacksun_bomber_s01_tier4", "blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4"},
+	allyForce = {
+		"corsec_interdiction_craft_tier4", "corsec_interdiction_craft_tier4", "corsec_interceptor_tier4", "corsec_interceptor_tier4",
+	},
+
+	enemyForce = {
+		"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_bomber_s01_tier4", "blacksun_bomber_s01_tier4",
+		"blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4",
+	},
 }
 
 registerScreenPlay("space_battle_corellia_privateer_tier4_3a", true)
@@ -1365,15 +1376,26 @@ space_battle_corellia_privateer_tier4_3c_win = SpaceBattleScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.NONE,
 	sideQuestDelay = 1, -- Time in seconds to wait to trigger side quest
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_privateer_tier4_3c_win.tab)
 
-	battleLocation = {patrolPointName = "corellia_privateer_tier4_leg_3_space_battle_two", x = 7512, z = -5651, y = 1803},
+	battlePoint = {patrolPointName = "corellia_privateer_tier4_leg_3_space_battle_two", x = 7512, z = -5651, y = 1803, forward = {x = 0.833879, z = 0.503772, y = -0.225520}},
 
-	supportShipsDelay = 30,
-	enemyShipsDelay = 90,
+	damageMultiplier = 4,
+	allyArrivalDelay = 30,
+	enemyArrivalDelay = 90,
+	allyOriginDist = 500,
+	enemyOriginDist = -500,
+	allyArrivalDist = 250,
+	enemyArrivalDist = -250,
 
-	supportShips = {"corsec_gunship_tier4", "corsec_interdiction_craft_tier4", "corsec_lancer_tier4", "corsec_interceptor_tier4"},
-	enemyShips = {"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_gunship_tier4", "blacksun_marauder_tier4", "blacksun_marauder_tier4", "blacksun_vehement_tier4", "blacksun_gunship_tier4"},
+	allyForce = {
+		"corsec_gunship_tier4", "corsec_interdiction_craft_tier4", "corsec_lancer_tier4", "corsec_interceptor_tier4",
+	},
+
+	enemyForce = {
+		"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_gunship_tier4", "blacksun_marauder_tier4",
+		"blacksun_marauder_tier4", "blacksun_vehement_tier4", "blacksun_gunship_tier4",
+	},
 }
 
 registerScreenPlay("space_battle_corellia_privateer_tier4_3c_win", true)
@@ -1399,17 +1421,27 @@ space_battle_corellia_privateer_tier4_3c_lose = SpaceBattleScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.NONE,
 	sideQuestDelay = 1, -- Time in seconds to wait to trigger side quest
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_privateer_tier4_3c_lose.tab)
 
-	battleLocation = {patrolPointName = "corellia_privateer_tier4_leg_3_space_battle_two", x = 7512, z = -5651, y = 1803},
+	battlePoint = {patrolPointName = "corellia_privateer_tier4_leg_3_space_battle_two", x = 7512, z = -5651, y = 1803, forward = {x = 0.833879, z = 0.503772, y = -0.225520}},
 
-	supportShipsDelay = 60,
-	enemyShipsDelay = 90,
+	damageMultiplier = 4,
+	allyArrivalDelay = 30,
+	enemyArrivalDelay = 90,
+	allyOriginDist = 500,
+	enemyOriginDist = -500,
+	allyArrivalDist = 250,
+	enemyArrivalDist = -250,
 
-	supportShips = {"corsec_gunship_tier4", "corsec_interdiction_craft_tier4", "corsec_lancer_tier4", "corsec_fighter_tier4"},
+	allyForce = {
+		"corsec_gunship_tier4", "corsec_interdiction_craft_tier4", "corsec_lancer_tier4", "corsec_fighter_tier4",
+	},
 
-	enemyShips = {"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_aggressor_tier4S", "blacksun_bomber_s02_tier4", "blacksun_bomber_s02_tier4", "blacksun_gunship_tier4", "blacksun_marauder_tier4",
-		"blacksun_marauder_tier4", "blacksun_marauder_tier4", "blacksun_vehement_tier4", "blacksun_vehement_tier4", "blacksun_vehement_tier4"
+	enemyForce = {
+		"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_aggressor_tier4",
+		"blacksun_bomber_s02_tier4", "blacksun_bomber_s02_tier4", "blacksun_gunship_tier4", "blacksun_marauder_tier4",
+		"blacksun_marauder_tier4", "blacksun_marauder_tier4", "blacksun_vehement_tier4", "blacksun_vehement_tier4",
+		"blacksun_vehement_tier4",
 	},
 }
 

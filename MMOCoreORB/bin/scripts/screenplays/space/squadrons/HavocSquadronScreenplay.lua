@@ -725,7 +725,11 @@ space_battle_corellia_rebel_tier3_1_d = SpaceBattleScreenplay:new {
 	parentQuestType = "assassinate",
 	parentQuestName = "corellia_rebel_tier3_1_c",
 
-	battlePoint = "space_yavin4:rebel_tier3_1_d_space_battle",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier3_1_d.tab)
+
+	battlePoint = {patrolPointName = "rebel_tier3_1_d_space_battle", x = 4546, z = -1172, y = -1680, forward = {x = 0.712721, z = -0.484232, y = -0.507492}},
+
+	damageMultiplier = 6,
 	allyArrivalDelay = 20,
 	enemyArrivalDelay = 35,
 	allyOriginDist = -600,
@@ -733,19 +737,13 @@ space_battle_corellia_rebel_tier3_1_d = SpaceBattleScreenplay:new {
 	allyArrivalDist = -100,
 	enemyArrivalDist = 0,
 
-	alliedShips = {
-		{"reb_xwing_tier3"},
-		{"reb_xwing_tier3"},
-		{"reb_xwing_tier3"},
+	allyForce = {
+		"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3",
 	},
 
-	enemyShips = {
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_interceptor_tier3"},
-		{"imp_tie_interceptor_tier3"},
-		{"imp_tie_interceptor_tier3"},
+	enemyForce = {
+		"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_interceptor_tier3",
+		"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3",
 	},
 }
 
@@ -1005,7 +1003,11 @@ space_battle_corellia_rebel_tier3_3_b = SpaceBattleScreenplay:new {
 	parentQuestType = "assassinate",
 	parentQuestName = "corellia_rebel_tier3_3_a",
 
-	battlePoint = "space_endor:corellia_rebel_tier3_3_b_battlepoint",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier3_3_b.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebel_tier3_3_b_battlepoint", x = 1300, z = 6340, y = 2100, forward = {x = -0.661143, z = -0.748716, y = -0.048105}},
+
+	damageMultiplier = 6,
 	allyArrivalDelay = 60,
 	enemyArrivalDelay = 85,
 	allyOriginDist = 500,
@@ -1013,19 +1015,13 @@ space_battle_corellia_rebel_tier3_3_b = SpaceBattleScreenplay:new {
 	allyArrivalDist = 50,
 	enemyArrivalDist = -200,
 
-	alliedShips = {
-		{"reb_ywing_tier3"},
-		{"reb_ywing_tier3"},
-		{"reb_ywing_tier3"},
+	allyForce = {
+		"reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3",
 	},
 
-	enemyShips = {
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_interceptor_tier3"},
-		{"imp_tie_interceptor_tier3"},
-		{"imp_tie_interceptor_tier3"},
+	enemyForce = {
+		"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_interceptor_tier3",
+		"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3",
 	},
 }
 
@@ -1186,7 +1182,11 @@ space_battle_corellia_rebel_tier3_4_c = SpaceBattleScreenplay:new {
 	parentQuestType = "destroy_surpriseattack",
 	parentQuestName = "corellia_rebel_tier3_4_b",
 
-	battlePoint = "space_endor:corellia_rebel_tier3_4_c_battlepoint",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier3_4_c.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebel_tier3_4_c_battlepoint", x = 1900, z = -5650, y = 2550, forward = {x = -0.352114, z = 0.917284, y = -0.186029}},
+
+	damageMultiplier = 6,
 	allyArrivalDelay = 60,
 	enemyArrivalDelay = 80,
 	allyOriginDist = 800,
@@ -1194,20 +1194,13 @@ space_battle_corellia_rebel_tier3_4_c = SpaceBattleScreenplay:new {
 	allyArrivalDist = 100,
 	enemyArrivalDist = -50,
 
-	alliedShips = {
-		{"reb_bwing_tier3"},
-		{"reb_bwing_tier3"},
-		{"reb_ywing_tier3"},
-		{"reb_ywing_tier3"},
+	allyForce = {
+		"reb_bwing_tier3", "reb_bwing_tier3", "reb_ywing_tier3", "reb_ywing_tier3",
 	},
 
-	enemyShips = {
-		{"imp_tie_bomber_tier3"},
-		{"imp_tie_bomber_tier3"},
-		{"imp_tie_bomber_tier3"},
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3"},
+	enemyForce = {
+		"imp_tie_bomber_tier3", "imp_tie_bomber_tier3", "imp_tie_bomber_tier3", "imp_tie_fighter_tier3",
+		"imp_tie_fighter_tier3", "imp_tie_fighter_tier3",
 	},
 }
 
@@ -1317,7 +1310,11 @@ space_battle_corellia_rebel_tier4_1_a = SpaceBattleScreenplay:new {
 	parentQuestType = "survival",
 	parentQuestName = "corellia_rebel_tier4_1",
 
-	battlePoint = "space_dathomir:corellia_rebel_tier4_1_a_battle_point",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier4_1_a.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebel_tier4_1_a_battle_point", x = 5904, z = -3905, y = 2357, forward = {x = 0.853768, z = -0.516927, y = 0.062185}},
+
+	damageMultiplier = 7,
 	allyArrivalDelay = 85,
 	enemyArrivalDelay = 60,
 	allyOriginDist = 600,
@@ -1325,24 +1322,15 @@ space_battle_corellia_rebel_tier4_1_a = SpaceBattleScreenplay:new {
 	allyArrivalDist = 50,
 	enemyArrivalDist = -100,
 
-	alliedShips = {
-		{"nym_enforcer_tier4"},
-		{"nym_enforcer_tier4"},
-		{"nym_enforcer_tier4"},
-		{"reb_xwing_tier4"},
-		{"reb_xwing_tier4"},
+	allyForce = {
+		"nym_enforcer_tier4", "nym_enforcer_tier4", "nym_enforcer_tier4", "reb_xwing_tier4",
+		"reb_xwing_tier4",
 	},
 
-	enemyShips = {
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s03_tier4"},
-		{"blacksun_fighter_s03_tier4"},
-		{"blacksun_fighter_s03_tier4"},
-		{"blacksun_marauder_tier4"},
-		{"blacksun_vehement_tier4"},
-		{"blacksun_marauder_tier4"},
+	enemyForce = {
+		"blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4", "blacksun_fighter_s03_tier4",
+		"blacksun_fighter_s03_tier4", "blacksun_fighter_s03_tier4", "blacksun_marauder_tier4", "blacksun_vehement_tier4",
+		"blacksun_marauder_tier4",
 	},
 }
 
@@ -1366,7 +1354,11 @@ space_battle_corellia_rebel_tier4_1_b = SpaceBattleScreenplay:new {
 	parentQuestType = "survival",
 	parentQuestName = "corellia_rebel_tier4_1",
 
-	battlePoint = "space_dathomir:corellia_rebe_tier4_1_b_battle_point",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier4_1_b.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebe_tier4_1_b_battle_point", x = 2994, z = -5955, y = 4244, forward = {x = 0.515042, z = -0.537332, y = -0.667837}},
+
+	damageMultiplier = 7,
 	allyArrivalDelay = 30,
 	enemyArrivalDelay = 45,
 	allyOriginDist = 600,
@@ -1374,22 +1366,14 @@ space_battle_corellia_rebel_tier4_1_b = SpaceBattleScreenplay:new {
 	allyArrivalDist = 50,
 	enemyArrivalDist = -100,
 
-	alliedShips = {
-		{"nym_fighter_tier4"},
-		{"nym_fighter_tier4"},
-		{"nym_fighter_tier4"},
-		{"nym_freighterheavy_tier4"},
-		{"nym_freighterlight_tier4"},
-		{"nym_freightermedium_tier4"},
+	allyForce = {
+		"nym_fighter_tier4", "nym_fighter_tier4", "nym_fighter_tier4", "nym_freighterheavy_tier4",
+		"nym_freighterlight_tier4", "nym_freightermedium_tier4",
 	},
 
-	enemyShips = {
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_fighter_s02_tier4"},
-		{"blacksun_gunship_tier4"},
+	enemyForce = {
+		"blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4", "blacksun_fighter_s02_tier4",
+		"blacksun_fighter_s02_tier4", "blacksun_gunship_tier4",
 	},
 }
 
@@ -1535,7 +1519,11 @@ space_battle_corellia_rebel_tier4_3 = SpaceBattleScreenplay:new {
 	sideFailQuestType = "survival",
 	sideFailQuestName = "corellia_rebel_tier4_3_b",
 
-	battlePoint = "space_dathomir:corellia_rebel_tier4_3_battle_point",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier4_3.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebel_tier4_3_battle_point", x = 4405, z = -3064, y = -1673, forward = {x = -0.599861, z = 0.750659, y = 0.276910}},
+
+	damageMultiplier = 5,
 	allyArrivalDelay = 60,
 	enemyArrivalDelay = 30,
 	allyOriginDist = 600,
@@ -1543,25 +1531,15 @@ space_battle_corellia_rebel_tier4_3 = SpaceBattleScreenplay:new {
 	allyArrivalDist = 50,
 	enemyArrivalDist = -200,
 
-	alliedShips = {
-		{"nym_fighter_tier4"},
-		{"nym_fighter_tier4"},
-		{"nym_fighter_tier4"},
-		{"nym_fighter_tier4"},
-		{"nym_enforcer_tier5"},
+	allyForce = {
+		"nym_fighter_tier4", "nym_fighter_tier4", "nym_fighter_tier4", "nym_fighter_tier4",
+		"nym_enforcer_tier5",
 	},
 
-	enemyShips = {
-		{"imp_imperial_gunboat_tier4"},
-		{"imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4"},
+	enemyForce = {
+		"imp_imperial_gunboat_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4",
+		"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4",
+		"imp_tie_fighter_tier4", "imp_tie_fighter_tier4",
 	},
 }
 
@@ -1585,7 +1563,11 @@ space_battle_corellia_rebel_tier4_3_a = SpaceBattleScreenplay:new {
 	parentQuestType = "space_battle",
 	parentQuestName = "corellia_rebel_tier4_3",
 
-	battlePoint = "space_dathomir:corellia_rebel_tier4_3_a_battle_point",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier4_3_a.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebel_tier4_3_a_battle_point", x = 4023, z = -5441, y = -6391, forward = {x = 0.657170, z = -0.550920, y = -0.514408}},
+
+	damageMultiplier = 7,
 	allyArrivalDelay = 30,
 	enemyArrivalDelay = 45,
 	allyOriginDist = 600,
@@ -1593,19 +1575,13 @@ space_battle_corellia_rebel_tier4_3_a = SpaceBattleScreenplay:new {
 	allyArrivalDist = 50,
 	enemyArrivalDist = -150,
 
-	alliedShips = {
-		{"reb_bwing_tier4"},
-		{"reb_bwing_tier4"},
-		{"reb_bwing_tier4"},
+	allyForce = {
+		"reb_bwing_tier4", "reb_bwing_tier4", "reb_bwing_tier4",
 	},
 
-	enemyShips = {
-		{"imp_tie_aggressor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
+	enemyForce = {
+		"imp_tie_aggressor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4",
+		"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4",
 	},
 }
 
@@ -1814,7 +1790,11 @@ space_battle_corellia_rebel_tier4_4_c = SpaceBattleScreenplay:new {
 	parentQuestType = "assassinate",
 	parentQuestName = "corellia_rebel_tier4_4_a",
 
-	battlePoint = "space_endor:corellia_rebel_tier4_4_c_battle_point",
+	-- Screenplay Specific Variables (copied from spacequest/space_battle/corellia_rebel_tier4_4_c.tab)
+
+	battlePoint = {patrolPointName = "corellia_rebel_tier4_4_c_battle_point", x = 318, z = 4729, y = 4803, forward = {x = -0.318970, z = -0.832231, y = 0.453486}},
+
+	damageMultiplier = 7,
 	allyArrivalDelay = 60,
 	enemyArrivalDelay = 85,
 	allyOriginDist = 800,
@@ -1822,24 +1802,15 @@ space_battle_corellia_rebel_tier4_4_c = SpaceBattleScreenplay:new {
 	allyArrivalDist = 150,
 	enemyArrivalDist = -200,
 
-	alliedShips = {
-		{"reb_xwing_tier4"},
-		{"reb_xwing_tier4"},
-		{"reb_bwing_tier4"},
-		{"nym_fighter_tier4"},
-		{"nym_fighter_tier4"},
+	allyForce = {
+		"reb_xwing_tier4", "reb_xwing_tier4", "reb_bwing_tier4", "nym_fighter_tier4",
+		"nym_fighter_tier4",
 	},
 
-	enemyShips = {
-		{"imp_decimator_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4"},
-		{"imp_tie_oppressor_tier4"},
-		{"imp_tie_advanced_tier4"},
+	enemyForce = {
+		"imp_decimator_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4",
+		"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_oppressor_tier4",
+		"imp_tie_advanced_tier4",
 	},
 }
 

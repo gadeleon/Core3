@@ -205,6 +205,8 @@ class ShipAiAgent extends FighterShipObject {
 
 	unsigned long missionOwnerID;
 
+	protected transient boolean dockable;
+
 	private transient SquadronObserver squadron;
 
 	public ShipAiAgent() {
@@ -249,6 +251,8 @@ class ShipAiAgent extends FighterShipObject {
 		maxGuardPatrol = 0;
 
 		missionOwnerID = 0;
+		dockable = false;
+		shipBitmask = 0;
 	}
 
 	/**
@@ -492,6 +496,16 @@ class ShipAiAgent extends FighterShipObject {
 
 	public unsigned long getMissionOwnerID() {
 		return missionOwnerID;
+	}
+
+	@preLocked
+	public void setDockable(boolean dockableValue) {
+		dockable = dockableValue;
+	}
+
+	@dirty
+	public boolean isDockable() {
+		return dockable;
 	}
 
 	@preLocked

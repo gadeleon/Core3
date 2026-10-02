@@ -54,6 +54,8 @@ public:
 	int setEscortSpeed(lua_State* L);
 	int setMissionOwner(lua_State* L);
 	int getMissionOwnerID(lua_State* L);
+	int setDockable(lua_State* L);
+	int isDockable(lua_State* L);
 	int repairShipAgent(lua_State* L);
 	int removeEnemyShip(lua_State* L);
 	int setConversationMobile(lua_State* L);

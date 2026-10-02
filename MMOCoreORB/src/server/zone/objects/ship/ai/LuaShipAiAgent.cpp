@@ -54,6 +54,8 @@ Luna<LuaShipAiAgent>::RegType LuaShipAiAgent::Register[] = {
 	{ "setEscortSpeed", &LuaShipAiAgent::setEscortSpeed },
 	{ "setMissionOwner", &LuaShipAiAgent::setMissionOwner },
 	{ "getMissionOwnerID", &LuaShipAiAgent::getMissionOwnerID },
+	{ "setDockable", &LuaShipAiAgent::setDockable },
+	{ "isDockable", &LuaShipAiAgent::isDockable },
 	{ "repairShipAgent", &LuaShipAiAgent::repairShipAgent },
 	{ "removeEnemyShip", &LuaShipAiAgent::removeEnemyShip },
 	{ "setConversationMobile", &LuaShipAiAgent::setConversationMobile },
@@ -524,6 +526,29 @@ int LuaShipAiAgent::setMissionOwner(lua_State* L) {
 
 int LuaShipAiAgent::getMissionOwnerID(lua_State* L) {
 	lua_pushinteger(L, realObject->getMissionOwnerID());
+
+	return 1;
+}
+
+int LuaShipAiAgent::setDockable(lua_State* L) {
+	int numberOfArguments = lua_gettop(L) - 1;
+
+	if (numberOfArguments != 1) {
+		realObject->error() << "Improper number of arguments in LuaShipAiAgent::setDockable.";
+		return 0;
+	}
+
+	bool value = lua_toboolean(L, -1);
+
+	Locker locker(realObject);
+
+	realObject->setDockable(value);
+
+	return 0;
+}
+
+int LuaShipAiAgent::isDockable(lua_State* L) {
+	lua_pushboolean(L, realObject->isDockable());
 
 	return 1;
 }

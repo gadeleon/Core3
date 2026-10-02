@@ -287,6 +287,7 @@ end
 function FakeCreature:getZoneName() return self.zone end
 function FakeCreature:getRootParent() return self.rootParent end
 function FakeCreature:isShipObject() return false end
+function FakeCreature:isShipAiAgent() return false end
 function FakeCreature:isPlayerShip() return false end
 function FakeCreature:isActiveArea() return false end
 function FakeCreature:isMissionObject() return false end
@@ -336,6 +337,7 @@ local function sceneMethods(class)
 	function class:getRootParent() return nil end
 	function class:isPlayerCreature() return false end
 	function class:isShipObject() return false end
+	function class:isShipAiAgent() return false end
 	function class:isPlayerShip() return false end
 	function class:isActiveArea() return false end
 	function class:isMissionObject() return false end
@@ -420,6 +422,13 @@ function Fakes.newShipAgent(opts)
 		factionAllies = {},    -- hashes from addSpaceFactionAlly
 		removedFactionEnemies = {}, -- hashes from removeSpaceFactionEnemy
 		taunts = {},           -- { t, player, msg } from tauntPlayer
+		callLog = {},          -- ordered { name, args = table.pack(...) } of setDockable, repairShipAgent, setFixedPatrol,
+		                       -- setEscort, setEscortSpeed, assignFixedPatrolPointsTable (space-quest-rescue-docking)
+		repairs = {},          -- values given to repairShipAgent
+		fixedPatrolCalls = 0,  -- setFixedPatrol() calls
+		escortCalls = 0,       -- setEscort() calls
+		escortSpeeds = {},     -- values given to setEscortSpeed
+		patrolPointTables = {},-- copies of the tables given to assignFixedPatrolPointsTable
 	}, FakeAgent)
 
 	return register(a)
@@ -436,6 +445,68 @@ function FakeAgent:assignToSquadron(pLeader) self.squadronLeader = pLeader end
 function FakeAgent:setDockable(b)
 	self.dockable = b and true or false
 	self.dockableCalls[#self.dockableCalls + 1] = self.dockable
+	self.callLog[#self.callLog + 1] = { name = "setDockable", args = table.pack(b) }
+end
+function FakeAgent:isShipAiAgent() return true end
+
+-- LuaShipAiAgent::setFixedPatrol / setEscort / setEscortSpeed / repairShipAgent /
+-- assignFixedPatrolPointsTable (space-quest-rescue-docking). Each is recorded in agent.callLog in call
+-- order. The C++ bindings refuse a wrong argument count (log an error and do nothing), so the fakes
+-- raise instead: setEscortSpeed, repairShipAgent and assignFixedPatrolPointsTable take exactly 1
+-- argument (LuaShipAiAgent.cpp: `lua_gettop(L) - 1 != 1`); the last one takes a table of patrol point
+-- names, not point tables and not a second argument.
+local function exactlyOne(name, ...)
+	local n = select("#", ...)
+
+	if n ~= 1 then
+		error("harness: LuaShipAiAgent::" .. name .. " takes exactly 1 argument (the binding logs 'Improper number of arguments' and does nothing); got " .. n, 3)
+	end
+end
+
+function FakeAgent:setFixedPatrol()
+	self.fixedPatrolCalls = self.fixedPatrolCalls + 1
+	self.callLog[#self.callLog + 1] = { name = "setFixedPatrol", args = table.pack() }
+end
+
+function FakeAgent:setEscort()
+	self.escortCalls = self.escortCalls + 1
+	self.callLog[#self.callLog + 1] = { name = "setEscort", args = table.pack() }
+end
+
+function FakeAgent:setEscortSpeed(...)
+	exactlyOne("setEscortSpeed", ...)
+	local speed = ...
+	self.escortSpeeds[#self.escortSpeeds + 1] = speed
+	self.callLog[#self.callLog + 1] = { name = "setEscortSpeed", args = table.pack(...) }
+end
+
+function FakeAgent:repairShipAgent(...)
+	exactlyOne("repairShipAgent", ...)
+	local amount = ...
+	self.repairs[#self.repairs + 1] = amount
+	self.callLog[#self.callLog + 1] = { name = "repairShipAgent", args = table.pack(...) }
+end
+
+function FakeAgent:assignFixedPatrolPointsTable(...)
+	exactlyOne("assignFixedPatrolPointsTable", ...)
+	local names = ...
+
+	if type(names) ~= "table" then
+		error("harness: LuaShipAiAgent::assignFixedPatrolPointsTable takes a table of patrol point names; got " .. type(names), 2)
+	end
+
+	local copy = {}
+
+	for i, v in ipairs(names) do
+		if type(v) ~= "string" then
+			error("harness: assignFixedPatrolPointsTable table entry " .. i .. " must be a patrol point name (string); got " .. type(v), 2)
+		end
+
+		copy[i] = v
+	end
+
+	self.patrolPointTables[#self.patrolPointTables + 1] = copy
+	self.callLog[#self.callLog + 1] = { name = "assignFixedPatrolPointsTable", args = table.pack(...) }
 end
 function FakeAgent:isDockable() return self.dockable end
 -- LuaShipAiAgent::addSpaceFactionAlly / removeSpaceFactionEnemy / tauntPlayer (space-quest-stub-delivery).

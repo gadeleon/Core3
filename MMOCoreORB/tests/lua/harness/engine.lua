@@ -615,13 +615,18 @@ function spawnShipAgent(shipName, zone, x, z, y, pTarget)
 	return agent
 end
 
--- spawnSpaceActiveArea(zone, template, x, z, y, radius) -> fake area.
+-- spawnSpaceActiveArea(zone, template, x, z, y, radius) -> fake area (nil if Engine.config.areaFails is set).
 function spawnSpaceActiveArea(zone, template, x, z, y, radius)
 	if type(zone) ~= "string" or type(template) ~= "string" or type(x) ~= "number" or type(z) ~= "number" or type(y) ~= "number" or type(radius) ~= "number" then
 		error("harness: spawnSpaceActiveArea(zone, template, x, z, y, radius) got bad argument types", 2)
 	end
 
 	record("spawnSpaceActiveArea", zone, template, x, z, y, radius)
+
+	-- Engine.config.areaFails = true: the server could not create the area (space-quest-rescue-docking).
+	if Engine.config.areaFails then
+		return nil
+	end
 
 	local area = Fakes.newActiveArea({ zone = zone, template = template, x = x, z = z, y = y, radius = radius })
 	Engine.spawnedAreas[#Engine.spawnedAreas + 1] = area

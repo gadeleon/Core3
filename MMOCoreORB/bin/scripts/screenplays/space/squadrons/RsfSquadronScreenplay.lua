@@ -743,30 +743,27 @@ rescue_naboo_privateer_tier3_2e = SpaceRescueScreenplay:new {
 	sideQuestType = "",
 	sideQuestName = "",
 
-	-- Screenplay Specific Variables
-	arrivalDelay = 3,
-
-	-- RSF Madersim - damaged heavy freighter needing rescue in Corellia
-	rescueShip = "freighterheavy_tier3",
-	rescueLocation = {x = 2500, z = 1200, y = -800},
-
-	-- Repair timing (no attackers during repairs per wiki)
-	repairDelay = 30, -- 30 seconds for repairs
-
-	-- Escort points to hyperspace jump after repairs (in Corellia)
-	escortPoints = {
-		{patrolPointName = "corellia_privateer_tier3_rescue_escort_1", zoneName = "space_corellia", x = 3000, z = 1000, y = -500, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_rescue_escort_2", zoneName = "space_corellia", x = 3500, z = 800, y = -200, escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_rescue_escort_3", zoneName = "space_corellia", x = 4000, z = 600, y = 100, escortNumber = 3, radius = 250},
+	-- Screenplay Specific Variables (SWG rescue/naboo_privateer_tier3_2e.tab)
+	recoveryPath = {
+		{patrolPointName = "naboo_privateer_tier3_leg_2_rescue_egress_1", x = 3286, z = -1563, y = -5979},
+		{patrolPointName = "naboo_privateer_tier3_leg_2_rescue_egress_2", x = 5139, z = -2619, y = -6917},
+		{patrolPointName = "naboo_privateer_tier3_leg_2_rescue_egress_3", x = 1924, z = -4732, y = -4708},
+		{patrolPointName = "naboo_privateer_tier3_leg_2_rescue_egress_4", x = 1156, z = -7106, y = -2482},
 	},
 
-	escortSpeed = 25,
+	targetShipType = "madersim_tier3",
+	targetArrivalDelay = 0,
 
-	-- Single Ay'Nat Vaporizer attacks during escort (per wiki)
-	escortAttackDelay = 15,
-	escortAttackShips = {
-		{{count = 1, shipName = "aynat_vaporizer_tier3"}},
+	attackShipLists = {
+		{"aynat_vaporizer_tier3", "aynat_vaporizer_tier3", "aynat_vaporizer_tier3"},
+		{"aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_outlaw_tier3"},
+		{"aynat_vaporizer_tier3", "aynat_vaporizer_tier3", "aynat_vaporizer_tier3"},
+		{"aynat_vaporizer_tier3", "aynat_vaporizer_tier3", "aynat_viggo_tier2"},
 	},
+
+	attackPeriod = 110,
+	attackListType = 0,
+	numResponses = 3,
 }
 
 registerScreenPlay("rescue_naboo_privateer_tier3_2e", true)

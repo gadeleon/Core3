@@ -1482,26 +1482,26 @@ rescue_corellia_rebel_tier4_2_b = SpaceRescueScreenplay:new {
 	parentQuestType = "assassinate",
 	parentQuestName = "corellia_rebel_tier4_2",
 
-	rescueShip = "reb_diplomat_tier4",
-	rescueArrivalDelay = 3,
-
-	rescuePoints = {
-		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_1", zoneName = "space_dathomir", x = 3872, z = 4158, y = -2791, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_2", zoneName = "space_dathomir", x = 2827, z = 3579, y = -4145, escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_3", zoneName = "space_dathomir", x = 2103, z = 3204, y = -5079, escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_4", zoneName = "space_dathomir", x = 1424, z = 2853, y = -5956, escortNumber = 4, radius = 250},
+	-- SWG rescue/corellia_rebel_tier4_2_b.tab
+	recoveryPath = {
+		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_1", x = 3872, z = 4158, y = -2791},
+		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_2", x = 2827, z = 3579, y = -4145},
+		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_3", x = 2103, z = 3204, y = -5079},
+		{patrolPointName = "corellia_rebel_tier4_2_b_rescue_4", x = 1424, z = 2853, y = -5956},
 	},
 
-	attackDelay = 50,
+	targetShipType = "reb_diplomat_tier4",
+	targetArrivalDelay = 3,
 
-	attackShips = {
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_bomber_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
-		{"imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+	attackShipLists = {
+		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+		{"imp_tie_bomber_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
 	},
+
+	attackPeriod = 50,
+	attackListType = 1,
+	numResponses = 5,
 }
 
 registerScreenPlay("rescue_corellia_rebel_tier4_2_b", true)
@@ -1762,28 +1762,28 @@ rescue_corellia_rebel_tier4_4_b = SpaceRescueScreenplay:new {
 	parentQuestType = "recovery",
 	parentQuestName = "corellia_rebel_tier4_4",
 
-	rescueShip = "spynet_spy_tier4",
-	rescueArrivalDelay = 5,
-
-	rescuePoints = {
-		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_1", zoneName = "space_endor", x = -961, z = -5548, y = 513, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_2", zoneName = "space_endor", x = -1637, z = -5535, y = 354, escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_3", zoneName = "space_endor", x = -2330, z = -5523, y = 191, escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_4", zoneName = "space_endor", x = -3110, z = -5509, y = 7, escortNumber = 4, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_5", zoneName = "space_endor", x = -3915, z = -5494, y = -182, escortNumber = 5, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_6", zoneName = "space_endor", x = -4794, z = -5884, y = -52, escortNumber = 6, radius = 250},
+	-- SWG rescue/corellia_rebel_tier4_4_b.tab
+	recoveryPath = {
+		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_1", x = -961, z = -5548, y = 513},
+		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_2", x = -1637, z = -5535, y = 354},
+		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_3", x = -2330, z = -5523, y = 191},
+		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_4", x = -3110, z = -5509, y = 7},
+		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_5", x = -3915, z = -5494, y = -182},
+		{patrolPointName = "corellia_rebel_tier4_4_b_rescue_6", x = -4794, z = -5884, y = -52},
 	},
 
-	attackDelay = 50,
+	targetShipType = "spynet_spy_tier4",
+	targetArrivalDelay = 5,
 
-	attackShips = {
-		{"imp_tie_advanced_tier4", "imp_tie_aggressor_tier4", "imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
-		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_oppressor_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
-		{"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+	attackShipLists = {
+		{"imp_tie_advanced_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+		{"imp_tie_aggressor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
+		{"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_oppressor_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4"},
 	},
+
+	attackPeriod = 50,
+	attackListType = 1,
+	numResponses = 5,
 }
 
 registerScreenPlay("rescue_corellia_rebel_tier4_4_b", true)

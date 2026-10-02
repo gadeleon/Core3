@@ -1,13 +1,14 @@
 --[[
 	Space Attack Waves (shared mixin)
 
-	Attack wave logic shared by the survival and delivery quest types, ported from SWG-Source
-	survival.java / delivery.java. Not a screenplay: hosts copy the functions in with
+	Attack wave logic shared by survival, delivery, and rescue quest types, ported from SWG-Source
+	survival.java / delivery.java / rescue.java. Not a screenplay: hosts copy the functions in with
 	SpaceAttackWaves:mixInto(Host), called right after the host's class table and before registerScreenPlay.
 
 	Host requirements: className, questZone, questType, questName, attackShipLists, attackPeriod,
 	attackListType, ATTACK_LIST_TYPES, maxActiveWaves, spawnMinDistance, spawnMaxDistance, spawnSpread,
-	squadronMinSize and the methods dataKey, messagePath, isCurrentRun and getRunToken.
+	squadronMinSize and the methods dataKey, messagePath, isCurrentRun and getRunToken. Rescue quests
+	override the three wave hooks (getWaveAnchor, notifyWaveLaunched, notifyWavesCleared).
 ]]
 
 SpaceAttackWaves = {}
@@ -19,6 +20,25 @@ function SpaceAttackWaves:mixInto(class)
 			rawset(class, name, value)
 		end
 	end
+end
+
+-- Hook: the ship the waves spawn in front of and attack. Default is the player's ship. Hosts may override it.
+function SpaceAttackWaves:getWaveAnchor(pPlayer)
+	local pPlayerShip = SceneObject(pPlayer):getRootParent()
+
+	if (pPlayerShip ~= nil and SceneObject(pPlayerShip):isShipObject()) then
+		return pPlayerShip
+	end
+
+	return nil
+end
+
+-- Hook: called after a wave was launched. Hosts may override it.
+function SpaceAttackWaves:notifyWaveLaunched(pPlayer)
+end
+
+-- Hook: called after the last attack ship died. Hosts may override it.
+function SpaceAttackWaves:notifyWavesCleared(pPlayer)
 end
 
 -- Number of waves that still have a live ship
@@ -49,13 +69,15 @@ function SpaceAttackWaves:launchWave(pPlayer, args)
 
 	deleteData(self:dataKey(playerID, "wavePending"))
 
-	local pPlayerShip = SceneObject(pPlayer):getRootParent()
+	local pAnchor = self:getWaveAnchor(pPlayer)
 
-	if (pPlayerShip ~= nil and SceneObject(pPlayerShip):isShipObject() and #self.attackShipLists > 0) then
-		self:spawnWave(pPlayer, pPlayerShip, self:pickList(playerID))
+	if (pAnchor ~= nil and #self.attackShipLists > 0) then
+		self:spawnWave(pPlayer, pAnchor, self:pickList(playerID))
 
 		CreatureObject(pPlayer):sendSystemMessage(self:messagePath("attack_notify"))
 		CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_spawn_wave.cef", "")
+
+		self:notifyWaveLaunched(pPlayer)
 	end
 
 	createEvent(self.attackPeriod * 1000, self.className, "launchWave", pPlayer, args)
@@ -76,11 +98,11 @@ function SpaceAttackWaves:pickList(playerID)
 	return self.attackShipLists[index]
 end
 
-function SpaceAttackWaves:spawnWave(pPlayer, pPlayerShip, shipList)
+function SpaceAttackWaves:spawnWave(pPlayer, pAnchorShip, shipList)
 	local playerID = SceneObject(pPlayer):getObjectID()
 	local waveNumber = readData(self:dataKey(playerID, "waveCount")) + 1
 	local playerFactionHash = SpaceHelpers:getPlayerShipFactionHash(pPlayer)
-	local spawnPoint = ShipObject(pPlayerShip):getSpawnPointInFrontOfShip(self.spawnMinDistance, self.spawnMaxDistance)
+	local spawnPoint = ShipObject(pAnchorShip):getSpawnPointInFrontOfShip(self.spawnMinDistance, self.spawnMaxDistance)
 	local shipIDs = readStringVectorSharedMemory(self:dataKey(playerID, "attackShips"))
 	local pLeader = nil
 	local spawned = 0
@@ -90,7 +112,7 @@ function SpaceAttackWaves:spawnWave(pPlayer, pPlayerShip, shipList)
 	for i = 1, #shipList, 1 do
 		local x = spawnPoint[1] + getRandomNumber(-self.spawnSpread, self.spawnSpread)
 		local y = spawnPoint[3] + getRandomNumber(-self.spawnSpread, self.spawnSpread)
-		local pShipAgent = spawnShipAgent(shipList[i], self.questZone, x, spawnPoint[2], y, pPlayerShip)
+		local pShipAgent = spawnShipAgent(shipList[i], self.questZone, x, spawnPoint[2], y, pAnchorShip)
 
 		if (pShipAgent ~= nil) then
 			local agentID = SceneObject(pShipAgent):getObjectID()
@@ -107,7 +129,7 @@ function SpaceAttackWaves:spawnWave(pPlayer, pPlayerShip, shipList)
 			end
 
 			ShipAiAgent(pShipAgent):addSpaceFactionEnemy(playerFactionHash)
-			ShipAiAgent(pShipAgent):engageShipTarget(pPlayerShip)
+			ShipAiAgent(pShipAgent):engageShipTarget(pAnchorShip)
 
 			CreatureObject(pPlayer):addSpaceMissionObject(agentID, (i == #shipList))
 
@@ -184,6 +206,8 @@ function SpaceAttackWaves:notifyAttackShipDestroyed(pShipAgent, pKillerShip)
 	if (not launching and #readStringVectorSharedMemory(self:dataKey(playerID, "attackShips")) == 0) then
 		CreatureObject(pPlayer):sendSystemMessage(self:messagePath("attack_stopped"))
 		CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_destroyed_wave.cef", "")
+
+		self:notifyWavesCleared(pPlayer)
 	end
 
 	return 1

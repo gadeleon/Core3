@@ -215,6 +215,8 @@ graph.successorsOf(sid, optionSid)  -- successor NPC sids (the last one is the u
 graph.pathTo(fromSid, toSid)        -- option sids to choose to get from one line to another
 ```
 
+`rsf_tier4_data.lua` is the same for RSF tier 4 (Imler): the spec's mission table, screen ids and a `D.rsf{...}` player builder. Fake creatures answer `surrenderSkill(skill)` (drops the skill), so `SpaceHelpers:surrenderPilot` can be driven.
+
 `havoc_tier4_data.lua` and `survival_scenario.lua` (next to the tests, not test files) show how a
 feature keeps its spec-copied constants and a player-state or scenario builder in one place.
 

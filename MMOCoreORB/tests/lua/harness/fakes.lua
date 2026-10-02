@@ -266,6 +266,8 @@ function FakeCreature:getDisplayedName() return self.name end
 function FakeCreature:getPlayerObject() return self.ghost end
 function FakeCreature:isPlayerCreature() return not self.isNpc end
 function FakeCreature:hasSkill(skill) return self.skills[skill] == true end
+-- LuaCreatureObject::surrenderSkill (SpaceHelpers:surrenderPilot): the player loses the skill.
+function FakeCreature:surrenderSkill(skill) self.skills[skill] = nil end
 function FakeCreature:getFaction() return self.faction end
 function FakeCreature:getSpecies() return self.species or 0 end
 function FakeCreature:isNeutralPilot() return self.pilot == "neutral" end

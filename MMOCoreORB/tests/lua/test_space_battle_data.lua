@@ -155,11 +155,16 @@ TestSpaceBattleDataInvariants = {}
 function TestSpaceBattleDataInvariants:setUp() H.reset() end
 
 -- I-2
-function TestSpaceBattleDataInvariants:test_there_are_exactly_the_thirteen_battle_quests()
+function TestSpaceBattleDataInvariants:test_there_are_exactly_the_sixteen_battle_quests()
 	local expected = {}
 
 	for _, name in ipairs(B.NAMES) do
 		expected[#expected + 1] = B.global(name)
+	end
+
+	-- RSF tier 4 (rsf-tier4) adds three battle quests; their data is tested in test_rsf_tier4_quest_data.lua.
+	for _, extra in ipairs({ "4a", "4c_lose", "4c_win" }) do
+		expected[#expected + 1] = B.global("naboo_privateer_tier4_" .. extra)
 	end
 
 	table.sort(expected)

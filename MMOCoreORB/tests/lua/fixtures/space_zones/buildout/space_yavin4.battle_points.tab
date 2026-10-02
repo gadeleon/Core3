@@ -1,3 +1,5 @@
 strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
 s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.042977	-0.994331	0.097255	0.999064	0.042300	-0.009016	5926.41	1988.38	-4590.83	nav_name|4|naboo_privateer_tier4_leg_4_space_battle_one|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.086801	-0.794982	0.600391	0.301881	-0.595319	-0.744622	-4578.94	1604.99	-3839.01	nav_name|4|naboo_privateer_tier4_leg_4_space_battle_two|$|	script.space.quest_logic.quest_nav_point
 object/tangible/space/content_infrastructure/quest_nav_point.iff	0.573406	0.818923	0.023902	0.712721	-0.484232	-0.507492	4546.12	-1172.07	-1680.75	nav_name|4|rebel_tier3_1_d_space_battle|$|	script.space.quest_logic.quest_nav_point

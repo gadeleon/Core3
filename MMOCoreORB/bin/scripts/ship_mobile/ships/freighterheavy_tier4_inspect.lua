@@ -30,6 +30,8 @@ freighterheavy_tier4_inspect = ShipAgent:new {
 	conversationTemplate = "",
 	conversationMobile = "",
 	conversationMessage = "", --Too Far Message
+
+	cargoString = "industrial_cargo",
 }
 
 ShipAgentTemplates:addShipAgentTemplate(freighterheavy_tier4_inspect, "freighterheavy_tier4_inspect")

@@ -65,6 +65,7 @@ includeFile("conversations/space/neutral/corsec_squadron/turoldine_convo.lua")
 includeFile("conversations/space/neutral/rsf_squadron/dinge_convo.lua")
 includeFile("conversations/space/neutral/rsf_squadron/kaydine_convo.lua")
 includeFile("conversations/space/neutral/rsf_squadron/dulios_convo.lua")
+includeFile("conversations/space/neutral/rsf_squadron/imler_convo.lua")
 
 -- Rebel Pilot
 

@@ -127,8 +127,8 @@ TestRescueDutyDataInvariants = {}
 function TestRescueDutyDataInvariants:setUp() H.reset() end
 
 -- I-2
-function TestRescueDutyDataInvariants:test_there_are_exactly_the_two_duty_rescue_quests()
-	lu.assertEquals(dutyGlobals(), { "rescue_duty_corellia_privateer_tier4_1", "rescue_duty_corellia_rebel_tier4_1" }, "rescue_duty quest globals")
+function TestRescueDutyDataInvariants:test_there_are_exactly_the_three_duty_rescue_quests()
+	lu.assertEquals(dutyGlobals(), { "rescue_duty_corellia_privateer_tier4_1", "rescue_duty_corellia_rebel_tier4_1", "rescue_duty_naboo_privateer_tier4_1" }, "rescue_duty quest globals")
 end
 
 -- I-2

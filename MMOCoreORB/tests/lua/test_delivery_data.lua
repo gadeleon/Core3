@@ -151,12 +151,15 @@ local function deliveryGlobals()
 end
 
 -- I-2
-function TestDeliveryDataInvariants:test_there_are_exactly_the_six_delivery_quests()
+function TestDeliveryDataInvariants:test_there_are_exactly_the_seven_delivery_quests()
 	local expected = {}
 
 	for _, q in ipairs(D.QUESTS) do
 		expected[#expected + 1] = D.global(q[1], q[2])
 	end
+
+	-- RSF tier 4 (rsf-tier4) adds one delivery quest; its data is tested in test_rsf_tier4_quest_data.lua.
+	expected[#expected + 1] = "delivery_naboo_privateer_tier4_3a"
 
 	table.sort(expected)
 

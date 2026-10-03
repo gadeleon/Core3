@@ -831,31 +831,44 @@ end
 -- @param pPlayer pointer to activate quest on
 -- @param questType from tre questlist/spacequest
 -- @param questName
+-- Returns false (and the caller must not start the run) when the quest is already active, a completed
+-- story entry exists, or a duty is requested while a duty mission is in the datapad. A completed duty
+-- entry is cleared and re-activated. Port of space_quest.java _setupQuest; feature space-quest-duty-rules.
 function SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, questType, questName, notifyClient)
 	if (pPlayer == nil) then
-		return
+		return false
 	end
 
 	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
 	if (pGhost == nil) then
-		return
-	end
-
-	local questString = "spacequest/" .. questType .. "/" .. questName
-	local questCRC = getHashCode(questString)
-
-	if (PlayerObject(pGhost):isJournalQuestActive(questCRC)) then
-		return
+		return false
 	end
 
 	local pDatapad = SceneObject(pPlayer):getSlottedObject("datapad")
 
 	if (pDatapad == nil) then
-		return
+		return false
 	end
 
-	local isDutyMission = string.find(questName, "_duty")
+	local questString = "spacequest/" .. questType .. "/" .. questName
+	local questCRC = getHashCode(questString)
+
+	-- The duty marker is in the quest type, as in SWG (space_quest.java:185)
+	local isDutyMission = string.find(questType, "_duty", 1, true) ~= nil
+
+	if (PlayerObject(pGhost):isJournalQuestActive(questCRC)) then
+		return false
+	end
+
+	if (PlayerObject(pGhost):isJournalQuestComplete(questCRC)) then
+		if (not isDutyMission) then
+			return false
+		end
+
+		-- The server never re-activates a completed entry, so repair an old completed duty
+		PlayerObject(pGhost):clearJournalQuest(questCRC, false)
+	end
 
 	if (isDutyMission) then
 		local hasDuty = false
@@ -864,7 +877,7 @@ function SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, questType, questName, no
 			if (not hasDuty) then
 				local pObject = SceneObject(pDatapad):getContainerObject(j - 1)
 
-				if (pObject ~= nil and SceneObject(pObject):isMissionObject() and MissionObject(pObject):isSpaceDutyMission()) then
+				if (pObject ~= nil and SceneObject(pObject):isMissionObject() and LuaMissionObject(pObject):isSpaceDutyMission()) then
 					hasDuty = true
 				end
 			end
@@ -872,7 +885,7 @@ function SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, questType, questName, no
 
 		if (hasDuty) then
 			CreatureObject(pPlayer):sendSystemMessage("@space/quest:duty_already")
-			return
+			return false
 		end
 	end
 
@@ -881,14 +894,14 @@ function SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, questType, questName, no
 
 	if (pMission == nil) then
 		Logger:log("ERROR: Failed to create Space Mission Object for Player: " .. SceneObject(pPlayer):getDisplayedName() .. " ID: " .. SceneObject(pPlayer):getObjectID(), LT_ERROR)
-		return
+		return false
 	end
 
 	local mission = LuaMissionObject(pMission)
 
 	if (mission == nil) then
 		Logger:log("ERROR: nil LuaMissionObject for Player: " .. SceneObject(pPlayer):getDisplayedName() .. " ID: " .. SceneObject(pPlayer):getObjectID(), LT_ERROR)
-		return
+		return false
 	end
 
 	mission:setTypeCRC(getHashCode("space_" .. questType))
@@ -922,6 +935,8 @@ function SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, questType, questName, no
 	CreatureObject(pPlayer):sendSystemMessage(missionMsg:_getObject())
 
 	CreatureObject(pPlayer):playMusicMessage("sound/music_themequest_acc_criminal.snd")
+
+	return PlayerObject(pGhost):isJournalQuestActive(questCRC)
 end
 
 -- @param pPlayer pointer to complete quest on

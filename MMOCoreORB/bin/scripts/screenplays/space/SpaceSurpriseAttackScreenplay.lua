@@ -18,7 +18,9 @@ function SpaceSurpriseAttackScreenplay:startQuest(pPlayer, pNpc)
 	end
 
 	-- Activate Space Quest
-	SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, true)
+	if (not SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, true)) then
+		return
+	end
 
 	-- Create inital observer for player entering Corellia Space
 	if (not hasObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)) then

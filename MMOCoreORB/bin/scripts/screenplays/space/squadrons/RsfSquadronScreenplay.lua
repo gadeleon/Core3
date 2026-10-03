@@ -1147,7 +1147,9 @@ function survival_naboo_privateer_tier3_4c:startQuest(pPlayer, pNpc)
 		pNpc = nil
 	end
 
-	SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, false)
+	if (not SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, false)) then
+		return
+	end
 
 	createEvent(500, self.className, "completeQuest", pPlayer, "true")
 end

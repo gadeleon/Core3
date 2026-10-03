@@ -109,7 +109,7 @@ function TestKaydineConvoTemplate:test_appendix_a_has_46_rows_43_new_2_changed_1
 
 	lu.assertEquals(count, { new = 43, chg = 2, kept = 1 }, "Appendix A rows by status")
 	lu.assertEquals(#sortedKeys(inScopeSids()), 42, "distinct NPC sids in Appendix A")
-	lu.assertEquals(#sortedKeys(D.KEPT), 32, "kept screens")
+	lu.assertEquals(#sortedKeys(D.KEPT), 27, "kept screens")
 	lu.assertEquals(#D.DELETED, 36, "deleted screens")
 end
 
@@ -152,7 +152,7 @@ function TestKaydineConvoTemplate:test_the_static_links_of_the_exception_rows_ar
 		{ "mission1_ready", 1, "mission1_offer" }, { "mission2_ready", 1, "mission2_offer" }, { "mission3_ready", 1, "mission3_offer" },
 		{ "mission1_brief", 1, "mission1_accept" },
 		{ "mission3_reward", 2, "ready_train_pilot" }, { "mission3_reward", 3, "mission3_reward_duty" },
-		{ "mission3_reward_duty", 1, "accept_duty_escort" }, { "mission3_reward_duty", 2, "accept_duty_recovery" }, { "mission3_reward_duty", 3, "accept_duty_destroy1" },
+		{ "mission3_reward_duty", 1, "accept_duty_escort" }, { "mission3_reward_duty", 2, "accept_duty_recovery" }, { "mission3_reward_duty", 3, "accept_duty_destroy" },
 	}
 
 	for _, e in ipairs(expected) do
@@ -192,7 +192,7 @@ function TestKaydineConvoTemplate:test_completed_kaydine_and_finished_tier3_have
 end
 
 -- AC-1, I-7: the gate, duty and training screens equal their definitions at 74247cbede
-function TestKaydineConvoTemplate:test_the_32_kept_screens_equal_their_definitions_at_74247cbede()
+function TestKaydineConvoTemplate:test_the_27_kept_screens_equal_their_definitions_at_74247cbede()
 	local byId = screensById()
 
 	for _, id in ipairs(sortedKeys(D.KEPT)) do
@@ -275,14 +275,13 @@ function TestKaydineConvoConformance:test_every_screen_showing_an_in_scope_line_
 			checked = checked + 1
 
 			local node = GRAPH.nodes[sid]
-			-- accept_duty_destroy1 shows s_bb291959 too (I-2 names it); it is a kept screen without an Appendix A row
-			local row = rows[screen.id] or (screen.id == "accept_duty_destroy1" and { status = "kept", exceptions = {} } or nil)
+			local row = rows[screen.id]
 
 			lu.assertNotNil(row, "screen '" .. screen.id .. "' shows in-scope line " .. sid .. " but is not in Appendix A")
 			lu.assertEquals(screen.stopConversation == "true", node.isEnd, "screen '" .. screen.id .. "' (" .. sid .. "): stopConversation == \"true\" iff the java ends the conversation")
 
-			-- new and changed screens carry exactly the java animation; kept duty screens may omit it (F5)
-			if row.status ~= "kept" and screen.id ~= "accept_duty_destroy1" then
+			-- new and changed screens carry exactly the java animation; kept screens may omit it
+			if row.status ~= "kept" then
 				lu.assertEquals(screen.animation or "", node.animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation")
 			else
 				lu.assertTrue(screen.animation == nil or screen.animation == node.animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation is absent or the java one")
@@ -420,14 +419,12 @@ function TestKaydineHandlerAgreement:test_every_screen_the_handler_returns_or_li
 	lu.assertTrue(found >= 20, "screen literals found in kaydineConvoHandler.lua: " .. found)
 end
 
--- AC-10, I-6: every screen id the handler tests exists, except the known accept_duty_destroy2 (F5)
-function TestKaydineHandlerAgreement:test_every_screen_id_the_handler_tests_exists_except_accept_duty_destroy2()
+-- AC-10, I-6: every screen id the handler tests exists (rsf-tier2-kaydine-duties removed the last exception, accept_duty_destroy2)
+function TestKaydineHandlerAgreement:test_every_screen_id_the_handler_tests_exists()
 	local byId = screensById()
 
 	for id in handlerText():gmatch('screenID == "([%w_]+)"') do
-		if id ~= "accept_duty_destroy2" then
-			lu.assertNotNil(byId[id], "kaydineConvoHandler tests screenID == \"" .. id .. "\", which is not a screen of kaydine_convo_template")
-		end
+		lu.assertNotNil(byId[id], "kaydineConvoHandler tests screenID == \"" .. id .. "\", which is not a screen of kaydine_convo_template")
 	end
 end
 

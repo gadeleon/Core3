@@ -1212,6 +1212,12 @@ function SpaceRecoveryScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)
 	end
 
 	local shipProgress = readData(shipAgentID .. ":" .. self.className .. ":recoveryShipProgress:")
+
+	-- Ignore recovery areas until the ship is captured (progress is written on capture)
+	if (shipProgress <= 0) then
+		return 0
+	end
+
 	deleteData(shipAgentID .. ":" .. self.className .. ":recoveryShipProgress:")
 
 	shipProgress = shipProgress - 1

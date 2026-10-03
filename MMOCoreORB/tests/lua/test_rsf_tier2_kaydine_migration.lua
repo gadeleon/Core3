@@ -215,7 +215,7 @@ for k = 1, 4 do
 		end
 
 		assertLegacyClean(player)
-		lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+		lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 	end
 end
 
@@ -403,7 +403,7 @@ function TestKaydineMigrationRows:test_t9_a_pilot_without_legacy_state_gets_only
 
 	migrate(player)
 
-	snap.status[player.objectID .. MARKER] = "2"
+	snap.status[player.objectID .. MARKER] = "3"
 	lu.assertEquals(M.snapshot(player), snap, "journal, status keys, observers, waypoints, datapad and shared memory (plus the marker)")
 	lu.assertEquals(M.sideEffects(player), before, "messages, music and createEvent calls")
 end
@@ -413,7 +413,7 @@ function TestKaydineMigrationRows:test_t9_a_never_started_pilot_is_offered_missi
 	local player = bare()
 
 	lu.assertEquals(kaydineScreen(player), "mission1_ready", "first screen")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-8 T10: a live new run survives a completed legacy entry of the same position
@@ -500,7 +500,7 @@ for k = 1, 4 do
 			end
 
 			assertShifted(player, set)
-			lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+			lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 			-- the pending screen of mission 2 is its pay screen (mission2_reward): shown, it pays the head once
 			lu.assertEquals(rec.rewards, (k == 2 and mode == "complete") and { HEADS[2] } or {}, "rewardPlayer calls on the first screen")
 			-- a re-grant by the failed screen plays the start music; nothing else makes noise
@@ -553,7 +553,7 @@ function TestKaydineMigrationPositions:test_a_pilot_without_a_marker_gets_both_s
 	assertMission(player, 3, "complete")
 	assertLegacyClean(player)
 	assertShifted(player, set)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-8: old 14 complete with 14:reward unset is the old mission 2 won and unpaid
@@ -680,7 +680,7 @@ local function assertBothMigrated(player, set, regranted)
 	lu.assertEquals(H.getQuestStatus(player, "naboo_privateer_tier3_4a:attempted"), "t3a", "tier3_4a:attempted")
 	lu.assertEquals(H.getQuestStatus(player, "naboo_privateer_tier3_4a:reward"), "t3r", "tier3_4a:reward")
 	lu.assertNil(H.getQuestStatus(player, "naboo_privateer_tier3_4_initial:attempted"), "4_initial:attempted")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-9: a pilot with no marker and legacy state of both tiers: step 1, then step 2, marker "2"
@@ -725,7 +725,7 @@ function TestKaydineMigrationSteps:test_a_pilot_on_marker_1_gets_only_step_2_thr
 	lu.assertEquals(state(player, NEW3), "none", "delivery_no_pickup 3b")
 	assertLegacyClean(player)
 	assertShifted(player, set)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-9: the same through Dulios
@@ -743,12 +743,12 @@ function TestKaydineMigrationSteps:test_a_pilot_on_marker_1_gets_only_step_2_thr
 	lu.assertEquals(log, { "step2" }, "steps run")
 	assertLegacyClean(player)
 	assertShifted(player, set)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
--- AC-9, I-9: marker "2": nothing happens, even with legacy state present
-function TestKaydineMigrationSteps:test_with_the_marker_at_2_migrate_legacy_progress_changes_nothing()
-	local player = bare({ marker = "2" })
+-- AC-9, I-9 (marker "3" since rsf-tier2-kaydine-duties): nothing happens, even with legacy state present
+function TestKaydineMigrationSteps:test_with_the_marker_at_3_migrate_legacy_progress_changes_nothing()
+	local player = bare({ marker = "3" })
 
 	bothTiers(player)
 
@@ -761,9 +761,10 @@ end
 
 -- AC-9, I-9: the number of steps run for each marker
 function TestKaydineMigrationSteps:test_the_number_of_steps_run_follows_the_marker()
-	lu.assertEquals(migrate(bare()), 2, "steps run without a marker")
-	lu.assertEquals(migrate(bare({ marker = "1" })), 1, "steps run on marker 1")
-	lu.assertEquals(migrate(bare({ marker = "2" })), 0, "steps run on marker 2")
+	lu.assertEquals(migrate(bare()), 3, "steps run without a marker")
+	lu.assertEquals(migrate(bare({ marker = "1" })), 2, "steps run on marker 1")
+	lu.assertEquals(migrate(bare({ marker = "2" })), 1, "steps run on marker 2")
+	lu.assertEquals(migrate(bare({ marker = "3" })), 0, "steps run on marker 3")
 end
 
 -- A slice of the state that belongs to tier 3 (journal states, status keys, leftovers of both the legacy and the new names)
@@ -963,7 +964,7 @@ function TestKaydineMigrationIdempotence:test_a_second_migrate_legacy_progress_c
 	lu.assertEquals(migrate(player), 0, "steps run the second time")
 	lu.assertEquals(M.snapshot(player), snap, "state after the second run")
 	lu.assertEquals(M.sideEffects(player), before, "messages, music and createEvent calls")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-9, I-9, R-3: step 2 is not idempotent by itself; the marker is what keeps 14 from shifting twice
@@ -986,7 +987,7 @@ function TestKaydineMigrationIdempotence:test_a_second_pilot_is_migrated_after_t
 	M.finish(first, "escort", "naboo_privateer_14")
 	M.finish(second, "escort", "naboo_privateer_14")
 	migrate(first)
-	lu.assertEquals(migrate(second), 2, "steps run for the second pilot")
+	lu.assertEquals(migrate(second), 3, "steps run for the second pilot")
 	lu.assertEquals(state(second, NEW[2][1]), "complete", "destroy 13")
 end
 
@@ -1044,7 +1045,7 @@ function TestKaydineMigrationPlacement:test_it_runs_for_a_player_who_gets_the_no
 	H.Engine.config.jtlEnabled = true
 	lu.assertEquals(state(player, NEW[2][1]), "complete", "destroy 13")
 	assertLegacyClean(player)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-9: before the squadron check
@@ -1056,7 +1057,7 @@ function TestKaydineMigrationPlacement:test_it_runs_for_a_pilot_of_another_squad
 	lu.assertEquals(kaydineScreen(player), "pilot_not_rsf", "first screen")
 	lu.assertEquals(state(player, NEW[2][1]), "complete", "destroy 13")
 	assertLegacyClean(player)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- The nil check stays first: no player, no npc or no template means no screen and no migration

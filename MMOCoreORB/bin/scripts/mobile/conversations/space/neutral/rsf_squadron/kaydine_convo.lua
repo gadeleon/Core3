@@ -73,54 +73,58 @@ completed_kaydine = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(completed_kaydine);
 
--- Here for work (default greeting)
+-- Here for work (default greeting, naboo_privateer_trainer_2.java:4332-4369)
 here_for_work = ConvoScreen:new {
 	id = "here_for_work",
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_c5fcc7f5", -- Greetings, Captain %TU! Are you ready to take my place on the duty roster?
 	stopConversation = "false",
+	animation = "salute1",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_6114e8b7", "duty_options"}, -- I'm ready for duty
-		{"@conversation/naboo_privateer_trainer_2:s_45d20070", "ready_train_pilot"}, -- I need training
+		{"@conversation/naboo_privateer_trainer_2:s_4a1d2431", "duty_options"}, -- I'm ready for duty
 	}
 }
 kaydine_convo_template:addScreen(here_for_work);
 
--- Duty mission options
+-- Duty mission options (naboo_privateer_trainer_2.java:2099-2158)
 duty_options = ConvoScreen:new {
 	id = "duty_options",
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_63053557", -- Good! What duty element do you want to participate in today?
 	stopConversation = "false",
+	animation = "explain",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy1"}, -- Destroy Ay'Nat Legion pirates in this system.
 		{"@conversation/naboo_privateer_trainer_2:s_9b73da8", "accept_duty_escort"}, -- Protect the Royal Kylantha cargo.
 		{"@conversation/naboo_privateer_trainer_2:s_30297e22", "accept_duty_recovery"}, -- Recover ships stolen by the Ay'Nat Legion.
+		{"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy"}, -- Destroy Ay'Nat Legion pirates in this system.
 	}
 }
 kaydine_convo_template:addScreen(duty_options);
 
-accept_duty_destroy1 = ConvoScreen:new {
-	id = "accept_duty_destroy1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_bb291959", -- Excellent! Be careful up there! Those Ay'Nat outlaws are deadly enemies!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(accept_duty_destroy1);
-
 accept_duty_escort = ConvoScreen:new {
 	id = "accept_duty_escort",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2e7b17f3", -- It's very likely you'll fall under attack from Ay'Nat Legion pirates. Be careful...
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_b104c183", -- A fine choice, my friend. I will add you to the Queen's duty roster. Good luck up there! (naboo_privateer_trainer_2.java:2162-2172)
 	stopConversation = "true",
+	animation = "salute1",
 	options = {}
 }
 kaydine_convo_template:addScreen(accept_duty_escort);
 
 accept_duty_recovery = ConvoScreen:new {
 	id = "accept_duty_recovery",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a0072111", -- Hm. A grim job if there ever was one. I respect your courage. Good luck!
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a91b70fb", -- Those Ay'Nat are the worst! You bet! I'll be updating the duty roster with your pilot info presently. Good luck! (naboo_privateer_trainer_2.java:2174-2184)
 	stopConversation = "true",
+	animation = "salute1",
 	options = {}
 }
 kaydine_convo_template:addScreen(accept_duty_recovery);
+
+accept_duty_destroy = ConvoScreen:new {
+	id = "accept_duty_destroy",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a0072111", -- Hm. A grim job if there ever was one. I respect your courage. Good luck! (naboo_privateer_trainer_2.java:2186-2196)
+	stopConversation = "true",
+	animation = "salute1",
+	options = {}
+}
+kaydine_convo_template:addScreen(accept_duty_destroy);
 
 -- Training screen (options added dynamically)
 ready_train_pilot = ConvoScreen:new {
@@ -669,7 +673,7 @@ mission3_reward_duty = ConvoScreen:new {
 	options = {
 		{"@conversation/naboo_privateer_trainer_2:s_9b73da8", "accept_duty_escort"},
 		{"@conversation/naboo_privateer_trainer_2:s_30297e22", "accept_duty_recovery"},
-		{"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy1"},
+		{"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy"},
 	}
 }
 kaydine_convo_template:addScreen(mission3_reward_duty);

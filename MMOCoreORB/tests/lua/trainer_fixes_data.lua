@@ -136,12 +136,13 @@ T.TRAINERS.kaydine = {
 		starts("+mission3_accept", "+mission3_failed"),
 		starts("+mission4_accept", "+mission4_failed"),
 	},
-	-- Migration is already done for these pilots (marker "2" = both steps ran): without it the status keys the builder seeds
-	-- (the new 14: and 15: names) would be read as legacy keys and moved. The migration tests set the marker themselves.
+	-- Migration is already done for these pilots (marker "3" = all three steps ran): without it the status keys the builder seeds
+	-- (the new 14: and 15: names) would be read as legacy keys and moved, and step 3 would purge the legacy duties.
+	-- The migration tests set the marker themselves.
 	player = function(n)
 		return {
 			pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 2, skills = { "pilot_neutral_starships_02" },
-			questStatus = { ["RsfSquadronScreenplay:legacyVersion"] = "2" },
+			questStatus = { ["RsfSquadronScreenplay:legacyVersion"] = "3" },
 		}
 	end,
 }

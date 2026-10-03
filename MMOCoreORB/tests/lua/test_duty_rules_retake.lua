@@ -212,9 +212,9 @@ function TestRecoveryDutyCompleteQuest:test_complete_quest_for_a_missing_player_
 	lu.assertNil(self.q:completeQuest(nil, "true"), "result")
 end
 
--- AC-5 (D-5): the destroy-based recovery duties keep the destroy duty ending
-function TestRecoveryDutyCompleteQuest:test_the_twelve_recovery_duties_are_not_changed_to_clear_their_entry()
-	for _, g in ipairs({ "recovery_duty_corellia_privateer_12", "recovery_duty_naboo_privateer_12" }) do
+-- AC-5 (D-5): the destroy-based recovery duty keeps the destroy duty ending
+function TestRecoveryDutyCompleteQuest:test_the_destroy_based_recovery_duty_is_not_changed_to_clear_its_entry()
+	for _, g in ipairs({ "recovery_duty_corellia_privateer_12" }) do
 		local q = H.expectGlobal(g, "recovery duty quest table")
 
 		lu.assertEquals(rawget(q, "completeQuest"), nil, g .. ": no own completeQuest")
@@ -418,9 +418,9 @@ function TestDutyRetake:test_every_recovery_duty_starts_again_after_its_end()
 	lu.assertEquals(problems, {}, "recovery duties that could not be re-taken after their end")
 end
 
--- AC-6: the two recovery duties on the destroy duty base
-function TestDutyRetake:test_the_destroy_based_recovery_duties_start_again_after_the_final_boss()
-	local problems = DR.collect(entries({ "recovery_duty_corellia_privateer_12", "recovery_duty_naboo_privateer_12" }), function(entry)
+-- AC-6: the recovery duty on the destroy duty base (RSF's naboo_privateer_12 was deleted in rsf-tier2-kaydine-duties; CorSec's stays)
+function TestDutyRetake:test_the_destroy_based_recovery_duty_starts_again_after_the_final_boss()
+	local problems = DR.collect(entries({ "recovery_duty_corellia_privateer_12" }), function(entry)
 		local q = entry.quest
 		local p = DR.player(q)
 

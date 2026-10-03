@@ -22,7 +22,7 @@ local LEGACY = {
 	{ "assassinate", "naboo_privateer_tier2_4a" },
 }
 
-local DUTIES = { "destroy_duty_naboo_privateer_9", "escort_duty_naboo_privateer_10", "destroy_duty_naboo_privateer_11", "recovery_duty_naboo_privateer_12" }
+local DUTIES = { "escort_duty_naboo_privateer_9", "recovery_duty_naboo_privateer_10", "destroy_duty_naboo_privateer_11" }
 
 -- The :attempted / :reward keys of the four new heads
 local HEAD_KEYS = {}
@@ -187,12 +187,12 @@ end
 
 -- AC-10: the same state through the squadron surrender
 function TestKaydineSurrender:test_surrender_pilot_clears_the_same_state_for_an_rsf_pilot_and_keeps_the_marker()
-	local player = veteranWithLegacyState("2")
+	local player = veteranWithLegacyState("3")
 
 	player.ghost:setSquadronType(RSF_SQUADRON)
 	SpaceHelpers:surrenderPilot(player)
 	assertEverythingClean(player, "surrenderPilot: ")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 end
 
 -- AC-10: a rejoined pilot is not paid and is offered mission 1; a conversation does not bring any legacy state back

@@ -360,9 +360,9 @@ TestRsfTier3Identity = {}
 
 function TestRsfTier3Identity:setUp() H.reset() end
 
--- I-1 (rsf-tier3-renames): 163 minus the three deleted tables plus four new ones.
+-- I-1 (rsf-tier3-renames): 163 minus the three deleted tables plus four new ones; rsf-tier2-kaydine-duties: minus three deleted duties, plus two new ones.
 function TestRsfTier3Identity:test_the_set_of_space_quest_globals_has_the_f2_count()
-	lu.assertEquals(#H.questGlobals(), 166, "number of space quest globals (CorSec, Havoc and RSF loaded)")
+	lu.assertEquals(#H.questGlobals(), 165, "number of space quest globals (CorSec, Havoc and RSF loaded)")
 end
 
 -- I-1

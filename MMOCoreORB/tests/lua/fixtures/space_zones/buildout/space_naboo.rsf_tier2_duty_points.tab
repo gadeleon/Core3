@@ -1,0 +1,11 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.759315	0.457336	-0.462908	0.343689	0.885917	0.311495	480.17	-2264.46	-3435.49	nav_name|4|privateer_tier2_recovery_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.185309	0.935172	0.301850	0.124931	0.282258	-0.951169	-2063.57	-2771.32	-1840.32	nav_name|4|privateer_tier2_recovery_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.700591	0.627040	0.340578	0.703003	-0.688340	-0.178816	-474.73	-3438.89	-3861.02	nav_name|4|privateer_tier2_recovery_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.262168	0.958706	0.110227	0.939091	-0.279755	0.199614	2010.57	415.78	-2523.28	nav_name|4|privateer_tier2_escort_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.218179	0.970609	0.101569	-0.891797	-0.240561	0.383182	2069.98	1466.90	-3259.50	nav_name|4|privateer_tier2_escort_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.361834	0.905840	0.220295	-0.931555	0.360402	0.048127	-1933.22	-3233.80	808.17	nav_name|4|privateer_tier2_escort_7|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.215529	0.976329	-0.018164	0.059113	-0.031612	-0.997751	-2263.71	-3101.69	86.95	nav_name|4|privateer_tier2_recovery_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.955305	0.136316	0.262317	0.128454	-0.607782	0.783646	646.90	-1687.48	-1161.63	nav_name|4|privateer_tier2_escort_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.038913	0.906969	0.419397	-0.533388	-0.373771	0.758810	-1645.41	1097.57	854.57	nav_name|4|rebel_escort_3|$|	script.space.quest_logic.quest_nav_point

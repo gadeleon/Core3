@@ -1001,21 +1001,6 @@ space_naboo = SpacePatrolPointTable:new {
 	{patrolPointName = "privateer_escort_2", x = 2800, z = -450, y = 3200},
 	{patrolPointName = "privateer_escort_3", x = 2400, z = -400, y = 4000},
 	{patrolPointName = "privateer_escort_4", x = 2000, z = -350, y = 4800},
-	-- RSF Tier 1 Duty: Patrol
-	{patrolPointName = "rsf_duty_patrol_1", x = 752, z = 659, y = -2444},
-	{patrolPointName = "rsf_duty_patrol_2", x = 2031, z = 887, y = -1759},
-	{patrolPointName = "rsf_duty_patrol_3", x = 2466, z = 854, y = -505},
-	-- RSF Tier 2 Duty: Patrol
-	{patrolPointName = "rsf_duty_patrol_4", x = 3500, z = 400, y = -1000},
-	{patrolPointName = "rsf_duty_patrol_5", x = 4000, z = 200, y = 500},
-	{patrolPointName = "rsf_duty_patrol_6", x = 4500, z = -100, y = 2000},
-	-- RSF Tier 2 Duty: Escort
-	{patrolPointName = "rsf_tier2_duty_escort_1", x = 1000, z = 500, y = -3000},
-	{patrolPointName = "rsf_tier2_duty_escort_2", x = 2500, z = 300, y = -1500},
-	{patrolPointName = "rsf_tier2_duty_escort_3", x = 4000, z = 100, y = 500},
-	-- RSF Tier 2: Recovery
-	{patrolPointName = "rsf_recovery_1", x = 2000, z = 300, y = -2500},
-	{patrolPointName = "rsf_recovery_2", x = 3000, z = 500, y = -1500},
 }
 
 SpacePatrolPoints:addSpacePatrolPoints(space_naboo, "space_naboo")

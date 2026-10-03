@@ -38,11 +38,6 @@ local function enterScreen(player, id, npc)
 	local tmpl = H.conversationTemplate(tr.template)
 	local pScreen = LuaConversationTemplate(tmpl):getScreen(id)
 
-	if pScreen == nil and id == "accept_duty_destroy2" then
-		pScreen = LuaConversationTemplate(tmpl):getScreen("accept_duty_destroy1"):cloneScreen()
-		pScreen.id = id
-	end
-
 	lu.assertNotNil(pScreen, "screen '" .. id .. "' is in " .. tr.template)
 	return handler():runScreenHandlers(tmpl, player, npc or H.newNpc({}), 0, pScreen)
 end
@@ -606,29 +601,30 @@ function TestKaydineMission3Reward:test_the_duty_line_offers_the_three_duty_opti
 	lu.assertEquals(optionsOf(transcript[3]), {
 		{ D.PREFIX .. "s_9b73da8", "accept_duty_escort" },
 		{ D.PREFIX .. "s_30297e22", "accept_duty_recovery" },
-		{ D.PREFIX .. "s_c892e540", "accept_duty_destroy1" },
+		{ D.PREFIX .. "s_c892e540", "accept_duty_destroy" },
 	}, "mission3_reward_duty options")
 end
 
--- AC-7: each duty option starts the same duty quest as the same option sid on duty_options does today
+-- AC-5 (rsf-tier2-kaydine-duties): each duty option on the duty line starts one of SWG's duties, as on duty_options
 local DUTY_OPTIONS = {
-	{ "s_c892e540", "accept_duty_destroy1", "destroy_duty_naboo_privateer_9" },
-	{ "s_9b73da8", "accept_duty_escort", "escort_duty_naboo_privateer_10" },
+	{ "s_9b73da8", "accept_duty_escort", "escort_duty_naboo_privateer_9" },
+	{ "s_30297e22", "accept_duty_recovery", "recovery_duty_naboo_privateer_10" },
+	{ "s_c892e540", "accept_duty_destroy", "destroy_duty_naboo_privateer_11" },
 }
 
 for _, d in ipairs(DUTY_OPTIONS) do
 	TestKaydineMission3Reward["test_option_" .. d[1] .. "_on_the_duty_line_starts_" .. d[3] .. "_like_duty_options"] = function()
-		local starts = H.spyOn(_G[d[3]], "startQuest")
+		local starts = H.spyOn(H.expectGlobal(d[3], "Kaydine duty quest table (rsf-tier2-kaydine-duties)"), "startQuest")
 		local player = T.player(tr, 3, { complete = { R14 } })
 		local transcript = T.converse(tr, player, { 0, "s_6114e8b7", d[1] })
 
 		lu.assertEquals(transcript[#transcript].id, d[2], "last screen")
 		lu.assertEquals(#starts, 1, d[3] .. ": startQuest calls")
 
-		-- the same option sid on duty_options (today's duty menu) starts the same quest
+		-- the same option sid on duty_options (the duty menu) starts the same quest
 		H.reset()
 
-		local viaMenu = H.spyOn(_G[d[3]], "startQuest")
+		local viaMenu = H.spyOn(H.expectGlobal(d[3], "Kaydine duty quest table (rsf-tier2-kaydine-duties)"), "startQuest")
 		local menu
 
 		for _, sc in ipairs(H.conversationTemplateTable(tr.template).screens) do
@@ -643,26 +639,7 @@ for _, d in ipairs(DUTY_OPTIONS) do
 
 		lu.assertEquals(link, d[2], "duty_options: link of " .. d[1])
 		enterScreen(T.player(tr, 1, {}), link)
-		lu.assertEquals(#viaMenu, 1, d[3] .. ": startQuest calls through duty_options (today)")
-	end
-end
-
--- AC-7
-function TestKaydineMission3Reward:test_option_s_30297e22_on_the_duty_line_sends_the_recovery_duty_message_like_duty_options()
-	local player = T.player(tr, 3, { complete = { R14 } })
-	local rec = T.spyAllQuests()
-	local before = #H.messageLog(player)
-	local transcript = T.converse(tr, player, { 0, "s_6114e8b7", "s_30297e22" })
-
-	lu.assertEquals(transcript[#transcript].id, "accept_duty_recovery", "last screen")
-
-	local log = H.messageLog(player)
-
-	lu.assertEquals(log[#log].id, "Recovery Duty Missions are not implemented yet!", "last system message")
-	lu.assertEquals(#log, before + 1, "messages sent")
-
-	for _, started in ipairs(rec.starts) do
-		lu.assertNotEquals(started, "destroy_duty_naboo_privateer_9", "no duty quest is started by the recovery option")
+		lu.assertEquals(#viaMenu, 1, d[3] .. ": startQuest calls through duty_options")
 	end
 end
 
@@ -676,7 +653,8 @@ function TestKaydineTierDone:setUp() H.reset() end
 
 -- AC-8
 function TestKaydineTierDone:test_all_four_skills_and_mission_4_won_show_completed_kaydine_and_raise_the_tier_to_3()
-	local player = T.player(tr, 4, { complete = { E15 }, skills = SKILLS_02 })
+	-- rsf-tier2-kaydine-duties D-8: SWG needs the mission 4 reward first (K:169), so this pilot has been paid
+	local player = T.player(tr, 4, { complete = { E15 }, skills = SKILLS_02, questStatus = { ["naboo_privateer_15:reward"] = "1" } })
 	local rec = T.spyRewards()
 
 	lu.assertEquals(player.ghost:getPilotTier(), 2, "setup: pilot tier")
@@ -736,16 +714,16 @@ function TestKaydineNeighbours:test_the_first_screen_of_every_state_uses_the_new
 	end
 end
 
--- AC-9: the duty screens start the same duty globals as at 74247cbede
-function TestKaydineNeighbours:test_the_duty_screens_still_start_their_duty_quests_and_recovery_only_sends_its_message()
-	local cases = { { "accept_duty_destroy1", "destroy_duty_naboo_privateer_9" }, { "accept_duty_escort", "escort_duty_naboo_privateer_10" }, { "accept_duty_destroy2", "destroy_duty_naboo_privateer_11" } }
+-- AC-5 (rsf-tier2-kaydine-duties): the duty screens start SWG's duties
+function TestKaydineNeighbours:test_the_duty_screens_start_their_duty_quests()
+	local cases = { { "accept_duty_escort", "escort_duty_naboo_privateer_9" }, { "accept_duty_recovery", "recovery_duty_naboo_privateer_10" }, { "accept_duty_destroy", "destroy_duty_naboo_privateer_11" } }
 
 	for _, c in ipairs(cases) do
 		H.reset()
 
 		local npc = H.newNpc({})
 		local player = T.player(tr, 1, {})
-		local starts = H.spyOn(_G[c[2]], "startQuest")
+		local starts = H.spyOn(H.expectGlobal(c[2], "Kaydine duty quest table (rsf-tier2-kaydine-duties)"), "startQuest")
 
 		enterScreen(player, c[1], npc)
 		lu.assertEquals(#starts, 1, c[1] .. ": startQuest calls on " .. c[2])

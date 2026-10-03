@@ -4,7 +4,7 @@
 -- Everything below is copied from the spec, not read from kaydine_convo.lua / kaydineConvoHandler.lua, so a wrong
 -- production value makes a test fail instead of agreeing with itself:
 --   D.ROWS     Appendix A, 46 rows (status "new" | "chg" | "kept"), options as {sid, link id}
---   D.KEPT     the 32 screens that stay byte-identical, copied from kaydine_convo.lua at 74247cbede
+--   D.KEPT     the 27 screens that stay byte-identical, copied from kaydine_convo.lua at 74247cbede
 --   D.DELETED  the 36 screens F4 had for the story missions
 --   D.PAYS / D.STARTS  the handler contract (Content contract 2)
 --   D.OFFER_CHAIN      the screens the "ready" option walks through, per mission
@@ -55,7 +55,7 @@ D.ROWS = {
 	{ id = "mission3_complete", status = "new", sid = "s_a0c23472", animation = "", stop = false, options = { {"s_75", "mission3_reward"} }, exceptions = {  } },
 	{ id = "mission3_reward", status = "new", sid = "s_d2ffe31e", animation = "applause_polite", stop = false, options = { {"s_78", "mission3_reward_end"}, {"s_45d20070", "ready_train_pilot"}, {"s_6114e8b7", "mission3_reward_duty"} }, exceptions = { ["s_45d20070"] = "E-3" } },
 	{ id = "mission3_reward_end", status = "new", sid = "s_9248b2ba", animation = "", stop = true, options = {  }, exceptions = {  } },
-	{ id = "mission3_reward_duty", status = "new", sid = "s_7bc9bef7", animation = "rub_chin_thoughtful", stop = false, options = { {"s_9b73da8", "accept_duty_escort"}, {"s_30297e22", "accept_duty_recovery"}, {"s_c892e540", "accept_duty_destroy1"} }, exceptions = { ["s_9b73da8"] = "E-5", ["s_30297e22"] = "E-5", ["s_c892e540"] = "E-5" } }, -- E-5 covers all three links (spec Data mapping)
+	{ id = "mission3_reward_duty", status = "new", sid = "s_7bc9bef7", animation = "rub_chin_thoughtful", stop = false, options = { {"s_9b73da8", "accept_duty_escort"}, {"s_30297e22", "accept_duty_recovery"}, {"s_c892e540", "accept_duty_destroy"} }, exceptions = {  } }, -- rsf-tier2-kaydine-duties: no E-5 exceptions remain
 	{ id = "mission4_complete", status = "new", sid = "s_afe7700f", animation = "salute2", stop = false, options = { {"s_588f56b2", "mission4_reward"} }, exceptions = {  } },
 	{ id = "mission4_reward", status = "new", sid = "s_ae21cb72", animation = "nod_head_once", stop = false, options = { {"s_c261cfae", "mission4_reward_dulios"}, {"s_725573da", "mission4_reward_end"} }, exceptions = {  } },
 	{ id = "mission4_reward_dulios", status = "new", sid = "s_aae78dca", animation = "", stop = true, options = {  }, exceptions = {  } },
@@ -65,18 +65,15 @@ D.ROWS = {
 	{ id = "completed_kaydine_end", status = "new", sid = "s_aa83c988", animation = "", stop = true, options = {  }, exceptions = {  } },
 }
 
--- Content contract 1: the 32 screens kept byte-identical (definitions at 74247cbede)
+-- Content contract 1: the 27 screens kept byte-identical (definitions at 74247cbede; the five duty screens here_for_work, duty_options,
+-- accept_duty_destroy1, accept_duty_escort and accept_duty_recovery left this list in rsf-tier2-kaydine-duties, see
+-- test_rsf_tier2_kaydine_duties_dialogue.lua)
 D.KEPT = {
 	["not_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_3db3463f", stopConversation = "true", options = {  } },
 	["pilot_not_rsf"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_7ac0f961", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_2:s_c1ff5062", "non_rsf_missions"} } },
 	["non_rsf_missions"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_7458c693", stopConversation = "true", options = {  } },
 	["not_ready_tier2"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_eac39719", stopConversation = "true", options = {  } },
 	["on_mission"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_e95a95a5", stopConversation = "true", options = {  } },
-	["here_for_work"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_c5fcc7f5", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_2:s_6114e8b7", "duty_options"}, {"@conversation/naboo_privateer_trainer_2:s_45d20070", "ready_train_pilot"} } },
-	["duty_options"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_63053557", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy1"}, {"@conversation/naboo_privateer_trainer_2:s_9b73da8", "accept_duty_escort"}, {"@conversation/naboo_privateer_trainer_2:s_30297e22", "accept_duty_recovery"} } },
-	["accept_duty_destroy1"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_bb291959", stopConversation = "true", options = {  } },
-	["accept_duty_escort"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_2e7b17f3", stopConversation = "true", options = {  } },
-	["accept_duty_recovery"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_a0072111", stopConversation = "true", options = {  } },
 	["ready_train_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8a84109d", stopConversation = "false", options = {  } },
 	["not_ready"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_943f6352", stopConversation = "true", options = {  } },
 	["initial_train_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", stopConversation = "true", options = {  } },

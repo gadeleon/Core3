@@ -459,8 +459,8 @@ function TestRsfTier2KaydineIdentity:test_the_six_new_tables_are_registered_as_s
 end
 
 -- AC-5, I-1
-function TestRsfTier2KaydineIdentity:test_there_are_166_space_quest_globals()
-	lu.assertEquals(#H.questGlobals(), 166, "space quest globals (CorSec, Havoc and RSF loaded)")
+function TestRsfTier2KaydineIdentity:test_there_are_165_space_quest_globals()
+	lu.assertEquals(#H.questGlobals(), 165, "space quest globals (CorSec, Havoc and RSF loaded)")
 end
 
 -- AC-5, I-2
@@ -534,27 +534,29 @@ function TestRsfTier2KaydineConstants:test_the_tier_2_quest_strings_equal_the_co
 	lu.assertEquals(R.TIER2_QUEST_STRING_4, { type = "escort", name = "naboo_privateer_15" }, "TIER2_QUEST_STRING_4")
 end
 
--- AC-5, I-11
-function TestRsfTier2KaydineConstants:test_the_duty_strings_and_globals_are_untouched()
+-- AC-5, I-11; rsf-tier2-kaydine-duties AC-2: the duty strings follow SWG's menu order, escort, recovery, destroy (D-11)
+function TestRsfTier2KaydineConstants:test_the_duty_strings_follow_the_swg_menu_order_and_there_is_no_fourth()
 	local R = RsfSquadronScreenplay
 
-	lu.assertEquals(R.TIER2_QUEST_STRING_DUTY_1, { type = "destroy_duty", name = "naboo_privateer_9" }, "TIER2_QUEST_STRING_DUTY_1")
-	lu.assertEquals(R.TIER2_QUEST_STRING_DUTY_2, { type = "escort_duty", name = "naboo_privateer_10" }, "TIER2_QUEST_STRING_DUTY_2")
+	lu.assertEquals(R.TIER2_QUEST_STRING_DUTY_1, { type = "escort_duty", name = "naboo_privateer_9" }, "TIER2_QUEST_STRING_DUTY_1")
+	lu.assertEquals(R.TIER2_QUEST_STRING_DUTY_2, { type = "recovery_duty", name = "naboo_privateer_10" }, "TIER2_QUEST_STRING_DUTY_2")
 	lu.assertEquals(R.TIER2_QUEST_STRING_DUTY_3, { type = "destroy_duty", name = "naboo_privateer_11" }, "TIER2_QUEST_STRING_DUTY_3")
-	lu.assertEquals(R.TIER2_QUEST_STRING_DUTY_4, { type = "recovery_duty", name = "naboo_privateer_12" }, "TIER2_QUEST_STRING_DUTY_4")
+	lu.assertNil(R.TIER2_QUEST_STRING_DUTY_4, "TIER2_QUEST_STRING_DUTY_4 no longer exists")
 
-	for _, name in ipairs({ "destroy_duty_naboo_privateer_9", "escort_duty_naboo_privateer_10", "destroy_duty_naboo_privateer_11", "recovery_duty_naboo_privateer_12" }) do
-		lu.assertNotNil(H.registered(name), name .. ": still registered")
+	for _, name in ipairs({ "escort_duty_naboo_privateer_9", "recovery_duty_naboo_privateer_10", "destroy_duty_naboo_privateer_11" }) do
+		lu.assertNotNil(H.registered(name), name .. ": registered")
 	end
 end
 
--- AC-5, I-11: the duty points are F5's and stay
-function TestRsfTier2KaydineConstants:test_the_duty_and_tier_1_points_stay_in_the_naboo_file()
+-- AC-5, I-11; rsf-tier2-kaydine-duties AC-3: privateer_escort_4 stays, the 11 invented duty points are gone (the rest is in test_rsf_tier2_kaydine_duties_data.lua)
+function TestRsfTier2KaydineConstants:test_the_tier_1_escort_points_stay_and_the_invented_duty_points_are_gone()
 	local points = H.patrolPoints("space_naboo")
 
-	for _, name in ipairs({ "privateer_escort_4", "rsf_duty_patrol_1", "rsf_duty_patrol_4", "rsf_duty_patrol_5", "rsf_duty_patrol_6",
+	lu.assertNotNil(points.privateer_escort_4, "space_naboo: privateer_escort_4 must stay")
+
+	for _, name in ipairs({ "rsf_duty_patrol_1", "rsf_duty_patrol_2", "rsf_duty_patrol_3", "rsf_duty_patrol_4", "rsf_duty_patrol_5", "rsf_duty_patrol_6",
 		"rsf_tier2_duty_escort_1", "rsf_tier2_duty_escort_2", "rsf_tier2_duty_escort_3", "rsf_recovery_1", "rsf_recovery_2" }) do
-		lu.assertNotNil(points[name], "space_naboo: " .. name .. " must stay")
+		lu.assertNil(points[name], "space_naboo: " .. name .. " is still defined")
 	end
 end
 
@@ -582,12 +584,12 @@ function TestRsfTier2KaydineConstants:test_the_legacy_tier_2_data_equals_the_con
 		{ old = "naboo_privateer_tier2_4a:attempted", new = "naboo_privateer_15:attempted" },
 		{ old = "naboo_privateer_tier2_4a:reward", new = "naboo_privateer_15:reward" },
 	}, "LEGACY_TIER2_STATUS")
-	lu.assertEquals(R.LEGACY_MIGRATION_STEPS, { "migrateLegacyTier3", "migrateLegacyTier2" }, "LEGACY_MIGRATION_STEPS")
+	lu.assertEquals(R.LEGACY_MIGRATION_STEPS, { "migrateLegacyTier3", "migrateLegacyTier2", "migrateLegacyTier2Duties" }, "LEGACY_MIGRATION_STEPS")
 end
 
 -- AC-5, I-12: a misspelt step name would raise an error in the middle of a conversation
 function TestRsfTier2KaydineConstants:test_every_migration_step_name_resolves_to_a_function_on_the_screenplay()
-	lu.assertTrue(#RsfSquadronScreenplay.LEGACY_MIGRATION_STEPS >= 2, "at least the two steps")
+	lu.assertTrue(#RsfSquadronScreenplay.LEGACY_MIGRATION_STEPS >= 3, "at least the three steps")
 
 	for k, name in ipairs(RsfSquadronScreenplay.LEGACY_MIGRATION_STEPS) do
 		lu.assertEquals(type(RsfSquadronScreenplay[name]), "function", "LEGACY_MIGRATION_STEPS[" .. k .. "] = '" .. tostring(name) .. "' must be a function on RsfSquadronScreenplay")
@@ -891,13 +893,13 @@ function TestRsfTier2KaydineInventedPointsGone:test_no_loaded_quest_global_conta
 end
 
 -- AC-5: the file keeps its neighbours and its registration call, and loses the two comment lines
-function TestRsfTier2KaydineInventedPointsGone:test_the_naboo_point_file_loses_the_two_comments_and_keeps_its_neighbours()
+function TestRsfTier2KaydineInventedPointsGone:test_the_naboo_point_file_loses_the_two_comments_and_keeps_its_registration()
 	local text = readFile(H.SCRIPTS .. "ship_mobile/patrol_points/space_naboo.lua")
 
 	lu.assertNil(text:find("RSF Tier 2 Mission 1: Escort", 1, true), "comment 'RSF Tier 2 Mission 1: Escort' is gone")
 	lu.assertNil(text:find("RSF Tier 2 Mission 2: Assassinate", 1, true), "comment 'RSF Tier 2 Mission 2: Assassinate' is gone")
-	lu.assertNotNil(text:find("-- RSF Tier 1 Duty: Patrol", 1, true), "the comment of the next block stays")
+	lu.assertNil(text:find("-- RSF Tier 1 Duty: Patrol", 1, true), "the comment of the orphaned duty block is gone (rsf-tier2-kaydine-duties)")
 	lu.assertNotNil(text:find("SpacePatrolPoints:addSpacePatrolPoints(space_naboo, \"space_naboo\")", 1, true), "addSpacePatrolPoints call")
 	lu.assertNotNil(H.patrolPoints("space_naboo").privateer_escort_4, "privateer_escort_4 stays")
-	lu.assertNotNil(H.patrolPoints("space_naboo").rsf_duty_patrol_1, "rsf_duty_patrol_1 stays")
+	lu.assertNil(H.patrolPoints("space_naboo").rsf_duty_patrol_1, "rsf_duty_patrol_1 is gone (rsf-tier2-kaydine-duties)")
 end

@@ -60,15 +60,9 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name)
 	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name)
 
-	local destroyDuty1Started = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.name)
-	local escortDutyStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.name)
-	local destroyDuty2Started = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.name)
-	local recoveryDutyStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_4.name)
-
-	local destroyDuty1Complete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.name)
-	local escortDutyComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.name)
-	local destroyDuty2Complete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.name)
-	local recoveryDutyComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_4.name)
+	local escortDutyActive = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.name)
+	local recoveryDutyActive = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.name)
+	local destroyDutyActive = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.name)
 
 	local completedTier2 = SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 2)
 
@@ -77,13 +71,12 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	--]]
 
 	-- Player has an active mission from Captain Kaydine
-	if (questOneStarted or questTwoStarted or questThreeStarted or questFourStarted or
-		(destroyDuty1Started and not destroyDuty1Complete) or (escortDutyStarted and not escortDutyComplete) or (destroyDuty2Started and not destroyDuty2Complete) or (recoveryDutyStarted and not recoveryDutyComplete)) then
+	if (questOneStarted or questTwoStarted or questThreeStarted or questFourStarted or escortDutyActive or recoveryDutyActive or destroyDutyActive) then
 
 		return convoTemplate:getScreen("on_mission")
 
 	-- Check if players have all the tier2 skill boxes and finished the last mission, then send them to next trainer.
-	elseif (questFourComplete and completedTier2) then
+	elseif (questFourComplete and completedTier2 and getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward") == "1") then
 		-- Player has all the skill boxes, they should be tier 3. Increment if not proper
 		if (ghost:getPilotTier() <= 2) then
 			ghost:incrementPilotTier()
@@ -221,15 +214,13 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 
 		return pClonedScreen
 
-	-- Duty Missions
-	elseif (screenID == "accept_duty_destroy1") then
-		destroy_duty_naboo_privateer_9:startQuest(pPlayer, pNpc)
+	-- Duty Missions (naboo_privateer_trainer_2.java:248-259, branch 55)
 	elseif (screenID == "accept_duty_escort") then
-		escort_duty_naboo_privateer_10:startQuest(pPlayer, pNpc)
-	elseif (screenID == "accept_duty_destroy2") then
-		destroy_duty_naboo_privateer_11:startQuest(pPlayer, pNpc)
+		escort_duty_naboo_privateer_9:startQuest(pPlayer, pNpc)
 	elseif (screenID == "accept_duty_recovery") then
-		CreatureObject(pPlayer):sendSystemMessage("Recovery Duty Missions are not implemented yet!")
+		recovery_duty_naboo_privateer_10:startQuest(pPlayer, pNpc)
+	elseif (screenID == "accept_duty_destroy") then
+		destroy_duty_naboo_privateer_11:startQuest(pPlayer, pNpc)
 
 	-- Mission Rewards
 	elseif (screenID == "mission4_reward") then

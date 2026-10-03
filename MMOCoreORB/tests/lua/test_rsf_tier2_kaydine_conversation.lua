@@ -20,7 +20,8 @@ local tr = T.TRAINERS.kaydine
 local A1, A2, A3 = "assassinate_naboo_privateer_tier2_1a", "assassinate_naboo_privateer_tier2_1b", "assassinate_naboo_privateer_tier2_1c"
 local D13, R14, E15 = "destroy_naboo_privateer_13", "recovery_naboo_privateer_14", "escort_naboo_privateer_15"
 local CHAIN1 = { A1, A2, A3 }
-local DUTIES = { "destroy_duty_naboo_privateer_9", "escort_duty_naboo_privateer_10", "destroy_duty_naboo_privateer_11", "recovery_duty_naboo_privateer_12" }
+-- rsf-tier2-kaydine-duties: SWG's three duties, in the order of the duty menu (escort, recovery, destroy)
+local DUTIES = { "escort_duty_naboo_privateer_9", "recovery_duty_naboo_privateer_10", "destroy_duty_naboo_privateer_11" }
 local ALL_SIX = { A1, A2, A3, D13, R14, E15 }
 local SKILLS_02 = { "pilot_neutral_droid_02", "pilot_neutral_procedures_02", "pilot_neutral_starships_02", "pilot_neutral_weapons_02" }
 
@@ -42,13 +43,6 @@ local function handler() return H.expectGlobal(H.conversationTemplateTable(tr.te
 local function enterScreen(player, id, npc)
 	local tmpl = H.conversationTemplate(tr.template)
 	local pScreen = LuaConversationTemplate(tmpl):getScreen(id)
-
-	-- The handler has a branch for accept_duty_destroy2, but the template has no such screen (not reachable in game): run the branch
-	-- on a copy of accept_duty_destroy1 that carries that id
-	if pScreen == nil and id == "accept_duty_destroy2" then
-		pScreen = LuaConversationTemplate(tmpl):getScreen("accept_duty_destroy1"):cloneScreen()
-		pScreen.id = id
-	end
 
 	lu.assertNotNil(pScreen, "screen '" .. id .. "' is in " .. tr.template)
 	return handler():runScreenHandlers(tmpl, player, npc or H.newNpc({}), 0, pScreen)
@@ -286,16 +280,17 @@ function TestKaydineRouting:test_each_failed_screen_reads_the_attempted_key_of_i
 	end
 end
 
--- AC-6 C8
-function TestKaydineRouting:test_completed_kaydine_wins_over_the_reward_screen_and_raises_the_tier_to_3()
+-- AC-6 C8, AC-9 (rsf-tier2-kaydine-duties D-8, reverses the F4 test): SWG's hasAllTierTwoSkills needs the mission 4 reward first, so an
+-- unpaid mission 4 shows mission4_complete even with all four skills, and the tier is not raised by routing
+function TestKaydineRouting:test_an_unpaid_mission_4_with_all_four_skills_shows_mission4_complete_not_completed_kaydine()
 	local player = pilot(4, { complete = { E15 }, skills = SKILLS_02 })
 	local rec = T.spyRewards()
 
 	lu.assertEquals(player.ghost:getPilotTier(), 2, "setup: pilot tier")
 	lu.assertNil(H.getQuestStatus(player, "naboo_privateer_15:reward"), "setup: 15:reward unset")
-	lu.assertEquals(firstScreen(player), "completed_kaydine", "first screen")
+	lu.assertEquals(firstScreen(player), "mission4_complete", "first screen")
 	lu.assertEquals(rec.rewards, {}, "rewardPlayer calls")
-	lu.assertEquals(player.ghost:getPilotTier(), 3, "pilot tier after the conversation")
+	lu.assertEquals(player.ghost:getPilotTier(), 2, "pilot tier after the conversation")
 end
 
 -- AC-6 C8: the win is escort 15, not an earlier mission
@@ -476,12 +471,12 @@ function TestKaydineStarts:test_mission1_failed_while_1b_is_active_starts_nothin
 	lu.assertEquals({ T.state(player, A1), T.state(player, A2), T.state(player, A3) }, { "complete", "active", "none" }, "1a, 1b, 1c")
 end
 
--- AC-7, I-11: the duty branches are untouched
-function TestKaydineStarts:test_the_duty_screens_still_start_their_duty_quests()
+-- AC-5 (rsf-tier2-kaydine-duties): the duty screens start SWG's duties, one each (test_rsf_tier2_kaydine_duties_conversation.lua has the detail)
+function TestKaydineStarts:test_the_duty_screens_start_their_duty_quests()
 	local cases = {
-		{ "accept_duty_destroy1", DUTIES[1] },
-		{ "accept_duty_escort", DUTIES[2] },
-		{ "accept_duty_destroy2", DUTIES[3] },
+		{ "accept_duty_escort", DUTIES[1] },
+		{ "accept_duty_recovery", DUTIES[2] },
+		{ "accept_duty_destroy", DUTIES[3] },
 	}
 
 	for _, c in ipairs(cases) do
@@ -489,25 +484,12 @@ function TestKaydineStarts:test_the_duty_screens_still_start_their_duty_quests()
 
 		local npc = H.newNpc({})
 		local player = pilot(1, {})
-		local starts = H.spyOn(_G[c[2]], "startQuest")
+		local starts = H.spyOn(H.expectGlobal(c[2], "Kaydine duty quest table (rsf-tier2-kaydine-duties)"), "startQuest")
 
 		enterScreen(player, c[1], npc)
 		lu.assertEquals(#starts, 1, c[1] .. ": startQuest calls on " .. c[2])
 		lu.assertTrue(starts[1].args[1] == player and starts[1].args[2] == npc, c[1] .. ": startQuest player, npc")
 	end
-end
-
--- AC-7, I-11
-function TestKaydineStarts:test_accept_duty_recovery_only_sends_its_message()
-	local player = pilot(1, {})
-	local rec = T.spyAllQuests()
-	local before = #H.messageLog(player)
-
-	enterScreen(player, "accept_duty_recovery")
-
-	lu.assertEquals(rec.starts, {}, "startQuest calls")
-	lu.assertEquals(#H.messageLog(player), before + 1, "messages sent")
-	lu.assertEquals(H.messageLog(player)[before + 1], { t = H.messageLog(player)[before + 1].t, id = "Recovery Duty Missions are not implemented yet!", plain = true }, "message")
 end
 
 ---------------------------------------------------------------------------------------------

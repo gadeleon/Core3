@@ -1001,14 +1001,6 @@ space_naboo = SpacePatrolPointTable:new {
 	{patrolPointName = "privateer_escort_2", x = 2800, z = -450, y = 3200},
 	{patrolPointName = "privateer_escort_3", x = 2400, z = -400, y = 4000},
 	{patrolPointName = "privateer_escort_4", x = 2000, z = -350, y = 4800},
-	-- RSF Tier 2 Mission 1: Escort
-	{patrolPointName = "rsf_tier2_escort_1", x = 3500, z = 500, y = -2000},
-	{patrolPointName = "rsf_tier2_escort_2", x = 4200, z = 300, y = -500},
-	{patrolPointName = "rsf_tier2_escort_3", x = 5000, z = 100, y = 1000},
-	{patrolPointName = "rsf_tier2_escort_4", x = 5500, z = -200, y = 2500},
-	-- RSF Tier 2 Mission 2: Assassinate
-	{patrolPointName = "rsf_tier2_assassinate_1", x = 1500, z = 600, y = -1500},
-	{patrolPointName = "rsf_tier2_assassinate_2", x = 2000, z = 400, y = -2000},
 	-- RSF Tier 1 Duty: Patrol
 	{patrolPointName = "rsf_duty_patrol_1", x = 752, z = 659, y = -2444},
 	{patrolPointName = "rsf_duty_patrol_2", x = 2031, z = 887, y = -1759},

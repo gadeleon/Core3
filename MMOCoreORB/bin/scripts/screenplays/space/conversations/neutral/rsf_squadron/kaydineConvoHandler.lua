@@ -6,6 +6,8 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return nil
 	end
 
+	RsfSquadronScreenplay:migrateLegacyProgress(pPlayer)
+
 	local convoTemplate = LuaConversationTemplate(pConvTemplate)
 
 	local faction = CreatureObject(pPlayer):getFaction()
@@ -48,12 +50,12 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("not_ready_tier2")
 	end
 
-	local questOneStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name)
-	local questTwoStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name)
-	local questThreeStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name)
-	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name)
+	local questOneStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_naboo_privateer_tier2_1a")
+	local questTwoStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "destroy_naboo_privateer_13")
+	local questThreeStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "recovery_naboo_privateer_14")
+	local questFourStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "escort_naboo_privateer_15")
 
-	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name)
+	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2.name)
 	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name)
 	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name)
 	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name)
@@ -75,7 +77,7 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	--]]
 
 	-- Player has an active mission from Captain Kaydine
-	if ((questOneStarted and not questOneComplete) or (questTwoStarted and not questTwoComplete) or (questThreeStarted and not questThreeComplete) or (questFourStarted and not questFourComplete) or
+	if (questOneStarted or questTwoStarted or questThreeStarted or questFourStarted or
 		(destroyDuty1Started and not destroyDuty1Complete) or (escortDutyStarted and not escortDutyComplete) or (destroyDuty2Started and not destroyDuty2Complete) or (recoveryDutyStarted and not recoveryDutyComplete)) then
 
 		return convoTemplate:getScreen("on_mission")
@@ -174,7 +176,7 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 			responseString = "mission4_"
 		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name)) then
 			responseString = "mission3_"
-		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name)) then
+		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2.name)) then
 			responseString = "mission2_"
 		end
 
@@ -232,30 +234,30 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	-- Mission Rewards
 	elseif (screenID == "fourth_mission_success") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward", 1)
-		assassinate_naboo_privateer_tier2_4a:rewardPlayer(pPlayer)
+		escort_naboo_privateer_15:rewardPlayer(pPlayer)
 	elseif (screenID == "turnover_intelligence") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name .. ":reward", 1)
-		inspect_naboo_privateer_15:rewardPlayer(pPlayer)
+		recovery_naboo_privateer_14:rewardPlayer(pPlayer)
 	elseif (screenID == "duty_calls" or screenID == "here_is_pay") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":reward", 1)
-		escort_naboo_privateer_14:rewardPlayer(pPlayer)
+		destroy_naboo_privateer_13:rewardPlayer(pPlayer)
 	elseif (screenID == "according_to_plan" or screenID == "first_mission_success") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":reward", 1)
-		destroy_naboo_privateer_13a:rewardPlayer(pPlayer)
+		assassinate_naboo_privateer_tier2_1a:rewardPlayer(pPlayer)
 
 	-- Give Missions
 	elseif (screenID == "accept_assassinate" or screenID == "nonsense" or screenID == "let_me_know" or screenID == "report_back_success" or screenID == "key_to_success" or screenID == "just_malfunctioned") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":attempted", 1)
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier2_4a")
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_naboo_privateer_15")
 	elseif (screenID == "accept_inspect" or screenID == "on_your_way" or screenID == "take_it_serious" or screenID == "bad_liar") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name .. ":attempted", 1)
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_naboo_privateer_15")
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_naboo_privateer_14")
 	elseif (screenID == "accept_escort" or screenID == "back_to_escort" or screenID == "now_is_good" or screenID == "be_smarter") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":attempted", 1)
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_naboo_privateer_14")
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_13")
 	elseif ((screenID == "start_first_mission") or (screenID == "try_first_mission") or (screenID == "cant_wait_first")) then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":attempted", 1)
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_13a")
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier2_1a")
 	end
 
 	return pClonedScreen

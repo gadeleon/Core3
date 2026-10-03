@@ -854,6 +854,12 @@ function FakeSkillManager:awardSkill(pPlayer, skill)
 	skillManagerAwardSkill(pPlayer, skill)
 end
 
+-- SkillManager::fulfillsSkillPrerequisitesAndXp. The fake always says yes: the trainers gate on hasSkill and on
+-- SpaceHelpers:hasExperienceForTraining before they offer a skill box (rsf-tier2-kaydine-missions, ready_train_pilot).
+function FakeSkillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, skill)
+	return true
+end
+
 ---------------------------------------------------------------------------------------------
 -- Wrapper types
 ---------------------------------------------------------------------------------------------

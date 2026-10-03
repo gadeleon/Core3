@@ -245,8 +245,8 @@ function TestRsfRenamesIdentity:test_the_four_new_tables_are_registered_as_start
 end
 
 -- AC-3, I-1
-function TestRsfRenamesIdentity:test_the_quest_global_counts_are_164_19_8_and_8()
-	lu.assertEquals(#H.questGlobals(), 164, "space quest globals")
+function TestRsfRenamesIdentity:test_the_quest_global_counts_are_166_19_8_and_8()
+	lu.assertEquals(#H.questGlobals(), 166, "space quest globals")
 	lu.assertEquals(countOfType("destroy_surpriseattack"), 19, "surprise attack globals")
 	-- The spec says 7, which is the count of survival quests with a SWG-Source survival .tab (survival_scenario's S.NAMES). The
 	-- 9 survival globals before F2 (8 of them from S.NAMES' list plus the 4c placeholder, and RSF tier 4's survival 3c) become 8.
@@ -347,7 +347,7 @@ function TestRsfRenamesIdentity:test_the_legacy_tier_3_data_equals_the_content_c
 		{ old = "naboo_privateer_tier3_4_initial:attempted", new = "naboo_privateer_tier3_4a:attempted" },
 		{ old = "naboo_privateer_tier3_4_initial:reward", new = "naboo_privateer_tier3_4a:reward" },
 	}, "LEGACY_TIER3_STATUS")
-	lu.assertEquals(R3.LEGACY_MIGRATION_STEPS, { "migrateLegacyTier3" }, "LEGACY_MIGRATION_STEPS")
+	lu.assertEquals(R3.LEGACY_MIGRATION_STEPS, { "migrateLegacyTier3", "migrateLegacyTier2" }, "LEGACY_MIGRATION_STEPS")
 	lu.assertEquals(type(R3.migrateLegacyTier3), "function", "RsfSquadronScreenplay:migrateLegacyTier3")
 	lu.assertEquals(type(R3.migrateLegacyProgress), "function", "RsfSquadronScreenplay:migrateLegacyProgress")
 end

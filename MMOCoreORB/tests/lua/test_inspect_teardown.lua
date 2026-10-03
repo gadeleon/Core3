@@ -301,7 +301,6 @@ function TestInspectSafeTeardown:test_the_trainer_reset_functions_run_without_er
 		{ "HavocSquadronScreenplay", "resetViopaQuests", "viopa_rebel_1" },
 		{ "HavocSquadronScreenplay", "resetAqzowQuests", REP },
 		{ "RsfSquadronScreenplay", "resetDuliosQuests", "naboo_privateer_tier3_3a" },
-		{ "RsfSquadronScreenplay", "resetKaydineQuests", I.MISSING },
 	}
 
 	for _, r in ipairs(resets) do

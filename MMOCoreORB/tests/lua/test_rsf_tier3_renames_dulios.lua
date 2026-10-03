@@ -24,7 +24,7 @@ local A4, F4 = g("assassinate", "4a"), g("assassinate", "4f")
 local function pilot(n, opts)
 	opts = opts or {}
 
-	local status = { [MARKER] = "1" }
+	local status = { [MARKER] = "2" }
 
 	for k, v in pairs(opts.questStatus or {}) do
 		status[k] = v

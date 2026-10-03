@@ -121,11 +121,13 @@ T.TRAINERS.kaydine = {
 	mobile = "conversations/space/neutral/rsf_squadron/kaydine_convo.lua",
 	handler = "space/conversations/neutral/rsf_squadron/kaydineConvoHandler.lua",
 	usesAttempted = true,
+	-- rsf-tier2-kaydine-missions (AC-5, AC-6, AC-7): SWG's four tier 2 missions; mission 1 is the 1a/1b/1c assassination chain.
+	-- The screen ids keep their old names (D-9: accept_escort starts the destroy mission, and so on).
 	chains = {
-		{ "destroy_naboo_privateer_13a" },
-		{ "escort_naboo_privateer_14" },
-		{ "inspect_naboo_privateer_15" },
-		{ "assassinate_naboo_privateer_tier2_4a" },
+		{ "assassinate_naboo_privateer_tier2_1a", "assassinate_naboo_privateer_tier2_1b", "assassinate_naboo_privateer_tier2_1c" },
+		{ "destroy_naboo_privateer_13" },
+		{ "recovery_naboo_privateer_14" },
+		{ "escort_naboo_privateer_15" },
 	},
 	starts = {
 		starts("+start_first_mission", "+try_first_mission", "+cant_wait_first"),
@@ -133,7 +135,14 @@ T.TRAINERS.kaydine = {
 		starts("+accept_inspect", "+on_your_way", "+take_it_serious", "+bad_liar"),
 		starts("+accept_assassinate", "+nonsense", "+let_me_know", "+report_back_success", "+key_to_success", "+just_malfunctioned"),
 	},
-	player = function(n) return { pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 2, skills = { "pilot_neutral_starships_02" } } end,
+	-- Migration is already done for these pilots (marker "2" = both steps ran): without it the status keys the builder seeds
+	-- (the new 14: and 15: names) would be read as legacy keys and moved. The migration tests set the marker themselves.
+	player = function(n)
+		return {
+			pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 2, skills = { "pilot_neutral_starships_02" },
+			questStatus = { ["RsfSquadronScreenplay:legacyVersion"] = "2" },
+		}
+	end,
 }
 
 T.TRAINERS.ramna = {
@@ -325,7 +334,7 @@ function T.statusName(tr, n)
 		return tr.statusNames[n]
 	end
 
-	return rawget(_G, tr.chains[n][1]).questName
+	return T.quest(tr.chains[n][1]).questName
 end
 
 -- Chain positions (2..#chain) at which "this member failed / is active" is a distinct realistic state
@@ -460,7 +469,8 @@ end
 -- A pilot in front of trainer tr who has won and been rewarded for missions 1..n-1.
 -- opts: complete / active (lists of quest globals of mission n), attempted (default: the trainer's usesAttempted;
 --   sets mission n's :attempted flag), skills (extra skills), questStatus (extra suffix -> value),
---   win (list of missions, default 1..n-1, whose whole chain is complete and :reward is set)
+--   win (list of missions, default 1..n-1, whose whole chain is complete and :reward is set), zone / ship (H.newPlayer: a pilot
+--   standing in a ship in that space zone)
 function T.player(tr, n, opts)
 	opts = opts or {}
 
@@ -531,6 +541,8 @@ function T.player(tr, n, opts)
 		completedQuests = completed,
 		activeQuests = active,
 		questStatus = status,
+		zone = opts.zone,
+		ship = opts.ship,
 	}
 
 	return H.newPlayer(args)

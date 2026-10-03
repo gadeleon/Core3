@@ -87,7 +87,7 @@ function TestRsfRenamesSurrender:setUp() H.reset() end
 
 -- AC-10
 function TestRsfRenamesSurrender:test_the_setup_has_every_new_member_and_every_legacy_form()
-	local player = veteranWithLegacyState("1")
+	local player = veteranWithLegacyState("2")
 
 	lu.assertEquals(#allMembers(), 18, "chain members")
 
@@ -107,7 +107,7 @@ end
 
 -- AC-10, I-9
 function TestRsfRenamesSurrender:test_reset_dulios_quests_leaves_every_chain_member_and_every_legacy_name_clean()
-	local player = veteranWithLegacyState("1")
+	local player = veteranWithLegacyState("2")
 
 	RsfSquadronScreenplay:resetDuliosQuests(player)
 	assertEverythingClean(player, "resetDuliosQuests: ")
@@ -115,24 +115,24 @@ end
 
 -- AC-10, D-7: the marker is not touched, set or not
 function TestRsfRenamesSurrender:test_reset_dulios_quests_leaves_the_marker_alone()
-	local withMarker = veteranWithLegacyState("1")
+	local withMarker = veteranWithLegacyState("2")
 	local withoutMarker = veteranWithLegacyState(nil)
 
 	RsfSquadronScreenplay:resetDuliosQuests(withMarker)
 	RsfSquadronScreenplay:resetDuliosQuests(withoutMarker)
 
-	lu.assertEquals(H.getQuestStatus(withMarker, MARKER), "1", "marker that was set")
+	lu.assertEquals(H.getQuestStatus(withMarker, MARKER), "2", "marker that was set")
 	lu.assertNil(H.getQuestStatus(withoutMarker, MARKER), "marker that was not set")
 end
 
 -- AC-10
 function TestRsfRenamesSurrender:test_surrender_pilot_clears_the_same_state_for_an_rsf_pilot()
-	local player = veteranWithLegacyState("1")
+	local player = veteranWithLegacyState("2")
 
 	player.ghost:setSquadronType(RSF_SQUADRON)
 	SpaceHelpers:surrenderPilot(player)
 	assertEverythingClean(player, "surrenderPilot: ")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 end
 
 -- AC-10: active legacy runs (not only completed entries) are removed with their datapad mission
@@ -154,7 +154,7 @@ end
 
 -- AC-10: a surrendered pilot who rejoins is not paid for anything and is offered mission 1
 function TestRsfRenamesSurrender:test_a_rejoined_pilot_is_offered_mission_1_and_paid_nothing()
-	local player = veteranWithLegacyState("1")
+	local player = veteranWithLegacyState("2")
 
 	RsfSquadronScreenplay:resetDuliosQuests(player)
 

@@ -491,13 +491,9 @@ local function assertCleanFailure(label, quest, player)
 	lu.assertFalse(SpaceHelpers:isSpaceQuestActive(player, quest.questType, quest.questName), label .. ": the quest ends not active")
 end
 
--- AC-7
-function TestInspectMissingData:test_naboo_privateer_15_without_schema_data_fails_cleanly_at_setup()
-	local sc = I.fresh(I.MISSING)
-
-	lu.assertFalse(sc.quest:hasQuestData(), "hasQuestData")
-	assertCleanFailure("inspect/naboo_privateer_15", sc.quest, sc.player)
-	lu.assertEquals(#sc:msgs(I.MSG_ABANDONED), 1, "the failure is reported to the player once (inspect_abandoned)")
+-- the failure is reported to the player exactly once (inspect_abandoned)
+local function assertAbandonedOnce(label, player)
+	lu.assertEquals(#I.msgs(player, I.MSG_ABANDONED), 1, label .. ": inspect_abandoned messages sent")
 end
 
 -- AC-7
@@ -511,7 +507,10 @@ function TestInspectMissingData:test_an_ad_hoc_quest_with_an_empty_cargo_fails_c
 	rawset(_G, "inspect_adhoc_nocargo", q)
 	I.checkRewrite(q, "ad hoc quest")
 	lu.assertFalse(q:hasQuestData(), "hasQuestData")
-	assertCleanFailure("ad hoc quest without cargo", q, H.newPlayer({ zone = "space_naboo", ship = {}, pilot = "rebel" }))
+	local player = H.newPlayer({ zone = "space_naboo", ship = {}, pilot = "rebel" })
+
+	assertCleanFailure("ad hoc quest without cargo", q, player)
+	assertAbandonedOnce("ad hoc quest without cargo", player)
 end
 
 -- AC-7
@@ -532,7 +531,10 @@ function TestInspectMissingData:test_an_ad_hoc_quest_with_an_empty_ship_list_or_
 		rawset(_G, "inspect_adhoc_" .. key, q)
 		I.checkRewrite(q, "ad hoc quest " .. key)
 		lu.assertFalse(q:hasQuestData(), key .. ": hasQuestData")
-		assertCleanFailure(key, q, H.newPlayer({ zone = "space_endor", ship = {}, pilot = "rebel" }))
+		local player = H.newPlayer({ zone = "space_endor", ship = {}, pilot = "rebel" })
+
+		assertCleanFailure(key, q, player)
+		assertAbandonedOnce(key, player)
 	end
 end
 

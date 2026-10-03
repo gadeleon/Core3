@@ -121,7 +121,7 @@ function TestRsfRenamesMigration:test_m1_a_completed_legacy_delivery_becomes_a_c
 	assertState(player, Q.a3, "complete")
 	assertState(player, Q.c3, "complete")
 	assertLegacyClean(player)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 	lu.assertEquals(rec.rewards, { g("inspect", "3a") }, "rewardPlayer calls (the win was never paid)")
 end
 
@@ -146,7 +146,7 @@ function TestRsfRenamesMigration:test_m2_a_stale_legacy_delivery_run_is_purged_a
 	assertState(player, Q.dnp3b, "none")
 	assertLegacyClean(player)
 	assertState(player, Q.a3, "complete")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 	lu.assertEquals(M.missions(player, "delivery", "naboo_privateer_tier3_3b"), 0, "datapad missions of the stale run")
 
 	local failed = false
@@ -284,10 +284,10 @@ function TestRsfRenamesMigration:test_m8_a_pilot_without_legacy_state_gets_only_
 
 	migrate(player)
 
-	snap.status[player.objectID .. MARKER] = "1"
+	snap.status[player.objectID .. MARKER] = "2"
 	lu.assertEquals(M.snapshot(player), snap, "journal, status keys, observers, waypoints, datapad and shared memory (plus the marker)")
 	lu.assertEquals(M.sideEffects(player), before, "messages, music and createEvent calls")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 end
 
 -- AC-9: the first screen of a never-started pilot is the mission 1 offer
@@ -295,7 +295,7 @@ function TestRsfRenamesMigration:test_m8_a_never_started_pilot_is_offered_missio
 	local player = pilot(1, { attempted = false })
 
 	lu.assertEquals(firstScreen(player), "first_mission", "first screen")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -453,7 +453,7 @@ function TestRsfRenamesMigrationIdempotence:test_a_second_migrate_legacy_progres
 	lu.assertEquals(migrate(player), 0, "steps run the second time")
 	lu.assertEquals(M.snapshot(player), snap, "state after the second run")
 	lu.assertEquals(M.sideEffects(player), before, "messages, music and createEvent calls")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 end
 
 -- AC-9, I-8: step 1 on its own is idempotent too, marker or not
@@ -488,7 +488,7 @@ end
 function TestRsfRenamesMigrationIdempotence:test_with_the_marker_already_set_the_step_does_not_run()
 	local player = pilot(3, { complete = { Q.a3 }, runs = { Q.oldDelivery } })
 
-	H.setQuestStatus(player, MARKER, "1")
+	H.setQuestStatus(player, MARKER, "2")
 
 	local snap = M.snapshot(player)
 
@@ -501,7 +501,7 @@ function TestRsfRenamesMigrationIdempotence:test_a_second_pilot_is_migrated_afte
 	local first, second = pilot(3, { complete = { Q.a3, Q.oldDelivery } }), pilot(3, { complete = { Q.a3, Q.oldDelivery } })
 
 	migrate(first)
-	lu.assertEquals(migrate(second), 1, "steps run for the second pilot")
+	lu.assertEquals(migrate(second), 2, "steps run for the second pilot (both)")
 	assertState(second, Q.dnp3b, "complete")
 end
 
@@ -584,7 +584,7 @@ function TestRsfRenamesMigrationPlacement:test_it_runs_for_a_player_who_gets_the
 	H.Engine.config.jtlEnabled = false
 	lu.assertEquals(firstScreen(player), "not_tier3", "first screen")
 	assertState(player, Q.dnp3b, "complete")
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 	H.Engine.config.jtlEnabled = true
 end
 
@@ -596,7 +596,7 @@ function TestRsfRenamesMigrationPlacement:test_it_runs_for_a_pilot_of_another_sq
 	lu.assertEquals(firstScreen(player), "pilot_not_rsf", "first screen")
 	assertState(player, Q.dnp3b, "complete")
 	assertLegacyClean(player)
-	lu.assertEquals(H.getQuestStatus(player, MARKER), "1", "marker")
+	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 end
 
 -- The nil check stays first: no player, no npc or no template means no screen and no migration

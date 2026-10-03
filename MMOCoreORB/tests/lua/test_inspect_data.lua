@@ -171,19 +171,6 @@ function TestInspectDataInvariants:test_the_class_drops_the_legacy_fields_and_th
 	end
 end
 
--- I-2, AC-7 (the documented exception)
-function TestInspectDataInvariants:test_naboo_privateer_15_is_the_documented_exception_and_keeps_its_legacy_data_with_no_schema_data()
-	local q = quest(I.MISSING)
-
-	lu.assertEquals(q.inspectTargets, { "blacksun_gunship_tier2" }, "inspect/naboo_privateer_15: inspectTargets untouched")
-	lu.assertEquals(q.inspectCargo, "shipment_orders", "inspect/naboo_privateer_15: inspectCargo untouched")
-	lu.assertEquals(type(q.targetLocation), "table", "inspect/naboo_privateer_15: targetLocation untouched")
-	lu.assertEquals(q.shipList, {}, "inspect/naboo_privateer_15: no shipList")
-	lu.assertEquals(q.validSpawns, {}, "inspect/naboo_privateer_15: no validSpawns")
-	lu.assertEquals(q.cargo, "", "inspect/naboo_privateer_15: no cargo")
-	lu.assertEquals(q.giveSpawnWaypoint, 0, "inspect/naboo_privateer_15: giveSpawnWaypoint stays at the class default")
-end
-
 -- Content contract: class defaults and constants
 function TestInspectDataInvariants:test_the_class_has_the_schema_defaults()
 	lu.assertEquals(SpaceInspectScreenplay.className, "SpaceInspectScreenplay", "className")
@@ -213,9 +200,10 @@ function TestInspectDataInvariants:test_the_class_defines_the_public_methods_the
 	end
 end
 
--- Scope: only the 8 inspect globals exist, 7 with data (RSF tier 4 adds inspect_naboo_privateer_tier4_2a, tested in test_rsf_tier4_quest_data.lua;
+-- Scope: only the 7 inspect globals exist, all with data (rsf-tier2-kaydine-missions deletes inspect_naboo_privateer_15, the last one
+-- without schema data; the missing-data behavior stays covered by the ad hoc quests of test_inspect_setup_and_zone.lua; RSF tier 4 adds inspect_naboo_privateer_tier4_2a, tested in test_rsf_tier4_quest_data.lua;
 -- corsec-tier3-extensions adds inspect_corellia_privateer_tier3_4_b, tested in test_corsec_tier3_quest_data.lua)
-function TestInspectDataInvariants:test_there_are_exactly_the_eight_inspect_quests()
+function TestInspectDataInvariants:test_there_are_exactly_the_seven_inspect_quests()
 	local got = {}
 
 	for _, n in ipairs(H.questGlobals()) do
@@ -224,7 +212,7 @@ function TestInspectDataInvariants:test_there_are_exactly_the_eight_inspect_ques
 		end
 	end
 
-	local expected = { I.global(I.MISSING), "inspect_naboo_privateer_tier4_2a", "inspect_corellia_privateer_tier3_4_b" }
+	local expected = { "inspect_naboo_privateer_tier4_2a", "inspect_corellia_privateer_tier3_4_b" }
 
 	for _, name in ipairs(I.NAMES) do
 		expected[#expected + 1] = I.global(name)

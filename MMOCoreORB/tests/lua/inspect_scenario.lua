@@ -37,7 +37,6 @@ I.NAMES = {
 
 I.REP = "corellia_rebel_tier3_2"        -- the representative quest: space_endor, 3 spawners, split to delivery
 I.SINGLE = "corellia_privateer_15"      -- one spawner, no side quest
-I.MISSING = "naboo_privateer_15"        -- RSF tier 2 mission 3: no SWG inspect table, no schema fields (D-5)
 
 -- rsf-tier3-renames (E-1 ends): RSF tier 3 3a splits to delivery_no_pickup like the .tab, so Core3's side type
 -- equals the fixture for every inspect quest; the override table stays (empty) for the next exception.
@@ -67,11 +66,6 @@ end
 
 -- Everything the spec derives from the .tab, read from the fixture and the Core3 spawner tables.
 function I.oracle(name)
-	if name == I.MISSING then
-		-- No SWG-Source inspect table exists for it (it is an escort quest there): only the zone is known.
-		return { name = name, zone = "space_naboo", shipList = {}, spawns = {}, give = 0, cargo = "" }
-	end
-
 	local rec = H.questFixture("inspect", name)
 	local zone = rec:get("questZone")
 	local o = {

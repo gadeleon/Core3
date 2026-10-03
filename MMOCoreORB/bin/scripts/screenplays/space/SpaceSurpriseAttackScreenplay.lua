@@ -1,3 +1,5 @@
+-- Surprise attack type (all squadrons). Feature rsf-tier3-data: a spawn waits until the player is in questZone in a ship, as in
+-- SWG-Source destroy_surpriseattack.java:36-66 (1 s deferral after entering the zone).
 SpaceSurpriseAttackScreenplay = SpaceQuestLogic:new {
 	className = "SpaceSurpriseAttackScreenplay",
 
@@ -27,7 +29,51 @@ function SpaceSurpriseAttackScreenplay:startQuest(pPlayer, pNpc)
 		createObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer, 1)
 	end
 
-	-- Trigger surpise attack
+	-- Trigger the surprise attack now when the pilot is flying in the quest zone, otherwise it stays pending
+	-- until the pilot enters the quest zone in a ship (SWG destroy_surpriseattack.java)
+	if (self:canSpawnNow(pPlayer)) then
+		self:spawnSurpriseAttack(pPlayer)
+	end
+end
+
+-- True when the pilot is in the quest zone, in a ship that is not the yacht
+function SpaceSurpriseAttackScreenplay:canSpawnNow(pPlayer)
+	if (pPlayer == nil) then
+		return false
+	end
+
+	if (SceneObject(pPlayer):getZoneName() ~= self.questZone) then
+		return false
+	end
+
+	if (SpaceHelpers:isInYacht(pPlayer)) then
+		return false
+	end
+
+	local pRootParent = SceneObject(pPlayer):getRootParent()
+
+	return pRootParent ~= nil and SceneObject(pRootParent):isShipObject()
+end
+
+-- Event: spawns the pending attack once the pilot has arrived in the quest zone. The pending state is the
+-- :spawned shared memory key, so it is valid from any Lua state.
+function SpaceSurpriseAttackScreenplay:spawnPendingAttack(pPlayer)
+	if (pPlayer == nil or not SceneObject(pPlayer):isPlayerCreature()) then
+		return
+	end
+
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	if (readData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned") == 1) then
+		return
+	end
+
+	if (not self:canSpawnNow(pPlayer)) then
+		return
+	end
+
 	self:spawnSurpriseAttack(pPlayer)
 end
 
@@ -52,6 +98,8 @@ function SpaceSurpriseAttackScreenplay:completeQuest(pPlayer, notifyClient)
 
 	-- Complete quest for surprise attack
 	SpaceHelpers:completeSpaceQuest(pPlayer, self.questType, self.questName, notifyBool)
+
+	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned")
 
 	-- Remove the zone entry observer
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
@@ -96,6 +144,8 @@ function SpaceSurpriseAttackScreenplay:failQuest(pPlayer, notifyClient)
 	-- Clear kill count off the player
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":Count")
 
+	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned")
+
 	-- Remove the zone entry observer
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
 
@@ -132,6 +182,8 @@ function SpaceSurpriseAttackScreenplay:resetQuest(pPlayer)
 
 	-- Clear kill count off the player
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":Count")
+
+	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned")
 
 	-- Remove the zone entry observer
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
@@ -228,6 +280,8 @@ function SpaceSurpriseAttackScreenplay:spawnSurpriseAttack(pPilot)
 		writeData(pilotID .. self.className .. ":Count", totalSpawned)
 	end
 
+	writeData(pilotID .. self.className .. ":spawned", 1)
+
 	-- Player effect for player
 	CreatureObject(pPilot):playEffect("clienteffect/ui_quest_spawn_wave.cef", "")
 
@@ -270,6 +324,12 @@ function SpaceSurpriseAttackScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 
 	if (self.DEBUG_SPACE_PATROL) then
 		print(self.className .. ":enteredZone called -- QuestType: " .. self.questType .. " Quest Name: " .. self.questName .. " Player Zone Hash: " .. zoneNameHash .. " questZone hash: " .. spaceQuestHash)
+	end
+
+	if (spaceQuestHash == zoneNameHash and readData(playerID .. self.className .. ":spawned") ~= 1) then
+		-- Spawn after the player has been moved: ZONESWITCHED fires before the switch is done
+		createEvent(1000, self.className, "spawnPendingAttack", pPlayer, "")
+		return 0
 	end
 
 	if (spaceQuestHash ~= zoneNameHash and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then

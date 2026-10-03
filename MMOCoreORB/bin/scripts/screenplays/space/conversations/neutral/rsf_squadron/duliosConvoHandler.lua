@@ -76,7 +76,14 @@ function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	--]]
 
 	-- Player has an active mission from CDR Dulios
-	if ((questOneStarted and not questOneComplete) or (questTwoStarted and not questTwoComplete) or (questThreeStarted and not questThreeComplete) or (questFourStarted and not questFourComplete)) then
+	-- Any active member of a tier 3 chain counts, even after its mission win quest is complete (SWG isOnQuest)
+	local onMission = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "recovery_naboo_privateer_tier3_1a") or
+						SpaceHelpers:isSpaceQuestChainActive(pPlayer, "escort_naboo_privateer_tier3_2a") or
+						SpaceHelpers:isSpaceQuestChainActive(pPlayer, "inspect_naboo_privateer_tier3_3a") or
+						SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_naboo_privateer_tier3_4a") or
+						SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_4.name) -- legacy 4_initial term, removed by F2
+
+	if (onMission) then
 		return convoTemplate:getScreen("on_mission")
 	end
 

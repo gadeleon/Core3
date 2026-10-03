@@ -76,6 +76,16 @@ function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			Quests
 	--]]
 
+	-- (rsf-tier1-dinge-convo) status keys
+	local reward1 = getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_1.name .. ":reward")
+	local reward2 = getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_2.name .. ":reward")
+	local reward3 = getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_3.name .. ":reward")
+	local reward4 = getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_4.name .. ":reward")
+
+	local function attempted(questString)
+		return getQuestStatus(playerID .. questString.name .. ":attempted") == "1"
+	end
+
 	-- Player has an active quest from this trainer
 	if ((questTwoStarted and not questTwoComplete) or (questThreeStarted and not questThreeComplete) or (questFourStarted and not questFourComplete) or (destroyDutyStarted and not destroyDutyComplete) or (escortDutyStarted and not escortDutyComplete)) then
 		return convoTemplate:getScreen("has_mission")
@@ -89,47 +99,38 @@ function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			return convoTemplate:getScreen("more_training")
 		-- Offer Duty missions
 		else
-			CreatureObject(pPlayer):doAnimation("salute1")
 			return convoTemplate:getScreen("duty_missions")
 		end
 	-- Player has finished 4 and has received the reward, but needs to accept training of first pilot skill
-	elseif (questFourComplete and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_4.name .. ":reward") == "1") then
+	elseif (questFourComplete and reward4 == "1") then
 		return convoTemplate:getScreen("missions_complete")
-	-- Player has completed quest 4 and needs reward
-	elseif (questFourComplete and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_4.name .. ":reward") ~= "1") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_4.name .. ":reward", 1)
-		assassinate_naboo_privateer_tier1_4a:rewardPlayer(pPlayer)
-		return convoTemplate:getScreen("missions_complete")
+	-- Player has completed quest 4 and needs reward (paid on the reward screen)
+	elseif (questFourComplete and reward4 ~= "1") then
+		return convoTemplate:getScreen("mission4_reward")
 	-- Player has finished 3, has received the reward and needs to start quest 4
-	elseif (questThreeComplete and not questFourStarted and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_3.name .. ":reward") == "1") then
-		return convoTemplate:getScreen("excellent_work3")
+	elseif (questThreeComplete and not questFourStarted and reward3 == "1") then
+		return convoTemplate:getScreen(attempted(RsfSquadronScreenplay.QUEST_STRING_4) and "mission4_failed" or "mission4_offer")
 	-- Player has completed quest 3 and needs reward
-	elseif (questThreeComplete and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_3.name .. ":reward") ~= "1") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_3.name .. ":reward", 1)
-		patrol_naboo_privateer_3:rewardPlayer(pPlayer)
-		return convoTemplate:getScreen("excellent_work3")
+	elseif (questThreeComplete and reward3 ~= "1") then
+		return convoTemplate:getScreen("mission3_reward")
 	-- Player has finished 2, has received the reward and needs to start quest 3
-	elseif (questTwoComplete and not questThreeStarted and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_2.name .. ":reward") == "1") then
-		return convoTemplate:getScreen("excellent_work2")
+	elseif (questTwoComplete and not questThreeStarted and reward2 == "1") then
+		return convoTemplate:getScreen(attempted(RsfSquadronScreenplay.QUEST_STRING_3) and "mission3_failed" or "mission3_offer")
 	-- Player has completed quest 2 and needs reward
-	elseif (questTwoComplete and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_2.name .. ":reward") ~= "1") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_2.name .. ":reward", 1)
-		destroy_naboo_privateer_2:rewardPlayer(pPlayer)
-		return convoTemplate:getScreen("excellent_work2")
+	elseif (questTwoComplete and reward2 ~= "1") then
+		return convoTemplate:getScreen("mission2_reward")
 	-- Player has finished quest 1, has received the reward and needs to start quest 2
-	elseif (questOneComplete and not questTwoStarted and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_1.name .. ":reward") == "1") then
-		return convoTemplate:getScreen("excellent_work")
+	elseif (questOneComplete and not questTwoStarted and reward1 == "1") then
+		return convoTemplate:getScreen(attempted(RsfSquadronScreenplay.QUEST_STRING_2) and "mission2_failed" or "mission2_offer")
 	-- Player has finished quest 1 and needs reward
-	elseif (questOneComplete and getQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_1.name .. ":reward") ~= 1) then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_1.name .. ":reward", 1)
-		patrol_naboo_privateer_1:rewardPlayer(pPlayer)
-		return convoTemplate:getScreen("excellent_work")
+	elseif (questOneComplete and reward1 ~= "1") then
+		return convoTemplate:getScreen("mission1_reward")
 	-- Player has first quest active, the mission giver will offer assistance
 	elseif (questOneStarted and not questOneComplete) then
-		return convoTemplate:getScreen("first_assignment")
+		return convoTemplate:getScreen("mission1_active")
 	-- Player has failed or aborted the first quest
 	elseif (not questOneComplete) then
-		return convoTemplate:getScreen("yes_im_ready")
+		return convoTemplate:getScreen(attempted(RsfSquadronScreenplay.QUEST_STRING_1) and "mission1_failed" or "mission1_offer")
 	end
 
 	return convoTemplate:getScreen("no_jtl")
@@ -142,6 +143,8 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 
 	local screen = LuaConversationScreen(pConvScreen)
 	local screenID = screen:getScreenID()
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
 
 	local pClonedScreen = screen:cloneScreen()
 	local clonedConversation = LuaConversationScreen(pClonedScreen)
@@ -231,23 +234,41 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 		end
 
 		if (not SpaceHelpers:hasCertifiedShip(pPlayer, true)) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_9817b9bb", "no_ship") -- No, I don't.
+			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_9817b9bb", "signup_no_ship") -- No, I don't.
 		else
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_d70dba34", "yes_ship") -- Yes.
+			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_5c522568", "yes_ship")
 		end
-	elseif (screenID == "no_ship") then
+	elseif (screenID == "no_ship" or screenID == "signup_no_ship") then
 		if (not SpaceHelpers:hasCertifiedShip(pPlayer, true)) then
 			grantStarterShip(pPlayer, "neutral")
 		end
 
-	-- Missions
-	elseif (screenID == "yes_im_ready") then
+	-- Rewards (paid on the screen that carries the reward)
+	elseif (screenID == "mission1_reward") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_1.name .. ":reward", 1)
+		patrol_naboo_privateer_1:rewardPlayer(pPlayer)
+	elseif (screenID == "mission2_reward") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_2.name .. ":reward", 1)
+		destroy_naboo_privateer_2:rewardPlayer(pPlayer)
+	elseif (screenID == "mission3_reward") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_3.name .. ":reward", 1)
+		patrol_naboo_privateer_3:rewardPlayer(pPlayer)
+	elseif (screenID == "mission4_reward") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_4.name .. ":reward", 1)
+		assassinate_naboo_privateer_tier1_4a:rewardPlayer(pPlayer)
+
+	-- Missions (started on the screen that carries the grant)
+	elseif (screenID == "mission1_accept" or screenID == "mission1_boast_accept1" or screenID == "mission1_boast_accept2" or screenID == "mission1_failed_attacked" or screenID == "mission1_failed_will_do") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_1.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_naboo_privateer_1")
-	elseif (screenID == "train_me2") then
+	elseif (screenID == "mission2_accept" or screenID == "mission2_failed") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_2.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_2")
-	elseif (screenID == "train_me3") then
+	elseif (screenID == "mission3_accept" or screenID == "mission3_failed_retry1" or screenID == "mission3_failed_retry2") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_3.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_naboo_privateer_3")
-	elseif (screenID == "train_me4") then
+	elseif (screenID == "mission4_accept" or screenID == "mission4_failed_retry1" or screenID == "mission4_failed_retry2" or screenID == "mission4_failed_retry3") then
+		setQuestStatus(playerID .. RsfSquadronScreenplay.QUEST_STRING_4.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier1_4a")
 	end
 

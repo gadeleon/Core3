@@ -2126,6 +2126,13 @@ function RsfSquadronScreenplay:resetDingeQuests(pPlayer)
 	escort_duty_naboo_privateer_7:resetQuest(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.QUEST_STRING_DUTY_4_1.type, self.QUEST_STRING_DUTY_4_1.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.QUEST_STRING_DUTY_4_2.type, self.QUEST_STRING_DUTY_4_2.name, false)
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
+
+	removeQuestStatus(playerID .. self.QUEST_STRING_1.name .. ":attempted")
+	removeQuestStatus(playerID .. self.QUEST_STRING_2.name .. ":attempted")
+	removeQuestStatus(playerID .. self.QUEST_STRING_3.name .. ":attempted")
+	removeQuestStatus(playerID .. self.QUEST_STRING_4.name .. ":attempted")
 end
 
 function RsfSquadronScreenplay:resetKaydineQuests(pPlayer)

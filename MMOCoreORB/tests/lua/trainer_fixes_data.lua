@@ -81,7 +81,8 @@ T.TRAINERS.dinge = {
 	template = "dinge_convo_template",
 	mobile = "conversations/space/neutral/rsf_squadron/dinge_convo.lua",
 	handler = "space/conversations/neutral/rsf_squadron/dingeConvoHandler.lua",
-	usesAttempted = false,
+	-- rsf-tier1-dinge-convo (spec section 4): per-mission :attempted keys; the accept screens and the failure screens that re-grant (D-12) start the mission.
+	usesAttempted = true,
 	chains = {
 		{ "patrol_naboo_privateer_1", "destroy_surpriseattack_naboo_privateer_1" },
 		{ "destroy_naboo_privateer_2" },
@@ -89,7 +90,10 @@ T.TRAINERS.dinge = {
 		{ "assassinate_naboo_privateer_tier1_4a" },
 	},
 	starts = {
-		starts("yes_im_ready"), starts("train_me2"), starts("train_me3"), starts("train_me4"),
+		starts("+mission1_accept", "+mission1_boast_accept1", "+mission1_boast_accept2", "+mission1_failed_attacked", "+mission1_failed_will_do"),
+		starts("+mission2_accept", "+mission2_failed"),
+		starts("+mission3_accept", "+mission3_failed_retry1", "+mission3_failed_retry2"),
+		starts("+mission4_accept", "+mission4_failed_retry1", "+mission4_failed_retry2", "+mission4_failed_retry3"),
 	},
 	player = function(n) return { pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 1 } end,
 }

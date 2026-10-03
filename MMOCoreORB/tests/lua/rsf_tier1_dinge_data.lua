@@ -8,11 +8,8 @@
 --   D.EXPECTED   Content contract 1: the whole table of each global, every key (a key not listed here must not be set)
 --   D.POINTS     the 15 nav points of the Source inventory, buildout position truncated toward zero
 --   D.SPAWNERS   the 5 destroy 2 spawners, truncated
---   D.UNTOUCHED  Content contract 5 / AC-10: files that must be byte-identical to D.BASE_COMMIT
 
 local D = {}
-
-D.BASE_COMMIT = "0d2c61189c"
 
 D.P1 = "patrol_naboo_privateer_1"
 D.S1 = "destroy_surpriseattack_naboo_privateer_1"
@@ -203,23 +200,5 @@ D.SPAWNERS = {
 -- Invented points the port deletes (Content contract 3) and the comment line of their block
 D.INVENTED = { "privateer_escort_1", "privateer_escort_2", "privateer_escort_3", "privateer_escort_4" }
 D.PP_COMMENT = "RSF Tier 1 Mission 3: Escort Freighter"
-
--- Content contract 5 / AC-10: paths relative to MMOCoreORB/ that must not change from D.BASE_COMMIT
-D.UNTOUCHED = {
-	"bin/scripts/mobile/conversations/space/neutral/rsf_squadron/dinge_convo.lua",
-	"bin/scripts/screenplays/space/conversations/neutral/rsf_squadron/dingeConvoHandler.lua",
-	"bin/scripts/mobile/space/dinge.lua",
-	"bin/scripts/screenplays/cities/naboo_theed.lua",
-	"bin/scripts/screenplays/space/spawning/space_naboo_spawner.lua",
-	"bin/scripts/utils/space_helpers.lua",
-	"bin/scripts/screenplays/space/SpaceQuestLogic.lua",
-	"bin/scripts/screenplays/space/SpacePatrolScreenplay.lua",
-	"bin/scripts/screenplays/space/SpaceSurpriseAttackScreenplay.lua",
-	"bin/scripts/screenplays/space/SpaceDestroyScreenplay.lua",
-	"bin/scripts/screenplays/space/SpaceEscortScreenplay.lua",
-	"bin/scripts/screenplays/space/SpaceAssassinateScreenplay.lua",
-	"bin/scripts/screenplays/space/SpaceDutyDestroyScreenplay.lua",
-	"bin/scripts/screenplays/space/SpaceDutyEscortScreenplay.lua",
-}
 
 return D

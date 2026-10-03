@@ -34,7 +34,7 @@ end
 -- Table O, rows that change: { trainer, mission, screen }
 local ON_MISSION_CHANGED = {
 	{ "rhea", 1, "first_assignment" }, { "rhea", 3, "has_mission" },
-	{ "dinge", 1, "first_assignment" }, { "dinge", 3, "has_mission" },
+	{ "dinge", 1, "mission1_active" }, { "dinge", 3, "has_mission" },
 	{ "kreezo", 1, "first_quest_active" }, { "kreezo", 3, "has_mission" },
 	{ "viopa", 1, "has_mission" },
 	{ "aqzow", 1, "has_mission" }, { "aqzow", 2, "has_mission" }, { "aqzow", 3, "has_mission" }, { "aqzow", 4, "has_mission" },

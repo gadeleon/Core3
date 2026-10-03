@@ -687,31 +687,8 @@ TestRsfTier1DingeUntouched = {}
 
 function TestRsfTier1DingeUntouched:setUp() H.reset() end
 
--- Reads <path relative to the repository root> as committed at D.BASE_COMMIT, or fails with the reason
-local function committed(path)
-	local top = io.popen("git -C " .. H.ROOT .. " rev-parse --show-toplevel 2>&1")
-	local root = top:read("l")
-
-	top:close()
-	lu.assertNotNil(root, "git cannot find the repository from " .. H.ROOT)
-
-	local prefix = io.popen("git -C " .. H.ROOT .. " rev-parse --show-prefix 2>&1"):read("l") or ""
-	local p = io.popen("git -C " .. root .. " show " .. D.BASE_COMMIT .. ":" .. prefix .. path .. " 2>&1")
-	local text = p:read("a")
-
-	p:close()
-	return text
-end
-
--- AC-10: Dinge's conversation and handler, and the other files Content contract 5 lists
-function TestRsfTier1DingeUntouched:test_dinges_conversation_handler_and_the_untouched_files_equal_the_base_commit()
-	for _, path in ipairs(D.UNTOUCHED) do
-		local base = committed(path)
-
-		lu.assertTrue(#base > 100, path .. ": could not read it at " .. D.BASE_COMMIT .. ": " .. base:sub(1, 120))
-		lu.assertTrue(readFile(H.ROOT .. "/" .. path) == base, path .. ": differs from " .. D.BASE_COMMIT .. " (rsf-tier1-dinge-data changes data only)")
-	end
-end
+-- rsf-tier1-dinge-convo D-10: the F6 byte-identity test (every file equal to 0d2c61189c) is retired; F6 was data-only and that
+-- is settled by the reviewed commit 4eefa91216. The constants test below stays.
 
 -- AC-10: §2, the constants
 function TestRsfTier1DingeUntouched:test_the_rsf_constants_and_the_migration_steps_do_not_move()

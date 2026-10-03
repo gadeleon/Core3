@@ -1,6 +1,79 @@
 -- Dinge (RSF tier 1) conversation handler; ported from SWG-Source naboo_privateer_trainer_1.java. Chain retry/won-check routing: feature space-trainer-fixes.
 dingeConvoHandler = conv_handler:new {}
 
+dingeConvoHandler.TRAIN_SCREENS = {
+	train_starships = "pilot_neutral_starships_01",
+	train_weapons = "pilot_neutral_weapons_01",
+	train_procedures = "pilot_neutral_procedures_01",
+	train_droid = "pilot_neutral_droid_01"
+}
+
+-- naboo_privateer_trainer_1.java:60-70
+function dingeConvoHandler:isReadyForFirstTraining(pPlayer)
+	return not SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 1)
+end
+
+-- The id of the screen the player chose an option on (the session still holds it while the next
+-- screen is picked and handled)
+function dingeConvoHandler:getLastScreenID(pPlayer)
+	local convSession = CreatureObject(pPlayer):getConversationSession()
+
+	if (convSession == nil) then
+		return nil
+	end
+
+	local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+
+	if (pLastScreen == nil) then
+		return nil
+	end
+
+	return LuaConversationScreen(pLastScreen):getScreenID()
+end
+
+-- Choosing the option on first_training_lesson grants the free starships skill; on a train_<x> screen it
+-- buys that skill (once). Both happen before the closing line (naboo_privateer_trainer_1.java:3164, 3310-3355)
+function dingeConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, selectedOption, pNpc)
+	local lastScreen = self:getLastScreenID(pPlayer) or ""
+	local skill = self.TRAIN_SCREENS[lastScreen]
+
+	if (lastScreen == "first_training_lesson") then
+		if (self:isReadyForFirstTraining(pPlayer)) then
+			SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_starships_01", false)
+
+			return LuaConversationTemplate(pConvTemplate):getScreen("first_training_done")
+		end
+
+		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
+	elseif (skill ~= nil) then
+		local had = CreatureObject(pPlayer):hasSkill(skill)
+
+		if (not had and SpaceHelpers:hasExperienceForTraining(pPlayer, 1) and LuaSkillManager():fulfillsSkillPrerequisitesAndXp(pPlayer, skill)) then
+			SpaceHelpers:grantSpaceSkill(pPlayer, skill, true)
+		end
+
+		local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+		if (pGhost ~= nil) then
+			local ghost = LuaPlayerObject(pGhost)
+
+			if (ghost ~= nil and ghost:getPilotTier() == 1 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1)) then
+				ghost:incrementPilotTier()
+			end
+		end
+
+		if (not had and CreatureObject(pPlayer):hasSkill(skill)) then
+			local name = string.gsub(lastScreen, "^train_", "")
+
+			return LuaConversationTemplate(pConvTemplate):getScreen("trained_" .. name)
+		end
+
+		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
+	end
+
+	return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+end
+
 function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (pPlayer == nil or pNpc == nil or pConvTemplate == nil) then
 		return nil
@@ -92,18 +165,15 @@ function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	-- Check if players have all the tier1 skill boxes, send them to next trainer.
 	elseif (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1)) then
 		return convoTemplate:getScreen("completed_tier1")
-	-- Player is an RSF pilot and has at least one of the Tier1 skill boxes
-	elseif (SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 1)) then
-		-- Check if the player can be trained in the remaining Tier1 Skills
-		if (SpaceHelpers:hasExperienceForTraining(pPlayer, 1)) then
+	-- Player has finished 4 and has received the reward: first training, more training or duties
+	elseif (questFourComplete and reward4 == "1") then
+		if (self:isReadyForFirstTraining(pPlayer)) then
+			return convoTemplate:getScreen("first_training")
+		elseif (SpaceHelpers:hasExperienceForTraining(pPlayer, 1)) then
 			return convoTemplate:getScreen("more_training")
-		-- Offer Duty missions
 		else
 			return convoTemplate:getScreen("duty_missions")
 		end
-	-- Player has finished 4 and has received the reward, but needs to accept training of first pilot skill
-	elseif (questFourComplete and reward4 == "1") then
-		return convoTemplate:getScreen("missions_complete")
 	-- Player has completed quest 4 and needs reward (paid on the reward screen)
 	elseif (questFourComplete and reward4 ~= "1") then
 		return convoTemplate:getScreen("mission4_reward")
@@ -163,53 +233,19 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 		return pClonedScreen
 	end
 
-	-- Handle additional training
 	if (screenID == "more_training") then
-		local skillManager = LuaSkillManager()
+		-- The first skill the pilot lacks, in SWG order (naboo_privateer_trainer_1.java:3177-3300)
+		local link = "train_droid"
 
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_starships_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_starships_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_e94f494b", "train_player_fighters") -- I want to know about basic fighters.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_weapons_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_weapons_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_939b6844", "train_player_component") -- I want to know about basic starship component use.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_procedures_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_procedures_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_ac00d21e", "train_player_basics") -- I want to know about basic training.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_droid_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_droid_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_1726d8a5", "train_player_droid") -- I want to know about droid interface basics.
-		end
-	-- Handle Skill box granting
-	elseif (string.find(screenID, "train_player_")) then
-		local skillManager = LuaSkillManager()
-
-		local deductExperience = (string.find(screenID, "_free") == nil)
-
-		screenID = string.gsub(screenID, "_free", "")
-
-		if (screenID == "train_player_droid") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_droid_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_droid_01", deductExperience)
-			end
-		elseif (screenID == "train_player_basics") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_procedures_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_procedures_01", deductExperience)
-			end
-		elseif (screenID == "train_player_fighters") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_starships_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_starships_01", deductExperience)
-			end
-		elseif (screenID == "train_player_component") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_weapons_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_weapons_01", deductExperience)
+		for _, screen in ipairs({"train_starships", "train_weapons", "train_procedures"}) do
+			if (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS[screen])) then
+				link = screen
+				break
 			end
 		end
 
-		if (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1) and ghost:getPilotTier() == 1) then
-			ghost:incrementPilotTier()
-		end
-
-		return pClonedScreen
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_143", link)
 	elseif (screenID == "go_to_tier2") then
 		-- Increment tier when player is sent to Kaydine
 		if (ghost:getPilotTier() == 1) then

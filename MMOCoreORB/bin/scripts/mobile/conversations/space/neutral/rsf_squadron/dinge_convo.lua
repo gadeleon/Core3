@@ -526,66 +526,118 @@ mission4_reward = ConvoScreen:new {
 dinge_convo_template:addScreen(mission4_reward);
 
 -- Training
-missions_complete = ConvoScreen:new {
-	id = "missions_complete",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_6ea4aa1e", -- That's great work! With their leader destroyed, they're sure to be on the run. Let 'em go to Tatooine if they want to be criminals, but they're not going to aggress merchants while the RSF is on the job. Take these credits and get your ship repaired, if it needs it.
+first_training = ConvoScreen:new {
+	id = "first_training",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_5e36283d",
 	stopConversation = "false",
+	animation = "explain",
 	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "more_training"}, -- How about some training?
-		{"@conversation/naboo_privateer_trainer_1:s_c4682ea6", "thanks_bye"}, -- Thanks!
+		{"@conversation/naboo_privateer_trainer_1:s_139", "first_training_lesson"},
 	}
 }
-dinge_convo_template:addScreen(missions_complete);
+dinge_convo_template:addScreen(first_training);
 
-thanks_bye = ConvoScreen:new {
-	id = "thanks_bye",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
+first_training_lesson = ConvoScreen:new {
+	id = "first_training_lesson",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_140",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_1:s_141", "first_training_done"},
+	}
+}
+dinge_convo_template:addScreen(first_training_lesson);
+
+first_training_done = ConvoScreen:new {
+	id = "first_training_done",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_142",
 	stopConversation = "true",
 	options = {}
 }
-dinge_convo_template:addScreen(thanks_bye);
+dinge_convo_template:addScreen(first_training_done);
 
 more_training = ConvoScreen:new {
 	id = "more_training",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_122b0165", -- You're really coming along as a pilot, %TU. I think you're ready for some more training. What interests you?
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_122b0165",
 	stopConversation = "false",
+	animation = "explain",
 	options = {
-		-- Options added dynamically via handler
+		{"@conversation/naboo_privateer_trainer_1:s_143", "train_droid"},
 	}
 }
 dinge_convo_template:addScreen(more_training);
 
-train_player_fighters = ConvoScreen:new {
-	id = "train_player_fighters",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
-	stopConversation = "true",
-	options = {}
+train_starships = ConvoScreen:new {
+	id = "train_starships",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_144",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_1:s_148", "trained_starships"},
+	}
 }
-dinge_convo_template:addScreen(train_player_fighters);
+dinge_convo_template:addScreen(train_starships);
 
-train_player_component = ConvoScreen:new {
-	id = "train_player_component",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
-	stopConversation = "true",
-	options = {}
+train_weapons = ConvoScreen:new {
+	id = "train_weapons",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_145",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_1:s_151", "trained_weapons"},
+	}
 }
-dinge_convo_template:addScreen(train_player_component);
+dinge_convo_template:addScreen(train_weapons);
 
-train_player_basics = ConvoScreen:new {
-	id = "train_player_basics",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
-	stopConversation = "true",
-	options = {}
+train_procedures = ConvoScreen:new {
+	id = "train_procedures",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_146",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_1:s_155", "trained_procedures"},
+	}
 }
-dinge_convo_template:addScreen(train_player_basics);
+dinge_convo_template:addScreen(train_procedures);
 
-train_player_droid = ConvoScreen:new {
-	id = "train_player_droid",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
+train_droid = ConvoScreen:new {
+	id = "train_droid",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_147",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_1:s_159", "trained_droid"},
+	}
+}
+dinge_convo_template:addScreen(train_droid);
+
+trained_starships = ConvoScreen:new {
+	id = "trained_starships",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_149",
 	stopConversation = "true",
 	options = {}
 }
-dinge_convo_template:addScreen(train_player_droid);
+dinge_convo_template:addScreen(trained_starships);
+
+trained_weapons = ConvoScreen:new {
+	id = "trained_weapons",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_153",
+	stopConversation = "true",
+	options = {}
+}
+dinge_convo_template:addScreen(trained_weapons);
+
+trained_procedures = ConvoScreen:new {
+	id = "trained_procedures",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_157",
+	stopConversation = "true",
+	options = {}
+}
+dinge_convo_template:addScreen(trained_procedures);
+
+trained_droid = ConvoScreen:new {
+	id = "trained_droid",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_161",
+	stopConversation = "true",
+	options = {}
+}
+dinge_convo_template:addScreen(trained_droid);
+
 
 
 duty_missions = ConvoScreen:new {

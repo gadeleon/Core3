@@ -46,8 +46,10 @@ kaydine_convo_template:addScreen(not_ready_tier2);
 finished_tier3 = ConvoScreen:new {
 	id = "finished_tier3",
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2d86b58b", -- Hey, kiddo! What are you still doing around here? You got bigger, better things to be doing!
-	stopConversation = "true",
-	options = {}
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_32c46e00", "completed_kaydine_end"},
+	}
 }
 kaydine_convo_template:addScreen(finished_tier3);
 
@@ -63,9 +65,11 @@ kaydine_convo_template:addScreen(on_mission);
 -- Completed Kaydine's tier, go to next trainer (Dulios)
 completed_kaydine = ConvoScreen:new {
 	id = "completed_kaydine",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_aae78dca", -- I think it's time for you to take on more responsibilities. Head deeper into the palace, my friend! Look for Commander Dulios.
-	stopConversation = "true",
-	options = {}
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2d86b58b",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_32c46e00", "completed_kaydine_end"},
+	}
 }
 kaydine_convo_template:addScreen(completed_kaydine);
 
@@ -292,336 +296,430 @@ final_train_algorithms = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(final_train_algorithms);
 
--- First Mission: Disable Ay'Nat Captain
-first_mission = ConvoScreen:new {
-	id = "first_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_130b925b", -- We'll need you to catch up to the Ay'Nat Captain's personal starship... a rather fast vessel! Disable him, and protect the RSF Boarding Team while they arrest him.
+-- Story missions (SWG naboo_privateer_trainer_2 dialogue)
+mission1_ready = ConvoScreen:new {
+	id = "mission1_ready",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8b529447",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "start_first_mission"}, -- Yes, Captain. I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "mission1_offer"},
+		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"},
 	}
 }
-kaydine_convo_template:addScreen(first_mission);
+kaydine_convo_template:addScreen(mission1_ready);
 
-failed_first_mission = ConvoScreen:new {
-	id = "failed_first_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_65042122", -- So, I hear you were not able to destroy all three of the Ay'Nat Legion's outlaw fighters. But don't worry...
+mission2_ready = ConvoScreen:new {
+	id = "mission2_ready",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8b529447",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_4a1d2431", "try_first_mission"}, -- Yes, I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "mission2_offer"},
+		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"},
 	}
 }
-kaydine_convo_template:addScreen(failed_first_mission);
+kaydine_convo_template:addScreen(mission2_ready);
 
-start_first_mission = ConvoScreen:new {
-	id = "start_first_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a80d9308", -- Good luck!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(start_first_mission);
-
-try_first_mission = ConvoScreen:new {
-	id = "try_first_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_726bdb69", -- Good! Then let's get you back out there right away!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(try_first_mission);
-
-cant_wait_first = ConvoScreen:new {
-	id = "cant_wait_first",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a80d9308", -- Good luck!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(cant_wait_first);
-
--- First Mission Complete
-complete_first_mission = ConvoScreen:new {
-	id = "complete_first_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9abb9538", -- Fantastic work! The space station holocomm'd me regarding a massive battle between a lone RSF pilot...
+mission3_ready = ConvoScreen:new {
+	id = "mission3_ready",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8b529447",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_aa77ffde", "according_to_plan"}, -- It was nothing
+		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "mission3_offer"},
+		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"},
 	}
 }
-kaydine_convo_template:addScreen(complete_first_mission);
+kaydine_convo_template:addScreen(mission3_ready);
 
-according_to_plan = ConvoScreen:new {
-	id = "according_to_plan",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8d90962a", -- Nonsense! You've earned this.
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(according_to_plan);
-
-first_mission_success = ConvoScreen:new {
-	id = "first_mission_success",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9248b2ba", -- Well you've certainly earned it. I'll talk to you later.
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(first_mission_success);
-
--- Second Mission: Escort Prison Ship
-second_mission = ConvoScreen:new {
-	id = "second_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ec671b3f", -- Well, the Empire has demanded that the prisoners be turned over for questioning.
+mission4_ready = ConvoScreen:new {
+	id = "mission4_ready",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8b529447",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_2d67b7a8", "accept_escort_details"}, -- Where do I come in?
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "mission4_offer"},
+		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"},
 	}
 }
-kaydine_convo_template:addScreen(second_mission);
+kaydine_convo_template:addScreen(mission4_ready);
 
-accept_escort_details = ConvoScreen:new {
-	id = "accept_escort_details",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_287eca83", -- We needed to get that prisoner ship out of the Naboo system to keep the Empire happy.
+mission1_offer = ConvoScreen:new {
+	id = "mission1_offer",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4a743aa7",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "accept_escort"}, -- Yes, Captain. I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
 	}
 }
-kaydine_convo_template:addScreen(accept_escort_details);
+kaydine_convo_template:addScreen(mission1_offer);
 
-failed_second_mission = ConvoScreen:new {
-	id = "failed_second_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_6da2c92b", -- I realize there were a lot of fighters up there to deal with... but nothing changes the fact that the Ay'Nat Legion must go!
+mission1_brief = ConvoScreen:new {
+	id = "mission1_brief",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_240",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_4a1d2431", "back_to_escort"}, -- Yes, I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_242", "mission1_accept"},
 	}
 }
-kaydine_convo_template:addScreen(failed_second_mission);
+kaydine_convo_template:addScreen(mission1_brief);
 
-accept_escort = ConvoScreen:new {
-	id = "accept_escort",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_57ba8a73", -- In that case, let's get you back up there. This time make sure the RSF prison ship makes it out of the system.
+mission1_accept_male = ConvoScreen:new {
+	id = "mission1_accept_male",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_244",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(accept_escort);
+kaydine_convo_template:addScreen(mission1_accept_male);
 
-back_to_escort = ConvoScreen:new {
-	id = "back_to_escort",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_57ba8a73", -- In that case, let's get you back up there. This time make sure the RSF prison ship makes it out of the system.
+mission1_accept = ConvoScreen:new {
+	id = "mission1_accept",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_246",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(back_to_escort);
+kaydine_convo_template:addScreen(mission1_accept);
 
-now_is_good = ConvoScreen:new {
-	id = "now_is_good",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_d586f458", -- Excellent! Get back out there and do me proud!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(now_is_good);
-
-be_smarter = ConvoScreen:new {
-	id = "be_smarter",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_85263c6d", -- We can't afford to botch this opportunity!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(be_smarter);
-
--- Second Mission Complete
-complete_second_mission = ConvoScreen:new {
-	id = "complete_second_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_70287826", -- Now that's showing some excellent leadership potential! You've really earned your pay this time.
+mission2_offer = ConvoScreen:new {
+	id = "mission2_offer",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9af8d581",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_5fa9a5d3", "duty_calls"}, -- Thanks
+		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
 	}
 }
-kaydine_convo_template:addScreen(complete_second_mission);
+kaydine_convo_template:addScreen(mission2_offer);
 
-duty_calls = ConvoScreen:new {
-	id = "duty_calls",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9248b2ba", -- Well you've certainly earned it. I'll talk to you later.
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(duty_calls);
-
-here_is_pay = ConvoScreen:new {
-	id = "here_is_pay",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ae21cb72", -- Thanks to you! Great work, %NU. You've really earned these credits.
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(here_is_pay);
-
--- Third Mission: Recover Stolen Ships
-third_mission = ConvoScreen:new {
-	id = "third_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_35fb22d6", -- The Royal family has increased security in the wake of recent theft. A number of Her Majesty's personal starships have gone missing.
+mission2_brief = ConvoScreen:new {
+	id = "mission2_brief",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_274",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_a6c7fa2b", "accept_inspect"}, -- What are the details?
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_276", "mission2_details"},
 	}
 }
-kaydine_convo_template:addScreen(third_mission);
+kaydine_convo_template:addScreen(mission2_brief);
 
-failed_third_mission = ConvoScreen:new {
-	id = "failed_third_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_85263c6d", -- We can't afford to botch this opportunity! RSF has a new battery of information... and another chance...
+mission2_details = ConvoScreen:new {
+	id = "mission2_details",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_278",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_4a1d2431", "on_your_way"}, -- Yes, I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_280", "mission2_accept"},
 	}
 }
-kaydine_convo_template:addScreen(failed_third_mission);
+kaydine_convo_template:addScreen(mission2_details);
 
-accept_inspect = ConvoScreen:new {
-	id = "accept_inspect",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_3cef63a0", -- Fly out to your choice of strike points... look for Ay'Nat Legion fighters.
+mission2_accept = ConvoScreen:new {
+	id = "mission2_accept",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_282",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(accept_inspect);
+kaydine_convo_template:addScreen(mission2_accept);
 
-on_your_way = ConvoScreen:new {
-	id = "on_your_way",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_726bdb69", -- Good! Then let's get you back out there right away!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(on_your_way);
-
-take_it_serious = ConvoScreen:new {
-	id = "take_it_serious",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_bb291959", -- Excellent! Be careful up there! Those Ay'Nat outlaws are deadly enemies!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(take_it_serious);
-
-bad_liar = ConvoScreen:new {
-	id = "bad_liar",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_da8818c5", -- If you say so, %NU. I still say it's an impressive accomplishment.
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(bad_liar);
-
--- Third Mission Complete
-complete_third_mission = ConvoScreen:new {
-	id = "complete_third_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ef08027f", -- That's excellent news for the peaceful citizens of the Naboo system.
+mission3_offer = ConvoScreen:new {
+	id = "mission3_offer",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_130b925b",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_5fa9a5d3", "turnover_intelligence"}, -- Thanks
+		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
 	}
 }
-kaydine_convo_template:addScreen(complete_third_mission);
+kaydine_convo_template:addScreen(mission3_offer);
 
-turnover_intelligence = ConvoScreen:new {
-	id = "turnover_intelligence",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9248b2ba", -- Well you've certainly earned it. I'll talk to you later.
+mission3_accept = ConvoScreen:new {
+	id = "mission3_accept",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_292",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(turnover_intelligence);
+kaydine_convo_template:addScreen(mission3_accept);
 
--- Fourth Mission: Hunt Ace Outlaws
-fourth_mission = ConvoScreen:new {
-	id = "fourth_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_c4ef0e93", -- We need you to slip in to Ay'Nat-controlled space, and hunt down a trio of Ace outlaws.
+mission4_offer = ConvoScreen:new {
+	id = "mission4_offer",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_387397fb",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_1b428a9f", "accept_assassinate"}, -- Yes, Captain. I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
 	}
 }
-kaydine_convo_template:addScreen(fourth_mission);
+kaydine_convo_template:addScreen(mission4_offer);
 
-failed_fourth_mission = ConvoScreen:new {
-	id = "failed_fourth_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_65042122", -- So, I hear you were not able to destroy all three of the Ay'Nat Legion's outlaw fighters. But don't worry...
+mission4_brief = ConvoScreen:new {
+	id = "mission4_brief",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_298",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_4a1d2431", "nonsense"}, -- Yes, I'm ready.
-		{"@conversation/naboo_privateer_trainer_2:s_1c2b565d", "not_ready"}, -- Not quite yet, sir.
+		{"@conversation/naboo_privateer_trainer_2:s_300", "mission4_accept"},
 	}
 }
-kaydine_convo_template:addScreen(failed_fourth_mission);
+kaydine_convo_template:addScreen(mission4_brief);
 
-accept_assassinate = ConvoScreen:new {
-	id = "accept_assassinate",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ff45f1fd", -- Good luck to you, Captain %TU!
+mission4_accept = ConvoScreen:new {
+	id = "mission4_accept",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_302",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(accept_assassinate);
+kaydine_convo_template:addScreen(mission4_accept);
 
-nonsense = ConvoScreen:new {
-	id = "nonsense",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_726bdb69", -- Good! Then let's get you back out there right away!
+mission1_failed = ConvoScreen:new {
+	id = "mission1_failed",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_65042122",
+	stopConversation = "false",
+	animation = "shrug_hands",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_45", "mission1_failed_end"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_failed);
+
+mission1_failed_end = ConvoScreen:new {
+	id = "mission1_failed_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_bb291959",
 	stopConversation = "true",
+	animation = "salute1",
 	options = {}
 }
-kaydine_convo_template:addScreen(nonsense);
+kaydine_convo_template:addScreen(mission1_failed_end);
 
-let_me_know = ConvoScreen:new {
-	id = "let_me_know",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_d586f458", -- Excellent! Get back out there and do me proud!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(let_me_know);
-
-report_back_success = ConvoScreen:new {
-	id = "report_back_success",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a80d9308", -- Good luck!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(report_back_success);
-
-key_to_success = ConvoScreen:new {
-	id = "key_to_success",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_225b33f", -- Good luck, son!
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(key_to_success);
-
-just_malfunctioned = ConvoScreen:new {
-	id = "just_malfunctioned",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_b0ab3e88", -- Oh! You had me going there. Well you've earned that, anyway.
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(just_malfunctioned);
-
--- Fourth Mission Complete
-complete_fourth_mission = ConvoScreen:new {
-	id = "complete_fourth_mission",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_76e6f264", -- Captain %TU! You are doing a fantastic job! I think you've grown enough as a pilot to warrant advancement.
+mission2_failed = ConvoScreen:new {
+	id = "mission2_failed",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_6da2c92b",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_5fa9a5d3", "fourth_mission_success"}, -- Thanks
+		{"@conversation/naboo_privateer_trainer_2:s_49", "mission2_failed_end"},
 	}
 }
-kaydine_convo_template:addScreen(complete_fourth_mission);
+kaydine_convo_template:addScreen(mission2_failed);
 
-fourth_mission_success = ConvoScreen:new {
-	id = "fourth_mission_success",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_aa83c988", -- Head deeper into the palace, my friend! Look for Commander Dulios.
+mission2_failed_end = ConvoScreen:new {
+	id = "mission2_failed_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_d586f458",
+	stopConversation = "true",
+	animation = "salute1",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission2_failed_end);
+
+mission3_failed = ConvoScreen:new {
+	id = "mission3_failed",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_85263c6d",
+	stopConversation = "false",
+	animation = "pound_fist_palm",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_c8f39347", "mission3_failed_end"},
+	}
+}
+kaydine_convo_template:addScreen(mission3_failed);
+
+mission3_failed_end = ConvoScreen:new {
+	id = "mission3_failed_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_726bdb69",
+	stopConversation = "true",
+	animation = "salute1",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission3_failed_end);
+
+mission4_failed = ConvoScreen:new {
+	id = "mission4_failed",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_287eca83",
+	stopConversation = "false",
+	animation = "shake_head_disgust",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_9817b9bb", "mission4_failed_end"},
+	}
+}
+kaydine_convo_template:addScreen(mission4_failed);
+
+mission4_failed_end = ConvoScreen:new {
+	id = "mission4_failed_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_57ba8a73",
+	stopConversation = "true",
+	animation = "salute1",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission4_failed_end);
+
+mission1_complete = ConvoScreen:new {
+	id = "mission1_complete",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_43148596",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_370822d1", "mission1_reward"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_complete);
+
+mission1_reward = ConvoScreen:new {
+	id = "mission1_reward",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ef08027f",
+	stopConversation = "false",
+	animation = "applause_polite",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_d65590b1", "mission1_reward_modest"},
+		{"@conversation/naboo_privateer_trainer_2:s_326deced", "mission1_reward_more"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_reward);
+
+mission1_reward_modest = ConvoScreen:new {
+	id = "mission1_reward_modest",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8d90962a",
+	stopConversation = "true",
+	animation = "shake_head_no",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission1_reward_modest);
+
+mission1_reward_more = ConvoScreen:new {
+	id = "mission1_reward_more",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_be7af651",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_ce72ef85", "mission1_reward_joke"},
+		{"@conversation/naboo_privateer_trainer_2:s_5fa9a5d3", "mission1_reward_thanks"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_reward_more);
+
+mission1_reward_joke = ConvoScreen:new {
+	id = "mission1_reward_joke",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_b0ab3e88",
+	stopConversation = "true",
+	animation = "smack_self",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission1_reward_joke);
+
+mission1_reward_thanks = ConvoScreen:new {
+	id = "mission1_reward_thanks",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9928bf27",
+	stopConversation = "true",
+	animation = "rub_chin_thoughtful",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission1_reward_thanks);
+
+mission2_reward = ConvoScreen:new {
+	id = "mission2_reward",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9abb9538",
+	stopConversation = "false",
+	animation = "bow2",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_aa77ffde", "mission2_reward_modest"},
+		{"@conversation/naboo_privateer_trainer_2:s_b45e2166", "mission2_reward_proud"},
+	}
+}
+kaydine_convo_template:addScreen(mission2_reward);
+
+mission2_reward_modest = ConvoScreen:new {
+	id = "mission2_reward_modest",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_da8818c5",
+	stopConversation = "true",
+	animation = "belly_laugh",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission2_reward_modest);
+
+mission2_reward_proud = ConvoScreen:new {
+	id = "mission2_reward_proud",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_70287826",
+	stopConversation = "true",
+	animation = "snap_finger2",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission2_reward_proud);
+
+mission3_complete = ConvoScreen:new {
+	id = "mission3_complete",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a0c23472",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_75", "mission3_reward"},
+	}
+}
+kaydine_convo_template:addScreen(mission3_complete);
+
+mission3_reward = ConvoScreen:new {
+	id = "mission3_reward",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_d2ffe31e",
+	stopConversation = "false",
+	animation = "applause_polite",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_78", "mission3_reward_end"},
+		{"@conversation/naboo_privateer_trainer_2:s_45d20070", "ready_train_pilot"},
+		{"@conversation/naboo_privateer_trainer_2:s_6114e8b7", "mission3_reward_duty"},
+	}
+}
+kaydine_convo_template:addScreen(mission3_reward);
+
+mission3_reward_end = ConvoScreen:new {
+	id = "mission3_reward_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9248b2ba",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(fourth_mission_success);
+kaydine_convo_template:addScreen(mission3_reward_end);
+
+mission3_reward_duty = ConvoScreen:new {
+	id = "mission3_reward_duty",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_7bc9bef7",
+	stopConversation = "false",
+	animation = "rub_chin_thoughtful",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_9b73da8", "accept_duty_escort"},
+		{"@conversation/naboo_privateer_trainer_2:s_30297e22", "accept_duty_recovery"},
+		{"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy1"},
+	}
+}
+kaydine_convo_template:addScreen(mission3_reward_duty);
+
+mission4_complete = ConvoScreen:new {
+	id = "mission4_complete",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_afe7700f",
+	stopConversation = "false",
+	animation = "salute2",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_588f56b2", "mission4_reward"},
+	}
+}
+kaydine_convo_template:addScreen(mission4_complete);
+
+mission4_reward = ConvoScreen:new {
+	id = "mission4_reward",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ae21cb72",
+	stopConversation = "false",
+	animation = "nod_head_once",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_c261cfae", "mission4_reward_dulios"},
+		{"@conversation/naboo_privateer_trainer_2:s_725573da", "mission4_reward_end"},
+	}
+}
+kaydine_convo_template:addScreen(mission4_reward);
+
+mission4_reward_dulios = ConvoScreen:new {
+	id = "mission4_reward_dulios",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_aae78dca",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission4_reward_dulios);
+
+mission4_reward_end = ConvoScreen:new {
+	id = "mission4_reward_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_90",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission4_reward_end);
+
+completed_kaydine_end = ConvoScreen:new {
+	id = "completed_kaydine_end",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_aa83c988",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(completed_kaydine_end);
 
 -- Not ready
 not_ready = ConvoScreen:new {

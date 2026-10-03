@@ -1680,4 +1680,135 @@ function SpaceHelpers:declareOvert(pShip, faction)
 	TangibleObject(pShip):setFactionStatus(OVERT)
 end
 
+-- Removes every persistent trace of a quest whose global no longer exists: journal entry, datapad mission,
+-- quest waypoint and the persistent observers of its class. Never calls a method on the (absent) class global.
+-- @param pPlayer pointer to the player
+-- @param questType legacy quest type
+-- @param questName legacy quest name
+function SpaceHelpers:purgeSpaceQuest(pPlayer, questType, questName)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost == nil) then
+		return
+	end
+
+	local className = questType .. "_" .. questName
+
+	self:failSpaceQuest(pPlayer, questType, questName, false)
+	self:clearQuestWaypoint(pPlayer, className)
+
+	dropObserver(ZONESWITCHED, className, "enteredZone", pPlayer)
+	dropObserver(INSPECTEDSHIP, className, "inspectedShip", pPlayer)
+	dropObserver(SHIPDOCKED, className, "dockedShip", pPlayer)
+end
+
+-- Moves a completed journal entry of a renamed or deleted quest onto its replacements, then purges it.
+-- @param moveTo list of {type, name}; empty when the quest was deleted
+-- @return true if a completion was written
+function SpaceHelpers:migrateSpaceQuestEntry(pPlayer, oldType, oldName, moveTo)
+	if (pPlayer == nil) then
+		return false
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost == nil) then
+		return false
+	end
+
+	for _, target in ipairs(moveTo) do
+		if (target.type == oldType and target.name == oldName) then
+			return false
+		end
+	end
+
+	local written = false
+	local oldCRC = getHashCode("spacequest/" .. oldType .. "/" .. oldName)
+
+	if (#moveTo > 0 and PlayerObject(pGhost):isJournalQuestComplete(oldCRC)) then
+		local targetActive = false
+
+		for _, target in ipairs(moveTo) do
+			if (PlayerObject(pGhost):isJournalQuestActive(getHashCode("spacequest/" .. target.type .. "/" .. target.name))) then
+				targetActive = true
+			end
+		end
+
+		if (not targetActive) then
+			for _, target in ipairs(moveTo) do
+				local targetCRC = getHashCode("spacequest/" .. target.type .. "/" .. target.name)
+
+				if (not PlayerObject(pGhost):isJournalQuestComplete(targetCRC)) then
+					PlayerObject(pGhost):activateJournalQuest(targetCRC, false)
+					PlayerObject(pGhost):completeJournalQuest(targetCRC, false)
+					written = true
+				end
+			end
+		end
+	end
+
+	self:purgeSpaceQuest(pPlayer, oldType, oldName)
+
+	return written
+end
+
+-- Renames quest status keys. All old keys are read before any is changed, so chains of colliding names work.
+-- @param moves list of {old = "<suffix>", new = "<suffix>" or nil}; keys are <objectID><suffix>
+function SpaceHelpers:moveQuestStatuses(pPlayer, moves)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
+	local values = {}
+
+	for i, move in ipairs(moves) do
+		values[i] = getQuestStatus(playerID .. move.old)
+	end
+
+	for i, move in ipairs(moves) do
+		if (values[i] ~= nil) then
+			removeQuestStatus(playerID .. move.old)
+		end
+	end
+
+	for i, move in ipairs(moves) do
+		if (values[i] ~= nil and move.new ~= nil and getQuestStatus(playerID .. move.new) == nil) then
+			setQuestStatus(playerID .. move.new, values[i])
+		end
+	end
+end
+
+-- Runs the migration steps a character has not seen yet, in order, marking each as done.
+-- @param screenplayName global name of the screenplay holding the step functions
+-- @param stepNames ordered list of function names
+-- @return number of steps run
+function SpaceHelpers:runProgressMigrations(pPlayer, screenplayName, stepNames)
+	if (pPlayer == nil) then
+		return 0
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost == nil) then
+		return 0
+	end
+
+	local key = CreatureObject(pPlayer):getObjectID() .. screenplayName .. ":legacyVersion"
+	local version = tonumber(getQuestStatus(key)) or 0
+	local ran = 0
+
+	for k = version + 1, #stepNames do
+		_G[screenplayName][stepNames[k]](_G[screenplayName], pPlayer)
+		setQuestStatus(key, k)
+		ran = ran + 1
+	end
+
+	return ran
+end
+
 return SpaceHelpers

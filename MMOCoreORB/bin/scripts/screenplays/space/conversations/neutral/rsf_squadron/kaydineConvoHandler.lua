@@ -26,9 +26,13 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("not_pilot")
 	end
 
-	-- Check if player has any pilot skills
-	if (not SpaceHelpers:isNeutralPilot(pPlayer)) then
+	-- Check if player has any pilot skills, then which faction (naboo_privateer_trainer_2.java:3881-3898)
+	if (not SpaceHelpers:isPilot(pPlayer)) then
 		return convoTemplate:getScreen("not_pilot")
+	elseif (SpaceHelpers:isRebelPilot(pPlayer)) then
+		return convoTemplate:getScreen("rebel_pilot")
+	elseif (SpaceHelpers:isImperialPilot(pPlayer)) then
+		return convoTemplate:getScreen("imperial_pilot")
 	end
 
 	-- We know the player is a neutral pilot, check if pilot is a different squadron
@@ -192,6 +196,11 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	elseif (screenID == "accept_duty_destroy") then
 		destroy_duty_naboo_privateer_11:startQuest(pPlayer, pNpc)
 
+	-- Off-track pilots may fly a duty (naboo_privateer_trainer_2.java:282-343)
+	elseif (screenID == "pilot_not_rsf") then
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_c1ff5062", self:canFlyNonTrackDuty(pPlayer) and "non_rsf_duty_options" or "non_rsf_missions")
+
 	-- Mission Rewards
 	elseif (screenID == "mission4_reward") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward", 1)
@@ -245,6 +254,22 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	end
 
 	return pClonedScreen
+end
+
+-- Any of Kaydine's story chains or duties is running (the on_mission condition of getInitialScreen)
+function kaydineConvoHandler:isOnMission(pPlayer)
+	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_naboo_privateer_tier2_1a")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "destroy_naboo_privateer_13")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "recovery_naboo_privateer_14")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "escort_naboo_privateer_15")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_1.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_2.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.name)
+end
+
+-- SWG canFlyNonTrackDuty (naboo_privateer_trainer_2.java:183-190): all of tier 1 and no quest
+function kaydineConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
 end
 
 -- The story mission the pilot is on: 5 once mission 4 is won, else 1 + the number of missions won in order

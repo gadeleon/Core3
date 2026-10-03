@@ -122,7 +122,7 @@ function imlerConvoHandler:flagKey(pPlayer, suffix)
 end
 
 function imlerConvoHandler:canFlyNonTrackDuty(pPlayer)
-	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3) and not self:isOnMission(pPlayer)
+	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
 end
 
 function imlerConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)

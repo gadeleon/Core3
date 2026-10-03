@@ -823,6 +823,34 @@ function SpaceHelpers:hasExperienceForTraining(pPlayer, tierNumber)
 	return (PlayerObject(pGhost):getExperience("space_combat_general") >= xpNeeded)
 end
 
+-- Port of SWG space_quest.hasQuest(player): true when the datapad holds a space mission (a mission object with a quest CRC). Read-only.
+-- @param pPlayer pointer to check
+function SpaceHelpers:hasSpaceQuest(pPlayer)
+	if (pPlayer == nil) then
+		return false
+	end
+
+	local pDatapad = SceneObject(pPlayer):getSlottedObject("datapad")
+
+	if (pDatapad == nil) then
+		return false
+	end
+
+	for i = 1, SceneObject(pDatapad):getContainerObjectsSize(), 1 do
+		local pObject = SceneObject(pDatapad):getContainerObject(i - 1)
+
+		if (pObject ~= nil and SceneObject(pObject):isMissionObject()) then
+			local questCRC = LuaMissionObject(pObject):getQuestCRC()
+
+			if (questCRC ~= nil and questCRC ~= 0) then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
 --[[
 
 		Space Quest Handling

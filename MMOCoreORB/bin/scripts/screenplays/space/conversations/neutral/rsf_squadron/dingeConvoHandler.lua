@@ -8,6 +8,21 @@ dingeConvoHandler.TRAIN_SCREENS = {
 	train_droid = "pilot_neutral_droid_01"
 }
 
+-- Any of Dinge's story chains or duties is running (the journal checks of getInitialScreen)
+function dingeConvoHandler:isOnMission(pPlayer)
+	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_naboo_privateer_1")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_2.type, RsfSquadronScreenplay.QUEST_STRING_2.name)
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_naboo_privateer_3")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_4.type, RsfSquadronScreenplay.QUEST_STRING_4.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_DUTY_4_1.type, RsfSquadronScreenplay.QUEST_STRING_DUTY_4_1.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_DUTY_4_2.type, RsfSquadronScreenplay.QUEST_STRING_DUTY_4_2.name)
+end
+
+-- SWG canFlyNonTrackDuty (naboo_privateer_trainer_1.java:166-173): any tier 1 skill and no quest
+function dingeConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 1) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
+end
+
 -- naboo_privateer_trainer_1.java:60-70
 function dingeConvoHandler:isReadyForFirstTraining(pPlayer)
 	return not SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 1)
@@ -246,6 +261,10 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 
 		clonedConversation:removeAllOptions()
 		clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_143", link)
+	elseif (screenID == "non_rsf_pilot") then
+		-- Off-track pilots may fly a duty (naboo_privateer_trainer_1.java:983-1059)
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_c1ff5062", self:canFlyNonTrackDuty(pPlayer) and "non_rsf_duty_offer" or "non_rsf_duty_missions")
 	elseif (screenID == "go_to_tier2") then
 		-- Increment tier when player is sent to Kaydine
 		if (ghost:getPilotTier() == 1) then

@@ -1,10 +1,12 @@
 -- Shared test data for the RSF tier 1 Dinge conversation (not a test file).
--- Spec: .claude/work/rsf-tier1-dinge-convo/01-spec.md (Appendix A, Content contract, Data mapping).
+-- Spec: .claude/work/rsf-tier1-dinge-convo/01-spec.md (Appendix A, Content contract, Data mapping); updated for
+-- .claude/work/rsf-tier1-dinge-training/01-spec.md section 3 (72 screens, 9 kept, no foreign sids, DH regions truncated or deleted).
 --
 -- Everything below is copied from the spec or from commit 4eefa91216, not read from dinge_convo.lua / dingeConvoHandler.lua at test
 -- time, so a wrong production value makes a test fail instead of agreeing with itself:
 --   D.ROWS      Appendix A, 60 rows (status "new" | "chg" | "kept"), options as {sid, link id}; yes_enlist carries no template options (E-2)
---   D.KEPT      the 16 screens that stay byte-identical, as defined at 4eefa91216 (the 9 Appendix A "kept" rows + 7 training screens)
+--   D.KEPT      the 9 screens that stay byte-identical, as defined at 4eefa91216 (the 9 Appendix A "kept" rows; the 7 training screens left
+--               with rsf-tier1-dinge-training, see rsf_tier1_dinge_training_data.lua)
 --   D.DELETED   the 20 screens F6 had for the old story mission flow
 --   D.PAYS / D.STARTS  the handler contract (Content contract 2)
 --   D.DH_*      the DH lines Content contract 2 says do not change, as they are at 4eefa91216
@@ -13,7 +15,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_1:"
 D.TEMPLATE = "dinge_convo_template"
-D.SCREEN_COUNT = 67 -- 47 - 20 deleted + 40 new
+D.SCREEN_COUNT = 72 -- 47 - 20 deleted + 40 new, then rsf-tier1-dinge-training: - 6 deleted + 11 new
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1).
 D.ROWS = {
@@ -82,7 +84,7 @@ D.ROWS = {
 -- E-6: the java animation the two gate screens lack (kept without animation; gate screens are gap report item 24)
 D.JAVA_ONLY_ANIMATION = { rebel_pilot = "slow_down", imperial_pilot = "salute1" }
 
--- Content contract 1: the 16 screens kept byte-identical (definitions at 4eefa91216)
+-- Content contract 1: the 9 screens kept byte-identical (definitions at 4eefa91216)
 D.KEPT = {
 	["no_jtl"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_7c1fe68f", stopConversation = "true", options = {  } },
 	["rebel_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_72f94b8e", stopConversation = "true", options = {  } },
@@ -93,13 +95,6 @@ D.KEPT = {
 	["go_to_tier2"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_919029b", stopConversation = "true", options = {  } },
 	["destroy_duty"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_6575e5d0", stopConversation = "true", options = {  } },
 	["escort_duty"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_90b16aa7", stopConversation = "true", options = {  } },
-	["missions_complete"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_6ea4aa1e", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "more_training"}, {"@conversation/naboo_privateer_trainer_1:s_c4682ea6", "thanks_bye"} } },
-	["thanks_bye"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", stopConversation = "true", options = {  } },
-	["more_training"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_122b0165", stopConversation = "false", options = {  } },
-	["train_player_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", stopConversation = "true", options = {  } },
-	["train_player_component"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", stopConversation = "true", options = {  } },
-	["train_player_basics"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", stopConversation = "true", options = {  } },
-	["train_player_droid"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", stopConversation = "true", options = {  } },
 }
 
 -- Content contract 1: the 20 deleted screens
@@ -129,8 +124,8 @@ D.FAILED = {
 }
 
 -- Sids the files may carry that are not in the java (I-3)
-D.DC_FOREIGN = { s_cd72f93 = true }
-D.DH_FOREIGN = { s_e94f494b = true, s_939b6844 = true, s_ac00d21e = true, s_1726d8a5 = true }
+D.DC_FOREIGN = {}
+D.DH_FOREIGN = {}
 D.GONE_SID = "s_e9c7c6bb"
 
 -- The four screens that show a story mission's first line when the pilot has not tried it yet, then the ones for the other states
@@ -222,18 +217,7 @@ function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("has_mission")
 	-- Check if players have all the tier1 skill boxes, send them to next trainer.
 	elseif (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1)) then
-		return convoTemplate:getScreen("completed_tier1")
-	-- Player is an RSF pilot and has at least one of the Tier1 skill boxes
-	elseif (SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 1)) then
-		-- Check if the player can be trained in the remaining Tier1 Skills
-		if (SpaceHelpers:hasExperienceForTraining(pPlayer, 1)) then
-			return convoTemplate:getScreen("more_training")
-		-- Offer Duty missions
-		else]==]
-D.DH_DUTY_RETURN = [==[
-			return convoTemplate:getScreen("duty_missions")
-		end
-	-- Player has finished 4 and has received the reward, but needs to accept training of first pilot skill]==]
+		return convoTemplate:getScreen("completed_tier1")]==]
 D.DH_PROLOGUE = [==[
 function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
 	if (pPlayer == nil or pConvScreen == nil) then
@@ -259,54 +243,6 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	if (ghost == nil) then
 		return pClonedScreen
 	end]==]
-D.DH_TRAINING = [==[
-	-- Handle additional training
-	if (screenID == "more_training") then
-		local skillManager = LuaSkillManager()
-
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_starships_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_starships_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_e94f494b", "train_player_fighters") -- I want to know about basic fighters.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_weapons_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_weapons_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_939b6844", "train_player_component") -- I want to know about basic starship component use.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_procedures_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_procedures_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_ac00d21e", "train_player_basics") -- I want to know about basic training.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_droid_01") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_droid_01")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_1726d8a5", "train_player_droid") -- I want to know about droid interface basics.
-		end
-	-- Handle Skill box granting
-	elseif (string.find(screenID, "train_player_")) then
-		local skillManager = LuaSkillManager()
-
-		local deductExperience = (string.find(screenID, "_free") == nil)
-
-		screenID = string.gsub(screenID, "_free", "")
-
-		if (screenID == "train_player_droid") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_droid_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_droid_01", deductExperience)
-			end
-		elseif (screenID == "train_player_basics") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_procedures_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_procedures_01", deductExperience)
-			end
-		elseif (screenID == "train_player_fighters") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_starships_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_starships_01", deductExperience)
-			end
-		elseif (screenID == "train_player_component") then
-			if (not deductExperience or skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_weapons_01")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_weapons_01", deductExperience)
-			end
-		end
-
-		if (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1) and ghost:getPilotTier() == 1) then
-			ghost:incrementPilotTier()
-		end
-
-		return pClonedScreen]==]
 D.DH_TIER2_AND_DUTIES = [==[
 	elseif (screenID == "go_to_tier2") then
 		-- Increment tier when player is sent to Kaydine

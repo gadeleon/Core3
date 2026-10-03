@@ -1,6 +1,7 @@
 -- Dinge (RSF tier 1) on SWG's story dialogue: what the conversation does. Offers that grant at the end of the SWG chain, the failure
 -- screens and where they re-grant (D-12), payments on the reward screens (D-4), the running-mission and directions screens, signup and
--- the ship grant, the duty menu, the tier-done line, training left alone, and the handler/template agreement (dynamic part).
+-- the ship grant, the duty menu, the tier-done line, and the handler/template agreement (dynamic part). Training is in test_rsf_tier1_dinge_training_*.lua;
+-- the rows and tests below that touched it were superseded by .claude/work/rsf-tier1-dinge-training/01-spec.md (D-12 routing, groups S and T).
 -- Spec: .claude/work/rsf-tier1-dinge-convo/01-spec.md (AC-3 .. AC-10, invariants I-4, I-5, Conversation flow C1-C17).
 -- Appendix A (rsf_tier1_dinge_convo_data.lua) is the answer key for screens, options and actions.
 -- Fake limits: the harness does not model NPC animations (they are template fields, checked in the template test) and
@@ -236,11 +237,11 @@ local FIRST_SCREENS = {
 	{ "c4_escort_duty_running", function() return T.player(tr, 4, { win = { 1, 2, 3, 4 }, active = { DUTY7 } }) end, "has_mission" },
 	-- C5
 	{ "c5_all_four_tier_1_skills", function() return T.player(tr, 1, { skills = SKILLS_01 }) end, "completed_tier1" },
-	-- C6, C7 (unchanged F8 routing)
-	{ "c6_tier_1_skill_and_xp_to_train", function() return T.player(tr, 1, { skills = { SKILLS_01[1] }, experience = { space_combat_general = 7500 } }) end, "more_training" },
-	{ "c7_tier_1_skill_and_no_xp", function() return T.player(tr, 1, { skills = { SKILLS_01[1] } }) end, "duty_missions" },
+	-- C6, C7 (setup: M4 won and paid, D-12 of rsf-tier1-dinge-training; the screens are unchanged)
+	{ "c6_tier_1_skill_and_xp_to_train", function() return T.player(tr, 1, { win = { 1, 2, 3, 4 }, skills = { SKILLS_01[1] }, experience = { space_combat_general = 7500 } }) end, "more_training" },
+	{ "c7_tier_1_skill_and_no_xp", function() return T.player(tr, 4, { win = { 1, 2, 3, 4 }, skills = { SKILLS_01[1] } }) end, "duty_missions" },
 	-- C8, C9
-	{ "c8_mission_4_won_and_paid", function() return T.player(tr, 4, { win = { 1, 2, 3, 4 } }) end, "missions_complete" },
+	{ "c8_mission_4_won_and_paid", function() return T.player(tr, 4, { win = { 1, 2, 3, 4 } }) end, "first_training" },
 	{ "c9_mission_4_won_not_paid", function() return wonUnpaid(4) end, "mission4_reward" },
 	-- C10
 	{ "c10_mission_4_attempted_and_not_won", function() return T.player(tr, 4, {}) end, "mission4_failed" },
@@ -632,7 +633,7 @@ function TestDingeRewards:tearDown() restore() end
 
 for n = 1, 4 do
 	local screen = "mission" .. n .. "_reward"
-	local nextScreen = n < 4 and D.OFFER[n + 1] or "missions_complete"
+	local nextScreen = n < 4 and D.OFFER[n + 1] or "first_training"
 
 	-- AC-5: only the conversation's first screen pays
 	TestDingeRewards["test_get_initial_screen_alone_pays_nothing_for_" .. screen] = function()
@@ -735,16 +736,16 @@ function TestDingeRewards:test_the_bandolier_line_and_the_mission_4_offer_start_
 	lu.assertNil(attempted(player, 4), "naboo_privateer_tier1_4a:attempted before the accept screen")
 end
 
--- AC-5: SWG's tier done follow-up: M4's reward line is the story's last screen
-function TestDingeRewards:test_mission_4_reward_is_followed_by_missions_complete_in_the_next_conversation_with_its_two_training_options()
+-- AC-5 (superseded by rsf-tier1-dinge-training D-12): M4's reward line is followed by SWG's first training
+function TestDingeRewards:test_mission_4_reward_is_followed_by_first_training_in_the_next_conversation_with_its_single_option()
 	local player = wonUnpaid(4)
 
 	T.converse(tr, player)
 
 	local transcript = T.converse(tr, player)
 
-	lu.assertEquals(transcript[1].id, "missions_complete", "first screen")
-	lu.assertEquals(texts(transcript[1].options), sids({ "s_db74ddc6", "s_c4682ea6" }), "missions_complete: options (unchanged, F8)")
+	lu.assertEquals(transcript[1].id, "first_training", "first screen")
+	lu.assertEquals(texts(transcript[1].options), sids({ "s_139" }), "first_training: options")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -997,7 +998,7 @@ TestDingeDutyMenu = {}
 function TestDingeDutyMenu:setUp() H.reset() end
 function TestDingeDutyMenu:tearDown() restore() end
 
-local function dutyPilot() return T.player(tr, 1, { skills = { SKILLS_01[1] } }) end
+local function dutyPilot() return T.player(tr, 4, { win = { 1, 2, 3, 4 }, skills = { SKILLS_01[1] } }) end
 local DUTY_OPTIONS = { "s_6106187c", "s_e814cf37", "s_db74ddc6", "s_2883b989" }
 
 -- AC-8
@@ -1091,7 +1092,7 @@ function TestDingeDutyMenu:test_a_pilot_with_a_finished_duty_and_a_tier_1_skill_
 end
 
 ---------------------------------------------------------------------------------------------
--- AC-9: tier done, training untouched
+-- AC-9: tier done
 ---------------------------------------------------------------------------------------------
 
 TestDingeTierDoneAndTraining = {}
@@ -1127,46 +1128,8 @@ function TestDingeTierDoneAndTraining:test_go_to_tier2_does_not_raise_a_pilot_wh
 	lu.assertEquals(player.ghost:getPilotTier(), 2, "pilot tier")
 end
 
--- AC-9 (regression, F8): more_training offers the skills the pilot lacks, in the same order and strings
-function TestDingeTierDoneAndTraining:test_more_training_lists_the_missing_skills_with_the_unchanged_options()
-	local player = T.player(tr, 1, { skills = { SKILLS_01[1] }, experience = { space_combat_general = 7500 } })
-	local transcript = T.converse(tr, player)
-
-	lu.assertEquals(transcript[1].id, "more_training", "first screen")
-	lu.assertEquals(texts(transcript[1].options), { P .. "s_e94f494b", P .. "s_939b6844", P .. "s_ac00d21e" }, "more_training: options")
-	lu.assertEquals({ transcript[1].options[1].link, transcript[1].options[2].link, transcript[1].options[3].link },
-		{ "train_player_fighters", "train_player_component", "train_player_basics" }, "more_training: links")
-end
-
--- AC-9 (regression, F8)
-function TestDingeTierDoneAndTraining:test_train_player_fighters_grants_starships_01_with_xp_deduction()
-	local player = T.player(tr, 1, { skills = { SKILLS_01[1] }, experience = { space_combat_general = 7500 } })
-	local rec = T.spyAllQuests()
-	local transcript = T.converse(tr, player, { 0 })
-
-	lu.assertEquals(ids(transcript), { "more_training", "train_player_fighters" }, "screens")
-	lu.assertEquals(#rec.skills, 1, "grantSpaceSkill calls")
-	lu.assertEquals({ rec.skills[1].args[2], rec.skills[1].args[3] }, { "pilot_neutral_starships_01", true }, "grantSpaceSkill (skill, deductExperience)")
-end
-
--- AC-9 (regression, F8): the last skill raises the tier
-function TestDingeTierDoneAndTraining:test_training_the_last_tier_1_skill_raises_the_tier_once()
-	local player = T.player(tr, 1, { skills = { SKILLS_01[1], SKILLS_01[2], SKILLS_01[4] }, experience = { space_combat_general = 7500 } })
-	local transcript = T.converse(tr, player, { 0 })
-
-	lu.assertEquals(ids(transcript), { "more_training", "train_player_fighters" }, "screens")
-	lu.assertTrue(player:hasSkill("pilot_neutral_starships_01"), "starships_01 granted")
-	lu.assertEquals(player.ghost:getPilotTier(), 2, "pilot tier")
-end
-
--- AC-9 (regression, F8)
-function TestDingeTierDoneAndTraining:test_missions_complete_keeps_its_two_training_options()
-	local transcript = T.converse(tr, T.player(tr, 4, { win = { 1, 2, 3, 4 } }), { "s_c4682ea6" })
-
-	lu.assertEquals(ids(transcript), { "missions_complete", "thanks_bye" }, "screens")
-	lu.assertEquals(texts(transcript[1].options), sids({ "s_db74ddc6", "s_c4682ea6" }), "missions_complete: options")
-	lu.assertTrue(transcript[2].stop, "thanks_bye ends the conversation")
-end
+-- (retired by rsf-tier1-dinge-training: the four old more_training / train_player_ / missions_complete tests are replaced by
+-- test_rsf_tier1_dinge_training_purchase.lua)
 
 ---------------------------------------------------------------------------------------------
 -- AC-10: the handler and the template agree (dynamic part, I-4, I-5)

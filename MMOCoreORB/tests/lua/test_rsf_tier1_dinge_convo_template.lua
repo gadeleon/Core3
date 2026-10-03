@@ -4,12 +4,14 @@
 -- Answer keys: spec Appendix A (rsf_tier1_dinge_convo_data.lua, copied from the spec; the 16 kept screens copied from commit 4eefa91216) and
 -- the SWG java fixtures/script/conversation/naboo_privateer_trainer_1.java parsed by harness/swgjava.lua. The parser's action attribution is
 -- NOT used (it credits a repeated line with the actions of its first occurrence); payments and grants are behavior, see
--- test_rsf_tier1_dinge_convo_flow.lua. Training (F8) and the gate screens (item 24) are only checked as unchanged.
+-- test_rsf_tier1_dinge_convo_flow.lua. The gate screens (item 24) are only checked as unchanged. The training screens (F8) are covered by
+-- test_rsf_tier1_dinge_training_*.lua; superseded here by .claude/work/rsf-tier1-dinge-training/01-spec.md (Test strategy hints, Superseded).
 
 local lu = require("luaunit")
 local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier1_dinge_convo_data")
+local TD = require("rsf_tier1_dinge_training_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -94,11 +96,12 @@ local function expectedShape(row)
 	}
 end
 
--- The training screens and the story-complete screen reuse lines of the story (E-9: missions_complete shows s_6ea4aa1e like mission4_reward)
-local TRAINING = {
-	missions_complete = true, thanks_bye = true, more_training = true,
-	train_player_fighters = true, train_player_component = true, train_player_basics = true, train_player_droid = true,
-}
+-- The 12 training screens of rsf-tier1-dinge-training Appendix A (E-9 is gone: all 72 NPC lines are distinct)
+local TRAINING = {}
+
+for _, row in ipairs(TD.ROWS) do
+	TRAINING[row.id] = true
+end
 
 ---------------------------------------------------------------------------------------------
 -- The answer key itself
@@ -119,9 +122,9 @@ function TestDingeConvoAnswerKey:test_appendix_a_has_60_rows_40_new_11_changed_9
 
 	lu.assertEquals(count, { new = 40, chg = 11, kept = 9 }, "Appendix A rows by status")
 	lu.assertEquals(#sortedKeys(sids), 60, "distinct NPC sids in Appendix A")
-	lu.assertEquals(#sortedKeys(D.KEPT), 16, "kept screens")
+	lu.assertEquals(#sortedKeys(D.KEPT), 9, "kept screens (rsf-tier1-dinge-training: the 7 training screens left)")
 	lu.assertEquals(#D.DELETED, 20, "deleted screens")
-	lu.assertEquals(D.SCREEN_COUNT, 47 - 20 + 40, "screen count")
+	lu.assertEquals(D.SCREEN_COUNT, 47 - 20 + 40 - 6 + 11, "screen count (72)")
 end
 
 -- AC-2: the java fixture is the file the spec cites
@@ -200,13 +203,13 @@ TestDingeConvoTemplate = {}
 function TestDingeConvoTemplate:setUp() H.reset() end
 
 -- AC-1
-function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_67_screens()
+function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_72_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "dingeConvoHandler", "dinge_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "dinge_convo_template: templateType")
 	lu.assertEquals(t.initialScreen, "", "dinge_convo_template: initialScreen")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "dinge_convo_template: number of screens (47 - 20 + 40)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "dinge_convo_template: number of screens (67 - 6 + 11)")
 end
 
 -- AC-1
@@ -293,8 +296,8 @@ function TestDingeConvoTemplate:test_screens_without_an_appendix_animation_have_
 	end
 end
 
--- AC-1, I-7: the 16 screens listed as kept equal their definitions at 4eefa91216
-function TestDingeConvoTemplate:test_the_16_kept_screens_equal_their_definitions_at_4eefa91216()
+-- AC-1, I-7: the 9 screens listed as kept equal their definitions at 4eefa91216
+function TestDingeConvoTemplate:test_the_9_kept_screens_equal_their_definitions_at_4eefa91216()
 	local byId = screensById()
 
 	for _, id in ipairs(sortedKeys(D.KEPT)) do
@@ -328,7 +331,7 @@ function TestDingeConvoTemplate:test_no_new_screen_id_contains_train_player_or_e
 	end
 end
 
--- AC-1: every screen of the template is an Appendix A row or one of the 7 training screens, nothing else
+-- AC-1: every screen of the template is a convo Appendix A row or one of the 12 training Appendix A rows, nothing else
 function TestDingeConvoTemplate:test_the_template_has_exactly_the_appendix_screens_and_the_training_screens()
 	local rows = rowsById()
 	local extra = {}
@@ -340,7 +343,7 @@ function TestDingeConvoTemplate:test_the_template_has_exactly_the_appendix_scree
 	end
 
 	table.sort(extra)
-	lu.assertEquals(extra, {}, "template screens that are neither in Appendix A nor a training screen")
+	lu.assertEquals(extra, {}, "template screens that are neither in a convo Appendix A row nor a training Appendix A row")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -351,7 +354,7 @@ TestDingeConvoConformance = {}
 
 function TestDingeConvoConformance:setUp() H.reset() end
 
--- AC-2: each of the 60 Appendix A NPC sids has exactly one story screen (the training screens may repeat s_6ea4aa1e, E-9)
+-- AC-2: each of the 60 Appendix A NPC sids has exactly one story screen (the training screens are checked in the training test files)
 function TestDingeConvoConformance:test_each_of_the_60_appendix_npc_sids_has_exactly_one_screen()
 	local count = {}
 
@@ -417,7 +420,7 @@ function TestDingeConvoConformance:test_every_appendix_screen_matches_the_java_g
 	lu.assertEquals(checked, 60, "screens checked against the java")
 end
 
--- AC-2, I-3: every string of dinge_convo.lua is a java line or response, except the one training line
+-- AC-2, I-3: every string of dinge_convo.lua is a java line or response (no foreign sid is left)
 function TestDingeConvoConformance:test_every_string_of_dinge_convo_is_in_the_java_except_the_known_foreign_one()
 	for _, s in ipairs(template().screens) do
 		local sid = sidOf(s.leftDialog)
@@ -440,7 +443,7 @@ function TestDingeConvoConformance:test_every_string_of_dinge_convo_is_in_the_ja
 	end
 end
 
--- AC-2, I-3: every string id DH adds is a response of the java, except the four training options
+-- AC-2, I-3: every string id DH adds is a response of the java (the four foreign training options are gone)
 function TestDingeConvoConformance:test_every_string_dinge_convo_handler_adds_is_a_java_response_except_the_training_options()
 	local seen, foreign = 0, 0
 
@@ -454,9 +457,9 @@ function TestDingeConvoConformance:test_every_string_dinge_convo_handler_adds_is
 		end
 	end
 
-	-- s_9817b9bb and s_5c522568 (the two signup options of yes_enlist) plus the four training options
-	lu.assertEquals(foreign, 4, "foreign (training) string ids in dingeConvoHandler.lua")
-	lu.assertTrue(seen >= 6, "string ids in dingeConvoHandler.lua: " .. seen)
+	-- s_9817b9bb and s_5c522568 (the two signup options of yes_enlist) are java responses like every other literal
+	lu.assertEquals(foreign, 0, "foreign string ids in dingeConvoHandler.lua (rsf-tier1-dinge-training: the four training options are gone)")
+	lu.assertTrue(seen >= 2, "string ids in dingeConvoHandler.lua: " .. seen) -- the two signup options; the four training options are gone
 end
 
 -- AC-2: the two signup options DH builds are the java ones (E-2)
@@ -474,8 +477,8 @@ function TestDingeConvoConformance:test_the_foreign_string_s_e9c7c6bb_is_in_neit
 	lu.assertNil(readFile(DH_PATH):find(D.GONE_SID, 1, true), "dingeConvoHandler.lua still carries " .. D.GONE_SID)
 end
 
--- AC-2: the java lines of branches 54-64 and the off-track line stay unported (F8 / item 24): the story port must not pull them in
-function TestDingeConvoConformance:test_the_template_uses_101_of_the_120_java_strings()
+-- AC-2, I-3: with the training port only the off-track line s_1e029d90 (item 24) is unused
+function TestDingeConvoConformance:test_the_template_uses_119_of_the_120_java_strings()
 	local used = {}
 
 	for _, s in ipairs(template().screens) do
@@ -506,7 +509,7 @@ function TestDingeConvoConformance:test_the_template_uses_101_of_the_120_java_st
 		n = n + 1
 	end
 
-	lu.assertEquals(n, 101, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (61 NPC lines + 40 responses)")
+	lu.assertEquals(n, 119, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (72 NPC lines + 47 responses)")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -523,11 +526,13 @@ local function handlerText() return readFile(DH_PATH) end
 local function initialScreenBody()
 	local text = handlerText()
 	local a = text:find("function dingeConvoHandler:getInitialScreen", 1, true)
-	local b = text:find("function dingeConvoHandler:runScreenHandlers", 1, true)
 
 	lu.assertNotNil(a, "dingeConvoHandler:getInitialScreen is defined")
-	lu.assertNotNil(b, "dingeConvoHandler:runScreenHandlers is defined")
-	return text:sub(a, b - 1)
+
+	-- up to the next top-level function, wherever the training helpers sit (rsf-tier1-dinge-training: placement is free)
+	local b = text:find("\nfunction ", a + 1, true)
+
+	return text:sub(a, (b or #text + 1) - 1)
 end
 
 local function lines(text)
@@ -610,7 +615,7 @@ function TestDingeHandlerAgreement:test_the_handler_returns_the_new_routing_scre
 	for _, id in ipairs({
 		"mission4_reward", "mission4_failed", "mission4_offer", "mission3_reward", "mission3_failed", "mission3_offer",
 		"mission2_reward", "mission2_failed", "mission2_offer", "mission1_reward", "mission1_active", "mission1_failed", "mission1_offer",
-		"missions_complete", "completed_tier1", "has_mission", "recruitment", "no_ship", "duty_missions", "more_training",
+		"first_training", "completed_tier1", "has_mission", "recruitment", "no_ship", "duty_missions", "more_training",
 	}) do
 		lu.assertNotNil(body:find('"' .. id .. '"', 1, true), "dingeConvoHandler:getInitialScreen never returns \"" .. id .. "\"")
 	end
@@ -661,20 +666,14 @@ function TestDingeHandlerAgreement:test_the_gates_and_the_start_of_get_initial_s
 	assertSubsequence(handlerText(), D.DH_GET_INITIAL_HEAD, "dingeConvoHandler.lua lines 1-91 at 4eefa91216")
 end
 
--- I-7: DH:93-95
-function TestDingeHandlerAgreement:test_the_duty_menu_return_is_unchanged()
-	lu.assertNotNil(handlerText():find(D.DH_DUTY_RETURN, 1, true), "DH:93-95 (return duty_missions, end, comment) verbatim")
-end
+-- (retired by rsf-tier1-dinge-training D-11: the duty-menu return region is rewritten, AC-3 covers the routing)
 
 -- I-7: the prologue of runScreenHandlers (DH:138-161, a new playerID local may be added)
 function TestDingeHandlerAgreement:test_the_run_screen_handlers_prologue_is_unchanged()
 	assertSubsequence(handlerText(), D.DH_PROLOGUE, "dingeConvoHandler.lua lines 138-161 at 4eefa91216")
 end
 
--- I-7, Out (F8): the training branches stay byte-identical
-function TestDingeHandlerAgreement:test_the_training_branches_are_unchanged()
-	lu.assertNotNil(handlerText():find(D.DH_TRAINING, 1, true), "DH:163-209 (more_training and train_player_ branches) verbatim")
-end
+-- (retired by rsf-tier1-dinge-training D-11: the old training branches are deleted, see test_rsf_tier1_dinge_training_handler.lua)
 
 -- I-7: go_to_tier2, destroy_duty and escort_duty
 function TestDingeHandlerAgreement:test_the_tier2_and_duty_branches_are_unchanged()

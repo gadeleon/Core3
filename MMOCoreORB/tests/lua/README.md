@@ -296,6 +296,17 @@ files that must stay byte-identical to commit `0d2c61189c` (`test_rsf_tier1_ding
 A quest table without an `attackDelay` makes `SpaceEscortScreenplay:spawnAttackWave` re-queue itself at the same instant; the escort duty tests
 assert the delay first so such a table fails instead of hanging the event clock.
 
+### RSF tier 1 Dinge training (rsf-tier1-dinge-training)
+
+`rsf_tier1_dinge_training_data.lua` holds the spec's Appendix A (12 training screens: first training, `more_training`, four prompts, four closing lines),
+the SWG purchase order (`D.TRAINING`, `D.SKILLS`), the retired foreign sids and the 18 newly used sids, plus `D.subsets()` / `D.expectedLink(list)` for the
+1 to 3 skill combinations. `fixtures/skill/skills.pilot_neutral_01.tab` is an excerpt of SWG `skills.tab` (lines 1, 2, 641, 643, 647, 651, 655: header rows,
+the novice box and the four `_01` skills); the tests read the 7500 XP cost from it and feed it to `H.Engine.config.skillXpCosts`.
+The first skill (starships) is the free grant (`callsTo("awardSkill")`); the other three go through `callsTo("skillManagerAwardSkill")`. The fake
+`fulfillsSkillPrerequisitesAndXp` always answers yes, so the engine-refusal case replaces the global `LuaSkillManager` for the test and restores it in `tearDown`.
+Choices that happen "while a screen is shown" (the skill arrives, the XP is gone) are hooks (`function(player) ... end`) between two choices of `H.converse`.
+`rsf_tier2_kaydine_training_data.lua`'s `D.drive` starts a conversation on any screen (here `train_<x>` and `first_training_lesson`), as if the pilot had just chosen there.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

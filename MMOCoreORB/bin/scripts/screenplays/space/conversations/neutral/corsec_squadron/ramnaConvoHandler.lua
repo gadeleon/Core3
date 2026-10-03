@@ -1,3 +1,4 @@
+-- Ramna (CorSec tier 3) conversation handler; ported from SWG-Source corellia_privateer_tier3.java. Chain retry/won-check routing: feature space-trainer-fixes.
 ramnaConvoHandler = conv_handler:new {}
 
 function ramnaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -237,22 +238,22 @@ function ramnaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":attempted", 1)
 
 		--	Give fourth mission to player
-		assassinate_corellia_privateer_tier3_4:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_privateer_tier3_4")
 	elseif (screenID == "dant_operations" or screenID == "go_back_get_some") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":attempted", 1)
 
 		--	Give third mission to player
-		delivery_corellia_privateer_tier3_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "delivery_corellia_privateer_tier3_3")
 	elseif (screenID == "good_luck_mission2" or screenID == "good_luck_mission2_2" or screenID == "need_good_news" or screenID == "then_go_fight") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":attempted", 1)
 
 		--	Give second mission to player
-		inspect_corellia_privateer_tier3_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_corellia_privateer_tier3_2")
 	elseif (screenID == "dont_care" or screenID == "keep_going" or screenID == "exactly1") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":attempted", 1)
 
 		--	Give First mission to player
-		recovery_corellia_privateer_tier3_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_corellia_privateer_tier3_1")
 	end
 
 	return pClonedScreen

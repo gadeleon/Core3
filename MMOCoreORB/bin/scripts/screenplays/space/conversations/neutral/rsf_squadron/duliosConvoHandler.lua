@@ -49,13 +49,14 @@ function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 							SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE1.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE1.name) or
 							SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE2.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE2.name) or
 							SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.name)
+	-- The initial surprise attack is the :attempted key of mission 4 and is not part of the head's chain
 	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_4.name) or
-							SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.name)
+							SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_naboo_privateer_tier3_4a")
 
 	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE3.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE3.name)
-	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE3.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE3.name)
-	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.name)
-	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.name)
+	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE1.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE1.name)
+	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE2.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE2.name)
+	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE4.type, RsfSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE4.name)
 
 	local completedTier3 = SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3)
 
@@ -229,22 +230,22 @@ function duliosConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":attempted", 1)
 
 		--	Give fourth mission to player
-		assassinate_naboo_privateer_tier3_4a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier3_4a")
 	elseif (screenID == "accept_third_mission" or screenID == "i_was_better") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":attempted", 1)
 
 		--	Give third mission to player
-		inspect_naboo_privateer_tier3_3a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_naboo_privateer_tier3_3a")
 	elseif (screenID == "accept_second_mission" or screenID == "stories_about_me") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":attempted", 1)
 
 		--	Give second mission to player
-		escort_naboo_privateer_tier3_2a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_naboo_privateer_tier3_2a")
 	elseif (screenID == "accept_first_mission" or screenID == "try_first_again") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":attempted", 1)
 
 		--	Give First mission to player
-		recovery_naboo_privateer_tier3_1a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_naboo_privateer_tier3_1a")
 	end
 
 	return pClonedScreen

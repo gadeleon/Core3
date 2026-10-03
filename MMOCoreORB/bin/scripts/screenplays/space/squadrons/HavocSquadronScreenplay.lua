@@ -1090,10 +1090,10 @@ assassinate_corellia_rebel_tier3_4 = SpaceAssassinateScreenplay:new {
 	},
 
 	targetPatrols = {
-		{patrolPointName = "corellia_rebel_tier3_4_assassin_1", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier3_4_assassin_2", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier3_4_assassin_3", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier3_4_assassin_4", zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier3_4_assassin_1", x = 1450, z = -6280, y = -4250, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier3_4_assassin_2", x = 412, z = -5403, y = -4219, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier3_4_assassin_3", x = -717, z = -4324, y = -3779, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier3_4_assassin_4", x = -931, z = -3353, y = -2116, zoneName = "space_dathomir"},
 	},
 }
 
@@ -1409,12 +1409,12 @@ assassinate_corellia_rebel_tier4_2 = SpaceAssassinateScreenplay:new {
 	},
 
 	targetPatrols = {
-		{patrolPointName = "corellia_rebel_tier4_2_assassin_1", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier4_2_assassin_2", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier4_2_assassin_3", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier4_2_assassin_4", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier4_2_assassin_5", zoneName = "space_dathomir"},
-		{patrolPointName = "corellia_rebel_tier4_2_assassin_6", zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier4_2_assassin_1", x = 5144, z = 6027, y = 4570, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier4_2_assassin_2", x = 4769, z = 4864, y = 4402, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier4_2_assassin_3", x = 4497, z = 3961, y = 4264, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier4_2_assassin_4", x = 4233, z = 3085, y = 4131, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier4_2_assassin_5", x = 4052, z = 2486, y = 4039, zoneName = "space_dathomir"},
+		{patrolPointName = "corellia_rebel_tier4_2_assassin_6", x = 3608, z = 1014, y = 3815, zoneName = "space_dathomir"},
 	},
 }
 
@@ -1864,10 +1864,10 @@ escort_duty_corellia_rebel_tier4_1 = SpaceDutyEscortScreenplay:new {
 	escortShips = {"nym_freighterheavy_tier4", "nym_freighterlight_tier4", "nym_freightermedium_tier4"},
 
 	escortPoints = {
-		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_1", zoneName = "space_dathomir", escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_2", zoneName = "space_dathomir", escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_3", zoneName = "space_dathomir", escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_4", zoneName = "space_dathomir", escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_1", x = 3237, z = -1676, y = -4704, zoneName = "space_dathomir", escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_2", x = 3436, z = -191, y = -4597, zoneName = "space_dathomir", escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_3", x = 4148, z = -1451, y = -4735, zoneName = "space_dathomir", escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_escort_duty_4", x = 5597, z = -1843, y = -4732, zoneName = "space_dathomir", escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 50,
@@ -1947,17 +1947,17 @@ recovery_duty_corellia_rebel_tier4_1 = SpaceDutyRecoveryScreenplay:new {
 	escortShips = {"imp_tie_interceptor_tier4"},
 
 	preRecoveryPoints = {
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_1", zoneName = "space_endor", escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_2", zoneName = "space_endor", escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_3", zoneName = "space_endor", escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_4", zoneName = "space_endor", escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_1", x = -3500, z = 800, y = -4700, zoneName = "space_endor", escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_2", x = -3484, z = 1675, y = -4689, zoneName = "space_endor", escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_3", x = -3482, z = 2680, y = -4693, zoneName = "space_endor", escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_4", x = -3510, z = 3821, y = -4710, zoneName = "space_endor", escortNumber = 4, radius = 250},
 	},
 
 	recoveryPoints = {
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_5", zoneName = "space_endor", escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_6", zoneName = "space_endor", escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_7", zoneName = "space_endor", escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_8", zoneName = "space_endor", escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_5", x = -4308, z = 2410, y = -4170, zoneName = "space_endor", escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_6", x = -5138, z = 2114, y = -3706, zoneName = "space_endor", escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_7", x = -6299, z = 1699, y = -3069, zoneName = "space_endor", escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_1_recovery_duty_8", x = -7338, z = 1328, y = -2499, zoneName = "space_endor", escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 45,
@@ -2025,6 +2025,7 @@ HavocSquadronScreenplay = ScreenPlay:new {
 
 	-- Tier 2 (Viopa)
 	TIER2_QUEST_STRING_1 = {type = "inspect", name = "viopa_rebel_1"},
+	TIER2_QUEST_STRING_1_SIDE = {type = "destroy_surpriseattack", name = "viopa_rebel_1"},
 	TIER2_QUEST_STRING_2 = {type = "escort", name = "viopa_rebel_2"},
 	TIER2_QUEST_STRING_3 = {type = "recovery", name = "viopa_rebel_3"},
 	TIER2_QUEST_STRING_4 = {type = "assassinate", name = "viopa_rebel_4"},
@@ -2034,12 +2035,12 @@ HavocSquadronScreenplay = ScreenPlay:new {
 
 	-- Tier 3 (Aqzow)
 	TIER3_QUEST_STRING_1 = {type = "recovery", name = "corellia_rebel_tier3_1"},
-	TIER3_QUEST_STRING_1_SIDE1 = {type = "patrol", name = "patrol_corellia_rebel_tier3_1_A"},
+	TIER3_QUEST_STRING_1_SIDE1 = {type = "patrol", name = "corellia_rebel_tier3_1_A"},
 	TIER3_QUEST_STRING_1_SIDE2 = {type = "destroy_surpriseattack", name = "corellia_rebel_tier3_1_b"},
 	TIER3_QUEST_STRING_1_SIDE3 = {type = "assassinate", name = "corellia_rebel_tier3_1_c"},
 	TIER3_QUEST_STRING_1_SIDE4 = {type = "space_battle", name = "corellia_rebel_tier3_1_d"},
 	TIER3_QUEST_STRING_2 = {type = "inspect", name = "corellia_rebel_tier3_2"},
-	TIER3_QUEST_STRING_2_SIDE1 = {type = "delivery", name = "delivery_corellia_rebel_tier3_2_a"},
+	TIER3_QUEST_STRING_2_SIDE1 = {type = "delivery", name = "corellia_rebel_tier3_2_a"},
 	TIER3_QUEST_STRING_2_SIDE2 = {type = "survival", name = "corellia_rebel_tier3_2_b"},
 	TIER3_QUEST_STRING_2_SIDE3 = {type = "escort", name = "corellia_rebel_tier3_2_c"},
 	TIER3_QUEST_STRING_3 = {type = "delivery", name = "corellia_rebel_tier3_3"},
@@ -2047,7 +2048,7 @@ HavocSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_3_SIDE2 = {type = "space_battle", name = "corellia_rebel_tier3_3_b"},
 	TIER3_QUEST_STRING_3_SIDE3 = {type = "escort", name = "corellia_rebel_tier3_3_c"},
 	TIER3_QUEST_STRING_4 = {type = "assassinate", name = "corellia_rebel_tier3_4"},
-	TIER3_QUEST_STRING_4_SIDE1 = {type = "patrol", name = "patrol_corellia_rebel_tier3_4_a"},
+	TIER3_QUEST_STRING_4_SIDE1 = {type = "patrol", name = "corellia_rebel_tier3_4_a"},
 	TIER3_QUEST_STRING_4_SIDE2 = {type = "destroy_surpriseattack", name = "corellia_rebel_tier3_4_b"},
 	TIER3_QUEST_STRING_4_SIDE3 = {type = "space_battle", name = "corellia_rebel_tier3_4_c"},
 	TIER3_QUEST_STRING_4_SIDE4 = {type = "survival", name = "corellia_rebel_tier3_4_d"},
@@ -2126,6 +2127,8 @@ function HavocSquadronScreenplay:resetViopaQuests(pPlayer)
 	-- Mission 1
 	inspect_viopa_rebel_1:resetQuest(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER2_QUEST_STRING_1.type, self.TIER2_QUEST_STRING_1.name, false)
+	destroy_surpriseattack_viopa_rebel_1:resetQuest(pPlayer)
+	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER2_QUEST_STRING_1_SIDE.type, self.TIER2_QUEST_STRING_1_SIDE.name, false)
 
 	-- Mission 2
 	escort_viopa_rebel_2:resetQuest(pPlayer)

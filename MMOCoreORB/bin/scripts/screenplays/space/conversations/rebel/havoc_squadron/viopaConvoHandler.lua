@@ -1,3 +1,4 @@
+-- Viopa (Havoc tier 2) conversation handler; ported from SWG-Source lok_rebel_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes.
 local SpaceHelpers = require("utils.space_helpers")
 
 viopaConvoHandler = conv_handler:new {}
@@ -60,12 +61,12 @@ function viopaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("negative_faction")
 	end
 
-	local questOneStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_1.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_1.name)
+	local questOneStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "inspect_viopa_rebel_1")
 	local questTwoStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_2.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_2.name)
 	local questThreeStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_3.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_3.name)
 	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_4.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_4.name)
 
-	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_1.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_1.name)
+	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE.name)
 	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_2.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_2.name)
 	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_3.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_3.name)
 	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER2_QUEST_STRING_4.type, HavocSquadronScreenplay.TIER2_QUEST_STRING_4.name)
@@ -358,26 +359,26 @@ function viopaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	elseif (screenID == "accept_mission1_easy" or screenID == "accept_mission1_consider") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":attempted", 1)
 
-		inspect_viopa_rebel_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_viopa_rebel_1")
 
 	-- Mission 1 - retry accept
 	elseif (screenID == "retry_mission1_accept" or screenID == "retry_mission1_convinced") then
-		inspect_viopa_rebel_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_viopa_rebel_1")
 
 	elseif (screenID == "accept_mission3") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER2_QUEST_STRING_3.name .. ":attempted", 1)
 
-		recovery_viopa_rebel_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_viopa_rebel_3")
 	elseif (screenID == "accept_mission4_best" or screenID == "accept_mission4_luck") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":attempted", 1)
 
-		assassinate_viopa_rebel_4:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_viopa_rebel_4")
 	elseif (screenID == "retry_mission2_eager" or screenID == "retry_mission2_reluctant") then
-		escort_viopa_rebel_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_viopa_rebel_2")
 	elseif (screenID == "retry_mission3") then
-		recovery_viopa_rebel_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_viopa_rebel_3")
 	elseif (screenID == "retry_mission4") then
-		assassinate_viopa_rebel_4:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_viopa_rebel_4")
 	elseif (screenID == "goodbye") then
 		CreatureObject(pNpc):doAnimation("goodbye")
 
@@ -396,7 +397,7 @@ function viopaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	elseif (screenID == "mission2_granted_sweetie" or screenID == "mission2_granted_goodluck") then
 		-- Player accepted Mission 2 (escort hacker to Dantooine)
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":attempted", 1)
-		escort_viopa_rebel_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_viopa_rebel_2")
 
 	elseif (screenID == "accept_confront_vrak" or screenID == "accept_confront_vrak_flayed") then
 		-- Set flag so Vrak knows to give confrontation conversation

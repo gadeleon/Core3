@@ -1,3 +1,4 @@
+-- Dinge (RSF tier 1) conversation handler; ported from SWG-Source naboo_privateer_trainer_1.java. Chain retry/won-check routing: feature space-trainer-fixes.
 dingeConvoHandler = conv_handler:new {}
 
 function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -26,9 +27,9 @@ function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local isNeutralPilot = SpaceHelpers:isNeutralPilot(pPlayer)
 	local hasShip = SpaceHelpers:hasCertifiedShip(pPlayer, true)
 
-	local questOneStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_1.type, RsfSquadronScreenplay.QUEST_STRING_1.name)
+	local questOneStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_naboo_privateer_1")
 	local questTwoStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_2.type, RsfSquadronScreenplay.QUEST_STRING_2.name)
-	local questThreeStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_3.type, RsfSquadronScreenplay.QUEST_STRING_3.name)
+	local questThreeStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_naboo_privateer_3")
 	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.QUEST_STRING_4.type, RsfSquadronScreenplay.QUEST_STRING_4.name)
 
 	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.QUEST_STRING_1.type, RsfSquadronScreenplay.QUEST_STRING_1.name) and SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.QUEST_STRING_1_SIDE.type, RsfSquadronScreenplay.QUEST_STRING_1_SIDE.name)
@@ -241,13 +242,13 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 
 	-- Missions
 	elseif (screenID == "yes_im_ready") then
-		patrol_naboo_privateer_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_naboo_privateer_1")
 	elseif (screenID == "train_me2") then
-		destroy_naboo_privateer_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_2")
 	elseif (screenID == "train_me3") then
-		patrol_naboo_privateer_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_naboo_privateer_3")
 	elseif (screenID == "train_me4") then
-		assassinate_naboo_privateer_tier1_4a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier1_4a")
 	end
 
 	return pClonedScreen

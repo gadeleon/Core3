@@ -579,8 +579,8 @@ local function cut(text, a, b, what)
 	return text:sub(1, s - 1) .. text:sub(e)
 end
 
--- I-7, AC-5
-function TestArkonFreeChoiceNothingElseMoves:test_can_fly_non_track_duty_is_byte_identical_to_commit_a93da5f969()
+-- I-7, AC-5; retargeted by havoc-tier4-arkon-duty-gate (AC-4): the block gains the datapad clause and nothing else
+function TestArkonFreeChoiceNothingElseMoves:test_can_fly_non_track_duty_is_commit_a93da5f969_plus_the_datapad_clause()
 	local function block(text, what)
 		local s = text:find("function arkonConvoHandler:canFlyNonTrackDuty", 1, true)
 
@@ -591,7 +591,14 @@ function TestArkonFreeChoiceNothingElseMoves:test_can_fly_non_track_duty_is_byte
 		return text:sub(s, e + 4)
 	end
 
-	lu.assertEquals(block(readFile(AH_PATH), "now"), block(baseFile(AH_PATH), BASE), "canFlyNonTrackDuty (D-8: the datapad check is a separate feature)")
+	local old = block(baseFile(AH_PATH), BASE)
+	local ret = "\n\treturn SpaceHelpers:hasCompletedPilotTier(pPlayer, \"rebel_navy\", 3) and not self:isOnMission(pPlayer)\n"
+	local at, stop = old:find(ret, 1, true)
+
+	lu.assertNotNil(at, "base canFlyNonTrackDuty return line")
+	old = old:sub(1, stop - 1) .. " and not SpaceHelpers:hasSpaceQuest(pPlayer)" .. old:sub(stop)
+
+	lu.assertEquals(block(readFile(AH_PATH), "now"), old, "canFlyNonTrackDuty (D-8 done by havoc-tier4-arkon-duty-gate: only the datapad clause is added)")
 end
 
 -- I-7, AC-5: the handler outside the ready_train branch and the TRAIN_CHOICES table is unchanged
@@ -616,6 +623,14 @@ function TestArkonFreeChoiceNothingElseMoves:test_the_handler_outside_the_ready_
 
 	new = new:sub(1, s - 1) .. new:sub(stop + 1)
 	new = cut(new, 'elseif (screenID == "ready_train") then', "elseif (self.TRAINED_SCREENS[screenID] ~= nil) then", "handler")
+
+	-- havoc-tier4-arkon-duty-gate: the one superseded line is the canFlyNonTrackDuty return, which gains the datapad clause
+	local ret = '\treturn SpaceHelpers:hasCompletedPilotTier(pPlayer, "rebel_navy", 3) and not self:isOnMission(pPlayer)'
+	local s1, e1 = old:find(ret, 1, true)
+
+	lu.assertNotNil(s1, "base canFlyNonTrackDuty return line")
+	lu.assertNil(old:find(ret, e1 + 1, true), "base canFlyNonTrackDuty return line occurs once")
+	old = old:sub(1, e1) .. " and not SpaceHelpers:hasSpaceQuest(pPlayer)" .. old:sub(e1 + 1)
 
 	lu.assertEquals(code(new), code(old), "arkonConvoHandler.lua outside the ready_train branch and TRAIN_CHOICES")
 end

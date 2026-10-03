@@ -152,7 +152,7 @@ function TestRescueDataInvariants:test_parent_and_side_quest_wiring_and_rewards_
 	local b2 = quest("corellia_rebel_tier4_2_b")
 	local b4 = quest("corellia_rebel_tier4_4_b")
 
-	lu.assertEquals({ rsf.parentQuest, rsf.sideQuest, rsf.creditReward }, { "space_battle_naboo_privateer_tier3_2d", false, 25000 }, "2e: parent, sideQuest, creditReward")
+	lu.assertEquals({ rsf.parentQuest, rsf.sideQuest, rsf.creditReward }, { "space_battle_naboo_privateer_tier3_2d", false, 0 }, "2e: parent, sideQuest, creditReward (rsf-tier3-data AC-1: the reward moved to the mission head)")
 	lu.assertEquals({ b2.parentQuest, b2.sideQuest, b2.creditReward }, { "assassinate_corellia_rebel_tier4_2", false, 0 }, "2_b: parent, sideQuest, creditReward")
 	lu.assertEquals({ b4.parentQuest, b4.sideQuest, b4.sideQuestType, b4.sideQuestName, b4.sideQuestSplitType, b4.sideQuestDelay },
 		{ "recovery_corellia_rebel_tier4_4", true, "assassinate", "corellia_rebel_tier4_4_a", SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION, 0 },

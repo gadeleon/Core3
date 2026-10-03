@@ -200,11 +200,15 @@ T.TRAINERS.dulios = {
 	chains = {
 		{ "recovery_naboo_privateer_tier3_1a", "patrol_naboo_privateer_tier3_1b", "destroy_surpriseattack_naboo_privateer_tier3_1c", "assassinate_naboo_privateer_tier3_1d" },
 		{ "escort_naboo_privateer_tier3_2a", "destroy_surpriseattack_naboo_privateer_tier3_2c", "space_battle_naboo_privateer_tier3_2d", "rescue_naboo_privateer_tier3_2e" },
-		{ "inspect_naboo_privateer_tier3_3a", "delivery_naboo_privateer_tier3_3b", "survival_naboo_privateer_tier3_3c" },
+		-- rsf-tier3-data (AC-9, I-5): 3c now splits to the surprise attack 3e
+		{ "inspect_naboo_privateer_tier3_3a", "delivery_naboo_privateer_tier3_3b", "survival_naboo_privateer_tier3_3c", "destroy_surpriseattack_naboo_privateer_tier3_3e" },
 		{ "assassinate_naboo_privateer_tier3_4a", "space_battle_naboo_privateer_tier3_4b", "survival_naboo_privateer_tier3_4c", "assassinate_naboo_privateer_tier3_4f" },
 	},
 	-- Mission 4's :attempted/:reward keys are named after the initial surprise attack, not after the head the handler starts
 	statusNames = { [4] = "naboo_privateer_tier3_4_initial" },
+	-- rsf-tier3-data (D-8): mission 3 is won by survival 3c, so a failed 3e leaves 3a..3c complete and Dulios pays
+	-- (complete_mission3); there is no retry state at position 4. Positions 2 and 3 stay distinct failed states.
+	failPositions = { [3] = { 2, 3 } },
 	starts = {
 		starts("+accept_first_mission", "+try_first_again"),
 		starts("+accept_second_mission", "+stories_about_me"),

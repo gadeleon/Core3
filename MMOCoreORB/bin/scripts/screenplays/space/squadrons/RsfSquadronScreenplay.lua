@@ -528,6 +528,9 @@ registerScreenPlay("recovery_duty_naboo_privateer_12", true)
 
 --[[
 	Tier 3 -- Commander Dulios Main Missions
+
+	Feature rsf-tier3-data: rewards sit on the mission heads (1a/2a/3a/4a, naboo_privateer_tier3.java:224-251);
+	split wiring, the 3c -> 3e ambush and the 4a/4f assassination payloads follow the SWG-Source spacequest .tab files.
 ]]
 
 -- Mission 1: Recovery -> Patrol -> Destroy_Surpriseattack -> Assassinate
@@ -540,12 +543,16 @@ recovery_naboo_privateer_tier3_1a = SpaceRecoveryScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_neutral_subpro_military.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "patrol",
 	sideQuestName = "naboo_privateer_tier3_1b",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5,
 
 	-- Screenplay Specific Variables
 	arrivalDelay = 13,
@@ -599,8 +606,8 @@ patrol_naboo_privateer_tier3_1b = SpacePatrolScreenplay:new {
 	sideQuestName = "naboo_privateer_tier3_1c",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT,
 
-	sideQuestPatrolStart = 3,
-	sideQuestDelay = 4,
+	sideQuestPatrolStart = 1,
+	sideQuestDelay = 44,
 
 	parentQuest = "recovery_naboo_privateer_tier3_1a",
 	parentQuestType = "recovery",
@@ -633,7 +640,7 @@ destroy_surpriseattack_naboo_privateer_tier3_1c = SpaceSurpriseAttackScreenplay:
 	sideQuestType = "assassinate",
 	sideQuestName = "naboo_privateer_tier3_1d",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 3,
+	sideQuestDelay = 5,
 
 	-- Black Sun ambush during patrol in Dantooine
 	surpriseAttackShips = {
@@ -653,10 +660,8 @@ assassinate_naboo_privateer_tier3_1d = SpaceAssassinateScreenplay:new {
 	-- Saymonz Varg has fled to Naboo space after evading capture in Dantooine
 	questZone = "space_naboo",
 
-	creditReward = 25000,
-	itemReward = {
-		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_neutral_subpro_military.iff"},
-	},
+	creditReward = 0,
+	itemReward = {},
 
 	parentQuest = "destroy_surpriseattack_naboo_privateer_tier3_1c",
 	parentQuestType = "destroy_surpriseattack",
@@ -693,7 +698,10 @@ escort_naboo_privateer_tier3_2a = SpaceEscortScreenplay:new {
 
 	questZone = "space_naboo",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_neutral_mandal_inferno.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "destroy_surpriseattack",
@@ -730,10 +738,8 @@ rescue_naboo_privateer_tier3_2e = SpaceRescueScreenplay:new {
 
 	questZone = "space_corellia",  -- STF: Corellia System
 
-	creditReward = 25000,
-	itemReward = {
-		{species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_neutral_mandal_inferno.iff"},
-	},
+	creditReward = 0,
+	itemReward = {},
 
 	parentQuest = "space_battle_naboo_privateer_tier3_2d",
 	parentQuestType = "space_battle",
@@ -787,7 +793,7 @@ space_battle_naboo_privateer_tier3_2d = SpaceBattleScreenplay:new {
 	sideQuestType = "rescue",
 	sideQuestName = "naboo_privateer_tier3_2e",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 1,
+	sideQuestDelay = 5,
 
 	-- Screenplay Specific Variables (copied from spacequest/space_battle/naboo_privateer_tier3_2d.tab)
 
@@ -829,7 +835,7 @@ destroy_surpriseattack_naboo_privateer_tier3_2c = SpaceSurpriseAttackScreenplay:
 	sideQuestType = "space_battle",
 	sideQuestName = "naboo_privateer_tier3_2d",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 3,
+	sideQuestDelay = 5,
 
 	-- Ay'Nat pirate reinforcements
 	surpriseAttackShips = {
@@ -850,7 +856,10 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 
 	questZone = "space_naboo",  -- STF: Naboo System
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon_capacitor/cap_mission_reward_neutral_sorosuub_v1.iff"},
+	},
 
 	parentQuest = "",
 	parentQuestType = "",
@@ -860,6 +869,7 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 	sideQuestType = "delivery",
 	sideQuestName = "naboo_privateer_tier3_3b",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 10,
 
 	-- Screenplay Specific Variables
 	shipList = {"naboo_diplomatic_corps_bad_tier3"},
@@ -929,19 +939,19 @@ survival_naboo_privateer_tier3_3c = SpaceSurvivalScreenplay:new {
 
 	questZone = "space_lok",  -- STF: Lok System
 
-	creditReward = 25000,
-	itemReward = {
-		{species = {-1}, item = "object/tangible/ship/components/weapon_capacitor/cap_mission_reward_neutral_sorosuub_v1.iff"},
-	},
+	creditReward = 0,
+	itemReward = {},
 
 	parentQuest = "delivery_naboo_privateer_tier3_3b",
 	parentQuestType = "delivery",
 	parentQuestName = "naboo_privateer_tier3_3b",
 
-	-- Mission 3 ends here - return to Dulios for reward (per wiki)
-	sideQuest = false,
-	sideQuestType = "",
-	sideQuestName = "",
+	-- Ambush on the way back (survival/naboo_privateer_tier3_3c.tab triggerArg); the mission 3 win quest stays 3c
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "naboo_privateer_tier3_3e",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5,
 
 	-- Screenplay Specific Variables (survival/naboo_privateer_tier3_3c.tab)
 	transmissionPoint = {patrolPointName = "naboo_privateer_tier3_leg_3_survival", x = -991, z = 1118, y = -1713},
@@ -979,10 +989,10 @@ destroy_surpriseattack_naboo_privateer_tier3_3e = SpaceSurpriseAttackScreenplay:
 	sideQuest = false,
 	sideQuestType = "",
 
-	-- Screenplay Specific Variables
+	-- Screenplay Specific Variables (destroy_surpriseattack/naboo_privateer_tier3_3e.tab)
 	surpriseAttackShips = {
 		zone = "space_naboo",
-		spawns = {{count = 5, shipName = "blacksun_aggressor_tier3"}},
+		spawns = {{count = 5, shipName = "blacksun_marauder_tier3"}},
 	},
 }
 
@@ -1029,34 +1039,35 @@ assassinate_naboo_privateer_tier3_4a = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_neutral_kse_handcrafted.iff"},
+	},
 
-	parentQuest = "destroy_surpriseattack_naboo_privateer_tier3_4_initial",
-	parentQuestType = "destroy_surpriseattack",
-	parentQuestName = "naboo_privateer_tier3_4_initial",
+	parentQuest = "",
+	parentQuestType = "",
+	parentQuestName = "",
 
 	sideQuest = true,
 	sideQuestType = "space_battle",
 	sideQuestName = "naboo_privateer_tier3_4b",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 1,
+	sideQuestDelay = 5,
 
-	-- Screenplay Specific Variables
-	arrivalDelay = 12,
+	-- Screenplay Specific Variables (assassinate/naboo_privateer_tier3_4a.tab)
+	arrivalDelay = 45,
 	failTimer = 20,
 
-	-- Per wiki: 2 Tier 3 Rihkxyrk Black Sun Bomber, 2 Tier 3 Ixiyen Black Sun Vehement, 1 Tier 4 Kihraxz Beldini
 	assassinateSpawns = {
 		target = "blacksun_beldini_tier3",
-		escorts = {"blacksun_bomber_s01_tier3", "blacksun_bomber_s01_tier3", "blacksun_vehement_tier3", "blacksun_vehement_tier3"},
+		escorts = {"blacksun_vehement_tier3", "blacksun_vehement_tier3", "blacksun_bomber_s03_tier3", "blacksun_bomber_s03_tier3"},
 	},
 
 	targetPatrols = {
-		{patrolPointName = "dantooine_privateer_tier3_beldini_1", x = -2673, z = -2332, y = -502},
-		{patrolPointName = "dantooine_privateer_tier3_beldini_2", x = -4323, z = -3711, y = -844},
-		{patrolPointName = "dantooine_privateer_tier3_beldini_3", x = -5818, z = -4961, y = -1155},
-		{patrolPointName = "dantooine_privateer_tier3_beldini_4", x = -7473, z = -6718, y = -1559},
+		{patrolPointName = "naboo_privateer_tier3_leg_4_assassinate_1", x = 1595, z = 2985, y = 2864},
+		{patrolPointName = "naboo_privateer_tier3_leg_4_assassinate_2", x = 1500, z = 4139, y = 1708},
+		{patrolPointName = "naboo_privateer_tier3_leg_4_assassinate_3", x = 1420, z = 3841, y = -954},
+		{patrolPointName = "naboo_privateer_tier3_leg_4_assassinate_4", x = 558, z = 2111, y = -569},
 	},
 }
 
@@ -1082,7 +1093,7 @@ space_battle_naboo_privateer_tier3_4b = SpaceBattleScreenplay:new {
 	sideQuestType = "survival",
 	sideQuestName = "naboo_privateer_tier3_4c",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 3,
+	sideQuestDelay = 5,
 
 	-- Screenplay Specific Variables (copied from spacequest/space_battle/naboo_privateer_tier3_4b.tab)
 
@@ -1163,10 +1174,8 @@ assassinate_naboo_privateer_tier3_4f = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_lok",
 
-	creditReward = 25000,
-	itemReward = {
-		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_neutral_kse_handcrafted.iff"},
-	},
+	creditReward = 0,
+	itemReward = {},
 
 	parentQuest = "survival_naboo_privateer_tier3_4c",
 	parentQuestType = "survival",
@@ -1176,21 +1185,19 @@ assassinate_naboo_privateer_tier3_4f = SpaceAssassinateScreenplay:new {
 	sideQuestType = "",
 	sideQuestName = "",
 
-	-- Screenplay Specific Variables
-	arrivalDelay = 10,
+	-- Screenplay Specific Variables (assassinate/naboo_privateer_tier3_4f.tab)
+	arrivalDelay = 25,
 	failTimer = 20,
 
-	-- Per wiki: 2 Tier 4 Kihraxz Black Sun Wraith, 1 Tier 3 Rihkxyrk Krayt's Bane
 	assassinateSpawns = {
 		target = "blacksun_krayt_bane_tier3",
-		escorts = {"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},
+		escorts = {"blacksun_ace_s04_tier3", "blacksun_ace_s04_tier3"},
 	},
 
 	targetPatrols = {
-		{patrolPointName = "lok_privateer_tier3_krayt_bane_1", x = 2500, z = 1200, y = -1500},
-		{patrolPointName = "lok_privateer_tier3_krayt_bane_2", x = 3000, z = 800, y = -1800},
-		{patrolPointName = "lok_privateer_tier3_krayt_bane_3", x = 3500, z = 400, y = -2100},
-		{patrolPointName = "lok_privateer_tier3_krayt_bane_4", x = 4000, z = 0, y = -2400},
+		{patrolPointName = "hostage_escort_5", x = -3467, z = 2588, y = -6633},
+		{patrolPointName = "hostage_recovery_1", x = -2930, z = 2690, y = -4742},
+		{patrolPointName = "hostage_recovery_5", x = -5082, z = 2428, y = -476},
 	},
 }
 

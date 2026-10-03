@@ -412,6 +412,14 @@ local function sceneMethods(class)
 	function class:getPositionZ() return self.z or 0 end
 	function class:getPositionY() return self.y or 0 end
 	function class:destroyObjectFromWorld() Fakes.destroy(self) end
+
+	-- LuaSceneObject::getDistanceTo3d (rsf-tier1-dinge-data: SpaceEscortScreenplay:checkEscort). A creature in a ship counts at its ship's position.
+	function class:getDistanceTo3d(other)
+		local from, to = self.rootParent or self, other.rootParent or other
+		local dx, dz, dy = (from.x or 0) - (to.x or 0), (from.z or 0) - (to.z or 0), (from.y or 0) - (to.y or 0)
+
+		return math.sqrt(dx * dx + dz * dz + dy * dy)
+	end
 end
 
 -- Ship (player ship or AI ship). opts: pilot (fake creature), objectName (default "player_ship";
@@ -657,6 +665,14 @@ function FakeAgent:setMaximumGuardPatrol(v) self.maximumGuardPatrol = v end
 function FakeAgent:setGuardPatrol() self.guardPatrol = true end
 function FakeAgent:setDespawnOnNoPlayerInRange(b) self.despawnOnNoPlayerInRange = b end
 function FakeAgent:setShipFactionString(s) self.shipFactionString = s end
+
+-- LuaShipAiAgent::setWaveAttack / removeSpaceFactionAlly (rsf-tier1-dinge-data: the escort attack wave runs for the first time).
+-- They only record; test_rsf_tier1_dinge_harness_fakes.lua checks the names against the bindings.
+function FakeAgent:setWaveAttack() self.waveAttack = true end
+function FakeAgent:removeSpaceFactionAlly(hash)
+	self.removedFactionAllies = self.removedFactionAllies or {}
+	self.removedFactionAllies[#self.removedFactionAllies + 1] = hash
+end
 
 function FakeAgent:dropFromSquadron() self.squadronLeader = nil; self.isSquadronLeader = false end
 

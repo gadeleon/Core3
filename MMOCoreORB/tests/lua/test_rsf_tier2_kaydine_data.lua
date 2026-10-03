@@ -552,7 +552,7 @@ end
 function TestRsfTier2KaydineConstants:test_the_tier_1_escort_points_stay_and_the_invented_duty_points_are_gone()
 	local points = H.patrolPoints("space_naboo")
 
-	lu.assertNotNil(points.privateer_escort_4, "space_naboo: privateer_escort_4 must stay")
+	lu.assertNotNil(points.commerce_route_1_04, "space_naboo: commerce_route_1_04 must stay (privateer_escort_4 went with rsf-tier1-dinge-data)")
 
 	for _, name in ipairs({ "rsf_duty_patrol_1", "rsf_duty_patrol_2", "rsf_duty_patrol_3", "rsf_duty_patrol_4", "rsf_duty_patrol_5", "rsf_duty_patrol_6",
 		"rsf_tier2_duty_escort_1", "rsf_tier2_duty_escort_2", "rsf_tier2_duty_escort_3", "rsf_recovery_1", "rsf_recovery_2" }) do
@@ -900,6 +900,6 @@ function TestRsfTier2KaydineInventedPointsGone:test_the_naboo_point_file_loses_t
 	lu.assertNil(text:find("RSF Tier 2 Mission 2: Assassinate", 1, true), "comment 'RSF Tier 2 Mission 2: Assassinate' is gone")
 	lu.assertNil(text:find("-- RSF Tier 1 Duty: Patrol", 1, true), "the comment of the orphaned duty block is gone (rsf-tier2-kaydine-duties)")
 	lu.assertNotNil(text:find("SpacePatrolPoints:addSpacePatrolPoints(space_naboo, \"space_naboo\")", 1, true), "addSpacePatrolPoints call")
-	lu.assertNotNil(H.patrolPoints("space_naboo").privateer_escort_4, "privateer_escort_4 stays")
+	lu.assertNotNil(H.patrolPoints("space_naboo").commerce_route_1_04, "commerce_route_1_04 stays (privateer_escort_4 went with rsf-tier1-dinge-data)")
 	lu.assertNil(H.patrolPoints("space_naboo").rsf_duty_patrol_1, "rsf_duty_patrol_1 is gone (rsf-tier2-kaydine-duties)")
 end

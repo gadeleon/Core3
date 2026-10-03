@@ -588,10 +588,10 @@ end
 function TestRsfTier2DutyPoints:test_privateer_escort_4_and_the_registration_call_remain()
 	local text = readFile(PP_PATH)
 
-	lu.assertNotNil(H.patrolPoints("space_naboo").privateer_escort_4, "privateer_escort_4 stays")
-	lu.assertNotNil(H.patrolPoints("space_naboo").privateer_escort_1, "privateer_escort_1 stays (F6)")
+	lu.assertNil(H.patrolPoints("space_naboo").privateer_escort_4, "privateer_escort_4 is gone (rsf-tier1-dinge-data)")
+	lu.assertNil(H.patrolPoints("space_naboo").privateer_escort_1, "privateer_escort_1 is gone (rsf-tier1-dinge-data)")
 	lu.assertNotNil(text:find("SpacePatrolPoints:addSpacePatrolPoints(space_naboo, \"space_naboo\")", 1, true), "addSpacePatrolPoints call")
-	lu.assertNotNil(text:find("-- RSF Tier 1 Mission 3: Escort Freighter", 1, true), "the comment of the tier 1 escort block stays")
+	lu.assertNil(text:find("-- RSF Tier 1 Mission 3: Escort Freighter", 1, true), "the comment of the tier 1 escort block is gone (rsf-tier1-dinge-data)")
 end
 
 -- AC-3: no loaded quest global mentions an invented point at any depth

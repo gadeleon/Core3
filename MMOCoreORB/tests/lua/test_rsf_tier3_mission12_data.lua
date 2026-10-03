@@ -753,7 +753,7 @@ end
 function TestRsfTier3InventedPointsGone:test_the_neighbours_and_the_points_that_must_stay_are_still_defined()
 	local stay = {
 		space_dantooine = { "mining_route_1_09" },
-		space_naboo = { "commerce_route_1_04", "privateer_escort_1", "privateer_escort_2", "privateer_escort_3", "privateer_escort_4" },
+		space_naboo = { "commerce_route_1_04" }, -- privateer_escort_1..4 went with rsf-tier1-dinge-data
 		-- the spec names these "leg_3_deliver_pickup" and "leg_3_delivery"; the file has leg_3_deliver_delivery, in space_lok
 		space_lok = { "trade_fed_station_patrol_14", "naboo_privateer_tier3_leg_3_deliver_pickup", "naboo_privateer_tier3_leg_3_deliver_delivery", "naboo_privateer_tier3_leg_3_survival" },
 		space_corellia = { "rebel_gunboat_patrol_03_05" },
@@ -777,7 +777,7 @@ function TestRsfTier3InventedPointsGone:test_the_four_files_keep_their_registrat
 		lu.assertNil(text:find("RSF Tier 3", 1, true), zone .. ": no 'RSF Tier 3' comment line is left")
 	end
 
-	lu.assertNotNil(readFile(dir .. "space_naboo.lua"):find("-- RSF Tier 1 Mission 3: Escort Freighter", 1, true), "space_naboo: the RSF Tier 1 comment stays")
+	lu.assertNil(readFile(dir .. "space_naboo.lua"):find("-- RSF Tier 1 Mission 3: Escort Freighter", 1, true), "space_naboo: the RSF Tier 1 comment is gone (rsf-tier1-dinge-data)")
 end
 
 ---------------------------------------------------------------------------------------------

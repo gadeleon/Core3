@@ -58,7 +58,7 @@ destroy_surpriseattack_naboo_privateer_1 = SpaceSurpriseAttackScreenplay:new {
 	-- Screenplay Specific Variables
 	surpriseAttackShips = {
 		zone = "space_naboo",
-		spawns = {{count = 1, shipName = "blacksun_fighter_s02_tier1"}, {count = 3, shipName = "blacksun_fighter_s01_tier1"}},
+		spawns = {{count = 3, shipName = "blacksun_fighter_s02_tier1"}},
 	},
 }
 
@@ -83,16 +83,25 @@ destroy_naboo_privateer_2 = SpaceDestroyScreenplay:new {
 	killsRequired = 4,
 
 	shipLocations = {
-		{patrolPointName = "privateer_patrol_1", x = 752, z = 659, y = -2444},
-		{patrolPointName = "privateer_patrol_2", x = 2031, z = 887, y = -1759},
-		{patrolPointName = "privateer_patrol_3", x = 2466, z = 854, y = -505},
+		{spawnName = "black_sun_attack_1", x = 1091, z = 733, y = -2295},
+		{spawnName = "black_sun_generic_1", x = -2302, z = 1093, y = -1291},
+		{spawnName = "black_sun_route_1", x = -21, z = -289, y = -960},
+		{spawnName = "naboo_privateer_2", x = 2958, z = 941, y = -1002},
+		{spawnName = "naboo_privateer_4", x = 2147, z = -1509, y = 3415},
 	},
 
 	shipTypes = {
 		"blacksun_ace_s04_tier1", "blacksun_ace_s04_tier2", "blacksun_aggressor_tier1", "blacksun_aggressor_tier2",
-		"blacksun_bomber_s01_tier1", "blacksun_bomber_s01_tier2", "blacksun_bomber_s02_tier1", "blacksun_bomber_s02_tier2",
-		"blacksun_fighter_s01_tier1", "blacksun_fighter_s01_tier2", "blacksun_fighter_s02_tier1", "blacksun_fighter_s02_tier2",
-		"blacksun_fighter_s03_tier1", "blacksun_fighter_s03_tier2", "blacksun_gunship_tier1", "blacksun_gunship_tier2",
+		"blacksun_bomber_ace_s04_tier1", "blacksun_bomber_ace_s04_tier2", "blacksun_bomber_ace_tier3_dantooine",
+		"blacksun_bomber_s01_tier1", "blacksun_bomber_s01_tier2", "blacksun_bomber_s01_tier2_tatooine",
+		"blacksun_bomber_s02_tier1", "blacksun_bomber_s02_tier2", "blacksun_bomber_s02_tier3_dantooine",
+		"blacksun_bomber_s03_tier1", "blacksun_bomber_s03_tier2",
+		"blacksun_fighter_s01_tier1", "blacksun_fighter_s01_tier2", "blacksun_fighter_s01_tier2_tatooine",
+		"blacksun_fighter_s02_tier1", "blacksun_fighter_s02_tier2", "blacksun_fighter_s02_tier3_dantooine",
+		"blacksun_fighter_s03_tier1", "blacksun_fighter_s03_tier2",
+		"blacksun_freighterheavy_tier2", "blacksun_freighterlight_tier2", "blacksun_gunship_tier1", "blacksun_gunship_tier2",
+		"blacksun_marauder_tier1", "blacksun_marauder_tier2", "blacksun_transport_tier2",
+		"blacksun_vehement_tier1", "blacksun_vehement_tier2", "blacksun_yt1300_tier1", "blacksun_yt1300_tier3",
 	},
 }
 
@@ -124,10 +133,10 @@ patrol_naboo_privateer_3 = SpacePatrolScreenplay:new {
 
 	-- Screenplay Specific Variables
 	patrolPoints = {
-		{patrolPointName = "privateer_security_patrol_1", x = 2479, z = -500, y = 1187, patrolNumber = 1, radius = 150},
+		{patrolPointName = "privateer_security_patrol_1", x = 1690, z = -686, y = 2007, patrolNumber = 1, radius = 150},
 		{patrolPointName = "privateer_security_patrol_2", x = 3251, z = -414, y = 2349, patrolNumber = 2, radius = 150},
 		{patrolPointName = "privateer_security_patrol_3", x = 3039, z = -499, y = 3761, patrolNumber = 3, radius = 150},
-		{patrolPointName = "privateer_security_patrol_4", x = 2500, z = -400, y = 4500, patrolNumber = 4, radius = 150},
+		{patrolPointName = "privateer_security_patrol_4", x = 1314, z = -489, y = 3639, patrolNumber = 4, radius = 150},
 	},
 }
 
@@ -152,17 +161,20 @@ escort_naboo_privateer_3 = SpaceEscortScreenplay:new {
 	escortShips = {"freighterheavy_tier1"},
 
 	escortPoints = {
-		{patrolPointName = "privateer_escort_1", zoneName = "space_naboo", x = 3200, z = -400, y = 2600, escortNumber = 1, radius = 250},
-		{patrolPointName = "privateer_escort_2", zoneName = "space_naboo", x = 2800, z = -450, y = 3200, escortNumber = 2, radius = 250},
-		{patrolPointName = "privateer_escort_3", zoneName = "space_naboo", x = 2400, z = -400, y = 4000, escortNumber = 3, radius = 250},
-		{patrolPointName = "privateer_escort_4", zoneName = "space_naboo", x = 2000, z = -350, y = 4800, escortNumber = 4, radius = 250},
+		{patrolPointName = "privateer_security_escort_1", zoneName = "space_naboo", x = 1341, z = -546, y = 3125, escortNumber = 1, radius = 250},
+		{patrolPointName = "privateer_security_escort_2", zoneName = "space_naboo", x = 1292, z = -705, y = 2368, escortNumber = 2, radius = 250},
+		{patrolPointName = "privateer_security_escort_3", zoneName = "space_naboo", x = 600, z = -803, y = 1737, escortNumber = 3, radius = 250},
+		{patrolPointName = "privateer_security_escort_4", zoneName = "space_naboo", x = 456, z = -909, y = 291, escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 90,
 
 	attackShips = {
-		{"blacksun_fighter_s02_tier1", "blacksun_fighter_s03_tier1", "blacksun_fighter_s02_tier1"},
-	}
+		{"blacksun_fighter_s01_tier1", "blacksun_fighter_s02_tier1"},
+		{"blacksun_vehement_tier1", "blacksun_fighter_s03_tier1"},
+	},
+
+	tauntData = {goodbyeCount = 3, reasonCount = 3, tauntCount = 3, thanksCount = 3},
 }
 
 registerScreenPlay("escort_naboo_privateer_3", true)
@@ -186,18 +198,19 @@ assassinate_naboo_privateer_tier1_4a = SpaceAssassinateScreenplay:new {
 	sideQuestType = "",
 
 	-- Screenplay Specific Variables
-	arrivalDelay = 6,
+	arrivalDelay = 0,
 	failTimer = 20,
 
-	assassinateTarget = {
-		zone = "space_naboo",
-		ship = "blacksun_ace_s04_tier1",
-		x = 1500, z = 500, y = -1000,
+	assassinateSpawns = {
+		target = "blacksun_ace_s04_tier1",
+		escorts = {"blacksun_fighter_s01_tier1", "blacksun_fighter_s02_tier1", "blacksun_bomber_s03_tier1"},
 	},
 
-	assassinateWingmen = {
-		zone = "space_naboo",
-		spawns = {{count = 2, shipName = "blacksun_fighter_s02_tier1"}},
+	targetPatrols = {
+		{patrolPointName = "naboo_imperial_escort_2", x = -2934, z = 3049, y = -3022},
+		{patrolPointName = "corellia_imperial_tier3_leg_4_assassinate_one_2", x = -1972, z = -1677, y = -2951},
+		{patrolPointName = "naboo_imperial_tier2_escortduty_6", x = -3203, z = 3201, y = -3078},
+		{patrolPointName = "naboo_imperial_tier2_recoveryduty_4", x = -1492, z = 746, y = -2021},
 	},
 }
 
@@ -213,23 +226,21 @@ destroy_duty_naboo_privateer_6 = SpaceDutyDestroyScreenplay:new {
 
 	questZone = "space_naboo",
 
-	creditReward = 50,
+	creditReward = 100,
 
 	sideQuest = false,
 	sideQuestType = "",
 
 	-- Screenplay Specific Variables
-	dutyMissionLevel = 1,
+	totalLevels = 2,
+	totalRounds = 2,
+	totalWaves = 2,
 
-	shipLocations = {
-		{patrolPointName = "privateer_patrol_1", x = 752, z = 659, y = -2444},
-		{patrolPointName = "privateer_patrol_2", x = 2031, z = 887, y = -1759},
-		{patrolPointName = "privateer_patrol_3", x = 2466, z = 854, y = -505},
-	},
+	bossShip = "blacksun_marauder_tier1",
 
 	shipTypes = {
-		"blacksun_fighter_s01_tier1", "blacksun_fighter_s02_tier1", "blacksun_fighter_s03_tier1",
-		"blacksun_bomber_s01_tier1", "blacksun_bomber_s02_tier1",
+		{"blacksun_fighter_s01_tier1", "blacksun_fighter_s01_tier1"},
+		{"blacksun_aggressor_tier1", "blacksun_bomber_s03_tier1", "blacksun_bomber_s02_tier1"},
 	},
 }
 
@@ -243,26 +254,30 @@ escort_duty_naboo_privateer_7 = SpaceDutyEscortScreenplay:new {
 
 	questZone = "space_naboo",
 
-	creditReward = 75,
+	creditReward = 2500,
 
 	sideQuest = false,
 	sideQuestType = "",
 
 	-- Screenplay Specific Variables
-	dutyMissionLevel = 1,
+	creditKillBonus = 200,
 
-	escortShips = {"freighterheavy_tier1", "freighterlight_tier1"},
+	escortShips = {"freighterheavy_tier2", "freighterlight_tier2", "freightermedium_tier2"},
 
 	escortPoints = {
-		{patrolPointName = "stn_rori_rsf_escort_duty_1", zoneName = "space_naboo", x = 832, z = 2355, y = -6460, escortNumber = 1, radius = 250},
-		{patrolPointName = "stn_rori_rsf_escort_duty_2", zoneName = "space_naboo", x = 5504, z = 1267, y = -4332, escortNumber = 2, radius = 250},
-		{patrolPointName = "stn_rori_rsf_escort_duty_3", zoneName = "space_naboo", x = 6352, z = -220, y = 1363, escortNumber = 3, radius = 250},
+		{patrolPointName = "privateer_security_escort_1", zoneName = "space_naboo", x = 1341, z = -546, y = 3125, escortNumber = 1, radius = 250},
+		{patrolPointName = "privateer_security_escort_2", zoneName = "space_naboo", x = 1292, z = -705, y = 2368, escortNumber = 2, radius = 250},
+		{patrolPointName = "privateer_security_escort_3", zoneName = "space_naboo", x = 600, z = -803, y = 1737, escortNumber = 3, radius = 250},
+		{patrolPointName = "privateer_security_escort_4", zoneName = "space_naboo", x = 456, z = -909, y = 291, escortNumber = 4, radius = 250},
 	},
 
+	attackDelay = 90,
+
 	attackShips = {
-		{"blacksun_fighter_s01_tier1", "blacksun_fighter_s02_tier1"},
-		{"blacksun_fighter_s01_tier1", "blacksun_fighter_s02_tier1", "blacksun_fighter_s03_tier1"},
-	}
+		{"blacksun_marauder_tier2", "blacksun_marauder_tier2"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
 }
 
 registerScreenPlay("escort_duty_naboo_privateer_7", true)

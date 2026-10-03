@@ -287,6 +287,15 @@ chosen an option on `screenId` (reaches prompts no first screen leads to). `T.pl
 `space_combat_general` and refuses (grants nothing) when the pilot has less; without it nothing is charged. `H.reset()` clears it.
 `fixtures/skill/skills.pilot_neutral_02.tab` is an excerpt of SWG `skills.tab` (header rows plus the four `_02` rows, lines 1, 2, 644, 648, 652, 656).
 
+### RSF tier 1 Dinge data (rsf-tier1-dinge-data)
+
+`rsf_tier1_dinge_data.lua` holds the spec's literals for the 8 tier 1 tables (`D.expected()`), the 15 points and 5 spawners, and the
+files that must stay byte-identical to commit `0d2c61189c` (`test_rsf_tier1_dinge_data.lua` compares them through `git show`).
+`test_rsf_tier1_dinge_runtime.lua` runs mission 4, destroy duty 6 and escort duty 7 through the fakes. Fake agents and scene objects gained
+`setWaveAttack`, `removeSpaceFactionAlly` and `getDistanceTo3d` (`test_rsf_tier1_dinge_harness_fakes.lua` checks the names against the bindings).
+A quest table without an `attackDelay` makes `SpaceEscortScreenplay:spawnAttackWave` re-queue itself at the same instant; the escort duty tests
+assert the delay first so such a table fails instead of hanging the event clock.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

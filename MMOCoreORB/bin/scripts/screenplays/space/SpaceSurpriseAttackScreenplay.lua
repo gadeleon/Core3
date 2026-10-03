@@ -294,6 +294,12 @@ function SpaceSurpriseAttackScreenplay:notifyShipDestroyed(pShipAgent, pKillerSh
 
 	local agentID = SceneObject(pShipAgent):getObjectID()
 
+	-- Quest was aborted or ended, the ship no longer counts
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		CreatureObject(pPlayer):removeSpaceMissionObject(agentID, false)
+		return 1
+	end
+
 	if (self.DEBUG_SPACE_SURPRISE_ATTACK) then
 		print(self.className .. ":notifyShipDestroyed - Ship Destoyed: " .. SceneObject(pShipAgent):getDisplayedName() .. " Quest Owner Name: " .. SceneObject(pPlayer):getDisplayedName())
 	end

@@ -8,6 +8,7 @@
 #include "server/zone/managers/mission/MissionManager.h"
 #include "server/zone/managers/mission/MissionDirection.h"
 #include "server/zone/managers/mission/MissionDifficulty.h"
+#include "engine/lua/LuaPanicException.h"
 #include "server/zone/objects/tangible/terminal/mission/MissionTerminal.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/ai/AiAgent.h"
@@ -563,12 +564,38 @@ void MissionManagerImplementation::handleMissionAbort(MissionObject* mission, Cr
 			player->sendSystemMessage("You cannot abort a bounty hunter mission this soon after being in combat with the mission target.");
 			return;
 		}
+	}
 
+	mission->abort();
+
+	// Lua abort hook, run while the journal entry is still active so the quest can tear down its run
+	if (!questType.isEmpty()) {
+		Lua* lua = DirectorManager::instance()->getLuaInstance();
+
+		if (lua != nullptr) {
+			// A missing quest global or a Lua error must not skip the journal safety net and removeMission
+			try {
+				Reference<LuaFunction*> abortSpaceMission = lua->createFunction(questType + "_" + questName, "abortQuest", 0);
+
+				*abortSpaceMission << player;
+				abortSpaceMission->callFunction();
+			} catch (const LuaPanicException& panic) {
+				error() << "handleMissionAbort: abortQuest failed for " << questType << "_" << questName << ": " << panic.getMessage();
+			} catch (Exception& e) {
+				error() << "handleMissionAbort: abortQuest exception for " << questType << "_" << questName << ": " << e.getMessage();
+			}
+		}
+	}
+
+	if (ghost != nullptr) {
 		// Space Missions
 		uint32 questCRC = mission->getQuestCRC();
 
 		if (questCRC > 0) {
-			ghost->clearJournalQuest(questCRC, false);
+			// Safety net if the Lua hook is missing or failed; only an active entry is cleared
+			if (ghost->isJournalQuestActive(questCRC)) {
+				ghost->clearJournalQuest(questCRC, false);
+			}
 
 			if (questMessage) {
 				String questString = "@spacequest/" + questType + "/" + questName + ":title";
@@ -580,21 +607,6 @@ void MissionManagerImplementation::handleMissionAbort(MissionObject* mission, Cr
 
 				player->playMusicMessage("sound/music_themequest_fail_criminal.snd");
 			}
-		}
-	}
-
-	mission->abort();
-
-	// JTL Mission Abort to clear lua quest data
-	if (!questType.isEmpty()) {
-		Lua* lua = DirectorManager::instance()->getLuaInstance();
-
-		if (lua != nullptr) {
-			Reference<LuaFunction*> abortSpaceMission = lua->createFunction(questType + "_" + questName, "failQuest", 0);
-
-			*abortSpaceMission << player;
-			*abortSpaceMission << "false";
-			abortSpaceMission->callFunction();
 		}
 	}
 

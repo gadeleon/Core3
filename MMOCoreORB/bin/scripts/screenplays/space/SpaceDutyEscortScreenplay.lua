@@ -16,6 +16,10 @@ function SpaceDutyEscortScreenplay:resetDutyMission(pPlayer)
 		return
 	end
 
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
 	if (self.DEBUG_SPACE_ESCORT) then
 		print(self.className .. ":resetDutyMission called")
 	end
@@ -80,6 +84,10 @@ end
 function SpaceDutyEscortScreenplay:setupEscort(pPlayer)
 	if (pPlayer == nil) then
 		Logger:log("Quest: " .. self.questName .. " Type: " .. self.questType .. " -- Failed to setupEscort due to pPlayer being nil.", LT_ERROR)
+		return
+	end
+
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
 		return
 	end
 

@@ -118,6 +118,27 @@ function SpaceQuestLogic:failQuest(pPlayer, notifyClient)
 
 end
 
+-- Datapad abort: end only this run, no messages, no parent/side/split handling
+function SpaceQuestLogic:abortQuest(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	self:resetQuest(pPlayer)
+end
+
+function SpaceQuestLogic:resetQuest(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	SpaceHelpers:failSpaceQuest(pPlayer, self.questType, self.questName, false)
+end
+
 function SpaceQuestLogic:triggerCompletionSplitQuest(pPlayer)
 	local alertMessage = "@spacequest/" .. self.questType .. "/" .. self.questName .. ":split_quest_alert"
 

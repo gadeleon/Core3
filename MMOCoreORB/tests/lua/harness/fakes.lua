@@ -100,7 +100,15 @@ end
 function FakeGhost:getObjectID() return self.objectID end
 function FakeGhost:isJournalQuestActive(crc) return self.journalActive[crc] == true end
 function FakeGhost:isJournalQuestComplete(crc) return self.journalComplete[crc] == true end
-function FakeGhost:activateJournalQuest(crc, notify) self.journalActive[crc] = true end
+-- Like PlayerObjectImplementation::activateJournalQuest: an entry that already has an owner
+-- (active or completed) is left alone, so a completed entry stays completed until cleared.
+function FakeGhost:activateJournalQuest(crc, notify)
+	if self.journalComplete[crc] then
+		return
+	end
+
+	self.journalActive[crc] = true
+end
 function FakeGhost:completeJournalQuest(crc, notify) self.journalActive[crc] = nil; self.journalComplete[crc] = true end
 function FakeGhost:clearJournalQuest(crc, notify)
 	self.journalActive[crc] = nil
@@ -328,9 +336,28 @@ function FakeCreature:removeSpaceMissionObject(id, notify)
 end
 
 -- Datapad mission bookkeeping (SpaceHelpers:completeSpaceQuest / failSpaceQuest).
-function FakeCreature:removeQuestMission(crc) end
+-- Both remove the first datapad mission whose quest CRC matches (a mission built without a
+-- quest type/name has no CRC and never matches).
+local function removeDatapadMission(creature, crc)
+	local items = creature.datapad and creature.datapad.items or {}
+
+	for i, item in ipairs(items) do
+		if item.getQuestCRC and item:getQuestCRC() == crc then
+			table.remove(items, i)
+			return true
+		end
+	end
+
+	return false
+end
+
+function FakeCreature:removeQuestMission(crc)
+	removeDatapadMission(self, crc)
+end
+
 function FakeCreature:failQuestMission(crc)
 	self.failedMissions[#self.failedMissions + 1] = crc
+	removeDatapadMission(self, crc)
 end
 
 -- Bank credits (LuaCreatureObject::addBankCredits): every call is recorded in order.
@@ -635,6 +662,11 @@ end
 
 function FakeMission:isMissionObject() return true end
 function FakeMission:isSpaceDutyMission() return self.spaceDuty end
+function FakeMission:getQuestCRC()
+	if self.questType and self.questName then
+		return Fakes.questCrc(self.questType, self.questName)
+	end
+end
 function FakeMission:setTypeCRC(crc) self.typeCRC = crc end
 function FakeMission:setQuestType(t) self.questType = t end
 function FakeMission:setQuestName(n) self.questName = n end

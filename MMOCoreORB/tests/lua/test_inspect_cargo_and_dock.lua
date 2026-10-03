@@ -472,6 +472,10 @@ function TestInspectRecovery:test_the_same_ship_cannot_be_recovered_again_in_a_l
 	sc:dock(ship)
 	lu.assertTrue(sc:complete(), "precondition: first recovery")
 
+	-- A trainer clears the completed entry before it hands the quest out again; the server never
+	-- re-activates a completed entry (PlayerObjectImplementation::activateJournalQuest).
+	sc.player.ghost:clearJournalQuest(H.questCrc(sc.questType, sc.name), false)
+
 	sc:start()
 	sc:setup()
 	sc:dock(ship, getHashCode(ship.cargo))

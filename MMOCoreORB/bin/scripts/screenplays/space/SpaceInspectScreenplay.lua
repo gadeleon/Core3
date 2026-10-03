@@ -70,7 +70,9 @@ function SpaceInspectScreenplay:startQuest(pPlayer, pNpc)
 	end
 
 	-- Activate the Journal Quest
-	SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, "inspect", self.questName, false)
+	if (not SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, "inspect", self.questName, false)) then
+		return
+	end
 
 	-- Activate the quest task 0, wherever the player is
 	SpaceHelpers:activateSpaceQuestTask(pPlayer, self.questType, self.questName, 0, false)

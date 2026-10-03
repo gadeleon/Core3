@@ -201,6 +201,15 @@ records `agent.engaged` (ships) and `agent.engageLog` (`{t, target}`).
 these: oracle values from fixtures, spies on every other quest, `sc:start()`, `sc:arrive()`,
 `sc:at(ms)`, message timeline helpers.
 
+### Journal and datapad fakes (space-quest-duty-rules)
+
+- `activateJournalQuest` on an entry that has an owner is a no-op, as on the server
+  (`PlayerObjectImplementation.cpp:3189-3194`); `completeJournalQuest` keeps the owner, so a
+  completed entry can only be re-taken after `clearJournalQuest`.
+- Fake missions carry a quest CRC (`getQuestCRC`), and `failQuestMission` / `removeQuestMission`
+  remove the datapad mission; the fake creature records failed CRCs in `failedMissions` (`harness/fakes.lua:233`).
+- `duty_rules_scenario.lua` has shared builders for the duty-rule tests.
+
 ### SWG-Source conversation answer keys
 
 `harness/swgjava.lua` parses the generated trainer scripts in SWG-Source

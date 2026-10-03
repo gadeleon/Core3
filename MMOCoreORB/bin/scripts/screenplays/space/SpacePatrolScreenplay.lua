@@ -54,7 +54,9 @@ function SpacePatrolScreenplay:startQuest(pPlayer, pNpc)
 	end
 
 	-- Activate the Journal Quest
-	SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, true)
+	if (not SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, true)) then
+		return
+	end
 
 	local spaceQuestHash = getHashCode(self.questZone)
 	local zoneName = SceneObject(pPlayer):getZoneName()

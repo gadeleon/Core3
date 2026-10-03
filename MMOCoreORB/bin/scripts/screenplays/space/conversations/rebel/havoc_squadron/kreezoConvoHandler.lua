@@ -1,3 +1,4 @@
+-- Kreezo (Havoc tier 1) conversation handler; ported from SWG-Source corellia_rebel_trainer_1.java. Chain retry/won-check routing: feature space-trainer-fixes.
 local SpaceHelpers = require("utils.space_helpers")
 
 kreezoConvoHandler = conv_handler:new {}
@@ -46,9 +47,9 @@ function kreezoConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	-- Check for a starter ship
 	local hasShip = SpaceHelpers:hasCertifiedShip(pPlayer, true)
 
-	local questOneStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.QUEST_STRING_1.type, HavocSquadronScreenplay.QUEST_STRING_1.name)
+	local questOneStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_rebel_1")
 	local questTwoStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.QUEST_STRING_2.type, HavocSquadronScreenplay.QUEST_STRING_2.name)
-	local questThreeStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.QUEST_STRING_3.type, HavocSquadronScreenplay.QUEST_STRING_3.name)
+	local questThreeStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_rebel_3")
 	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.QUEST_STRING_4.type, HavocSquadronScreenplay.QUEST_STRING_4.name)
 
 	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.QUEST_STRING_1.type, HavocSquadronScreenplay.QUEST_STRING_1.name) and SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.QUEST_STRING_1_SIDE.type, HavocSquadronScreenplay.QUEST_STRING_1_SIDE.name)
@@ -320,15 +321,15 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		-- Track that quest was attempted
 		setQuestStatus(playerID .. HavocSquadronScreenplay.QUEST_STRING_1.name .. ":attempted", 1)
 
-		patrol_corellia_rebel_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_rebel_1")
 	elseif (screenID == "retry_quest1") then
-		patrol_corellia_rebel_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_rebel_1")
 	elseif (screenID == "retry_quest2") then
-		destroy_corellia_rebel_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_corellia_rebel_2")
 	elseif (screenID == "retry_quest3") then
-		patrol_corellia_rebel_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_rebel_3")
 	elseif (screenID == "retry_quest4") then
-		assassinate_corellia_rebel_4:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_rebel_4")
 	-- Quest 1 completion screens - give reward
 	elseif (screenID == "i_was_attacked" or screenID == "imperial_ambush" or screenID == "not_resistance" or screenID == "tie_intercepted") then
 		local playerID = CreatureObject(pPlayer):getObjectID()
@@ -346,14 +347,14 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 	elseif (screenID == "quest2_accepted") then
 		local playerID = CreatureObject(pPlayer):getObjectID()
 		setQuestStatus(playerID .. HavocSquadronScreenplay.QUEST_STRING_2.name .. ":attempted", 1)
-		destroy_corellia_rebel_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_corellia_rebel_2")
 
 	elseif (screenID == "quest2_goodbye" and CreatureObject(pPlayer):getGender() ~= 0) then
 		clonedConversation:setDialogTextStringId("@conversation/corellia_rebel_trainer_1:s_5a12db83") -- Stay safe up there! I want to see you again soon...
 	elseif (screenID == "train_me3") then
 		local playerID = CreatureObject(pPlayer):getObjectID()
 		setQuestStatus(playerID .. HavocSquadronScreenplay.QUEST_STRING_3.name .. ":attempted", 1)
-		patrol_corellia_rebel_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_rebel_3")
 	-- Excellent Work 2 - gender-specific options
 	elseif (screenID == "excellent_work2") then
 		local isMale = (CreatureObject(pPlayer):getGender() == 0)
@@ -411,7 +412,7 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		if (screenID == "quest4_accepted") then
 			local playerID = CreatureObject(pPlayer):getObjectID()
 			setQuestStatus(playerID .. HavocSquadronScreenplay.QUEST_STRING_4.name .. ":attempted", 1)
-			assassinate_corellia_rebel_4:startQuest(pPlayer, pNpc)
+			SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_rebel_4")
 		end
 
 		local isMale = (CreatureObject(pPlayer):getGender() == 0)
@@ -434,7 +435,7 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		if (screenID == "quest4_salute_accepted") then
 			local playerID = CreatureObject(pPlayer):getObjectID()
 			setQuestStatus(playerID .. HavocSquadronScreenplay.QUEST_STRING_4.name .. ":attempted", 1)
-			assassinate_corellia_rebel_4:startQuest(pPlayer, pNpc)
+			SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_rebel_4")
 		end
 
 		clonedConversation:addOption("@conversation/corellia_rebel_trainer_1:s_5792c0f4", "quest4_salute_goodbye") -- (Salute) Yes sir!
@@ -458,7 +459,7 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		if (screenID == "quest4_alliance_accepted") then
 			local playerID = CreatureObject(pPlayer):getObjectID()
 			setQuestStatus(playerID .. HavocSquadronScreenplay.QUEST_STRING_4.name .. ":attempted", 1)
-			assassinate_corellia_rebel_4:startQuest(pPlayer, pNpc)
+			SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_rebel_4")
 		end
 
 		clonedConversation:addOption("@conversation/corellia_rebel_trainer_1:s_cf04e474", "quest4_alliance_veteran") -- What more do we know of this TIE veteran?

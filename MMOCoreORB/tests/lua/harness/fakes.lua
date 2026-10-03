@@ -271,7 +271,16 @@ end
 function FakeCreature:getObjectID() return self.objectID end
 function FakeCreature:getFirstName() return self.name end
 function FakeCreature:getDisplayedName() return self.name end
+-- SceneObject::getObjectName on an NPC (SpaceHelpers:activateSpaceQuest reads it for the mission creator name).
+function FakeCreature:getObjectName() return self.objectName or self.name end
 function FakeCreature:getPlayerObject() return self.ghost end
+-- LuaCreatureObject::doAnimation (trainer handlers play emotes); every call is recorded in order.
+function FakeCreature:doAnimation(animation)
+	self.animations = self.animations or {}
+	self.animations[#self.animations + 1] = animation
+end
+-- LuaCreatureObject::getGender (0 = male); set opts.gender / creature.gender to change it.
+function FakeCreature:getGender() return self.gender or 0 end
 function FakeCreature:isPlayerCreature() return not self.isNpc end
 function FakeCreature:hasSkill(skill) return self.skills[skill] == true end
 -- LuaCreatureObject::surrenderSkill (SpaceHelpers:surrenderPilot): the player loses the skill.

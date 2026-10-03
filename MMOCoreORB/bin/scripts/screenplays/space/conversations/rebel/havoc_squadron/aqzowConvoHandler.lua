@@ -1,3 +1,4 @@
+-- Aqzow (Havoc tier 3) conversation handler; ported from SWG-Source corellia_rebel_tier3.java. Chain retry/won-check routing: feature space-trainer-fixes.
 local SpaceHelpers = require("utils.space_helpers")
 
 aqzowConvoHandler = conv_handler:new {}
@@ -54,20 +55,21 @@ function aqzowConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	-- Testing resetAqzowQuests
 	--HavocSquadronScreenplay:resetAqzowQuests(pPlayer)
 
-	local questOneStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_1.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_1.name)
-	local questTwoStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_2.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_2.name)
-	local questThreeStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_3.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_3.name)
-	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_4.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_4.name)
+	local questOneStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "recovery_corellia_rebel_tier3_1")
+	local questTwoStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "inspect_corellia_rebel_tier3_2")
+	local questThreeStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "delivery_corellia_rebel_tier3_3")
+	local questFourStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_corellia_rebel_tier3_4")
 
-	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_1.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_1.name)
-	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_2.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_2.name)
-	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_3.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_3.name)
-	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_4.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_4.name)
+	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE4.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE4.name)
+	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE3.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE3.name)
+	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.name)
+	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, HavocSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE4.type, HavocSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE4.name)
 
 	local completedTier3 = SpaceHelpers:hasCompletedPilotTier(pPlayer, "rebel_navy", 3)
 
 	-- Check if players have all the tier 3 skill boxes and finished last mission, send them to Warvog Arkon for Tier 4
-	if (questFourComplete and completedTier3) then
+	-- SWG isReadyForTier4: tier 3 trained and the mission 4 reward received
+	if (completedTier3 and getQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":reward") == "1") then
 		if (ghost:getPilotTier() <= 3) then
 			ghost:incrementPilotTier()
 		end
@@ -240,41 +242,41 @@ function aqzowConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	elseif (screenID == "accept_quest1_a" or screenID == "accept_quest1_b" or screenID == "accept_quest1_c" or screenID == "accept_quest1_d") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":attempted", 1)
 
-		recovery_corellia_rebel_tier3_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_corellia_rebel_tier3_1")
 
 	-- Quest 1: Failed retry
 	elseif (screenID == "retry_quest1_a" or screenID == "retry_quest1_b") then
-		recovery_corellia_rebel_tier3_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_corellia_rebel_tier3_1")
 
 	-- Quest 2: Inspect mission (Endor smuggler data)
 	elseif (screenID == "accept_quest2_a" or screenID == "accept_quest2_b" or screenID == "accept_quest2_c" or screenID == "accept_quest2_d") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":attempted", 1)
 
-		inspect_corellia_rebel_tier3_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_corellia_rebel_tier3_2")
 
 	-- Quest 2: Failed retry
 	elseif (screenID == "retry_quest2_a" or screenID == "retry_quest2_b") then
-		inspect_corellia_rebel_tier3_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_corellia_rebel_tier3_2")
 
 	-- Quest 3: Delivery mission (Nym smuggler intel)
 	elseif (screenID == "accept_quest3_a" or screenID == "accept_quest3_b" or screenID == "accept_quest3_c" or screenID == "accept_quest3_d" or screenID == "accept_quest3_e") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":attempted", 1)
 
-		delivery_corellia_rebel_tier3_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "delivery_corellia_rebel_tier3_3")
 
 	-- Quest 3: Failed retry
 	elseif (screenID == "retry_quest3_a" or screenID == "retry_quest3_b") then
-		delivery_corellia_rebel_tier3_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "delivery_corellia_rebel_tier3_3")
 
 	-- Quest 4: Assassinate mission (Imperial pilot intercept)
 	elseif (screenID == "accept_quest4_a" or screenID == "accept_quest4_b" or screenID == "accept_quest4_c") then
 		setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":attempted", 1)
 
-		assassinate_corellia_rebel_tier3_4:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_rebel_tier3_4")
 
 	-- Quest 4: Failed retry
 	elseif (screenID == "retry_quest4_a" or screenID == "retry_quest4_b") then
-		assassinate_corellia_rebel_tier3_4:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_rebel_tier3_4")
 	end
 
 	return pClonedScreen

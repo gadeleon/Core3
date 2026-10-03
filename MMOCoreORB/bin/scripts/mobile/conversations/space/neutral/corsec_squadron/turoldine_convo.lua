@@ -1147,7 +1147,7 @@ accept_fourth_mission = ConvoScreen:new {
 turoldine_convo_template:addScreen(accept_fourth_mission);
 
 failed_fourth_mission = ConvoScreen:new {
-	id = "failed_third_mission",
+	id = "failed_fourth_mission",
 	leftDialog = "@conversation/corellia_privateer_tier4:s_6862706c", -- No good.
 	animation = "shake_head_no",
 	playerAnimation = "",
@@ -1195,14 +1195,14 @@ turoldine_convo_template:addScreen(fourth_mission_success);
 dont_we_all = ConvoScreen:new {
 	id = "dont_we_all",
 	leftDialog = "@conversation/corellia_privateer_tier4:s_fc9e5d39", -- Don't we all! We're making headway. For now, though, take a break. Here's your duty pay. Take it down to the cantina. They'll like the color of your money.
-	animation = "laugh",
+	animation = "",
 	playerAnimation = "",
 	stopConversation = "false",
 	options = {
 		{"@conversation/corellia_privateer_tier4:s_fcab4be0", "see_you_around"}, -- Good idea.
 	}
 }
-turoldine_convo_template:addScreen(fourth_mission_dont_we_allsuccess);
+turoldine_convo_template:addScreen(dont_we_all);
 
 see_you_around = ConvoScreen:new {
 	id = "see_you_around",

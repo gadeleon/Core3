@@ -21,16 +21,12 @@ function TestRheaConversation:test_template_is_registered_with_its_handler()
 	lu.assertEquals(t.luaClassHandler, "rheaConvoHandler")
 end
 
--- New conversations must assert H.conversationProblems(...) == {}. Rhea's existing template has
--- known dead links (found when this harness was added), pinned here so the gate stays green
--- until a CorSec feature fixes them:
---   * rhea_convo.lua defines `maybe_great` with id "maybe__42" and calls addScreen(maybe__42),
---     an undefined global, so the "Maybe." option has no screen and restarts the conversation.
---   * `i_need_to` is never defined.
--- When they are fixed, replace KNOWN_ISSUES with {}.
+-- New conversations must assert H.conversationProblems(...) == {}. Rhea's template still has two known dead
+-- links, pinned here so the gate stays green until a CorSec feature fixes them:
+--   * `i_need_to` is never defined ("I need to take care of some things first." on thank_you and yes_ship).
+-- (The `maybe_great` screen was registered by the space-trainer-fixes feature, which also pins it in
+-- test_trainer_fixes_templates.lua.) When the last one is fixed, replace KNOWN_ISSUES with {}.
 local KNOWN_ISSUES = {
-	"screen 'ridiculous' option 1 links to missing screen 'maybe_great'",
-	"screen 'ridiculous_great' option 1 links to missing screen 'maybe_great'",
 	"screen 'thank_you' option 2 links to missing screen 'i_need_to'",
 	"screen 'yes_ship' option 2 links to missing screen 'i_need_to'",
 }

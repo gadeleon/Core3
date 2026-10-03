@@ -1,3 +1,4 @@
+-- Turoldine (CorSec tier 4) conversation handler; ported from SWG-Source corellia_privateer_tier4.java. Chain retry/won-check routing: feature space-trainer-fixes.
 turoldineConvoHandler = conv_handler:new {}
 
 function turoldineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -77,7 +78,7 @@ function turoldineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local duty1Complete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_1.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_1.name)
 	local duty2Complete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_2.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_2.name)
 	local duty3Complete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_3.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_3.name)
-	local duty4Complete = SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_4.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_4.name)
+	local duty4Complete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_4.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_DUTY_4.name)
 
 	local completedTier4 = SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 4)
 
@@ -296,22 +297,22 @@ function turoldineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER4_QUEST_STRING_4.name .. ":attempted", 1)
 
 		--	Give fourth mission to player
-		assassinate_corellia_privateer_tier4_4a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_privateer_tier4_4a")
 	elseif (screenID == "accept_third_mission" or screenID == "accept_third_mission2" or screenID == "failed_third_mission") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER4_QUEST_STRING_3.name .. ":attempted", 1)
 
 		--	Give third mission to player
-		space_battle_corellia_privateer_tier4_3a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "space_battle_corellia_privateer_tier4_3a")
 	elseif (screenID == "accept_second_mission" or screenID == "failed_second_mission") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER4_QUEST_STRING_2.name .. ":attempted", 1)
 
 		--	Give second mission to player
-		assassinate_corellia_privateer_tier4_2a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_privateer_tier4_2a")
 	elseif (screenID == "accept_first_mission" or screenID == "failed_first_mission") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER4_QUEST_STRING_1.name .. ":attempted", 1)
 
 		--	Give first mission to player
-		patrol_corellia_privateer_tier4_1a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_privateer_tier4_1a")
 	end
 
 	return pClonedScreen

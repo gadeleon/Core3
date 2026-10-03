@@ -245,6 +245,16 @@ graph.pathTo(fromSid, toSid)        -- option sids to choose to get from one lin
 `havoc_tier4_data.lua` and `survival_scenario.lua` (next to the tests, not test files) show how a
 feature keeps its spec-copied constants and a player-state or scenario builder in one place.
 
+### Trainer handlers (space-trainer-fixes)
+
+`trainer_fixes_data.lua` (next to the tests, not a test file) holds the spec tables for the ten legacy trainers
+(Rhea, Rikkh, Ramna, Turoldine, Dinge, Kaydine, Dulios, Kreezo, Viopa, Aqzow): each mission's quest chain, the start screens
+(`+id` = the screen sets `:attempted`), and a player builder `T.player(tr, n, {complete = {...}, active = {...}})` that stands a pilot in front
+of the trainer with missions 1..n-1 won and rewarded. `T.driveToStart(tr, n, build)` talks to the trainer and follows the static option links
+(breadth-first) to a start screen of mission n. Fake creatures also answer `getObjectName` (NPC name for the datapad mission),
+`doAnimation` (recorded in `creature.animations`) and `getGender`. `Factions::FACTIONREBEL` is a C++ value the harness cannot resolve, so
+`T.load()` defines it as `getHashCode("rebel")` when it is missing.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file
@@ -258,6 +268,17 @@ cp $S/patrol/corellia_privateer_1.tab tests/lua/fixtures/spacequest/patrol/
 
 Fixtures mirror the SWG-Source path under `fixtures/` and are committed, so tests run without
 the research clone. They only change if the copy itself was wrong.
+
+Buildout extracts (`fixtures/space_zones/buildout/<zone>.<name>.tab`) are the two header rows plus the nav point rows a test needs:
+
+```bash
+B=$G/datatables/space_zones/buildout     # $G = .../dsrc/sku.0/sys.server/compiled/game
+{ head -n 2 $B/space_endor.tab; grep -F "nav_name|4|corellia_rebel_tier4_1_recovery_duty_" $B/space_endor.tab; } \
+  > tests/lua/fixtures/space_zones/buildout/space_endor.recovery_duty_points.tab
+{ head -n 2 $B/space_dathomir.tab; grep -F -e "nav_name|4|corellia_rebel_tier4_1_escort_duty_" \
+  -e "nav_name|4|corellia_rebel_tier3_4_assassin_" -e "nav_name|4|corellia_rebel_tier4_2_assassin_" $B/space_dathomir.tab; } \
+  > tests/lua/fixtures/space_zones/buildout/space_dathomir.havoc_points.tab
+```
 
 `.tab` layout: row 1 = column names, row 2 = types, then data. A row with an empty first column
 continues the record above (e.g. one `navPoints` value per row).
@@ -275,9 +296,10 @@ continues the record above (e.g. one `navPoints` value per row).
 
 Found by these tests and pinned so the gate stays green; fix them in a feature, then update the test:
 
-- **CorSec / Sgt. Rhea** (`rhea_convo.lua`): options "Maybe." (`maybe_great`) and "I need to take
-  care of some things first." (`i_need_to`) link to screens that are never added, so choosing them
-  restarts the conversation. Pinned in `test_example_rhea_conversation.lua`.
+- **CorSec / Sgt. Rhea** (`rhea_convo.lua`): the option "I need to take care of some things first."
+  (`i_need_to`, on `thank_you` and `yes_ship`) links to a screen that is never added, so choosing it restarts the
+  conversation. Pinned in `test_example_rhea_conversation.lua`. Rikkh `non_corsec_missions` and Ramna's duplicate
+  `go_back_get_some` are the other known template defects (space-trainer-fixes findings F-2).
 
 ## Layout
 

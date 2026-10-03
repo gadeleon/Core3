@@ -1,3 +1,4 @@
+-- Sgt. Rhea (CorSec tier 1) conversation handler; ported from SWG-Source corellia_privateer_trainer.java. Chain retry/won-check routing: feature space-trainer-fixes.
 rheaConvoHandler = conv_handler:new {}
 
 function rheaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -28,9 +29,9 @@ function rheaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local isNeutralPilot = SpaceHelpers:isNeutralPilot(pPlayer)
 	local hasShip = SpaceHelpers:hasCertifiedShip(pPlayer, true)
 
-	local questOneStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.QUEST_STRING_1.type, CorsecSquadronScreenplay.QUEST_STRING_1.name)
+	local questOneStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_privateer_1")
 	local questTwoStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.QUEST_STRING_2.type, CorsecSquadronScreenplay.QUEST_STRING_2.name)
-	local questThreeStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.QUEST_STRING_3.type, CorsecSquadronScreenplay.QUEST_STRING_3.name)
+	local questThreeStarted = SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_privateer_3")
 	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.QUEST_STRING_4.type, CorsecSquadronScreenplay.QUEST_STRING_4.name)
 
 	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.QUEST_STRING_1.type, CorsecSquadronScreenplay.QUEST_STRING_1.name) and SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.QUEST_STRING_1_SIDE.type, CorsecSquadronScreenplay.QUEST_STRING_1_SIDE.name)
@@ -294,6 +295,12 @@ function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, select
 		if (ghost:getPilotTier() < 1) then
 			ghost:incrementPilotTier()
 		end
+
+		if (not SpaceHelpers:hasCertifiedShip(pPlayer, true)) then
+			clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_111", "no_ship")
+		else
+			clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_127", "yes_ship")
+		end
 	elseif (screenID == "goodbye") then
 		CreatureObject(pPlayer):doAnimation("slump_head")
 		CreatureObject(pNpc):doAnimation("goodbye")
@@ -337,7 +344,7 @@ function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, select
 
 	-- Missions
 	elseif (screenID == "yes_im_ready") then
-		patrol_corellia_privateer_1:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_privateer_1")
 	elseif (screenID == "i_was_attacked") then
 		CreatureObject(pPlayer):doAnimation("pound_fist_palm")
 		CreatureObject(pNpc):doAnimation("explain")
@@ -345,7 +352,7 @@ function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, select
 		CreatureObject(pPlayer):doAnimation("nod_head_multiple")
 		CreatureObject(pNpc):doAnimation("rub_chin_thoughtful")
 	elseif (screenID == "train_me2") then
-		destroy_corellia_privateer_2:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_corellia_privateer_2")
 	elseif (screenID == "whats_next") then
 		CreatureObject(pPlayer):doAnimation("shrug_hands")
 	elseif (screenID == "was_a_snap") then
@@ -355,12 +362,12 @@ function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, select
 		CreatureObject(pNpc):doAnimation("shake_head_no")
 		CreatureObject(pPlayer):doAnimation("belly_laugh")
 
-		patrol_corellia_privateer_3:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "patrol_corellia_privateer_3")
 	elseif (screenID == "train_me4") then
 		CreatureObject(pNpc):doAnimation("nod_head_once")
 		CreatureObject(pPlayer):doAnimation("belly_laugh")
 
-		assassinate_corellia_privateer_tier1_4a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_privateer_tier1_4a")
 	end
 
 	return pClonedScreen

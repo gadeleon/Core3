@@ -1,0 +1,10 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.496872	-0.061627	0.865633	-0.836653	-0.298953	0.458954	-6299.21	1699.90	-3069.83	nav_name|4|corellia_rebel_tier4_1_recovery_duty_7|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.496872	-0.061627	0.865633	-0.836653	-0.298953	0.458954	-7338.92	1328.41	-2499.52	nav_name|4|corellia_rebel_tier4_1_recovery_duty_8|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.536854	-0.047355	0.842345	-0.815896	-0.283237	0.504074	-4308.56	2410.78	-4170.32	nav_name|4|corellia_rebel_tier4_1_recovery_duty_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.496872	-0.061627	0.865633	-0.836653	-0.298953	0.458954	-5138.61	2114.55	-3706.41	nav_name|4|corellia_rebel_tier4_1_recovery_duty_6|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.688607	0.003541	0.725126	0.000115	0.999988	-0.004992	-3482.32	2680.51	-4693.34	nav_name|4|corellia_rebel_tier4_1_recovery_duty_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.687440	-0.053918	0.724237	0.039972	0.998538	0.036398	-3500.00	800.00	-4700.00	nav_name|4|corellia_rebel_tier4_1_recovery_duty_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.688555	-0.008355	0.725136	0.009895	0.999949	0.002126	-3484.07	1675.10	-4689.68	nav_name|4|corellia_rebel_tier4_1_recovery_duty_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.688254	0.025932	0.725007	-0.024145	0.999626	-0.012834	-3510.11	3821.17	-4710.10	nav_name|4|corellia_rebel_tier4_1_recovery_duty_4|$|	script.space.quest_logic.quest_nav_point

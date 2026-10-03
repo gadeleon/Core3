@@ -1,3 +1,4 @@
+-- Kaydine (RSF tier 2) conversation handler; ported from SWG-Source naboo_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes.
 kaydineConvoHandler = conv_handler:new {}
 
 function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -245,16 +246,16 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	-- Give Missions
 	elseif (screenID == "accept_assassinate" or screenID == "nonsense" or screenID == "let_me_know" or screenID == "report_back_success" or screenID == "key_to_success" or screenID == "just_malfunctioned") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":attempted", 1)
-		assassinate_naboo_privateer_tier2_4a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier2_4a")
 	elseif (screenID == "accept_inspect" or screenID == "on_your_way" or screenID == "take_it_serious" or screenID == "bad_liar") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name .. ":attempted", 1)
-		inspect_naboo_privateer_15:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_naboo_privateer_15")
 	elseif (screenID == "accept_escort" or screenID == "back_to_escort" or screenID == "now_is_good" or screenID == "be_smarter") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":attempted", 1)
-		escort_naboo_privateer_14:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_naboo_privateer_14")
 	elseif ((screenID == "start_first_mission") or (screenID == "try_first_mission") or (screenID == "cant_wait_first")) then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":attempted", 1)
-		destroy_naboo_privateer_13a:startQuest(pPlayer, pNpc)
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_13a")
 	end
 
 	return pClonedScreen

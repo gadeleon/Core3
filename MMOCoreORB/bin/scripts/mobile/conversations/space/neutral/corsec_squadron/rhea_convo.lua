@@ -113,22 +113,19 @@ ridiculous_great = ConvoScreen:new {
 	leftDialog = "@conversation/corellia_privateer_trainer:s_cec02f8", -- Not at all.  We can't have thugs and ne'er-do-wells joining CorSec.  We're here to provide security for the citizens of Corellia!  Now, this will only take a moment... Oh... Wow!  You've got an excellent track record.  I guess you've tangled with your share of criminals and thugs in your day. Are you ready to begin?
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_privateer_trainer:s_2f9db7a", "maybe_great"}, -- Maybe.
-		{"@conversation/corellia_privateer_trainer:s_f42d051f", "goodbye"}, -- Maybe not.
+		{"@conversation/corellia_privateer_trainer:s_108", "maybe_great"},
+		{"@conversation/corellia_privateer_trainer:s_139", "goodbye"},
 	}
 }
 rhea_convo_template:addScreen(ridiculous_great);
 
 maybe_great = ConvoScreen:new {
-	id = "maybe__42",
+	id = "maybe_great",
 	leftDialog = "@conversation/corellia_privateer_trainer:s_e0dfe067", -- Very well.  I'll go ahead and sign you up.  Do you have your own ship?
 	stopConversation = "false",
-	options = {
-		{"@conversation/corellia_privateer_trainer:s_5091cb8e", "no_ship"}, -- Ah... no I don't.
-		{"@conversation/corellia_privateer_trainer:s_90ec63e0", "yes_ship"}, -- Yes, I do.
-	}
+	options = {}
 }
-rhea_convo_template:addScreen(maybe__42);
+rhea_convo_template:addScreen(maybe_great);
 
 of_course = ConvoScreen:new {
 	id = "of_course",
@@ -146,8 +143,8 @@ ridiculous = ConvoScreen:new {
 	leftDialog = "@conversation/corellia_privateer_trainer:s_7396ebcf", -- Not at all.  We can't have thugs and ne'er-do-wells joining CorSec.  We're here to provide security for the citizens of Corellia!  Now, this will only take a moment... Ah... You've got a pretty clean record here.  I can assure you that it'd improve once you're flying for CorSec! Are you ready to begin?
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_privateer_trainer:s_2f9db7a", "maybe_great"}, -- Maybe.
-		{"@conversation/corellia_privateer_trainer:s_f42d051f", "goodbye"}, -- Maybe not.
+		{"@conversation/corellia_privateer_trainer:s_108", "maybe_great"},
+		{"@conversation/corellia_privateer_trainer:s_139", "goodbye"},
 	}
 }
 rhea_convo_template:addScreen(ridiculous);

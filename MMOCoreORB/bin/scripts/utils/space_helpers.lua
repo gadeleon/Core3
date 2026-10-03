@@ -1080,6 +1080,87 @@ function SpaceHelpers:clearSpaceQuest(pPlayer, questType, questName, notifyClien
 	PlayerObject(pGhost):clearJournalQuest(questCRC, notifyClient)
 end
 
+-- Returns the quests of the split chain that starts at the quest global named headGlobal, head first
+-- (depth-first, sideQuest child before sideFail child, each global once). Each entry:
+-- {global = "<global name>", type = <global>.questType, name = <global>.questName}.
+-- Returns {} when the head global doesn't exist.
+function SpaceHelpers:getSpaceQuestChain(headGlobal)
+	local chain = {}
+	local visited = {}
+
+	local function walk(globalName)
+		if (visited[globalName] ~= nil) then
+			return
+		end
+
+		local quest = _G[globalName]
+
+		if (type(quest) ~= "table") then
+			return
+		end
+
+		visited[globalName] = true
+		table.insert(chain, {global = globalName, type = quest.questType, name = quest.questName})
+
+		if (quest.sideQuest ~= true) then
+			return
+		end
+
+		if (quest.sideQuestType ~= nil and quest.sideQuestType ~= "" and quest.sideQuestName ~= nil and quest.sideQuestName ~= "") then
+			walk(quest.sideQuestType .. "_" .. quest.sideQuestName)
+		end
+
+		local splitTypes = quest.SIDE_QUEST_SPLIT_TYPES
+
+		if (splitTypes ~= nil and (quest.sideQuestSplitType == splitTypes.FAILURE or quest.sideQuestSplitType == splitTypes.BIDIRECTIONAL)
+			and quest.sideFailQuestType ~= nil and quest.sideFailQuestType ~= "" and quest.sideFailQuestName ~= nil and quest.sideFailQuestName ~= "") then
+			walk(quest.sideFailQuestType .. "_" .. quest.sideFailQuestName)
+		end
+	end
+
+	walk(headGlobal)
+
+	return chain
+end
+
+-- True when any quest of the chain has an active journal entry.
+function SpaceHelpers:isSpaceQuestChainActive(pPlayer, headGlobal)
+	local chain = self:getSpaceQuestChain(headGlobal)
+
+	for i = 1, #chain, 1 do
+		if (self:isSpaceQuestActive(pPlayer, chain[i].type, chain[i].name)) then
+			return true
+		end
+	end
+
+	return false
+end
+
+-- Starts a story mission so it can be flown again: refuses (returns false, changes nothing) when
+-- any chain member is active; otherwise clears every member's journal entry (notify false), calls
+-- _G[headGlobal]:startQuest(pPlayer, pNpc) once and returns whether the head entry is now active.
+function SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, headGlobal)
+	local head = _G[headGlobal]
+
+	if (pPlayer == nil or head == nil) then
+		return false
+	end
+
+	if (self:isSpaceQuestChainActive(pPlayer, headGlobal)) then
+		return false
+	end
+
+	local chain = self:getSpaceQuestChain(headGlobal)
+
+	for i = 1, #chain, 1 do
+		self:clearSpaceQuest(pPlayer, chain[i].type, chain[i].name, false)
+	end
+
+	head:startQuest(pPlayer, pNpc)
+
+	return self:isSpaceQuestActive(pPlayer, head.questType, head.questName)
+end
+
 -- @param pPlayer pointer to activate quest on
 -- @param questType from tre questlist/spacequest
 -- @param questName

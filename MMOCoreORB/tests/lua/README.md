@@ -302,10 +302,19 @@ assert the delay first so such a table fails instead of hanging the event clock.
 the SWG purchase order (`D.TRAINING`, `D.SKILLS`), the retired foreign sids and the 18 newly used sids, plus `D.subsets()` / `D.expectedLink(list)` for the
 1 to 3 skill combinations. `fixtures/skill/skills.pilot_neutral_01.tab` is an excerpt of SWG `skills.tab` (lines 1, 2, 641, 643, 647, 651, 655: header rows,
 the novice box and the four `_01` skills); the tests read the 7500 XP cost from it and feed it to `H.Engine.config.skillXpCosts`.
-The first skill (starships) is the free grant (`callsTo("awardSkill")`); the other three go through `callsTo("skillManagerAwardSkill")`. The fake
+The first skill (the pilot's pick since pilot-training-free-choice D-9; starships before) is the free grant (`callsTo("awardSkill")`); the other three go through `callsTo("skillManagerAwardSkill")`. The fake
 `fulfillsSkillPrerequisitesAndXp` always answers yes, so the engine-refusal case replaces the global `LuaSkillManager` for the test and restores it in `tearDown`.
 Choices that happen "while a screen is shown" (the skill arrives, the XP is gone) are hooks (`function(player) ... end`) between two choices of `H.converse`.
 `rsf_tier2_kaydine_training_data.lua`'s `D.drive` starts a conversation on any screen (here `train_<x>` and `first_training_lesson`), as if the pilot had just chosen there.
+
+### Pilot training free choice (pilot-training-free-choice)
+
+`pilot_training_free_choice_data.lua` (not a test file) is the answer key of the pre-NGE free choice of the next pilot skill at Dinge, Kaydine and Imler:
+the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`, `reply`, `screen`, and `closing` for Dinge), the retired single replies
+(`C.RETIRED`) and helpers (`C.expected(list, heldSet[, "closing"])` = the `{ reply, link }` pairs a choice screen must show, `C.properSubsets`, `C.pairsOf`).
+`test_pilot_training_free_choice_{kaydine,dinge,imler}.lua` drive the choice, the purchase / free grant and out-of-order careers through `H.converse`
+(choices by reply sid, so an out-of-order pick does not depend on the order of the list); `test_pilot_training_free_choice_conformance.lua` pins the
+`TRAIN_CHOICES` tables, the string ids and "nothing else moves" against commit 1092dfb3fd through `git show`.
 
 ### SWG-Source fixtures
 

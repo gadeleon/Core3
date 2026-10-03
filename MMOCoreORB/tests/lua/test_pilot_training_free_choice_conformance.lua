@@ -1,0 +1,593 @@
+-- Pre-NGE free choice (Dinge, Kaydine, Imler): the TRAIN_CHOICES tables against the spec's answer key, the strings, and "nothing else moves".
+-- Spec: .claude/work/pilot-training-free-choice/01-spec.md (AC-9, AC-10; Content contract 1-4; invariants I-1, I-6, I-7).
+--
+-- The per-screen comparison with the SWG java (options, order, successors, end flag, animation, with E-PN1 .. E-PN4 as the only exceptions) lives
+-- in the superseded conformance tests of the three trainers (test_rsf_tier2_kaydine_training_template.lua, test_rsf_tier1_dinge_training_template.lua,
+-- test_rsf_tier4_imler_dialogue.lua, test_rsf_gate_screens_templates.lua). This file pins the tables, the literal shape of their ids, the retired strings
+-- and the "untouched since 1092dfb3fd" part (I-7), which reads that commit through `git show` like test_rsf_gate_screens_templates.lua does.
+
+local lu = require("luaunit")
+local H = require("harness")
+local T = require("trainer_fixes_data")
+local C = require("pilot_training_free_choice_data")
+local Swgjava = require("harness.swgjava")
+
+T.load()
+H.loadMobile("conversations/space/neutral/rsf_squadron/imler_convo.lua") -- T.load() does not load Imler
+H.loadScreenplay("space/conversations/neutral/rsf_squadron/imlerConvoHandler.lua")
+
+local BASE = "1092dfb3fd"
+
+local DIR_C = "mobile/conversations/space/neutral/rsf_squadron/"
+local DIR_H = "screenplays/space/conversations/neutral/rsf_squadron/"
+
+local TRAINERS = {
+	kaydine = { convo = DIR_C .. "kaydine_convo.lua", handler = DIR_H .. "kaydineConvoHandler.lua", global = "kaydineConvoHandler", template = "kaydine_convo_template",
+		prefix = "naboo_privateer_trainer_2", java = "naboo_privateer_trainer_2.java", rows = C.KAYDINE, retired = { "s_187" } },
+	dinge = { convo = DIR_C .. "dinge_convo.lua", handler = DIR_H .. "dingeConvoHandler.lua", global = "dingeConvoHandler", template = "dinge_convo_template",
+		prefix = "naboo_privateer_trainer_1", java = "naboo_privateer_trainer_1.java", rows = C.DINGE, retired = { "s_143", "s_141" } },
+	imler = { convo = DIR_C .. "imler_convo.lua", handler = DIR_H .. "imlerConvoHandler.lua", global = "imlerConvoHandler", template = "imler_convo_template",
+		prefix = "naboo_privateer_tier4", java = "naboo_privateer_tier4.java", rows = C.IMLER, retired = { "s_438" } },
+}
+
+local ORDER = { "kaydine", "dinge", "imler" }
+
+local function readFile(rel)
+	local f = assert(io.open(H.SCRIPTS .. rel, "r"), "cannot open " .. rel)
+	local text = f:read("a")
+
+	f:close()
+	return text
+end
+
+local function baseFile(rel)
+	local pipe = io.popen("git show " .. BASE .. ":MMOCoreORB/bin/scripts/" .. rel .. " 2>&1")
+	local text = pipe:read("a")
+
+	pipe:close()
+	lu.assertTrue(#text > 500 and text:find("^fatal") == nil, "git show " .. BASE .. ":MMOCoreORB/bin/scripts/" .. rel .. " did not return the file: " .. text:sub(1, 120))
+
+	return text
+end
+
+local function handlerGlobal(name)
+	local h = H.expectGlobal(TRAINERS[name].global, name .. " conversation handler")
+
+	return h
+end
+
+local function screenIds(name)
+	local ids = {}
+
+	for _, s in ipairs(H.conversationTemplateTable(TRAINERS[name].template).screens) do
+		ids[s.id] = s
+	end
+
+	return ids
+end
+
+---------------------------------------------------------------------------------------------
+-- AC-9: the TRAIN_CHOICES tables equal the answer key
+---------------------------------------------------------------------------------------------
+
+TestFreeChoiceTables = {}
+
+function TestFreeChoiceTables:setUp() H.reset() end
+
+-- AC-9: entries { skill, reply, screen } for Kaydine and Imler, { skill, reply, purchaseScreen, closingScreen } for Dinge, in the order starships, weapons, procedures, droid
+for _, name in ipairs(ORDER) do
+	TestFreeChoiceTables["test_" .. name .. "_train_choices_equal_the_answer_key_in_skill_reply_link_and_order"] = function()
+		local h = handlerGlobal(name)
+
+		lu.assertEquals(type(h.TRAIN_CHOICES), "table", TRAINERS[name].global .. ".TRAIN_CHOICES must be defined (pilot-training-free-choice)")
+
+		local want = {}
+
+		for i, row in ipairs(TRAINERS[name].rows) do
+			want[i] = { row.skill, row.reply, row.screen, row.closing }
+		end
+
+		local got = {}
+
+		for i, entry in ipairs(h.TRAIN_CHOICES) do
+			got[i] = { entry[1], entry[2], entry[3], entry[4] }
+		end
+
+		lu.assertEquals(got, want, TRAINERS[name].global .. ".TRAIN_CHOICES ({ skill, reply, screen [, closing screen] } in order starships, weapons, procedures, droid)")
+	end
+
+	-- AC-9: every link a table names is a screen of the trainer's template, and the purchase screens are the ones TRAIN_SCREENS buys
+	TestFreeChoiceTables["test_every_link_of_the_" .. name .. "_train_choices_is_a_template_screen_and_the_purchase_screens_agree_with_train_screens"] = function()
+		local h = handlerGlobal(name)
+		local ids = screenIds(name)
+
+		lu.assertEquals(type(h.TRAIN_CHOICES), "table", TRAINERS[name].global .. ".TRAIN_CHOICES must be defined")
+
+		for i, entry in ipairs(h.TRAIN_CHOICES) do
+			lu.assertNotNil(ids[entry[3]], name .. " TRAIN_CHOICES[" .. i .. "]: screen '" .. tostring(entry[3]) .. "' is not in " .. TRAINERS[name].template)
+			lu.assertEquals(h.TRAIN_SCREENS[entry[3]], entry[1], name .. " TRAIN_CHOICES[" .. i .. "]: TRAIN_SCREENS['" .. tostring(entry[3]) .. "'] buys the skill of the entry")
+
+			if name == "dinge" then
+				lu.assertNotNil(ids[entry[4]], name .. " TRAIN_CHOICES[" .. i .. "]: closing screen '" .. tostring(entry[4]) .. "' is not in " .. TRAINERS[name].template)
+				lu.assertEquals(entry[4], "trained_" .. entry[3]:gsub("^train_", ""), name .. " TRAIN_CHOICES[" .. i .. "]: closing screen of the purchase screen")
+			end
+		end
+	end
+
+	-- AC-9, Content contract: every reply and screen id in a TRAIN_CHOICES table is a complete string literal (the static checks parse handler literals)
+	TestFreeChoiceTables["test_the_" .. name .. "_train_choices_ids_are_complete_string_literals"] = function()
+		local text = readFile(TRAINERS[name].handler)
+		local open = text:find("TRAIN_CHOICES%s*=%s*{")
+
+		lu.assertNotNil(open, TRAINERS[name].handler .. ": a 'TRAIN_CHOICES = {' table")
+
+		-- the table body: from the first brace to its matching brace
+		local depth, i, start = 0, text:find("{", open, true), nil
+
+		start = i
+
+		local stop
+
+		while i <= #text do
+			local ch = text:sub(i, i)
+
+			if ch == "{" then
+				depth = depth + 1
+			elseif ch == "}" then
+				depth = depth - 1
+
+				if depth == 0 then
+					stop = i
+					break
+				end
+			end
+
+			i = i + 1
+		end
+
+		lu.assertNotNil(stop, TRAINERS[name].handler .. ": the TRAIN_CHOICES table is closed")
+
+		local body = text:sub(start, stop)
+
+		lu.assertNil(body:find("..", 1, true), name .. " TRAIN_CHOICES contains a string concatenation; every id must be a complete literal")
+
+		for _, row in ipairs(TRAINERS[name].rows) do
+			lu.assertNotNil(body:find('"' .. row.skill .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.skill .. "\"")
+			lu.assertNotNil(body:find('"' .. row.reply .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.reply .. "\"")
+			lu.assertNotNil(body:find('"' .. row.screen .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.screen .. "\"")
+
+			if row.closing then
+				lu.assertNotNil(body:find('"' .. row.closing .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.closing .. "\"")
+			end
+		end
+	end
+end
+
+-- AC-9: the answer key itself is the spec's (sanity of the copy: 4 distinct replies per trainer, none of them a java string of its trainer)
+function TestFreeChoiceTables:test_the_answer_key_has_12_distinct_replies_and_none_is_a_response_of_the_swg_java()
+	local seen = {}
+
+	for _, name in ipairs(ORDER) do
+		local java = Swgjava.read(H.FIXTURES .. "script/conversation/" .. TRAINERS[name].java)
+
+		lu.assertEquals(#TRAINERS[name].rows, 4, name .. ": choice rows")
+
+		for _, row in ipairs(TRAINERS[name].rows) do
+			lu.assertNil(seen[row.reply], row.reply .. " appears twice in the answer key")
+			seen[row.reply] = true
+
+			if name ~= "imler" then
+				lu.assertNil(java.responses[row.sid], name .. ": " .. row.sid .. " is a response of the java; the spec lists it as foreign")
+			end
+		end
+	end
+end
+
+---------------------------------------------------------------------------------------------
+-- AC-9, I-6: strings
+---------------------------------------------------------------------------------------------
+
+TestFreeChoiceStrings = {}
+
+function TestFreeChoiceStrings:setUp() H.reset() end
+
+-- I-6: s_187, s_143, s_141 and s_438 appear in neither the template nor the handler of their trainer
+for _, name in ipairs(ORDER) do
+	TestFreeChoiceStrings["test_the_retired_replies_of_" .. name .. "_are_in_neither_file"] = function()
+		for _, kind in ipairs({ "convo", "handler" }) do
+			local text = readFile(TRAINERS[name][kind])
+
+			for _, sid in ipairs(TRAINERS[name].retired) do
+				lu.assertNil(text:find(TRAINERS[name].prefix .. ":" .. sid, 1, true), TRAINERS[name][kind] .. " still carries " .. sid)
+			end
+		end
+	end
+end
+
+-- I-6: the foreign string ids of a trainer's template + handler are exactly its four choice replies
+for _, name in ipairs({ "kaydine", "dinge" }) do
+	TestFreeChoiceStrings["test_the_only_foreign_string_ids_in_the_" .. name .. "_files_are_the_four_choice_replies"] = function()
+		local java = Swgjava.read(H.FIXTURES .. "script/conversation/" .. TRAINERS[name].java)
+		local foreign = {}
+
+		for _, kind in ipairs({ "convo", "handler" }) do
+			for sid in readFile(TRAINERS[name][kind]):gmatch(TRAINERS[name].prefix .. ":(s_[%w_]+)") do
+				if java.nodes[sid] == nil and java.responses[sid] == nil then
+					foreign[sid] = true
+				end
+			end
+		end
+
+		local got, want = {}, {}
+
+		for sid in pairs(foreign) do got[#got + 1] = sid end
+		for _, row in ipairs(TRAINERS[name].rows) do want[#want + 1] = row.sid end
+
+		table.sort(got)
+		table.sort(want)
+		lu.assertEquals(got, want, name .. ": foreign string ids")
+	end
+end
+
+-- I-6, AC-9: Imler's own string file keeps every id in the java; the foreign ones are exactly Turoldine's four replies, carried by the handler only
+function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4_ids_of_the_java_plus_the_four_corellia_privateer_tier4_replies()
+	local java = Swgjava.read(H.FIXTURES .. "script/conversation/naboo_privateer_tier4.java")
+	local foreignOwn = {}
+
+	for _, kind in ipairs({ "convo", "handler" }) do
+		for sid in readFile(TRAINERS.imler[kind]):gmatch("naboo_privateer_tier4:(s_[%w_]+)") do
+			if java.nodes[sid] == nil and java.responses[sid] == nil then
+				foreignOwn[#foreignOwn + 1] = kind .. ":" .. sid
+			end
+		end
+	end
+
+	lu.assertEquals(foreignOwn, {}, "naboo_privateer_tier4 ids that are not in the java")
+
+	local other = {}
+
+	for sid in readFile(TRAINERS.imler.convo):gmatch("corellia_privateer_tier4:(s_[%w_]+)") do
+		other[#other + 1] = "convo:" .. sid
+	end
+
+	lu.assertEquals(other, {}, "imler_convo.lua carries no corellia_privateer_tier4 id (the handler adds them)")
+
+	local seen = {}
+
+	for sid in readFile(TRAINERS.imler.handler):gmatch("corellia_privateer_tier4:(s_[%w_]+)") do
+		seen[#seen + 1] = sid
+	end
+
+	table.sort(seen)
+
+	local want = {}
+
+	for _, row in ipairs(C.IMLER) do want[#want + 1] = row.sid end
+
+	table.sort(want)
+	lu.assertEquals(seen, want, "corellia_privateer_tier4 ids in imlerConvoHandler.lua (Turoldine's four replies, D-10)")
+end
+
+-- AC-9: Imler uses 182 of 182 NPC lines and 157 of 158 replies; s_438 is the only newly unused string
+function TestFreeChoiceStrings:test_imler_uses_182_of_182_npc_lines_and_157_of_158_replies_s_438_is_the_only_unused_string()
+	local java = Swgjava.read(H.FIXTURES .. "script/conversation/naboo_privateer_tier4.java")
+	local used = {}
+	local function sid(text) return type(text) == "string" and text:match("^@conversation/naboo_privateer_tier4:(s_[%w_]+)$") or nil end
+
+	for _, s in ipairs(H.conversationTemplateTable("imler_convo_template").screens) do
+		local x = sid(s.leftDialog)
+
+		if x and java.nodes[x] then used[x] = true end
+
+		for _, o in ipairs(s.options or {}) do
+			local y = sid(o[1])
+
+			if y and java.responses[y] then used[y] = true end
+		end
+	end
+
+	for x in readFile(TRAINERS.imler.handler):gmatch("naboo_privateer_tier4:(s_[%w_]+)") do
+		if java.nodes[x] or java.responses[x] then used[x] = true end
+	end
+
+	local npc, resp = 0, 0
+
+	for x in pairs(used) do
+		if java.nodes[x] then npc = npc + 1 else resp = resp + 1 end
+	end
+
+	lu.assertEquals({ npc, resp }, { 182, 157 }, "naboo_privateer_tier4 strings used (NPC lines, replies)")
+	lu.assertNil(used.s_438, "s_438 must be unused")
+end
+
+-- AC-9: the unused constant is gone with the reply
+function TestFreeChoiceStrings:test_imler_handler_has_no_ready_train_option_constant_left()
+	lu.assertNil(readFile(TRAINERS.imler.handler):find("READY_TRAIN_OPTION", 1, true), "imlerConvoHandler.lua still defines or uses READY_TRAIN_OPTION")
+	lu.assertNil(handlerGlobal("imler").READY_TRAIN_OPTION, "imlerConvoHandler.READY_TRAIN_OPTION")
+end
+
+---------------------------------------------------------------------------------------------
+-- AC-9, I-1: the graphs
+---------------------------------------------------------------------------------------------
+
+TestFreeChoiceGraph = {}
+
+function TestFreeChoiceGraph:setUp() H.reset() end
+
+for _, name in ipairs(ORDER) do
+	-- AC-9, I-1
+	TestFreeChoiceGraph["test_the_" .. name .. "_template_has_no_dead_links_or_duplicate_ids"] = function()
+		lu.assertNotNil(H.conversationTemplateTable(TRAINERS[name].template), TRAINERS[name].template)
+		lu.assertEquals(H.conversationProblems(TRAINERS[name].template), {})
+	end
+end
+
+-- AC-9: the screen counts the spec names
+function TestFreeChoiceGraph:test_the_screen_counts_are_87_plus_4_for_kaydine_72_for_dinge_and_182_for_imler()
+	local function count(name) return #H.conversationTemplateTable(TRAINERS[name].template).screens end
+
+	lu.assertEquals(count("kaydine"), 91, "kaydine_convo_template screens (87 + the 4 gate screens)")
+	lu.assertEquals(count("dinge"), 72, "dinge_convo_template screens (73 - first_training_done)")
+	lu.assertEquals(count("imler"), 182, "imler_convo_template screens")
+end
+
+-- AC-6, D-6: the 72 Dinge screens show 72 distinct NPC lines and s_142 is shown by none
+function TestFreeChoiceGraph:test_dinge_screens_show_72_distinct_lines_and_none_shows_s_142()
+	local seen, n = {}, 0
+
+	for _, s in ipairs(H.conversationTemplateTable("dinge_convo_template").screens) do
+		n = n + 1
+		lu.assertNil(seen[s.leftDialog], "screens '" .. tostring(seen[s.leftDialog]) .. "' and '" .. s.id .. "' show the same line " .. tostring(s.leftDialog))
+		lu.assertNotEquals(s.leftDialog, "@conversation/naboo_privateer_trainer_1:s_142", "screen '" .. s.id .. "' shows s_142")
+		seen[s.leftDialog] = s.id
+	end
+
+	lu.assertEquals(n, 72, "screens")
+end
+
+---------------------------------------------------------------------------------------------
+-- AC-10, I-7: nothing else moves (against commit 1092dfb3fd)
+---------------------------------------------------------------------------------------------
+
+TestFreeChoiceNothingElseMoves = {}
+
+function TestFreeChoiceNothingElseMoves:setUp() H.reset() end
+
+-- screen id -> text of its definition, for the "<var> = ConvoScreen:new {" ... "<template>:addScreen(<var>);" style (Kaydine, Dinge)
+local function varBlocks(text)
+	local blocks, current = {}, nil
+
+	for line in (text .. "\n"):gmatch("(.-)\n") do
+		if current == nil and line:match("^[%w_]+ = ConvoScreen:new {") then
+			current = { line }
+		elseif current ~= nil then
+			current[#current + 1] = line
+
+			if line:match("^[%w_]+:addScreen%(") then
+				local body = table.concat(current, "\n")
+
+				blocks[body:match('\n%s*id = "([^"]+)"')] = body
+				current = nil
+			end
+		end
+	end
+
+	return blocks
+end
+
+-- Imler's style: "imler_convo_template:addScreen(ConvoScreen:new {" ... "})"
+local function inlineBlocks(text)
+	local blocks, current = {}, nil
+
+	for line in (text .. "\n"):gmatch("(.-)\n") do
+		if line:match("^imler_convo_template:addScreen%(ConvoScreen:new {") then
+			current = { line }
+		elseif current ~= nil then
+			current[#current + 1] = line
+
+			if line == "})" then
+				local body = table.concat(current, "\n")
+
+				blocks[body:match('\n%s*id = "([^"]+)"')] = body
+				current = nil
+			end
+		end
+	end
+
+	return blocks
+end
+
+local BLOCKS = { kaydine = varBlocks, dinge = varBlocks, imler = inlineBlocks }
+local CHANGED_SCREENS = { kaydine = { ready_train_pilot = true }, dinge = { more_training = true, first_training_lesson = true, first_training_done = true }, imler = { ready_train = true } }
+
+-- I-7: every screen not named in the spec is the very text of commit 1092dfb3fd; the named ones differ only in their options
+for _, name in ipairs(ORDER) do
+	TestFreeChoiceNothingElseMoves["test_every_" .. name .. "_screen_outside_the_choice_screens_equals_commit_" .. BASE] = function()
+		local old = BLOCKS[name](baseFile(TRAINERS[name].convo))
+		local new = BLOCKS[name](readFile(TRAINERS[name].convo))
+		local oldCount, checked = 0, 0
+
+		for _ in pairs(old) do oldCount = oldCount + 1 end
+
+		lu.assertEquals(oldCount, ({ kaydine = 91, dinge = 73, imler = 182 })[name], "screen definitions parsed from " .. TRAINERS[name].convo .. " at " .. BASE)
+
+		for id, body in pairs(old) do
+			if not CHANGED_SCREENS[name][id] then
+				lu.assertNotNil(new[id], TRAINERS[name].convo .. ": screen '" .. id .. "' of " .. BASE .. " is missing")
+				lu.assertEquals(new[id], body, TRAINERS[name].convo .. ": screen '" .. id .. "' changed since " .. BASE)
+				checked = checked + 1
+			end
+		end
+
+		for id in pairs(new) do
+			lu.assertNotNil(old[id], TRAINERS[name].convo .. ": unexpected new screen '" .. id .. "'")
+		end
+
+		local changed = 0
+
+		for _ in pairs(CHANGED_SCREENS[name]) do changed = changed + 1 end
+
+		lu.assertEquals(checked, oldCount - changed, "screens compared with " .. BASE)
+	end
+
+	-- I-7: a choice screen keeps its id, line, end flag and animation; only its options change (here: become empty)
+	TestFreeChoiceNothingElseMoves["test_the_" .. name .. "_choice_screens_differ_from_commit_" .. BASE .. "_only_in_their_options"] = function()
+		local old = BLOCKS[name](baseFile(TRAINERS[name].convo))
+		local new = BLOCKS[name](readFile(TRAINERS[name].convo))
+		local function stripOptions(body)
+			return (body:gsub("options = {.-\n\t}", "options = {}", 1))
+		end
+
+		for id in pairs(CHANGED_SCREENS[name]) do
+			if new[id] == nil then
+				lu.assertEquals(id, "first_training_done", name .. ": only first_training_done may be deleted")
+			else
+				lu.assertNotNil(old[id], name .. ": screen '" .. id .. "' exists at " .. BASE)
+				lu.assertEquals(stripOptions(new[id]), stripOptions(old[id]), name .. ": screen '" .. id .. "' differs from " .. BASE .. " in more than its options")
+				lu.assertNotNil(new[id]:find("options = {}", 1, true), name .. ": screen '" .. id .. "' static options must be empty")
+			end
+		end
+	end
+end
+
+-- Top-level function blocks of a handler file: "<Class>:<name>" -> text
+local function functionBlocks(text)
+	local blocks, current, name = {}, nil, nil
+
+	for line in (text .. "\n"):gmatch("(.-)\n") do
+		if current == nil then
+			local n = line:match("^function ([%w_%.:]+)%(")
+
+			if n then
+				current, name = { line }, n
+			end
+		else
+			current[#current + 1] = line
+
+			if line == "end" then
+				blocks[name] = table.concat(current, "\n")
+				current = nil
+			end
+		end
+	end
+
+	return blocks
+end
+
+-- the functions each feature rewrites (the rest must be the very text of the base commit)
+local REWRITTEN = {
+	kaydine = { ["kaydineConvoHandler:runScreenHandlers"] = true },
+	dinge = { ["dingeConvoHandler:runScreenHandlers"] = true, ["dingeConvoHandler:getNextConversationScreen"] = true },
+	imler = { ["imlerConvoHandler:runScreenHandlers"] = true },
+}
+
+-- I-7: handler code outside the branches named in the Content contract is unchanged
+for _, name in ipairs(ORDER) do
+	TestFreeChoiceNothingElseMoves["test_every_" .. name .. "_handler_function_but_the_rewritten_ones_equals_commit_" .. BASE] = function()
+		local old = functionBlocks(baseFile(TRAINERS[name].handler))
+		local new = functionBlocks(readFile(TRAINERS[name].handler))
+		local checked = 0
+
+		for fn, body in pairs(old) do
+			if not REWRITTEN[name][fn] then
+				lu.assertNotNil(new[fn], TRAINERS[name].handler .. ": function " .. fn .. " of " .. BASE .. " is missing")
+				lu.assertEquals(new[fn], body, TRAINERS[name].handler .. ": function " .. fn .. " changed since " .. BASE)
+				checked = checked + 1
+			end
+		end
+
+		lu.assertTrue(checked >= 4, TRAINERS[name].handler .. ": functions compared with " .. BASE .. ": " .. checked)
+
+		for fn in pairs(new) do
+			lu.assertNotNil(old[fn], TRAINERS[name].handler .. ": unexpected new function " .. fn)
+		end
+	end
+end
+
+-- I-7: the branches of runScreenHandlers other than the choice screens are the text of the base commit
+local function branchTexts(fnText)
+	-- text of each `if/elseif (screenID == "...")` branch up to the next `elseif (screenID` or the final return
+	local out, order = {}, {}
+	local pos = 1
+
+	while true do
+		local s, e, id = fnText:find('screenID == "([%w_]+)"', pos)
+
+		if not s then break end
+
+		-- a branch starts at the beginning of the line that holds its marker
+		local lineStart = s
+
+		while lineStart > 1 and fnText:sub(lineStart - 1, lineStart - 1) ~= "\n" do
+			lineStart = lineStart - 1
+		end
+
+		order[#order + 1] = { id = id, from = lineStart }
+		pos = e + 1
+	end
+
+	for i, b in ipairs(order) do
+		local to = order[i + 1] and order[i + 1].from or #fnText
+		local lines = {}
+
+		for line in (fnText:sub(b.from, to - 1) .. "\n"):gmatch("(.-)\n") do
+			lines[#lines + 1] = line
+		end
+
+		-- comment and blank lines directly above the next branch belong to no branch
+		while #lines > 0 and (lines[#lines]:match("^%s*%-%-") or lines[#lines]:match("^%s*$")) do
+			lines[#lines] = nil
+		end
+
+		local text = table.concat(lines, "\n")
+
+		out[b.id] = out[b.id] and (out[b.id] .. "\n" .. text) or text
+	end
+
+	return out
+end
+
+local CHOICE_BRANCHES = {
+	kaydine = { ready_train_pilot = true },
+	dinge = { more_training = true, first_training_lesson = true },
+	imler = { ready_train = true },
+}
+
+for _, name in ipairs(ORDER) do
+	TestFreeChoiceNothingElseMoves["test_the_" .. name .. "_run_screen_handlers_branches_outside_the_choice_screen_equal_commit_" .. BASE] = function()
+		local fn = TRAINERS[name].global .. ":runScreenHandlers"
+		local old = functionBlocks(baseFile(TRAINERS[name].handler))[fn]
+		local new = functionBlocks(readFile(TRAINERS[name].handler))[fn]
+
+		lu.assertNotNil(old, fn .. " at " .. BASE)
+		lu.assertNotNil(new, fn .. " now")
+
+		local ob, nb = branchTexts(old), branchTexts(new)
+		local checked = 0
+
+		for id, text in pairs(ob) do
+			if not CHOICE_BRANCHES[name][id] then
+				-- the branch that precedes a choice branch ends where the next branch starts; compare after trimming the choice branch header
+				lu.assertNotNil(nb[id], fn .. ": branch for screen '" .. id .. "' is missing")
+				lu.assertEquals(nb[id], text, fn .. ": branch for screen '" .. id .. "' changed since " .. BASE)
+				checked = checked + 1
+			end
+		end
+
+		lu.assertTrue(checked >= 3, fn .. ": branches compared: " .. checked)
+	end
+end
+
+-- I-7, AC-5: Dinge's paid purchase branch is untouched; the free branch is the only part of getNextConversationScreen that changes
+function TestFreeChoiceNothingElseMoves:test_dinge_paid_purchase_branch_equals_commit_1092dfb3fd()
+	local function purchase(text)
+		local fn = functionBlocks(text)["dingeConvoHandler:getNextConversationScreen"]
+		local a = fn:find("\telseif (skill ~= nil) then", 1, true)
+
+		lu.assertNotNil(a, "dingeConvoHandler:getNextConversationScreen: the 'elseif (skill ~= nil) then' branch")
+
+		return fn:sub(a)
+	end
+
+	lu.assertEquals(purchase(readFile(TRAINERS.dinge.handler)), purchase(baseFile(TRAINERS.dinge.handler)), "the paid purchase branch")
+end

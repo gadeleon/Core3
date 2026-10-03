@@ -9,6 +9,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local T = require("trainer_fixes_data")
 local G = require("rsf_gate_screens_data")
+local P = require("pilot_training_free_choice_data") -- pilot-training-free-choice (spec: .claude/work/pilot-training-free-choice/01-spec.md)
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -120,6 +121,8 @@ local ROWS = { kaydine = G.KAYDINE_ROWS, dinge = G.DINGE_ROWS }
 local SCREEN_COUNT = { kaydine = G.KAYDINE_SCREEN_COUNT, dinge = G.DINGE_SCREEN_COUNT }
 local CHANGED = { kaydine = G.KAYDINE_CHANGED, dinge = G.DINGE_CHANGED }
 local NEW = { kaydine = G.KAYDINE_NEW, dinge = G.DINGE_NEW }
+local DELETED = { kaydine = G.KAYDINE_DELETED, dinge = G.DINGE_DELETED } -- pilot-training-free-choice: first_training_done
+local CHOICE = { kaydine = P.KAYDINE, dinge = P.DINGE } -- the choice replies each handler adds (D-4); not java responses
 local OLD_COUNT = { kaydine = 87, dinge = 72 }
 
 ---------------------------------------------------------------------------------------------
@@ -228,6 +231,14 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 		for _, id in ipairs(CHANGED[trainer]) do touched[id] = true end
 		for _, id in ipairs(NEW[trainer]) do touched[id] = true end
+		for _, id in ipairs(DELETED[trainer]) do touched[id] = true end
+
+		-- a deleted screen must be gone
+		local newBlocks = screenBlocks(readFile(files.convo))
+
+		for _, id in ipairs(DELETED[trainer]) do
+			lu.assertNil(newBlocks[id], files.template .. ": screen '" .. id .. "' must be deleted")
+		end
 
 		local oldCount, checked = 0, 0
 
@@ -243,7 +254,7 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 			end
 		end
 
-		lu.assertEquals(checked, OLD_COUNT[trainer] - #CHANGED[trainer], "screens compared with " .. BASE)
+		lu.assertEquals(checked, OLD_COUNT[trainer] - #CHANGED[trainer] - #DELETED[trainer], "screens compared with " .. BASE)
 
 		for id in pairs(new) do
 			if old[id] == nil then
@@ -253,8 +264,8 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 	end
 end
 
--- AC-5: Dinge's 73 screens show 73 distinct NPC lines
-function TestGateTemplates:test_dinge_screens_show_73_distinct_left_dialogs()
+-- AC-5; pilot-training-free-choice: Dinge's 72 screens show 72 distinct NPC lines
+function TestGateTemplates:test_dinge_screens_show_72_distinct_left_dialogs()
 	local seen, n = {}, 0
 
 	for _, s in ipairs(template("dinge").screens) do
@@ -287,15 +298,32 @@ local function functionText(text, name)
 	return table.concat(out, "\n")
 end
 
-for _, fn in ipairs({ "getInitialScreen", "getNextConversationScreen" }) do
-	-- AC-5, I-7
-	TestGateTemplates["test_dinge_handler_" .. fn .. "_is_byte_identical_to_commit_" .. BASE] = function()
-		local name = "dingeConvoHandler:" .. fn
-		local old = functionText(baseFile(FILES.dinge.handler), name)
+-- AC-5, I-7: getInitialScreen is still the text of the base commit.
+-- pilot-training-free-choice: getNextConversationScreen is re-pinned in two parts: the paid purchase branch (from "elseif (skill ~= nil) then" to the
+-- delegation to conv_handler) is still the text of the base commit; the first_training_lesson branch above it is the one the feature rewrites (D-9).
+TestGateTemplates["test_dinge_handler_getInitialScreen_is_byte_identical_to_commit_" .. BASE] = function()
+	local name = "dingeConvoHandler:getInitialScreen"
+	local old = functionText(baseFile(FILES.dinge.handler), name)
 
-		lu.assertTrue(#old > 100, "setup: " .. name .. " found at " .. BASE)
-		lu.assertEquals(functionText(readFile(FILES.dinge.handler), name), old, name .. " changed since " .. BASE)
+	lu.assertTrue(#old > 100, "setup: " .. name .. " found at " .. BASE)
+	lu.assertEquals(functionText(readFile(FILES.dinge.handler), name), old, name .. " changed since " .. BASE)
+end
+
+TestGateTemplates["test_dinge_handler_getNextConversationScreen_paid_purchase_branch_is_byte_identical_to_commit_" .. BASE] = function()
+	local name = "dingeConvoHandler:getNextConversationScreen"
+	local function purchase(text)
+		local fn = functionText(text, name)
+		local a = fn:find("\telseif (skill ~= nil) then", 1, true)
+
+		lu.assertNotNil(a, name .. ": the 'elseif (skill ~= nil) then' branch")
+
+		return fn:sub(a)
 	end
+
+	local old = purchase(baseFile(FILES.dinge.handler))
+
+	lu.assertTrue(#old > 300, "setup: the paid purchase branch found at " .. BASE)
+	lu.assertEquals(purchase(readFile(FILES.dinge.handler)), old, name .. ": the paid purchase branch changed since " .. BASE)
 end
 
 -- AC-2, I-7: Kaydine's getInitialScreen keeps its head (migration first, JTL check) and the lines after the pilot gates
@@ -365,14 +393,22 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 		lu.assertEquals(checked, #ROWS[trainer], "appendix rows checked")
 	end
 
-	-- AC-2, AC-5, I-3: every PJ/PK sid in the four files is a node or a response of the java
-	TestGateConformance["test_every_" .. trainer .. "_string_id_is_in_the_java"] = function()
+	-- AC-2, AC-5, I-3; pilot-training-free-choice I-6: every PJ/PK sid in the four files is a node or a response of the java, except the four choice
+	-- replies of the trainer's handler (D-4), which must all be there
+	TestGateConformance["test_every_" .. trainer .. "_string_id_is_in_the_java_except_the_four_choice_replies"] = function()
 		local java = files.java
 		local foreign = {}
+		local choice, seenChoice = {}, {}
+
+		for _, row in ipairs(CHOICE[trainer]) do
+			choice[row.sid] = true
+		end
 
 		for _, path in ipairs({ files.convo, files.handler }) do
 			for sid in readFile(path):gmatch(files.prefix:gsub("%p", "%%%0") .. "(s_[%w_]+)") do
-				if java.nodes[sid] == nil and java.responses[sid] == nil then
+				if choice[sid] then
+					seenChoice[sid] = path:match("[^/]+$")
+				elseif java.nodes[sid] == nil and java.responses[sid] == nil then
 					foreign[#foreign + 1] = path:match("[^/]+$") .. ": " .. sid
 				end
 			end
@@ -380,6 +416,10 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 		table.sort(foreign)
 		lu.assertEquals(foreign, {}, "string ids that are not in the java")
+
+		for sid in pairs(choice) do
+			lu.assertEquals(seenChoice[sid], files.handler:match("[^/]+$"), "choice reply " .. sid .. " must be carried by the handler (and only by the handler)")
+		end
 	end
 end
 
@@ -419,19 +459,25 @@ local function used(trainer)
 	return set, npc, resp
 end
 
--- AC-5, I-3: Dinge uses all 73 NPC lines and 47 replies (120 strings)
-function TestGateConformance:test_dinge_uses_73_of_73_npc_lines_and_47_of_47_replies()
+-- AC-5, I-3; pilot-training-free-choice: Dinge uses 72 of 73 NPC lines and 45 of 47 replies (s_142, s_141 and s_143 are unused)
+function TestGateConformance:test_dinge_uses_72_of_73_npc_lines_and_45_of_47_replies()
 	local set, npc, resp = used("dinge")
 
-	lu.assertEquals({ npc, resp }, { 73, 47 }, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (NPC lines, replies)")
+	lu.assertEquals({ npc, resp }, { 72, 45 }, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (NPC lines, replies)")
+
+	for _, sid in ipairs({ "s_142", "s_141", "s_143" }) do
+		lu.assertNil(set[sid], sid .. " must be unused now")
+	end
+
 	lu.assertTrue(set["s_1e029d90"] == true, "s_1e029d90 (the off-track duty line) is used")
 end
 
--- AC-2, I-3: Kaydine uses 87 of 99 NPC lines and 49 of 59 replies; the unused ones are the signup dialog and the fallthrough (D-10)
-function TestGateConformance:test_kaydine_uses_87_of_99_npc_lines_and_49_of_59_replies_and_the_unused_ones_are_the_deferred_signup()
+-- AC-2, I-3; pilot-training-free-choice: Kaydine uses 87 of 99 NPC lines and 48 of 59 replies; the unused ones are the signup dialog, the fallthrough (D-10)
+-- and the retired single reply s_187
+function TestGateConformance:test_kaydine_uses_87_of_99_npc_lines_and_48_of_59_replies_and_the_unused_ones_are_the_deferred_signup_and_s_187()
 	local set, npc, resp = used("kaydine")
 
-	lu.assertEquals({ npc, resp }, { 87, 49 }, "java strings used by kaydine_convo.lua and kaydineConvoHandler.lua (NPC lines, replies)")
+	lu.assertEquals({ npc, resp }, { 87, 48 }, "java strings used by kaydine_convo.lua and kaydineConvoHandler.lua (NPC lines, replies)")
 
 	local unusedNpc, unusedResp = {}, {}
 

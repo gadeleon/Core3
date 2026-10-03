@@ -9,6 +9,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_convo_data")
+local C = require("pilot_training_free_choice_data") -- pilot-training-free-choice: the choice replaces SWG's single reply s_187
 
 T.load()
 
@@ -555,8 +556,8 @@ function TestKaydineMission3Reward:test_a_pilot_who_can_train_is_offered_s_78_an
 	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
 end
 
--- AC-9 (rsf-tier2-kaydine-training): the training option leads to the SWG greeting s_76e6f264 with the one option s_187
-function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_the_swg_training_greeting_with_the_single_option_s_187()
+-- AC-9 (rsf-tier2-kaydine-training): the training option leads to the SWG greeting s_76e6f264; pilot-training-free-choice: with the choice of the missing skills
+function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_the_swg_training_greeting_with_the_choice_of_the_missing_skills()
 	local player = T.player(tr, 3, { complete = { R14 } })
 
 	canTrain(player)
@@ -565,8 +566,15 @@ function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_the_swg_traini
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward", "ready_train_pilot" }, "screens")
 	lu.assertEquals(transcript[3].text, D.PREFIX .. "s_76e6f264", "ready_train_pilot: greeting")
-	lu.assertEquals(#transcript[3].options, 1, "ready_train_pilot: number of options")
-	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_187", "ready_train_pilot: option text")
+
+	local held = {}
+
+	for _, row in ipairs(C.KAYDINE) do
+		held[row.skill] = CreatureObject(player):hasSkill(row.skill) or nil
+	end
+
+	lu.assertEquals(C.pairsOf(transcript[3]), C.expected(C.KAYDINE, held), "ready_train_pilot: options (reply, link) are the replies of the skills the pilot lacks")
+	lu.assertTrue(#transcript[3].options >= 1, "ready_train_pilot: at least one reply (the pilot can train)")
 end
 
 -- AC-7

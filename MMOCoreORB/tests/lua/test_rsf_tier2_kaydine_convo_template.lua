@@ -356,20 +356,24 @@ function TestKaydineConvoConformance:test_every_string_of_kaydine_convo_is_in_th
 end
 
 -- AC-2, I-3: every string id KH adds is a response of the java
-function TestKaydineConvoConformance:test_every_string_kaydine_convo_handler_adds_is_a_java_response_except_the_training_options()
+function TestKaydineConvoConformance:test_every_string_kaydine_convo_handler_adds_is_a_java_response_except_the_four_choice_replies()
 	local text = readFile(H.SCRIPTS .. "screenplays/space/conversations/neutral/rsf_squadron/kaydineConvoHandler.lua")
-	local seen = 0
+	local seen, foreign = 0, 0
 
 	for sid in text:gmatch("naboo_privateer_trainer_2:(s_[%w_]+)") do
 		seen = seen + 1
 
-		if not D.KH_FOREIGN[sid] then
+		if D.KH_FOREIGN[sid] then
+			foreign = foreign + 1
+		else
 			lu.assertTrue(GRAPH.responses[sid] == true, "kaydineConvoHandler adds " .. sid .. ", which is not a response of the java")
 		end
 	end
 
+	-- pilot-training-free-choice I-6: exactly the four choice replies are foreign (D-4); s_187 is gone
+	lu.assertEquals(foreign, 4, "foreign string ids in kaydineConvoHandler.lua (the four choice replies)")
 	-- the handler must still add the M1 gender option and the M3 reward options (Content contract 2)
-	lu.assertTrue(seen >= 6, "string ids in kaydineConvoHandler.lua: " .. seen .. " (s_187 + s_264 + s_242 + s_78 + s_45d20070 + s_6114e8b7)")
+	lu.assertTrue(seen >= 8, "string ids in kaydineConvoHandler.lua: " .. seen .. " (4 choice replies + s_264 + s_242 + s_78 + s_45d20070 + s_6114e8b7)")
 end
 
 -- AC-2, I-3: the eight story strings of F4 that are not in the java are gone from both files

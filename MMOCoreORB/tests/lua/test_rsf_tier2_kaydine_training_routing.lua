@@ -10,6 +10,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_training_data")
+local C = require("pilot_training_free_choice_data") -- pilot-training-free-choice: the choice replaces SWG's single reply s_187
 
 T.load()
 
@@ -270,30 +271,35 @@ local function trainee(indexes, exp)
 	return pilot(s + 1, s, exp or 10 * XP, { baseSkills = holding(indexes) })
 end
 
--- AC-4
-function TestKaydineTrainingGreeting:test_the_greeting_is_s_76e6f264_with_the_pilot_name_and_exactly_the_option_s_187()
+-- AC-4; superseded by pilot-training-free-choice (AC-1): the greeting offers the choice of the missing skills instead of the single reply s_187
+function TestKaydineTrainingGreeting:test_the_greeting_is_s_76e6f264_with_the_pilot_name_and_the_four_choice_replies()
 	local player = trainee({})
 	local transcript = T.converse(tr, player)
 
 	lu.assertEquals(transcript[1].id, "ready_train_pilot", "first screen")
 	lu.assertEquals(transcript[1].text, D.PREFIX .. "s_76e6f264", "greeting")
 	lu.assertEquals(transcript[1].params.TU, player.name, "%TU is the pilot's first name")
-	lu.assertEquals(#transcript[1].options, 1, "number of options")
-	lu.assertEquals(transcript[1].options[1].text, D.PREFIX .. "s_187", "option text")
+	lu.assertEquals(C.pairsOf(transcript[1]), C.expected(C.KAYDINE, {}), "options (reply, link)")
 end
 
 for i, case in ipairs(FIRST_MISSING) do
-	-- AC-4
-	TestKaydineTrainingGreeting["test_the_option_of_the_greeting_leads_to_" .. case[3] .. "_when_" .. case[1]:gsub("[^%w]+", "_")] = function()
+	-- AC-4; superseded by pilot-training-free-choice (AC-1): the first reply is the first missing skill in SWG's order, and the held skills are not offered
+	TestKaydineTrainingGreeting["test_the_greeting_offers_the_choice_of_the_missing_skills_starting_with_" .. case[3] .. "_when_" .. case[1]:gsub("[^%w]+", "_")] = function()
+		local held = {}
+
+		for _, i in ipairs(case[2]) do
+			held[D.SKILLS[i]] = true
+		end
+
 		local transcript = T.converse(tr, trainee(case[2]))
 
 		lu.assertEquals(transcript[1].id, "ready_train_pilot", case[1] .. ": first screen")
-		lu.assertEquals(#transcript[1].options, 1, case[1] .. ": number of options")
-		lu.assertEquals(transcript[1].options[1].link, case[3], case[1] .. ": link of s_187")
+		lu.assertEquals(C.pairsOf(transcript[1]), C.expected(C.KAYDINE, held), case[1] .. ": options (reply, link)")
+		lu.assertEquals(transcript[1].options[1].link, case[3], case[1] .. ": link of the first reply (the first missing skill)")
 	end
 end
 
--- AC-4: choosing s_187 shows the prompt of the first missing skill, with its line and its one option, and nothing is granted
+-- AC-4: choosing the first reply shows the prompt of the first missing skill, with its line and its one option, and nothing is granted
 function TestKaydineTrainingGreeting:test_each_purchase_prompt_shows_its_line_and_one_option_and_grants_nothing()
 	local byScreen = {}
 
@@ -360,16 +366,14 @@ local function m3pilot(s, exp)
 	return T.player(tr, 3, { complete = { R14 }, baseSkills = skills(s), experience = xp(exp) })
 end
 
--- AC-9
+-- AC-9; the greeting's single option is replaced by the choice (pilot-training-free-choice AC-1)
 function TestKaydineTrainingMission3Reward:test_a_pilot_who_can_train_is_offered_s_45d20070_to_the_greeting_and_arrives_on_it()
 	local transcript = T.converse(tr, m3pilot(3, XP), { 0, "s_45d20070" })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward", "ready_train_pilot" }, "screens")
 	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
 	lu.assertEquals(transcript[3].text, D.PREFIX .. "s_76e6f264", "greeting")
-	lu.assertEquals(#transcript[3].options, 1, "greeting: number of options")
-	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_187", "greeting: option")
-	lu.assertEquals(transcript[3].options[1].link, "train_droid", "greeting: link (starships, weapons, procedures held)")
+	lu.assertEquals(C.pairsOf(transcript[3]), C.expected(C.KAYDINE, { [D.SKILLS[1]] = true, [D.SKILLS[2]] = true, [D.SKILLS[3]] = true }), "greeting: options (starships, weapons, procedures held: the droid reply only)")
 end
 
 -- AC-9, D-8, D-11: a pilot who is behind on skills can train too

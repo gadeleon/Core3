@@ -35,6 +35,14 @@ D.ROWS = {
 	{ id = "trained_droid", status = "new", sid = "s_161", animation = "", stop = true, options = {} },
 }
 
+-- pilot-training-free-choice (spec: .claude/work/pilot-training-free-choice/01-spec.md): D.ROWS stays the SWG-derived key of rsf-tier1-dinge-training;
+-- these are the exceptions on top of it. E-PN2 / E-PN3: the single reply of more_training (s_143) and of first_training_lesson (s_141) is replaced by
+-- the choice the handler adds, so their static options are empty. first_training_done (s_142) is deleted (D-6): the free grant ends on trained_<x>.
+D.E_PN = { more_training = "s_143", first_training_lesson = "s_141" }
+D.DELETED_NOW = { "first_training_done" }
+D.SCREENS_AFTER_CHOICE = 72 -- 73 - first_training_done
+D.NOW_UNUSED_SIDS = { "s_141", "s_142", "s_143" } -- the java strings no file uses any more (1 NPC line, 2 responses)
+
 -- E-T1: more_training's s_143 links to the java default (train_droid); the handler re-points it at run time
 D.EXCEPT = { ["more_training|s_143"] = "E-T1" }
 
@@ -56,8 +64,9 @@ end
 
 D.DELETED = { "missions_complete", "thanks_bye", "train_player_fighters", "train_player_component", "train_player_basics", "train_player_droid" }
 
--- Foreign sids of the old training (not in the java): s_cd72f93 (DC) and the four DH option sids
-D.OLD_FOREIGN = { "s_cd72f93", "s_e94f494b", "s_939b6844", "s_ac00d21e", "s_1726d8a5" }
+-- Foreign sids of the old training (not in the java): s_cd72f93 (DC) stays gone. The four DH option sids (s_e94f494b, s_939b6844, s_ac00d21e,
+-- s_1726d8a5) are the choice replies again since pilot-training-free-choice (D-4), see pilot_training_free_choice_data.lua.
+D.OLD_FOREIGN = { "s_cd72f93" }
 
 -- 11 NPC lines + 7 responses that were unused before
 D.NEW_SIDS = {

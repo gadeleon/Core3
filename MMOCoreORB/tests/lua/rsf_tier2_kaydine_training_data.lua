@@ -21,7 +21,8 @@ D.SCREEN_COUNT = 91 -- 87 + the 4 gate screens of rsf-gate-screens
 
 -- Appendix A. options are { option sid, static link }.
 D.ROWS = {
-	{ id = "ready_train_pilot", status = "chg", sid = "s_76e6f264", animation = "salute1", stop = false, options = { {"s_187", "train_droid"} } },
+	-- pilot-training-free-choice E-PN1: the static options are empty, the handler adds the choice (replaces the single reply s_187 -> train_droid)
+	{ id = "ready_train_pilot", status = "chg", sid = "s_76e6f264", animation = "salute1", stop = false, options = {} },
 	{ id = "train_starships", status = "new", sid = "s_188", animation = "", stop = false, options = { {"s_192", "trained_starships_mission4"} } },
 	{ id = "train_weapons", status = "new", sid = "s_189", animation = "", stop = false, options = { {"s_194", "trained_weapons_mission4"} } },
 	{ id = "train_procedures", status = "new", sid = "s_190", animation = "", stop = false, options = { {"s_196", "trained_procedures_mission4"} } },
@@ -166,9 +167,13 @@ for _, p in ipairs({ "initial", "mission2", "mission3", "mission4", "final" }) d
 	end
 end
 
--- The 8 reply sids of the old training that are not in the java (convo spec I-3). The old greeting s_8a84109d left this list with rsf-gate-screens:
--- it is the java's off-track duty line now (Kaydine non_rsf_duty_options)
-D.OLD_SIDS = { "s_4aa3066e", "s_8ad6a62e", "s_f32117e", "s_fd75abb", "s_45b71b4d", "s_197f4f94", "s_8f5942fa", "s_eff66f4d" }
+-- The 4 NPC-line sids of the old training that are not in the java (convo spec I-3). The old greeting s_8a84109d left this list with rsf-gate-screens:
+-- it is the java's off-track duty line now (Kaydine non_rsf_duty_options). The 4 old reply sids (s_45b71b4d, s_197f4f94, s_8f5942fa, s_eff66f4d) left this
+-- list with pilot-training-free-choice: they are the choice replies again (D-4), see pilot_training_free_choice_data.lua.
+D.OLD_SIDS = { "s_4aa3066e", "s_8ad6a62e", "s_f32117e", "s_fd75abb" }
+
+-- pilot-training-free-choice E-PN1: screen id -> the single java reply the choice replaces
+D.E_PN = { ready_train_pilot = "s_187" }
 
 ---------------------------------------------------------------------------------------------
 -- Driver

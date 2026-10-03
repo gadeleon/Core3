@@ -56,7 +56,15 @@ imlerConvoHandler.READY_SUFFIX = "RsfSquadronScreenplay:readyForTier4Mission"
 -- Option texts whose link is changed at run time
 imlerConvoHandler.NOT_MY_TRACK_OPTION = "@conversation/naboo_privateer_tier4:s_c1ff5062"
 imlerConvoHandler.READY_MISSION_OPTION = "@conversation/naboo_privateer_tier4:s_39e697de"
-imlerConvoHandler.READY_TRAIN_OPTION = "@conversation/naboo_privateer_tier4:s_438"
+
+-- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order.
+-- The replies are Turoldine's tier 4 replies (same four skills).
+imlerConvoHandler.TRAIN_CHOICES = {
+	{ "pilot_neutral_starships_04", "@conversation/corellia_privateer_tier4:s_2794eddd", "train_starships" },
+	{ "pilot_neutral_weapons_04", "@conversation/corellia_privateer_tier4:s_e16cb1fa", "train_weapons" },
+	{ "pilot_neutral_procedures_04", "@conversation/corellia_privateer_tier4:s_291ab969", "train_procedures" },
+	{ "pilot_neutral_droid_04", "@conversation/corellia_privateer_tier4:s_bc944dc4", "train_droid" }
+}
 
 -- Quest globals are named <type>_<name>; they are looked up at call time.
 function imlerConvoHandler:questGlobal(constant)
@@ -326,20 +334,15 @@ function imlerConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 		clonedConversation:removeAllOptions()
 		clonedConversation:addOption(self.READY_MISSION_OPTION, link)
 
-	-- Training menu: send the pilot to the first tier 4 skill they lack
+	-- Training menu: one choice per tier 4 skill the pilot lacks
 	elseif (screenID == "ready_train") then
-		local link = "train_droid"
-
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_starships_04")) then
-			link = "train_starships"
-		elseif (not CreatureObject(pPlayer):hasSkill("pilot_neutral_weapons_04")) then
-			link = "train_weapons"
-		elseif (not CreatureObject(pPlayer):hasSkill("pilot_neutral_procedures_04")) then
-			link = "train_procedures"
-		end
-
 		clonedConversation:removeAllOptions()
-		clonedConversation:addOption(self.READY_TRAIN_OPTION, link)
+
+		for _, choice in ipairs(self.TRAIN_CHOICES) do
+			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
+				clonedConversation:addOption(choice[2], choice[3])
+			end
+		end
 
 	elseif (string.match(screenID, "^trained_mission%d$") ~= nil) then
 		setQuestStatus(self:flagKey(pPlayer, self.READY_SUFFIX), 1)

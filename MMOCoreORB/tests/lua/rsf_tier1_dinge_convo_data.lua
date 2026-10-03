@@ -15,6 +15,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_1:"
 D.TEMPLATE = "dinge_convo_template"
+D.SCREEN_COUNT_CHOICE = 72 -- pilot-training-free-choice: first_training_done (s_142) is deleted (D-6); SCREEN_COUNT below is the count before that feature
 D.SCREEN_COUNT = 73 -- 47 - 20 deleted + 40 new, then rsf-tier1-dinge-training: - 6 deleted + 11 new, then rsf-gate-screens: + non_rsf_duty_offer
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1).
@@ -126,7 +127,8 @@ D.FAILED = {
 
 -- Sids the files may carry that are not in the java (I-3)
 D.DC_FOREIGN = {}
-D.DH_FOREIGN = {}
+-- pilot-training-free-choice (D-4): the four choice replies Core3 had before the SWG training port come back; they are not in the java
+D.DH_FOREIGN = { s_e94f494b = true, s_939b6844 = true, s_ac00d21e = true, s_1726d8a5 = true }
 D.GONE_SID = "s_e9c7c6bb"
 
 -- The four screens that show a story mission's first line when the pilot has not tried it yet, then the ones for the other states

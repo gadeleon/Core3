@@ -203,14 +203,14 @@ TestDingeConvoTemplate = {}
 
 function TestDingeConvoTemplate:setUp() H.reset() end
 
--- AC-1
-function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_73_screens()
+-- AC-1; pilot-training-free-choice: first_training_done is deleted, 72 screens
+function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_72_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "dingeConvoHandler", "dinge_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "dinge_convo_template: templateType")
 	lu.assertEquals(t.initialScreen, "", "dinge_convo_template: initialScreen")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "dinge_convo_template: number of screens (67 - 6 + 11 + 1)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT_CHOICE, "dinge_convo_template: number of screens (67 - 6 + 11 + 1 - 1)")
 end
 
 -- AC-1
@@ -446,8 +446,8 @@ function TestDingeConvoConformance:test_every_string_of_dinge_convo_is_in_the_ja
 	end
 end
 
--- AC-2, I-3: every string id DH adds is a response of the java (the four foreign training options are gone)
-function TestDingeConvoConformance:test_every_string_dinge_convo_handler_adds_is_a_java_response_except_the_training_options()
+-- AC-2, I-3; pilot-training-free-choice I-6: every string id DH adds is a response of the java, except the four choice replies (D-4)
+function TestDingeConvoConformance:test_every_string_dinge_convo_handler_adds_is_a_java_response_except_the_four_choice_replies()
 	local seen, foreign = 0, 0
 
 	for sid in readFile(DH_PATH):gmatch("naboo_privateer_trainer_1:(s_[%w_]+)") do
@@ -461,8 +461,8 @@ function TestDingeConvoConformance:test_every_string_dinge_convo_handler_adds_is
 	end
 
 	-- s_9817b9bb and s_5c522568 (the two signup options of yes_enlist) are java responses like every other literal
-	lu.assertEquals(foreign, 0, "foreign string ids in dingeConvoHandler.lua (rsf-tier1-dinge-training: the four training options are gone)")
-	lu.assertTrue(seen >= 2, "string ids in dingeConvoHandler.lua: " .. seen) -- the two signup options; the four training options are gone
+	lu.assertEquals(foreign, 4, "foreign string ids in dingeConvoHandler.lua (pilot-training-free-choice: exactly the four choice replies)")
+	lu.assertTrue(seen >= 6, "string ids in dingeConvoHandler.lua: " .. seen) -- the two signup options and the four choice replies
 end
 
 -- AC-2: the two signup options DH builds are the java ones (E-2)
@@ -480,8 +480,8 @@ function TestDingeConvoConformance:test_the_foreign_string_s_e9c7c6bb_is_in_neit
 	lu.assertNil(readFile(DH_PATH):find(D.GONE_SID, 1, true), "dingeConvoHandler.lua still carries " .. D.GONE_SID)
 end
 
--- AC-2, I-3: with the gate screens port (rsf-gate-screens) the off-track line s_1e029d90 is used too: all 120 strings
-function TestDingeConvoConformance:test_the_template_uses_all_120_java_strings()
+-- AC-2, I-3; pilot-training-free-choice: 117 of the 120 strings (s_142, s_141 and s_143 are unused; the off-track line s_1e029d90 of rsf-gate-screens is used)
+function TestDingeConvoConformance:test_the_template_uses_117_java_strings()
 	local used = {}
 
 	for _, s in ipairs(template().screens) do
@@ -512,7 +512,7 @@ function TestDingeConvoConformance:test_the_template_uses_all_120_java_strings()
 		n = n + 1
 	end
 
-	lu.assertEquals(n, 120, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (73 NPC lines + 47 responses)")
+	lu.assertEquals(n, 117, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (72 of 73 NPC lines + 45 of 47 responses)")
 end
 
 ---------------------------------------------------------------------------------------------

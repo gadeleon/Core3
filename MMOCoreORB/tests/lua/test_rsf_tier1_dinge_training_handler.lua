@@ -7,6 +7,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier1_dinge_training_data")
 local K = require("rsf_tier2_kaydine_training_data")
+local P = require("pilot_training_free_choice_data") -- pilot-training-free-choice
 
 T.load()
 
@@ -97,16 +98,19 @@ function TestDingeTrainingHandlerStatic:test_the_handler_names_none_of_the_delet
 	end
 end
 
--- AC-8, I-4: grantSpaceSkill( appears only inside getNextConversationScreen, exactly twice: free starships, paid TRAIN_SCREENS
-function TestDingeTrainingHandlerStatic:test_grant_space_skill_is_called_only_in_get_next_conversation_screen_once_free_for_starships_and_once_paid()
+-- AC-8, I-4; pilot-training-free-choice (I-4): grantSpaceSkill( appears only inside getNextConversationScreen, exactly twice: one free call (the
+-- skill the pilot picked on the lesson, no longer starships), one paid call (TRAIN_SCREENS)
+function TestDingeTrainingHandlerStatic:test_grant_space_skill_is_called_only_in_get_next_conversation_screen_once_free_for_the_picked_skill_and_once_paid()
 	local text = handlerText()
 	local inside = body("getNextConversationScreen")
 
 	lu.assertEquals(count(text, "grantSpaceSkill("), 2, "calls of grantSpaceSkill( in dingeConvoHandler.lua")
 	lu.assertEquals(count(inside, "grantSpaceSkill("), 2, "calls of grantSpaceSkill( inside getNextConversationScreen")
-	lu.assertNotNil(inside:find('grantSpaceSkill%(pPlayer, "pilot_neutral_starships_01", false%)'), "the free call: grantSpaceSkill(pPlayer, \"pilot_neutral_starships_01\", false)")
 	lu.assertEquals(select(2, inside:gsub("grantSpaceSkill%([^%)]*, true%)", "")), 1, "paid calls: grantSpaceSkill(..., true)")
 	lu.assertEquals(select(2, inside:gsub("grantSpaceSkill%([^%)]*, false%)", "")), 1, "free calls: grantSpaceSkill(..., false)")
+	lu.assertNil(inside:find('"pilot_neutral_starships_01", false', 1, true), "the free call must grant the picked skill, not always starships")
+	lu.assertNil(text:find("first_training_done", 1, true), "dingeConvoHandler still names the deleted screen first_training_done")
+	lu.assertNil(text:find("s_141", 1, true), "dingeConvoHandler still carries the retired reply s_141")
 end
 
 -- AC-8, I-4: no other route to a skill (no direct engine grant, no grant in the display handlers)
@@ -143,7 +147,7 @@ function TestDingeTrainingHandlerStatic:test_every_screen_the_override_returns_i
 		lu.assertNotNil(byId[id], "getNextConversationScreen returns \"" .. id .. "\", which is not in dinge_convo_template")
 	end
 
-	lu.assertNotNil(text:find("first_training_done", 1, true), "getNextConversationScreen never names first_training_done")
+	lu.assertNil(text:find("first_training_done", 1, true), "getNextConversationScreen still names the deleted screen first_training_done")
 	lu.assertNotNil(text:find("first_training_lesson", 1, true), "getNextConversationScreen never names first_training_lesson")
 	lu.assertNotNil(text:find("trained_", 1, true), "getNextConversationScreen never builds a trained_<x> id")
 
@@ -153,13 +157,18 @@ function TestDingeTrainingHandlerStatic:test_every_screen_the_override_returns_i
 	end
 end
 
--- AC-8: no runScreenHandlers branch tests a first_training*, train_<x> or trained_<x> screen
-function TestDingeTrainingHandlerStatic:test_run_screen_handlers_has_no_branch_for_the_training_screens_but_more_training()
+-- AC-8; pilot-training-free-choice: no runScreenHandlers branch tests a first_training*, train_<x> or trained_<x> screen, except more_training and
+-- first_training_lesson (the two choice screens)
+function TestDingeTrainingHandlerStatic:test_run_screen_handlers_has_no_branch_for_the_training_screens_but_more_training_and_the_lesson()
 	local seen = {}
 
 	for id in body("runScreenHandlers"):gmatch('screenID == "([%w_]+)"') do
 		seen[#seen + 1] = id
-		lu.assertNil(id:find("^first_training"), "runScreenHandlers tests screenID == \"" .. id .. "\"")
+
+		if id ~= "first_training_lesson" then
+			lu.assertNil(id:find("^first_training"), "runScreenHandlers tests screenID == \"" .. id .. "\"")
+		end
+
 		lu.assertNil(id:find("^train_"), "runScreenHandlers tests screenID == \"" .. id .. "\"")
 		lu.assertNil(id:find("^trained_"), "runScreenHandlers tests screenID == \"" .. id .. "\"")
 	end
@@ -169,6 +178,7 @@ function TestDingeTrainingHandlerStatic:test_run_screen_handlers_has_no_branch_f
 	local first = body("runScreenHandlers"):match('if %(screenID == "([%w_]+)"%) then')
 
 	lu.assertEquals(first, "more_training", "the first branch of runScreenHandlers")
+	lu.assertEquals(count(body("runScreenHandlers"), 'screenID == "first_training_lesson"'), 1, "branches for first_training_lesson")
 end
 
 -- AC-8: getInitialScreen neither grants, pays nor starts anything
@@ -223,8 +233,8 @@ TestDingeTrainingHandlerSweep = {}
 function TestDingeTrainingHandlerSweep:setUp() H.reset() end
 function TestDingeTrainingHandlerSweep:tearDown() end
 
--- AC-8, I-5: entering any one of the 73 screens grants no skill, charges no XP and changes no skill
-function TestDingeTrainingHandlerSweep:test_entering_each_of_the_73_screens_grants_no_skill()
+-- AC-8, I-5; pilot-training-free-choice: entering any one of the 72 screens grants no skill, charges no XP and changes no skill
+function TestDingeTrainingHandlerSweep:test_entering_each_of_the_72_screens_grants_no_skill()
 	local entered = 0
 	local dh = handler()
 
@@ -251,11 +261,11 @@ function TestDingeTrainingHandlerSweep:test_entering_each_of_the_73_screens_gran
 		lu.assertEquals(player.ghost.experience.space_combat_general, 5 * D.COST, screen.id .. ": space_combat_general")
 	end
 
-	lu.assertEquals(entered, 73, "template screens entered")
+	lu.assertEquals(entered, 72, "template screens entered")
 end
 
--- AC-8, I-5: more_training's runtime link re-points s_143 without granting (checked per screen state too)
-function TestDingeTrainingHandlerSweep:test_entering_more_training_re_points_the_link_and_grants_nothing()
+-- AC-8, I-5; pilot-training-free-choice: entering more_training adds the choice replies of the missing skills without granting
+function TestDingeTrainingHandlerSweep:test_entering_more_training_adds_the_choice_replies_and_grants_nothing()
 	local dh = handler()
 
 	for _, list in ipairs(D.subsets()) do
@@ -270,8 +280,13 @@ function TestDingeTrainingHandlerSweep:test_entering_more_training_re_points_the
 
 		local options = pScreen.options
 
-		lu.assertEquals(#options, 1, D.label(list) .. ": options of more_training")
-		lu.assertEquals(options[1].link, D.expectedLink(list), D.label(list) .. ": link of s_143")
+		local pairs_ = {}
+
+		for i, o in ipairs(options) do
+			pairs_[i] = { o.text, o.link }
+		end
+
+		lu.assertEquals(pairs_, P.expected(P.DINGE, P.set(list)), D.label(list) .. ": options of more_training (reply, link)")
 		lu.assertEquals(#grants, 0, D.label(list) .. ": grantSpaceSkill calls")
 	end
 end

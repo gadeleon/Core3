@@ -87,7 +87,8 @@ D.DELETED = {
 -- Sids the KC/KH may carry that are not in the java (I-3)
 -- rsf-tier2-kaydine-training (spec section 3): the eight old training sids are gone from both files, so nothing is foreign any more
 D.KC_FOREIGN = {}
-D.KH_FOREIGN = {}
+-- pilot-training-free-choice (D-4): the four choice replies Core3 had before the SWG training port come back; they are not in the java
+D.KH_FOREIGN = { s_45b71b4d = true, s_197f4f94 = true, s_8f5942fa = true, s_eff66f4d = true }
 D.F4_STORY_STRINGS = { "s_3cef63a0", "s_c4ef0e93", "s_ec671b3f", "s_a80d9308", "s_ff45f1fd", "s_225b33f", "s_2d67b7a8", "s_a6c7fa2b" }
 
 -- Mission head, :attempted / :reward key base, per mission

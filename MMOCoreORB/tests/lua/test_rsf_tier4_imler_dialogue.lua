@@ -217,6 +217,10 @@ function TestImlerDialogue:test_every_swg_npc_line_has_exactly_one_screen()
 	lu.assertEquals(#t.screens, 182, "number of screens in imler_convo_template (one per NPC line)")
 end
 
+-- AC-2, pilot-training-free-choice E-PN4: ready_train's one reply s_438 (conditional successor = first missing skill) is replaced by the choice the
+-- handler adds (spec: .claude/work/pilot-training-free-choice/01-spec.md); its static options are empty. Nothing else may differ.
+local E_PN4 = { ready_train = "s_438" }
+
 -- AC-2
 function TestImlerDialogue:test_options_are_the_swg_responses_in_order_and_link_to_the_swg_successor()
 	local t = template()
@@ -235,9 +239,16 @@ function TestImlerDialogue:test_options_are_the_swg_responses_in_order_and_link_
 			got[i] = sidOf(option[1])
 		end
 
-		lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
+		local exceptional = E_PN4[screen.id]
 
-		for i, optionSid in ipairs(node.options) do
+		if exceptional ~= nil then
+			lu.assertEquals(node.options, { exceptional }, "answer key: " .. screen.id .. " has the one reply " .. exceptional)
+			lu.assertEquals(got, {}, "screen '" .. screen.id .. "' (" .. sid .. "): static options (E-PN4: the handler adds the choice)")
+		else
+			lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
+		end
+
+		for i, optionSid in ipairs(exceptional ~= nil and {} or node.options) do
 			local successors = GRAPH.successorsOf(sid, optionSid)
 
 			lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
@@ -258,7 +269,7 @@ function TestImlerDialogue:test_the_conditional_options_default_to_the_spec_link
 
 	lu.assertEquals(byId.not_my_track.options[1][2], "nontrack_no_duty", "not_my_track: default link of s_c1ff5062")
 	lu.assertEquals(byId.ready_mission.options[1][2], "mission1_brief", "ready_mission: default link of s_39e697de")
-	lu.assertEquals(byId.ready_train.options[1][2], "train_droid", "ready_train: default link of s_438")
+	lu.assertEquals(byId.ready_train.options, {}, "ready_train: static options (E-PN4: no fixed-order default; the handler adds the choice)")
 
 	for _, skill in ipairs(D.SKILLS) do
 		local screen = byId["train_" .. skill]

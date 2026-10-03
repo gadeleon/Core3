@@ -1191,7 +1191,7 @@ function TestDingeHandlerSweep:test_entering_each_template_screen_pays_and_start
 		end
 	end
 
-	lu.assertEquals(entered, D.SCREEN_COUNT, "template screens entered")
+	lu.assertEquals(entered, D.SCREEN_COUNT_CHOICE, "template screens entered (pilot-training-free-choice: 72, first_training_done is deleted)")
 end
 
 -- AC-10, I-5: the start tables of the data file and of the generic suite agree

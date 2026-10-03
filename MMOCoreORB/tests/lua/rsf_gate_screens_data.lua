@@ -20,7 +20,7 @@ G.PJ = "@conversation/naboo_privateer_trainer_1:"
 G.KAYDINE_TEMPLATE = "kaydine_convo_template"
 G.DINGE_TEMPLATE = "dinge_convo_template"
 G.KAYDINE_SCREEN_COUNT = 91 -- 87 + rebel_pilot, imperial_pilot, not_ready_tier2_end, non_rsf_duty_options
-G.DINGE_SCREEN_COUNT = 73 -- 72 + non_rsf_duty_offer
+G.DINGE_SCREEN_COUNT = 72 -- 72 + non_rsf_duty_offer, - first_training_done (pilot-training-free-choice D-6)
 
 -- Appendix A-K. options are { option sid, static link }.
 G.KAYDINE_ROWS = {
@@ -49,9 +49,12 @@ G.DINGE_ROWS = {
 }
 
 G.KAYDINE_NEW = { "rebel_pilot", "imperial_pilot", "not_ready_tier2_end", "non_rsf_duty_options" }
-G.KAYDINE_CHANGED = { "pilot_not_rsf", "not_ready_tier2", "on_mission" }
+-- pilot-training-free-choice (E-PN1..E-PN3): ready_train_pilot, more_training and first_training_lesson lose their single static reply; first_training_done is deleted
+G.KAYDINE_CHANGED = { "pilot_not_rsf", "not_ready_tier2", "on_mission", "ready_train_pilot" }
 G.DINGE_NEW = { "non_rsf_duty_offer" }
-G.DINGE_CHANGED = { "rebel_pilot", "imperial_pilot" }
+G.DINGE_CHANGED = { "rebel_pilot", "imperial_pilot", "more_training", "first_training_lesson" }
+G.DINGE_DELETED = { "first_training_done" }
+G.KAYDINE_DELETED = {}
 
 -- The options whose static link differs from the java default (the java default is the last, unconditional successor)
 G.EXCEPTIONS = {
@@ -63,9 +66,10 @@ G.EXCEPTIONS = {
 G.KAYDINE_REACH = { "accept_duty_destroy", "accept_duty_escort", "accept_duty_recovery", "non_rsf_duty_options", "non_rsf_missions", "pilot_not_rsf" }
 G.DINGE_REACH = { "destroy_duty", "duty_no_training", "duty_not_now", "duty_options", "escort_duty", "non_rsf_duty_missions", "non_rsf_duty_offer", "non_rsf_pilot", "not_ready", "what_is_duty" }
 
--- String usage after this feature: Kaydine 87/99 NPC lines + 49/59 replies (the signup dialog and the fallthrough stay out, D-10)
+-- String usage after this feature: Kaydine 87/99 NPC lines + 49/59 replies (the signup dialog and the fallthrough stay out, D-10);
+-- pilot-training-free-choice: 48/59 replies, s_187 is no longer used
 G.KAYDINE_UNUSED_NPC = { "s_2847218", "s_24d86e89", "s_31", "s_35", "s_35fb22d6", "s_39", "s_464cfc61", "s_6cd96c01", "s_7cc7c206", "s_837686a5", "s_9ea46a82", "s_d8472b3c" }
-G.KAYDINE_UNUSED_RESP = { "s_29", "s_33", "s_37", "s_7614c65", "s_8f2e1055", "s_9560d48e", "s_d70dba34", "s_f6ae3b07", "s_f93088f1", "s_36a4e374" }
+G.KAYDINE_UNUSED_RESP = { "s_29", "s_33", "s_37", "s_7614c65", "s_8f2e1055", "s_9560d48e", "s_d70dba34", "s_f6ae3b07", "s_f93088f1", "s_36a4e374", "s_187" }
 
 G.TIER1_SKILLS = { "pilot_neutral_droid_01", "pilot_neutral_procedures_01", "pilot_neutral_starships_01", "pilot_neutral_weapons_01" }
 

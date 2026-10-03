@@ -12,6 +12,7 @@
 local lu = require("luaunit")
 local H = require("harness")
 local D = require("rsf_tier4_data")
+local C = require("pilot_training_free_choice_data") -- pilot-training-free-choice: the Imler choice replies
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -411,23 +412,31 @@ local function trainer(held)
 	return pilot({ tier4 = held, hist = #held, xp = XP_FOR_TIER4, met = true })
 end
 
+-- pilot-training-free-choice (AC-8): ready_train offers one reply per missing tier 4 skill, in the order starships, weapons, procedures, droid,
+-- each linking to the skill's own prompt (the single fixed-order reply s_438 is retired)
 local LINKS = {
-	{ "no_skills_links_to_starships", {}, "train_starships" },
-	{ "only_weapons_held_still_links_to_starships", { "weapons" }, "train_starships" },
-	{ "starships_held_links_to_weapons", { "starships" }, "train_weapons" },
-	{ "starships_and_procedures_held_links_to_weapons", { "starships", "procedures" }, "train_weapons" },
-	{ "starships_and_weapons_held_links_to_procedures", { "starships", "weapons" }, "train_procedures" },
-	{ "three_held_links_to_droid", { "starships", "weapons", "procedures" }, "train_droid" },
-	{ "all_but_starships_links_to_starships", { "weapons", "procedures", "droid" }, "train_starships" },
+	{ "no_skills_offers_all_four", {} },
+	{ "only_weapons_held_offers_starships_procedures_droid", { "weapons" } },
+	{ "starships_held_offers_weapons_procedures_droid", { "starships" } },
+	{ "starships_and_procedures_held_offers_weapons_and_droid", { "starships", "procedures" } },
+	{ "starships_and_weapons_held_offers_procedures_and_droid", { "starships", "weapons" } },
+	{ "three_held_offers_only_droid", { "starships", "weapons", "procedures" } },
+	{ "all_but_starships_offers_only_starships", { "weapons", "procedures", "droid" } },
 }
 
 for _, row in ipairs(LINKS) do
-	-- AC-5
-	TestImlerTraining["test_ready_train_option_s_438_" .. row[1]] = function()
-		local transcript = converse(trainer(row[2]), { "s_438" })
+	-- AC-8
+	TestImlerTraining["test_ready_train_" .. row[1]] = function()
+		local held = {}
+
+		for _, x in ipairs(row[2]) do
+			held["pilot_neutral_" .. x .. "_04"] = true
+		end
+
+		local transcript = converse(trainer(row[2]))
 
 		lu.assertEquals(transcript[1].id, "ready_train", "first screen")
-		lu.assertEquals(transcript[2].id, row[3], "screen after s_438 with held skills {" .. table.concat(row[2], ",") .. "}")
+		lu.assertEquals(C.pairsOf(transcript[1]), C.expected(C.IMLER, held), "ready_train options (reply, link) with held skills {" .. table.concat(row[2], ",") .. "}")
 	end
 end
 
@@ -439,9 +448,16 @@ local TRAINED = {
 	{ "droid", { "starships", "weapons", "procedures" }, "trained_mission4" },
 }
 
+-- The choice reply of each tier 4 skill (pilot-training-free-choice: Turoldine's replies, D-10)
+local REPLY = {}
+
+for _, row in ipairs(C.IMLER) do
+	REPLY[row.x] = row.sid
+end
+
 -- Choices that walk ready_train -> train_<x> -> (buy), with an optional hook just before the buy.
 local function trainingChoices(skill, hook)
-	local choices = { "s_438" }
+	local choices = { REPLY[skill] }
 
 	if hook then
 		choices[#choices + 1] = hook
@@ -648,7 +664,7 @@ local ROUTES_TO_GRANT = {
 		end
 
 		local player = pilot({ tier4 = held, hist = n - 1, xp = XP_FOR_TIER4, met = true })
-		local path = concat({ "s_438", D.BUY_OPTION[D.SKILLS[n]] }, pathBetween("trained_mission" .. n, target))
+		local path = concat({ REPLY[D.SKILLS[n]], D.BUY_OPTION[D.SKILLS[n]] }, pathBetween("trained_mission" .. n, target))
 
 		return player, path, "ready_train"
 	end,

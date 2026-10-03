@@ -13,6 +13,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier1_dinge_training_data")
 local K = require("rsf_tier2_kaydine_training_data") -- K.drive: start a conversation on a given screen
+local C = require("pilot_training_free_choice_data") -- pilot-training-free-choice: the choice replaces s_141 and s_143
 
 T.load()
 
@@ -111,8 +112,8 @@ TestDingeFirstTraining = {}
 function TestDingeFirstTraining:setUp() H.reset() end
 function TestDingeFirstTraining:tearDown() LuaSkillManager = REAL_SKILL_MANAGER end
 
--- AC-4
-function TestDingeFirstTraining:test_first_training_shows_s_5e36283d_with_the_single_option_s_139_and_the_lesson_shows_s_140_with_s_141()
+-- AC-4; superseded by pilot-training-free-choice (AC-6): the lesson offers the four choice replies instead of s_141
+function TestDingeFirstTraining:test_first_training_shows_s_5e36283d_with_the_single_option_s_139_and_the_lesson_shows_s_140_with_the_four_choice_replies()
 	local transcript = T.converse(tr, pilot({}, 0), { 0 })
 
 	lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson" }, "screens")
@@ -121,8 +122,7 @@ function TestDingeFirstTraining:test_first_training_shows_s_5e36283d_with_the_si
 	lu.assertEquals(transcript[1].options[1].link, "first_training_lesson", "first_training: link")
 	lu.assertFalse(transcript[1].stop, "first_training does not end the conversation")
 	lu.assertEquals(transcript[2].text, P .. "s_140", "first_training_lesson: NPC line")
-	lu.assertEquals(texts(transcript[2].options), { P .. "s_141" }, "first_training_lesson: options")
-	lu.assertEquals(transcript[2].options[1].link, "first_training_done", "first_training_lesson: link")
+	lu.assertEquals(C.pairsOf(transcript[2]), C.expected(C.DINGE, {}, "closing"), "first_training_lesson: options (reply, link)")
 	lu.assertFalse(transcript[2].stop, "first_training_lesson does not end the conversation")
 end
 
@@ -140,18 +140,19 @@ function TestDingeFirstTraining:test_nothing_is_granted_while_first_training_and
 	lu.assertEquals(exp(player), COST, "space_combat_general")
 end
 
--- AC-4, D-13: choosing s_141 grants starships once through the free path and charges nothing
+-- AC-4, D-13; superseded by pilot-training-free-choice (AC-6): the first reply of the lesson (starships, nothing held) grants starships once through the
+-- free path and charges nothing; the conversation ends on trained_starships (s_149), first_training_done is deleted
 for _, amount in ipairs({ 0, COST, 3 * COST }) do
-	TestDingeFirstTraining["test_choosing_s_141_grants_starships_01_once_for_free_with_" .. amount .. "_xp_and_ends_on_first_training_done"] = function()
+	TestDingeFirstTraining["test_choosing_the_first_lesson_reply_grants_starships_01_once_for_free_with_" .. amount .. "_xp_and_ends_on_trained_starships"] = function()
 		costs()
 
 		local player = pilot({}, amount)
 		local transcript = T.converse(tr, player, { 0, 0 })
 
-		lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", "first_training_done" }, "screens")
-		lu.assertEquals(transcript[3].text, P .. "s_142", "first_training_done: NPC line")
-		lu.assertTrue(transcript[3].stop, "first_training_done ends the conversation")
-		lu.assertEquals(transcript[3].options, {}, "first_training_done: options")
+		lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", "trained_starships" }, "screens")
+		lu.assertEquals(transcript[3].text, P .. "s_149", "trained_starships: NPC line")
+		lu.assertTrue(transcript[3].stop, "trained_starships ends the conversation")
+		lu.assertEquals(transcript[3].options, {}, "trained_starships: options")
 
 		local calls = free()
 
@@ -182,7 +183,7 @@ end
 -- AC-4, D-4: a pilot who holds any tier 1 skill when s_141 is chosen gets nothing and sees the fresh first screen
 for _, skill in ipairs(D.SKILLS) do
 	for _, amount in ipairs({ 0, COST }) do
-		TestDingeFirstTraining["test_holding_" .. skill:match("_(%a+)_01$") .. "_when_s_141_is_chosen_with_" .. amount .. "_xp_grants_nothing_and_restarts_the_conversation"] = function()
+		TestDingeFirstTraining["test_holding_" .. skill:match("_(%a+)_01$") .. "_when_a_lesson_reply_is_chosen_with_" .. amount .. "_xp_grants_nothing_and_restarts_the_conversation"] = function()
 			costs()
 
 			local player = pilot({}, amount)
@@ -199,7 +200,7 @@ for _, skill in ipairs(D.SKILLS) do
 			lu.assertEquals(exp(player), amount, "space_combat_general")
 			lu.assertEquals(#transcript, 3, "screens")
 			lu.assertEquals(transcript[3].id, freshFirstScreen({ skill }, amount), "third screen is the fresh first screen of that pilot")
-			lu.assertNotEquals(transcript[3].id, "first_training_done", "no success line for a skill that was not granted")
+			lu.assertNotEquals(transcript[3].id, "trained_starships", "no success line for a skill that was not granted")
 		end
 	end
 end
@@ -222,8 +223,8 @@ function TestDingeFirstTraining:test_the_lesson_calls_grant_space_skill_once_wit
 	lu.assertEquals(#calls2, 0, "grantSpaceSkill calls when a skill is held at the moment of choosing")
 end
 
--- AC-4: the lesson reached again after the grant grants nothing (exactly once)
-function TestDingeFirstTraining:test_choosing_s_141_twice_grants_one_skill()
+-- AC-4: the lesson reached again after the grant grants nothing (exactly once); pilot-training-free-choice: the lesson then offers the three skills still missing
+function TestDingeFirstTraining:test_choosing_a_lesson_reply_twice_grants_one_skill()
 	costs()
 
 	local player = pilot({}, COST)
@@ -274,26 +275,27 @@ TestDingeMoreTraining = {}
 function TestDingeMoreTraining:setUp() H.reset() end
 function TestDingeMoreTraining:tearDown() LuaSkillManager = REAL_SKILL_MANAGER end
 
--- AC-5
-function TestDingeMoreTraining:test_more_training_greets_the_pilot_by_name_with_one_option_s_143()
+-- AC-5; superseded by pilot-training-free-choice (AC-4): the greeting offers the choice replies of the missing skills instead of s_143
+function TestDingeMoreTraining:test_more_training_greets_the_pilot_by_name_with_the_choice_replies_of_the_missing_skills()
 	local transcript = T.converse(tr, pilot({ D.SKILLS[1] }, COST))
 
 	lu.assertEquals(transcript[1].id, "more_training", "first screen")
 	lu.assertEquals(transcript[1].text, P .. "s_122b0165", "more_training: NPC line")
 	lu.assertEquals(transcript[1].params.TU, "Ace", "more_training: %TU")
-	lu.assertEquals(texts(transcript[1].options), { P .. "s_143" }, "more_training: options")
+	lu.assertEquals(C.pairsOf(transcript[1]), C.expected(C.DINGE, C.set({ D.SKILLS[1] })), "more_training: options (reply, link)")
 	lu.assertFalse(transcript[1].stop, "more_training does not end the conversation")
 end
 
--- AC-5, E-T1: the link of s_143 is the first of starships, weapons, procedures the pilot lacks, else droid, for every 1 to 3 skill subset
+-- AC-5, E-PN2; superseded by pilot-training-free-choice (AC-4): for every 1 to 3 skill subset the first reply leads to the first skill the pilot lacks (SWG's
+-- old order) and the other replies to the other missing skills
 for _, list in ipairs(D.subsets()) do
-	TestDingeMoreTraining["test_more_training_for_a_pilot_holding_" .. D.label(list) .. "_links_to_" .. D.expectedLink(list)] = function()
+	TestDingeMoreTraining["test_more_training_for_a_pilot_holding_" .. D.label(list) .. "_offers_the_missing_skills_starting_with_" .. D.expectedLink(list)] = function()
 		local transcript = T.converse(tr, pilot(list, COST), { 0 })
 
 		lu.assertEquals(transcript[1].id, "more_training", "first screen")
-		lu.assertEquals(#transcript[1].options, 1, "more_training: number of options")
-		lu.assertEquals(transcript[1].options[1].link, D.expectedLink(list), "more_training: link of s_143")
-		lu.assertEquals(transcript[2].id, D.expectedLink(list), "screen after choosing s_143")
+		lu.assertEquals(C.pairsOf(transcript[1]), C.expected(C.DINGE, C.set(list)), "more_training: options (reply, link)")
+		lu.assertEquals(transcript[1].options[1].link, D.expectedLink(list), "more_training: link of the first reply")
+		lu.assertEquals(transcript[2].id, D.expectedLink(list), "screen after choosing the first reply")
 	end
 end
 
@@ -642,7 +644,7 @@ function TestDingeTrainingVisits:test_with_22500_xp_five_visits_grant_starships_
 
 	local transcript, nFree, nBought = visit(player)
 
-	lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", "first_training_done" }, "visit 1: screens")
+	lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", "trained_starships" }, "visit 1: screens")
 	lu.assertEquals({ nFree, nBought }, { 1, 0 }, "visit 1: awardSkill, skillManagerAwardSkill calls")
 	lu.assertEquals(held(player), { "pilot_neutral_starships_01" }, "visit 1: skills held")
 	lu.assertEquals(exp(player), 22500, "visit 1: space_combat_general (starships is free)")
@@ -682,7 +684,7 @@ function TestDingeTrainingVisits:test_with_only_7500_xp_the_third_visit_shows_du
 	local t1, f1, b1 = visit(player)
 	local t2, f2, b2 = visit(player)
 
-	lu.assertEquals(ids(t1), { "first_training", "first_training_lesson", "first_training_done" }, "visit 1: screens")
+	lu.assertEquals(ids(t1), { "first_training", "first_training_lesson", "trained_starships" }, "visit 1: screens")
 	lu.assertEquals({ f1, b1 }, { 1, 0 }, "visit 1: awardSkill, skillManagerAwardSkill calls")
 	lu.assertEquals(ids(t2), { "more_training", "train_weapons", "trained_weapons" }, "visit 2: screens")
 	lu.assertEquals({ f2, b2 }, { 0, 1 }, "visit 2: awardSkill, skillManagerAwardSkill calls")

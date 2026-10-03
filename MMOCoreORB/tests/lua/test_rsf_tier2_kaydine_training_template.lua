@@ -11,6 +11,7 @@ local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_training_data")
 local C = require("rsf_tier2_kaydine_convo_data")
 local G = require("rsf_gate_screens_data")
+local P = require("pilot_training_free_choice_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -134,15 +135,15 @@ function TestKaydineTrainingTemplate:test_the_20_free_choice_training_screens_ar
 	end
 end
 
--- AC-1
-function TestKaydineTrainingTemplate:test_ready_train_pilot_is_the_swg_greeting_with_the_single_option_s_187()
+-- AC-1; superseded by pilot-training-free-choice E-PN1 (spec: .claude/work/pilot-training-free-choice/01-spec.md): no static option, the handler adds the choice
+function TestKaydineTrainingTemplate:test_ready_train_pilot_is_the_swg_greeting_with_no_static_option()
 	local screen = screensById().ready_train_pilot
 
 	lu.assertNotNil(screen, "ready_train_pilot")
 	lu.assertEquals(shape(screen), {
 		leftDialog = D.PREFIX .. "s_76e6f264", stopConversation = "false", animation = "salute1",
-		options = { { D.PREFIX .. "s_187", "train_droid" } },
-	}, "ready_train_pilot (leftDialog, stopConversation, animation, options; the static link is the java default, E-T1)")
+		options = {},
+	}, "ready_train_pilot (leftDialog, stopConversation, animation, options; E-PN1: the handler adds the choice)")
 end
 
 -- AC-1
@@ -240,7 +241,8 @@ function TestKaydineTrainingTemplate:test_the_static_links_of_the_runtime_option
 		return byId[id].options[1][2]
 	end
 
-	lu.assertEquals(link("ready_train_pilot"), "train_droid", "ready_train_pilot: static link (K default s_191)")
+	-- pilot-training-free-choice E-PN1: ready_train_pilot has no static option (it had the java default s_187 -> train_droid)
+	lu.assertEquals(screensById().ready_train_pilot.options, {}, "ready_train_pilot: static options")
 
 	for _, t in ipairs(D.TRAINING) do
 		lu.assertEquals(link(t.screen), "trained_" .. t.x .. "_mission4", t.screen .. ": static link (the M4 intro, K default)")
@@ -300,9 +302,17 @@ function TestKaydineTrainingConformance:test_every_screen_showing_an_appendix_li
 				got[i] = sidOf(option[1])
 			end
 
-			lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
+			-- pilot-training-free-choice E-PN1: the single java reply is replaced by the choice the handler adds
+			local replaced = D.E_PN[screen.id]
 
-			for i, optionSid in ipairs(node.options) do
+			if replaced ~= nil then
+				lu.assertEquals(node.options, { replaced }, "answer key: " .. sid .. " has the one reply " .. replaced)
+				lu.assertEquals(got, {}, "screen '" .. screen.id .. "' (" .. sid .. "): static options (E-PN1)")
+			else
+				lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
+			end
+
+			for i, optionSid in ipairs(replaced ~= nil and {} or node.options) do
 				local target = byId[screen.options[i][2]]
 
 				lu.assertNotNil(target, "screen '" .. screen.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
@@ -383,15 +393,28 @@ end
 -- AC-2, I-3
 function TestKaydineTrainingConformance:test_every_string_the_handler_adds_is_a_java_response()
 	local seen = {}
+	local choice = {}
+
+	-- pilot-training-free-choice D-4: the four choice replies are the only strings that are not java responses
+	for _, row in ipairs(P.KAYDINE) do
+		choice[row.sid] = true
+	end
 
 	for sid in readFile(KH_PATH):gmatch("naboo_privateer_trainer_2:(s_[%w_]+)") do
 		seen[sid] = true
-		lu.assertTrue(GRAPH.responses[sid] == true, "kaydineConvoHandler adds " .. sid .. ", which is not a response of the java")
+		lu.assertTrue(GRAPH.responses[sid] == true or choice[sid] == true, "kaydineConvoHandler adds " .. sid .. ", which is neither a response of the java nor one of the four choice replies")
 	end
 
-	for _, sid in ipairs({ "s_187", "s_264", "s_242", "s_78", "s_45d20070", "s_6114e8b7" }) do
+	for _, sid in ipairs({ "s_264", "s_242", "s_78", "s_45d20070", "s_6114e8b7" }) do
 		lu.assertTrue(seen[sid] == true, "kaydineConvoHandler never adds the option " .. sid)
 	end
+
+	for sid in pairs(choice) do
+		lu.assertTrue(seen[sid] == true, "kaydineConvoHandler never adds the choice reply " .. sid)
+		lu.assertFalse(GRAPH.responses[sid] == true, "choice reply " .. sid .. " is a java response; the spec lists it as foreign")
+	end
+
+	lu.assertNil(seen.s_187, "kaydineConvoHandler still adds the retired single reply s_187")
 end
 
 -- AC-2, I-3

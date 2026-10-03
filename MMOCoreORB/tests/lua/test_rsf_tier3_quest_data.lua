@@ -397,11 +397,12 @@ function TestRsfTier3Identity:test_the_four_chains_walk_from_each_head_in_order(
 	end
 end
 
--- D-9: the invented points stay in F1 (F3 deletes them together).
-function TestRsfTier3Identity:test_the_invented_points_the_4a_and_4f_payload_orphans_are_not_deleted()
+-- D-9 (F1): the invented points stayed in F1 and F3 deletes them together
+-- (rsf-tier3-mission1-2-data AC-8 inverts this pin; the full list is in test_rsf_tier3_mission12_data.lua).
+function TestRsfTier3Identity:test_the_invented_points_the_4a_and_4f_payload_orphans_are_deleted()
 	for i = 1, 4 do
-		lu.assertNotNil(H.patrolPoints("space_dantooine")["dantooine_privateer_tier3_beldini_" .. i], "dantooine_privateer_tier3_beldini_" .. i .. " still defined")
-		lu.assertNotNil(H.patrolPoints("space_lok")["lok_privateer_tier3_krayt_bane_" .. i], "lok_privateer_tier3_krayt_bane_" .. i .. " still defined")
+		lu.assertNil(H.patrolPoints("space_dantooine")["dantooine_privateer_tier3_beldini_" .. i], "dantooine_privateer_tier3_beldini_" .. i .. " deleted")
+		lu.assertNil(H.patrolPoints("space_lok")["lok_privateer_tier3_krayt_bane_" .. i], "lok_privateer_tier3_krayt_bane_" .. i .. " deleted")
 	end
 end
 

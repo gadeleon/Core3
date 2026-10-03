@@ -554,39 +554,32 @@ recovery_naboo_privateer_tier3_1a = SpaceRecoveryScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 5,
 
-	-- Screenplay Specific Variables
-	arrivalDelay = 13,
-	recoveryDelay = 15,
+	-- Screenplay Specific Variables (recovery/naboo_privateer_tier3_1a.tab)
+	arrivalDelay = 0,
+	recoveryDelay = 21,
 
-	-- Target: Saymonz Varg's ship Dru'Mdar (Black Sun Assassin)
 	recoverShip = "dru_mdar_tier3",
-	recoveryConversationMobile = "object/mobile/shared_dressed_noble_human_male.iff",
+	recoveryConversationMobile = "object/mobile/shared_dressed_mercenary_elite_rod_m.iff",
 
-	-- Black Sun escorts protecting the Dru'Mdar
-	escortShips = {"blacksun_fighter_s02_tier3_dantooine", "blacksun_fighter_s02_tier3_dantooine"},
+	escortShips = {"blacksun_fighter_s02_tier2", "blacksun_fighter_s01_tier1"},
 
-	-- Pre-recovery patrol points in Dantooine space (friendly controlled area per STF)
 	preRecoveryPoints = {
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_1", zoneName = "space_dantooine", x = -1500, z = 800, y = 2000, escortNumber = 1, radius = 250},
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_2", zoneName = "space_dantooine", x = -1200, z = 600, y = 2500, escortNumber = 2, radius = 250},
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_3", zoneName = "space_dantooine", x = -800, z = 400, y = 3000, escortNumber = 3, radius = 250},
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_4", zoneName = "space_dantooine", x = -400, z = 200, y = 3500, escortNumber = 4, radius = 250},
+		{patrolPointName = "naboo_privateer_tier3_pirate_interdiction_1", x = -54, z = 635, y = 574, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_privateer_tier3_pirate_interdiction_2", x = -18, z = 1905, y = 2123, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_privateer_tier3_pirate_interdiction_3", x = -803, z = 2809, y = 3358, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier2_survival1", x = 4000, z = -2500, y = -5600, escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_rebel_tier4_4_recovery_4", x = -5049, z = 6532, y = 4746, escortNumber = 5, radius = 250},
 	},
 
-	-- Escort points after capture - route to hyperspace jump point
 	recoveryPoints = {
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_5", zoneName = "space_dantooine", x = 0, z = 0, y = 3800, escortNumber = 1, radius = 250},
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_6", zoneName = "space_dantooine", x = 500, z = -200, y = 4200, escortNumber = 2, radius = 250},
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_7", zoneName = "space_dantooine", x = 1000, z = -400, y = 4600, escortNumber = 3, radius = 250},
-		{patrolPointName = "dantooine_privateer_tier3_recovery_point_8", zoneName = "space_dantooine", x = 1500, z = -600, y = 5000, escortNumber = 4, radius = 250},
+		{patrolPointName = "naboo_privateer_tier3_pirate_decession_1", x = -756, z = 1762, y = 3480, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_privateer_tier3_pirate_decession_2", x = -1193, z = -959, y = 2238, escortNumber = 2, radius = 250},
 	},
 
-	attackDelay = 110,
+	attackDelay = 0,
+	attackShips = {},
 
-	-- Black Sun reinforcements attacking during escort
-	attackShips = {
-		{"blacksun_fighter_s01_tier3", "blacksun_fighter_s02_tier3", "blacksun_bomber_s01_tier3"},
-	},
+	tauntData = {panicCount = 2, thanksCount = 2},
 }
 
 registerScreenPlay("recovery_naboo_privateer_tier3_1a", true)
@@ -613,12 +606,12 @@ patrol_naboo_privateer_tier3_1b = SpacePatrolScreenplay:new {
 	parentQuestType = "recovery",
 	parentQuestName = "naboo_privateer_tier3_1a",
 
-	-- Patrol route in Dantooine space (awaiting orders after Varg escaped)
+	-- Screenplay Specific Variables (patrol/naboo_privateer_tier3_1b.tab)
 	patrolPoints = {
-		{patrolPointName = "dantooine_privateer_tier3_patrol_1", x = 2000, z = -500, y = 5500, patrolNumber = 1, radius = 150},
-		{patrolPointName = "dantooine_privateer_tier3_patrol_2", x = 2500, z = -700, y = 6000, patrolNumber = 2, radius = 150},
-		{patrolPointName = "dantooine_privateer_tier3_patrol_3", x = 3000, z = -900, y = 6500, patrolNumber = 3, radius = 150},
-		{patrolPointName = "dantooine_privateer_tier3_patrol_4", x = 3500, z = -1100, y = 7000, patrolNumber = 4, radius = 150},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_patrol_1", x = 1556, z = -1288, y = 3150, patrolNumber = 1, radius = 150},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_patrol_2", x = 2393, z = -206, y = 3190, patrolNumber = 2, radius = 150},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_patrol_3", x = 4816, z = 81, y = 1973, patrolNumber = 3, radius = 150},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_patrol_4", x = 2399, z = 1749, y = 3160, patrolNumber = 4, radius = 150},
 	},
 }
 
@@ -642,10 +635,10 @@ destroy_surpriseattack_naboo_privateer_tier3_1c = SpaceSurpriseAttackScreenplay:
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 5,
 
-	-- Black Sun ambush during patrol in Dantooine
+	-- Screenplay Specific Variables (destroy_surpriseattack/naboo_privateer_tier3_1c.tab)
 	surpriseAttackShips = {
 		zone = "space_dantooine",
-		spawns = {{count = 4, shipName = "blacksun_fighter_s02_tier3_dantooine"}},
+		spawns = {{count = 4, shipName = "blacksun_aggressor_tier2"}},
 	},
 }
 
@@ -657,7 +650,6 @@ assassinate_naboo_privateer_tier3_1d = SpaceAssassinateScreenplay:new {
 	questType = "assassinate",
 	questName = "naboo_privateer_tier3_1d",
 
-	-- Saymonz Varg has fled to Naboo space after evading capture in Dantooine
 	questZone = "space_naboo",
 
 	creditReward = 0,
@@ -670,19 +662,20 @@ assassinate_naboo_privateer_tier3_1d = SpaceAssassinateScreenplay:new {
 	sideQuest = false,
 	sideQuestType = "",
 
-	-- Screenplay Specific Variables
-	arrivalDelay = 7,
+	-- Screenplay Specific Variables (assassinate/naboo_privateer_tier3_1d.tab)
+	arrivalDelay = 12,
 	failTimer = 20,
 
-	-- Target: Saymonz Varg (Black Sun Assassin) - destroy since capture failed
 	assassinateSpawns = {
-		target = "blacksun_ace_s04_tier3",
-		escorts = {"blacksun_fighter_s01_tier3", "blacksun_fighter_s02_tier3"},
+		target = "saysmond_varg_tier3",
+		escorts = {"blacksun_fighter_s01_tier3", "blacksun_fighter_s01_tier3"},
 	},
 
 	targetPatrols = {
-		{patrolPointName = "naboo_privateer_tier3_assassinate_1", x = 3500, z = -3000, y = -2000},
-		{patrolPointName = "naboo_privateer_tier3_assassinate_2", x = 4000, z = -2500, y = -1500},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_assassinate_1", x = 1407, z = -1329, y = 1377},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_assassinate_2", x = 2236, z = -2336, y = 2872},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_assassinate_3", x = 3453, z = -4084, y = 1842},
+		{patrolPointName = "privateer_tier2_recovery_4", x = 480, z = -2264, y = -3435},
 	},
 }
 
@@ -709,23 +702,30 @@ escort_naboo_privateer_tier3_2a = SpaceEscortScreenplay:new {
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 5,
 
-	-- Escort the Cadamo Sun (decoy ship) to draw Ay'Nat pirate attack
-	escortShips = {"freighterlight_tier3"},
+	-- Screenplay Specific Variables (escort/naboo_privateer_tier3_2a.tab)
+	escortShips = {"cadamo_sun_tier3"},
 
 	escortPoints = {
-		{patrolPointName = "naboo_privateer_tier3_escort_1", zoneName = "space_naboo", x = 2799, z = -362, y = -19, escortNumber = 1, radius = 250},
-		{patrolPointName = "naboo_privateer_tier3_escort_2", zoneName = "space_naboo", x = 3281, z = 295, y = -818, escortNumber = 2, radius = 250},
-		{patrolPointName = "naboo_privateer_tier3_escort_3", zoneName = "space_naboo", x = 3775, z = 743, y = -925, escortNumber = 3, radius = 250},
-		{patrolPointName = "naboo_privateer_tier3_escort_4", zoneName = "space_naboo", x = 3895, z = 1220, y = -1913, escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_imperial_tier3_leg_4_assassinate_one_2", zoneName = "space_naboo", x = -1972, z = -1677, y = -2951, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_patrol_1", zoneName = "space_naboo", x = -2455, z = 2645, y = -3905, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_privateer_tier3_leg_1_assassinate_3", zoneName = "space_naboo", x = 3453, z = -4084, y = 1842, escortNumber = 3, radius = 250},
+		{patrolPointName = "privateer_patrol_1", zoneName = "space_naboo", x = 752, z = 659, y = -2444, escortNumber = 4, radius = 250},
 	},
 
-	attackDelay = 110,
+	attackDelay = 175,
 
-	-- Ay'Nat pirates attacking the decoy
 	attackShips = {
-		{"aynat_outlaw_tier3", "aynat_outlaw_tier3"},
-		{"aynat_outlaw_tier3", "aynat_enforcer_tier3", "aynat_intimidator_tier3"},
-	}
+		{"aynat_enforcer_tier3", "aynat_enforcer_tier3", "aynat_ghost_tier3"},
+		{"aynat_ghost_tier3", "aynat_intimidator_tier3", "aynat_intimidator_tier3"},
+		{"aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_vaporizer_tier3"},
+		{"aynat_enforcer_tier3", "aynat_enforcer_tier3", "aynat_enforcer_tier3"},
+		{"aynat_vaporizer_tier3", "aynat_vaporizer_tier3"},
+		{"aynat_vaporizer_tier3", "aynat_vaporizer_tier3", "aynat_viggo_tier3"},
+		{"aynat_enforcer_tier3", "aynat_enforcer_tier3", "aynat_intimidator_tier3", "aynat_intimidator_tier3"},
+		{"aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_outlaw_tier3", "aynat_vaporizer_tier3", "aynat_vaporizer_tier3"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
 }
 
 registerScreenPlay("escort_naboo_privateer_tier3_2a", true)
@@ -736,7 +736,7 @@ rescue_naboo_privateer_tier3_2e = SpaceRescueScreenplay:new {
 	questName = "naboo_privateer_tier3_2e",
 	questType = "rescue",
 
-	questZone = "space_corellia",  -- STF: Corellia System
+	questZone = "space_corellia",
 
 	creditReward = 0,
 	itemReward = {},
@@ -780,7 +780,7 @@ space_battle_naboo_privateer_tier3_2d = SpaceBattleScreenplay:new {
 	questType = "space_battle",
 	questName = "naboo_privateer_tier3_2d",
 
-	questZone = "space_corellia",  -- STF: Corellia System
+	questZone = "space_corellia",
 
 	creditReward = 0,
 	itemReward = {},
@@ -837,10 +837,10 @@ destroy_surpriseattack_naboo_privateer_tier3_2c = SpaceSurpriseAttackScreenplay:
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 5,
 
-	-- Ay'Nat pirate reinforcements
+	-- Screenplay Specific Variables (destroy_surpriseattack/naboo_privateer_tier3_2c.tab)
 	surpriseAttackShips = {
 		zone = "space_naboo",
-		spawns = {{count = 5, shipName = "aynat_outlaw_tier3"}},
+		spawns = {{count = 5, shipName = "aynat_intimidator_tier3"}},
 	},
 }
 
@@ -854,7 +854,7 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 	questName = "naboo_privateer_tier3_3a",
 	questType = "inspect",
 
-	questZone = "space_naboo",  -- STF: Naboo System
+	questZone = "space_naboo",
 
 	creditReward = 25000,
 	itemReward = {
@@ -930,7 +930,7 @@ survival_naboo_privateer_tier3_3c = SpaceSurvivalScreenplay:new {
 	questName = "naboo_privateer_tier3_3c",
 	questType = "survival",
 
-	questZone = "space_lok",  -- STF: Lok System
+	questZone = "space_lok",
 
 	creditReward = 0,
 	itemReward = {},
@@ -973,7 +973,7 @@ destroy_surpriseattack_naboo_privateer_tier3_3e = SpaceSurpriseAttackScreenplay:
 	questName = "naboo_privateer_tier3_3e",
 	questType = "destroy_surpriseattack",
 
-	questZone = "space_naboo",  -- STF: Naboo System
+	questZone = "space_naboo",
 
 	parentQuest = "survival_naboo_privateer_tier3_3c",
 	parentQuestType = "survival",

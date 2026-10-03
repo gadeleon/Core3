@@ -534,6 +534,22 @@ function FakeAgent:setDockable(b)
 	self.callLog[#self.callLog + 1] = { name = "setDockable", args = table.pack(b) }
 end
 function FakeAgent:isShipAiAgent() return true end
+-- LuaShipObject::isShipDestroyed / isShipDisabled (rsf-tier3-mission1-2-data: SpaceRecoveryScreenplay:continueRecovery
+-- and assignRecoveryPoints ask). A destroyed agent is the harness's `destroyed` flag; `disabled` is set by a test.
+function FakeAgent:isShipDestroyed() return self.destroyed == true end
+function FakeAgent:isShipDisabled() return self.disabled == true end
+-- continueRecovery turns the captured ship friendly: LuaShipAiAgent::swapSpaceFactionAssociations / removeEnemyShip and
+-- LuaTangibleObject::clearPvpStatusBit / broadcastPvpStatusBitmask. Recorded as counts / values, nothing else simulated.
+function FakeAgent:swapSpaceFactionAssociations() self.factionSwaps = (self.factionSwaps or 0) + 1 end
+function FakeAgent:removeEnemyShip(shipID)
+	self.removedEnemyShips = self.removedEnemyShips or {}
+	self.removedEnemyShips[#self.removedEnemyShips + 1] = shipID
+end
+function FakeAgent:clearPvpStatusBit(bit)
+	self.clearedPvpBits = self.clearedPvpBits or {}
+	self.clearedPvpBits[#self.clearedPvpBits + 1] = bit
+end
+function FakeAgent:broadcastPvpStatusBitmask() self.pvpBroadcasts = (self.pvpBroadcasts or 0) + 1 end
 
 -- LuaShipAiAgent::setFixedPatrol / setEscort / setEscortSpeed / repairShipAgent /
 -- assignFixedPatrolPointsTable (space-quest-rescue-docking). Each is recorded in agent.callLog in call

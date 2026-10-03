@@ -1,0 +1,9 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.726543	-0.681334	0.088995	0.687116	0.720894	-0.090457	-2455.91	2645.66	-3905.03	nav_name|4|naboo_imperial_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.441672	0.895124	0.060663	0.629111	0.357203	-0.690381	752.53	659.36	-2444.51	nav_name|4|privateer_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.201997	0.901388	-0.383011	-0.420490	-0.433013	-0.797301	-1972.90	-1677.96	-2951.38	nav_name|4|corellia_imperial_tier3_leg_4_assassinate_one_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.759315	0.457336	-0.462908	0.343689	0.885917	0.311495	480.17	-2264.46	-3435.49	nav_name|4|privateer_tier2_recovery_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.561075	0.699787	-0.442146	0.510183	-0.712976	-0.481019	3453.77	-4084.96	1842.23	nav_name|4|naboo_privateer_tier3_leg_1_assassinate_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.375774	0.730804	0.569841	0.359336	-0.681704	0.637305	2236.27	-2336.38	2872.67	nav_name|4|naboo_privateer_tier3_leg_1_assassinate_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.188213	0.586974	-0.787425	-0.129391	0.809585	0.572565	1407.87	-1329.10	1377.34	nav_name|4|naboo_privateer_tier3_leg_1_assassinate_1|$|	script.space.quest_logic.quest_nav_point

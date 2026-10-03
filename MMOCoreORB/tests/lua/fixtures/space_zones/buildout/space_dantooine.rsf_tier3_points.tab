@@ -1,0 +1,13 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.967037	0.207685	0.147331	-0.253885	0.830819	0.495259	-5049.45	6532.84	4746.40	nav_name|4|corellia_rebel_tier4_4_recovery_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.079392	0.996818	-0.007163	0.893609	0.067984	-0.443668	4816.52	81.22	1973.16	nav_name|4|naboo_privateer_tier3_leg_1_patrol_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.603346	0.655596	-0.454057	0.523833	0.755112	0.394215	1556.31	-1288.70	3150.85	nav_name|4|naboo_privateer_tier3_leg_1_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.471450	0.856598	-0.209704	-0.172807	0.322910	0.930520	4000.00	-2500.00	-5600.00	nav_name|4|naboo_imperial_tier2_survival1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.032702	0.151342	-0.987941	-0.013511	-0.988446	-0.150972	-756.28	1762.09	3480.14	nav_name|4|naboo_privateer_tier3_pirate_decession_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.253480	0.856781	-0.449081	-0.485903	0.514198	0.706752	-803.08	2809.40	3358.62	nav_name|4|naboo_privateer_tier3_pirate_interdiction_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.433797	0.878102	-0.201884	-0.796104	0.478474	0.370514	2399.19	1749.82	3160.21	nav_name|4|naboo_privateer_tier3_leg_1_patrol_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.756223	0.644347	0.113771	0.630737	0.764125	-0.135222	2393.22	-206.32	3190.08	nav_name|4|naboo_privateer_tier3_leg_1_patrol_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.000454	0.777539	-0.628835	0.018853	0.628717	0.777406	-18.85	1905.11	2123.35	nav_name|4|naboo_privateer_tier3_pirate_interdiction_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.006037	0.709796	-0.704381	-0.000470	0.704396	0.709807	-54.34	635.97	574.25	nav_name|4|naboo_privateer_tier3_pirate_interdiction_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.260055	0.445055	-0.856911	-0.148671	-0.895318	-0.419884	-1193.56	-959.80	2238.65	nav_name|4|naboo_privateer_tier3_pirate_decession_2|$|	script.space.quest_logic.quest_nav_point

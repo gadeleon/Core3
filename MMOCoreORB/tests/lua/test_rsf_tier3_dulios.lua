@@ -125,13 +125,14 @@ function TestDuliosOnMission:test_3c_and_3e_complete_shows_complete_mission_3_an
 	lu.assertEquals(rec.rewards, { g("inspect", "3a") }, "rewardPlayer calls")
 end
 
--- AC-8: any one of the 14 table W globals, delivery 3b or survival 4c active gives on_mission (no tier 3 quest complete).
+-- AC-8 / rsf-tier3-renames AC-5: any one of the 14 table W globals, delivery_no_pickup 3b or surprise attacks 4c, 4d, 4e
+-- active gives on_mission (no tier 3 quest complete).
 local ACTIVE_MEMBERS = {
 	g("recovery", "1a"), g("patrol", "1b"), g("destroy_surpriseattack", "1c"), g("assassinate", "1d"),
 	g("escort", "2a"), g("destroy_surpriseattack", "2c"), g("space_battle", "2d"), g("rescue", "2e"),
 	g("inspect", "3a"), g("survival", "3c"), g("destroy_surpriseattack", "3e"),
 	g("assassinate", "4a"), g("space_battle", "4b"), g("assassinate", "4f"),
-	g("delivery", "3b"), g("survival", "4c"),
+	g("delivery_no_pickup", "3b"), g("destroy_surpriseattack", "4c"), g("destroy_surpriseattack", "4d"), g("destroy_surpriseattack", "4e"),
 }
 
 for _, name in ipairs(ACTIVE_MEMBERS) do
@@ -146,12 +147,8 @@ for _, name in ipairs(ACTIVE_MEMBERS) do
 	end
 end
 
--- AC-8 / Conversation flow: the legacy 4_initial entry still counts until F2.
-function TestDuliosOnMission:test_the_legacy_4_initial_entry_still_shows_on_mission()
-	local player = pilot(1, { active = { g("destroy_surpriseattack", "4_initial") } })
-
-	lu.assertEquals(firstScreen(player), "on_mission", "4_initial active: first screen")
-end
+-- rsf-tier3-renames: the legacy 4_initial test that stood here ("still shows on_mission") is superseded by
+-- test_rsf_tier3_renames_migration.lua (AC-9 M5): the migration purges that entry.
 
 -- AC-8: completed_dulios wins over on_mission.
 function TestDuliosOnMission:test_completed_dulios_wins_over_on_mission_when_4f_is_complete_and_all_four_03_skills_are_held()
@@ -166,7 +163,7 @@ end
 
 -- AC-8 / Conversation flow: a mid-chain mission 1, 2 or 4 member behaves as before.
 function TestDuliosOnMission:test_a_mission_4_chain_member_active_after_mission_3_shows_on_mission()
-	local player = pilot(4, { active = { g("survival", "4c") } })
+	local player = pilot(4, { active = { g("destroy_surpriseattack", "4c") } })
 
 	lu.assertEquals(firstScreen(player), "on_mission", "4c active: first screen")
 end

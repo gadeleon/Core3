@@ -51,53 +51,8 @@ function TestSurvivalNoAutoComplete:test_started_elsewhere_the_quest_stays_activ
 	end
 end
 
--- AC-2, I-3 (decision D-3)
-function TestSurvivalNoAutoComplete:test_the_rsf_placeholder_still_completes_half_a_second_after_it_starts()
-	H.loadSquadron("RsfSquadronScreenplay")
-
-	local quest = H.expectGlobal("survival_naboo_privateer_tier3_4c")
-	local spies = S.isolate("survival_naboo_privateer_tier3_4c")
-	local player = H.newPlayer({ zone = "space_lok", ship = {}, pilot = "neutral" })
-
-	quest:startQuest(player, "")
-
-	local events = S.createEvents("completeQuest", "survival_naboo_privateer_tier3_4c")
-
-	lu.assertEquals(#events, 1, "one completeQuest event scheduled")
-	lu.assertEquals(events[1][1], 500, "completeQuest is scheduled 500 ms out")
-	lu.assertEquals(events[1][4], player, "for the player")
-	lu.assertEquals(events[1][5], "true", "with notify = 'true'")
-	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(player, "survival", "naboo_privateer_tier3_4c"), "the journal quest was activated")
-
-	H.advance(499)
-	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(player, "survival", "naboo_privateer_tier3_4c"), "still active at 499 ms")
-
-	H.advance(1)
-	lu.assertTrue(SpaceHelpers:isSpaceQuestComplete(player, "survival", "naboo_privateer_tier3_4c"), "complete at 500 ms")
-	lu.assertEquals(#player.ghost.waypoints, 0, "the placeholder sets up no waypoint")
-	lu.assertEquals(#areaCalls(), 0, "the placeholder spawns no area")
-
-	H.advance(4000)
-	lu.assertEquals(S.called(spies.start), { "assassinate_naboo_privateer_tier3_4f" }, "its completion split still starts the next quest")
-end
-
--- AC-2, I-3
-function TestSurvivalNoAutoComplete:test_the_rsf_placeholder_treats_an_empty_npc_argument_like_nil()
-	H.loadSquadron("RsfSquadronScreenplay")
-
-	local quest = H.expectGlobal("survival_naboo_privateer_tier3_4c")
-	S.isolate("survival_naboo_privateer_tier3_4c")
-	local player = H.newPlayer({ zone = "space_lok", ship = {} })
-
-	-- "" is what createEvent passes; the real activateSpaceQuest would call getObjectName on it.
-	local other = H.newPlayer({ zone = "space_lok", ship = {} })
-
-	quest:startQuest(player, "")
-	quest:startQuest(other, nil)
-
-	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(player, "survival", "naboo_privateer_tier3_4c"), "started with ''")
-	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(other, "survival", "naboo_privateer_tier3_4c"), "started with nil")
-end
+-- rsf-tier3-renames: the two RSF placeholder tests (auto-complete after 500 ms, empty npc argument) were removed
+-- with the placeholder; destroy_surpriseattack 4c-4e replace it.
 
 TestSurvivalSetup = {}
 

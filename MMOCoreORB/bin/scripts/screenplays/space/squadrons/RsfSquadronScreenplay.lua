@@ -846,7 +846,7 @@ destroy_surpriseattack_naboo_privateer_tier3_2c = SpaceSurpriseAttackScreenplay:
 
 registerScreenPlay("destroy_surpriseattack_naboo_privateer_tier3_2c", true)
 
--- Mission 3: Inspect -> Delivery -> Survival -> Destroy_Surpriseattack
+-- Mission 3: Inspect -> Delivery_No_Pickup -> Survival -> Destroy_Surpriseattack
 
 inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 	className = "inspect_naboo_privateer_tier3_3a",
@@ -866,7 +866,7 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 	parentQuestName = "",
 
 	sideQuest = true,
-	sideQuestType = "delivery",
+	sideQuestType = "delivery_no_pickup",
 	sideQuestName = "naboo_privateer_tier3_3b",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 10,
@@ -882,19 +882,19 @@ inspect_naboo_privateer_tier3_3a = SpaceInspectScreenplay:new {
 
 registerScreenPlay("inspect_naboo_privateer_tier3_3a", true)
 
--- RSF Tier 3 Mission 3b: Delivery (Lok)
--- Ported from SWG-Source: datatables/spacequest/delivery/naboo_privateer_tier3_3b.tab
--- Trainer: Dulios (tier 3)  SWG-Source series: naboo_privateer  Slice: space-quest-stub-delivery
--- Note: SWG's trainer chain uses delivery_no_pickup for this quest (D-4/F-2); rename deferred to RSF tier 3 reconciliation.
-delivery_naboo_privateer_tier3_3b = SpaceDeliveryScreenplay:new {
-	className = "delivery_naboo_privateer_tier3_3b",
+-- RSF Tier 3 Mission 3b: Delivery without pickup (Lok)
+-- Ported from SWG-Source: datatables/spacequest/delivery_no_pickup/naboo_privateer_tier3_3b.tab
+-- Trainer: Dulios (tier 3)  SWG-Source series: naboo_privateer
+delivery_no_pickup_naboo_privateer_tier3_3b = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_naboo_privateer_tier3_3b",
 
 	questName = "naboo_privateer_tier3_3b",
-	questType = "delivery",
+	questType = "delivery_no_pickup",
 
-	questZone = "space_lok",  -- Wiki: Lok System delivery run
+	questZone = "space_lok",
 
 	creditReward = 0,
+	itemReward = {},
 
 	parentQuest = "inspect_naboo_privateer_tier3_3a",
 	parentQuestType = "inspect",
@@ -904,29 +904,22 @@ delivery_naboo_privateer_tier3_3b = SpaceDeliveryScreenplay:new {
 	sideQuestType = "survival",
 	sideQuestName = "naboo_privateer_tier3_3c",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 4,
+	sideQuestDelay = 5,
 
-	-- Screenplay Specific Variables
-
-	pickupShip = "rsf_defender",
-	deliveryShip = "rsf_fighter",
-
-	pickupPoint = {patrolPointName = "naboo_privateer_tier3_leg_3_deliver_pickup", x = -1198, z = -3563, y = 3275},
-	deliveryPoint = {patrolPointName = "naboo_privateer_tier3_leg_3_deliver_delivery", x = 2028, z = 540, y = -749},
+	-- Screenplay Specific Variables (delivery_no_pickup/naboo_privateer_tier3_3b.tab)
+	deliveryShip = "rsf_rawl_tier3",
+	deliveryPoint = {patrolPointName = "hostage_recovery_3", x = -6832, z = 2296, y = -3612},
 
 	attackShipLists = {
-		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
-		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
-		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
-		{"blacksungunship", "blacksungunship", "blacksungunship"},
-		{"blacksun_pirate", "blacksun_pirate", "blacksun_pirate"},
+		{"blacksun_aggressor_tier3", "blacksun_aggressor_tier3"},
+		{"blacksun_fighter_s01_tier3", "blacksun_fighter_s01_tier3"},
 	},
 
-	attackPeriod = 48,
+	attackPeriod = 50,
 	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
 }
 
-registerScreenPlay("delivery_naboo_privateer_tier3_3b", true)
+registerScreenPlay("delivery_no_pickup_naboo_privateer_tier3_3b", true)
 
 -- RSF Tier 3 Mission 3c: Survival (Lok)
 -- Ported from SWG-Source: datatables/spacequest/survival/naboo_privateer_tier3_3c.tab
@@ -942,8 +935,8 @@ survival_naboo_privateer_tier3_3c = SpaceSurvivalScreenplay:new {
 	creditReward = 0,
 	itemReward = {},
 
-	parentQuest = "delivery_naboo_privateer_tier3_3b",
-	parentQuestType = "delivery",
+	parentQuest = "delivery_no_pickup_naboo_privateer_tier3_3b",
+	parentQuestType = "delivery_no_pickup",
 	parentQuestName = "naboo_privateer_tier3_3b",
 
 	-- Ambush on the way back (survival/naboo_privateer_tier3_3c.tab triggerArg); the mission 3 win quest stays 3c
@@ -998,37 +991,7 @@ destroy_surpriseattack_naboo_privateer_tier3_3e = SpaceSurpriseAttackScreenplay:
 
 registerScreenPlay("destroy_surpriseattack_naboo_privateer_tier3_3e", true)
 
--- Mission 4: Destroy_Surpriseattack (Naboo) -> Assassinate (Dantooine) -> Space_Battle (Lok) -> Survival (Lok) -> Assassinate (Lok)
-
--- Initial surprise attack upon launching from Theed - 5 Black Sun Marauders
-destroy_surpriseattack_naboo_privateer_tier3_4_initial = SpaceSurpriseAttackScreenplay:new {
-	className = "destroy_surpriseattack_naboo_privateer_tier3_4_initial",
-
-	questName = "naboo_privateer_tier3_4_initial",
-	questType = "destroy_surpriseattack",
-
-	questZone = "space_naboo",
-
-	creditReward = 0,
-
-	parentQuest = "",
-	parentQuestType = "",
-	parentQuestName = "",
-
-	sideQuest = true,
-	sideQuestType = "assassinate",
-	sideQuestName = "naboo_privateer_tier3_4a",
-	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 3,
-
-	-- 5 Tier 3 Ixiyen Black Sun Marauder (per wiki)
-	surpriseAttackShips = {
-		zone = "space_naboo",
-		spawns = {{count = 5, shipName = "blacksun_marauder_tier3"}},
-	},
-}
-
-registerScreenPlay("destroy_surpriseattack_naboo_privateer_tier3_4_initial", true)
+-- Mission 4: Assassinate (Dantooine) -> Space_Battle (Lok) -> Destroy_Surpriseattack x3 (Lok) -> Assassinate (Lok)
 
 -- Dantooine assassinate - destroy Beldini and escorts
 assassinate_naboo_privateer_tier3_4a = SpaceAssassinateScreenplay:new {
@@ -1090,7 +1053,7 @@ space_battle_naboo_privateer_tier3_4b = SpaceBattleScreenplay:new {
 	parentQuestName = "naboo_privateer_tier3_4a",
 
 	sideQuest = true,
-	sideQuestType = "survival",
+	sideQuestType = "destroy_surpriseattack",
 	sideQuestName = "naboo_privateer_tier3_4c",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 	sideQuestDelay = 5,
@@ -1119,51 +1082,104 @@ space_battle_naboo_privateer_tier3_4b = SpaceBattleScreenplay:new {
 
 registerScreenPlay("space_battle_naboo_privateer_tier3_4b", true)
 
--- RSF Tier 3 Mission 4c: Survival Placeholder (Lok)
--- No SWG-Source survival data; real SWG chain is destroy_surpriseattack 4c/4d/4e (D-3 override; see below).
--- Trainer: Dulios (tier 3)  Slice: space-quest-stub-survival
--- Note: override startQuest below; inherits data fields but does not run survival logic.
-survival_naboo_privateer_tier3_4c = SpaceSurvivalScreenplay:new {
-	className = "survival_naboo_privateer_tier3_4c",
+-- RSF Tier 3 Mission 4c: Surprise attack (marauders), feature rsf-tier3-renames
+-- Ported from SWG-Source: datatables/spacequest/destroy_surpriseattack/naboo_privateer_tier3_4c.tab
+
+destroy_surpriseattack_naboo_privateer_tier3_4c = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_naboo_privateer_tier3_4c",
 
 	questName = "naboo_privateer_tier3_4c",
-	questType = "survival",
+	questType = "destroy_surpriseattack",
 
 	questZone = "space_lok",
 
 	creditReward = 0,
+	itemReward = {},
 
 	parentQuest = "space_battle_naboo_privateer_tier3_4b",
 	parentQuestType = "space_battle",
 	parentQuestName = "naboo_privateer_tier3_4b",
 
 	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "naboo_privateer_tier3_4d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5,
+
+	-- Screenplay Specific Variables (destroy_surpriseattack/naboo_privateer_tier3_4c.tab)
+	surpriseAttackShips = {
+		zone = "space_lok",
+		spawns = {{count = 3, shipName = "blacksun_marauder_tier3"}},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_naboo_privateer_tier3_4c", true)
+
+-- RSF Tier 3 Mission 4d: Surprise attack (vehement fighters), feature rsf-tier3-renames
+-- Ported from SWG-Source: datatables/spacequest/destroy_surpriseattack/naboo_privateer_tier3_4d.tab
+
+destroy_surpriseattack_naboo_privateer_tier3_4d = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_naboo_privateer_tier3_4d",
+
+	questName = "naboo_privateer_tier3_4d",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_lok",
+
+	creditReward = 0,
+	itemReward = {},
+
+	parentQuest = "destroy_surpriseattack_naboo_privateer_tier3_4c",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "naboo_privateer_tier3_4c",
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "naboo_privateer_tier3_4e",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5,
+
+	-- Screenplay Specific Variables (destroy_surpriseattack/naboo_privateer_tier3_4d.tab)
+	surpriseAttackShips = {
+		zone = "space_lok",
+		spawns = {{count = 4, shipName = "blacksun_vehement_tier3"}},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_naboo_privateer_tier3_4d", true)
+
+-- RSF Tier 3 Mission 4e: Surprise attack (gunship), feature rsf-tier3-renames
+-- Ported from SWG-Source: datatables/spacequest/destroy_surpriseattack/naboo_privateer_tier3_4e.tab
+
+destroy_surpriseattack_naboo_privateer_tier3_4e = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_naboo_privateer_tier3_4e",
+
+	questName = "naboo_privateer_tier3_4e",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_lok",
+
+	creditReward = 0,
+	itemReward = {},
+
+	parentQuest = "destroy_surpriseattack_naboo_privateer_tier3_4d",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "naboo_privateer_tier3_4d",
+
+	sideQuest = true,
 	sideQuestType = "assassinate",
 	sideQuestName = "naboo_privateer_tier3_4f",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
-	sideQuestDelay = 3,
+	sideQuestDelay = 5,
+
+	-- Screenplay Specific Variables (destroy_surpriseattack/naboo_privateer_tier3_4e.tab)
+	surpriseAttackShips = {
+		zone = "space_lok",
+		spawns = {{count = 1, shipName = "blacksun_gunship_tier2"}},
+	},
 }
 
-registerScreenPlay("survival_naboo_privateer_tier3_4c", true)
-
--- PLACEHOLDER until the RSF tier 3 reconciliation. This quest is a Core3 invention: SWG has no survival
--- data for it (the real chain is destroy_surpriseattack 4c/4d/4e, then assassinate 4f), so it keeps the
--- old behavior of completing half a second after it starts instead of running the survival logic.
-function survival_naboo_privateer_tier3_4c:startQuest(pPlayer, pNpc)
-	if (pPlayer == nil) then
-		return
-	end
-
-	if (pNpc == "") then
-		pNpc = nil
-	end
-
-	if (not SpaceHelpers:activateSpaceQuest(pPlayer, pNpc, self.questType, self.questName, false)) then
-		return
-	end
-
-	createEvent(500, self.className, "completeQuest", pPlayer, "true")
-end
+registerScreenPlay("destroy_surpriseattack_naboo_privateer_tier3_4e", true)
 
 -- Lok final assassinate - destroy Black Sun operative (Krayt's Bane)
 assassinate_naboo_privateer_tier3_4f = SpaceAssassinateScreenplay:new {
@@ -1177,9 +1193,9 @@ assassinate_naboo_privateer_tier3_4f = SpaceAssassinateScreenplay:new {
 	creditReward = 0,
 	itemReward = {},
 
-	parentQuest = "survival_naboo_privateer_tier3_4c",
-	parentQuestType = "survival",
-	parentQuestName = "naboo_privateer_tier3_4c",
+	parentQuest = "destroy_surpriseattack_naboo_privateer_tier3_4e",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "naboo_privateer_tier3_4e",
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -1932,14 +1948,32 @@ RsfSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_2_SIDE2 = {type = "space_battle", name = "naboo_privateer_tier3_2d"},
 	TIER3_QUEST_STRING_2_SIDE3 = {type = "destroy_surpriseattack", name = "naboo_privateer_tier3_2c"},
 	TIER3_QUEST_STRING_3 = {type = "inspect", name = "naboo_privateer_tier3_3a"},
-	TIER3_QUEST_STRING_3_SIDE1 = {type = "delivery", name = "naboo_privateer_tier3_3b"},
+	TIER3_QUEST_STRING_3_SIDE1 = {type = "delivery_no_pickup", name = "naboo_privateer_tier3_3b"},
 	TIER3_QUEST_STRING_3_SIDE2 = {type = "survival", name = "naboo_privateer_tier3_3c"},
 	TIER3_QUEST_STRING_3_SIDE3 = {type = "destroy_surpriseattack", name = "naboo_privateer_tier3_3e"},
-	TIER3_QUEST_STRING_4 = {type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4_initial"},
-	TIER3_QUEST_STRING_4_SIDE1 = {type = "assassinate", name = "naboo_privateer_tier3_4a"},
-	TIER3_QUEST_STRING_4_SIDE2 = {type = "space_battle", name = "naboo_privateer_tier3_4b"},
-	TIER3_QUEST_STRING_4_SIDE3 = {type = "survival", name = "naboo_privateer_tier3_4c"},
-	TIER3_QUEST_STRING_4_SIDE4 = {type = "assassinate", name = "naboo_privateer_tier3_4f"},
+	TIER3_QUEST_STRING_4 = {type = "assassinate", name = "naboo_privateer_tier3_4a"},
+	TIER3_QUEST_STRING_4_SIDE1 = {type = "space_battle", name = "naboo_privateer_tier3_4b"},
+	TIER3_QUEST_STRING_4_SIDE2 = {type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4c"},
+	TIER3_QUEST_STRING_4_SIDE3 = {type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4d"},
+	TIER3_QUEST_STRING_4_SIDE4 = {type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4e"},
+	TIER3_QUEST_STRING_4_SIDE5 = {type = "assassinate", name = "naboo_privateer_tier3_4f"},
+
+	-- Tier 3 names used before rsf-tier3-renames (F2)
+	LEGACY_TIER3_QUESTS = {
+		{type = "delivery", name = "naboo_privateer_tier3_3b", moveTo = {{type = "delivery_no_pickup", name = "naboo_privateer_tier3_3b"}}},
+		{type = "survival", name = "naboo_privateer_tier3_4c", moveTo = {
+			{type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4c"},
+			{type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4d"},
+			{type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4e"},
+		}},
+		{type = "destroy_surpriseattack", name = "naboo_privateer_tier3_4_initial", moveTo = {}},
+	},
+	LEGACY_TIER3_STATUS = {
+		{old = "naboo_privateer_tier3_4_initial:attempted", new = "naboo_privateer_tier3_4a:attempted"},
+		{old = "naboo_privateer_tier3_4_initial:reward", new = "naboo_privateer_tier3_4a:reward"},
+	},
+	-- Ordered migration steps; step k runs once per character (marker <id>RsfSquadronScreenplay:legacyVersion)
+	LEGACY_MIGRATION_STEPS = {"migrateLegacyTier3"},
 
 	-- Tier 4 Quest Strings
 	TIER4_QUEST_STRING_1 = {type = "escort", name = "naboo_privateer_tier4_1a"},
@@ -2060,6 +2094,20 @@ function RsfSquadronScreenplay:resetKaydineQuests(pPlayer)
 	removeQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward")
 end
 
+-- Runs the ordered legacy progress migrations once per character
+function RsfSquadronScreenplay:migrateLegacyProgress(pPlayer)
+	return SpaceHelpers:runProgressMigrations(pPlayer, "RsfSquadronScreenplay", self.LEGACY_MIGRATION_STEPS)
+end
+
+-- Step 1: tier 3 renames (delivery_no_pickup 3b, surprise attacks 4c-4e, 4_initial removed)
+function RsfSquadronScreenplay:migrateLegacyTier3(pPlayer)
+	for _, legacy in ipairs(self.LEGACY_TIER3_QUESTS) do
+		SpaceHelpers:migrateSpaceQuestEntry(pPlayer, legacy.type, legacy.name, legacy.moveTo)
+	end
+
+	SpaceHelpers:moveQuestStatuses(pPlayer, self.LEGACY_TIER3_STATUS)
+end
+
 function RsfSquadronScreenplay:resetDuliosQuests(pPlayer)
 	if (pPlayer == nil) then
 		return
@@ -2097,7 +2145,7 @@ function RsfSquadronScreenplay:resetDuliosQuests(pPlayer)
 
 	-- Mission 3
 	inspect_naboo_privateer_tier3_3a:resetQuest(pPlayer)
-	delivery_naboo_privateer_tier3_3b:resetQuest(pPlayer)
+	delivery_no_pickup_naboo_privateer_tier3_3b:resetQuest(pPlayer)
 	survival_naboo_privateer_tier3_3c:resetQuest(pPlayer)
 	destroy_surpriseattack_naboo_privateer_tier3_3e:resetQuest(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_3.type, self.TIER3_QUEST_STRING_3.name, false)
@@ -2106,16 +2154,27 @@ function RsfSquadronScreenplay:resetDuliosQuests(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_3_SIDE3.type, self.TIER3_QUEST_STRING_3_SIDE3.name, false)
 
 	-- Mission 4
-	destroy_surpriseattack_naboo_privateer_tier3_4_initial:resetQuest(pPlayer)
 	assassinate_naboo_privateer_tier3_4a:resetQuest(pPlayer)
 	space_battle_naboo_privateer_tier3_4b:resetQuest(pPlayer)
-	survival_naboo_privateer_tier3_4c:resetQuest(pPlayer)
+	destroy_surpriseattack_naboo_privateer_tier3_4c:resetQuest(pPlayer)
+	destroy_surpriseattack_naboo_privateer_tier3_4d:resetQuest(pPlayer)
+	destroy_surpriseattack_naboo_privateer_tier3_4e:resetQuest(pPlayer)
 	assassinate_naboo_privateer_tier3_4f:resetQuest(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4.type, self.TIER3_QUEST_STRING_4.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE1.type, self.TIER3_QUEST_STRING_4_SIDE1.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE2.type, self.TIER3_QUEST_STRING_4_SIDE2.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE3.type, self.TIER3_QUEST_STRING_4_SIDE3.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE4.type, self.TIER3_QUEST_STRING_4_SIDE4.name, false)
+	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE5.type, self.TIER3_QUEST_STRING_4_SIDE5.name, false)
+
+	-- Names used before rsf-tier3-renames: their globals are gone, so clear them directly
+	for _, legacy in ipairs(self.LEGACY_TIER3_QUESTS) do
+		SpaceHelpers:purgeSpaceQuest(pPlayer, legacy.type, legacy.name)
+	end
+
+	for _, move in ipairs(self.LEGACY_TIER3_STATUS) do
+		removeQuestStatus(playerID .. move.old)
+	end
 
 	-- Clear quest status tracking
 	removeQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":attempted")

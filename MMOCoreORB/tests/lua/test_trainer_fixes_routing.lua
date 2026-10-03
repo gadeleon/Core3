@@ -96,11 +96,16 @@ addRunningTests(TestTrainerMissionRunningRegression, ON_MISSION_CHANGED, 1, 1)
 addRunningTests(TestTrainerMissionRunningRegression, ON_MISSION_REGRESSION, 1)
 
 -- AC-5
-function TestTrainerMissionRunningChanged:test_dulios_mission_4_still_counts_the_initial_surprise_attack_as_running()
+-- rsf-tier3-renames (AC-9 M5): the legacy 4_initial entry is purged by the migration, so it no longer counts as
+-- running; the pilot is routed by the remaining state (4a:attempted is set, so failed_fourth_mission). The migration
+-- itself is covered in test_rsf_tier3_renames_migration.lua.
+function TestTrainerMissionRunningChanged:test_dulios_mission_4_no_longer_counts_the_legacy_initial_surprise_attack_as_running()
 	local tr = T.TRAINERS.dulios
-	local player = T.player(tr, 4, { complete = {}, active = { "destroy_surpriseattack_naboo_privateer_tier3_4_initial" } })
+	local player = T.player(tr, 4, { complete = {}, questStatus = { ["naboo_privateer_tier3_4_initial:attempted"] = "1" } })
 
-	lu.assertEquals(firstScreen(tr, player), "on_mission", "Dulios mission 4 with the initial surprise attack running: first screen")
+	player.ghost:activateJournalQuest(H.questCrc("destroy_surpriseattack", "naboo_privateer_tier3_4_initial"), false)
+
+	lu.assertEquals(firstScreen(tr, player), "failed_fourth_mission", "Dulios mission 4 with only the legacy initial surprise attack running: first screen")
 end
 
 ---------------------------------------------------------------------------------------------

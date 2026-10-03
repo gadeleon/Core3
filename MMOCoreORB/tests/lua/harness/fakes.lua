@@ -109,7 +109,17 @@ function FakeGhost:activateJournalQuest(crc, notify)
 
 	self.journalActive[crc] = true
 end
-function FakeGhost:completeJournalQuest(crc, notify) self.journalActive[crc] = nil; self.journalComplete[crc] = true end
+-- Like PlayerObjectImplementation::completeJournalQuest (PlayerObjectImplementation.cpp:3212-3217): an entry that
+-- was never activated has no owner, so completing it does nothing. A completed entry can only be written as
+-- activate, then complete.
+function FakeGhost:completeJournalQuest(crc, notify)
+	if not self.journalActive[crc] and not self.journalComplete[crc] then
+		return
+	end
+
+	self.journalActive[crc] = nil
+	self.journalComplete[crc] = true
+end
 function FakeGhost:clearJournalQuest(crc, notify)
 	self.journalActive[crc] = nil
 	self.journalComplete[crc] = nil

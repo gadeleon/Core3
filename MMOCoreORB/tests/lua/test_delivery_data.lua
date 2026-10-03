@@ -65,7 +65,7 @@ function TestDeliveryDataConformance:test_delivery_points_resolve_to_the_patrol_
 end
 
 -- AC-1
-function TestDeliveryDataConformance:test_pickup_points_resolve_to_the_patrol_point_coordinates_for_the_five_pickup_quests()
+function TestDeliveryDataConformance:test_pickup_points_resolve_to_the_patrol_point_coordinates_for_the_four_pickup_quests()
 	local checked = 0
 
 	for _, q in ipairs(D.QUESTS) do
@@ -84,7 +84,8 @@ function TestDeliveryDataConformance:test_pickup_points_resolve_to_the_patrol_po
 		end
 	end
 
-	lu.assertEquals(checked, 5, "five of the six quests have a pickup point")
+	-- rsf-tier3-renames: 3b is delivery_no_pickup now, so four of the six quests have a pickup point
+	lu.assertEquals(checked, 4, "four of the six quests have a pickup point")
 end
 
 -- AC-1
@@ -118,7 +119,7 @@ function TestDeliveryDataConformance:test_the_fixtures_carry_the_values_the_spec
 	local want = {
 		corellia_privateer_tier3_2_b = { 3, 50, 0 },
 		corellia_privateer_tier3_3 = { 0, 60, 0 },
-		naboo_privateer_tier3_3b = { 5, 48, 0 },
+		naboo_privateer_tier3_3b = { 2, 50, 0 }, -- rsf-tier3-renames: the delivery_no_pickup fixture
 		corellia_rebel_tier3_2_a = { 3, 70, 1 },
 		corellia_rebel_tier3_3 = { 2, 80, 0 },
 		corellia_rebel_tier4_2_a = { 3, 45, 1 },
@@ -237,7 +238,8 @@ function TestDeliveryDataInvariants:test_class_names_quest_types_and_rewards_are
 	local expected = {
 		delivery_corellia_privateer_tier3_2_b = { zone = "space_dathomir", credit = 0, side = "destroy_surpriseattack_corellia_privateer_tier3_2_c", delay = 5, parent = "survival_corellia_privateer_tier3_2_a" },
 		delivery_corellia_privateer_tier3_3 = { zone = "space_dantooine", credit = 25000, side = "escort_corellia_privateer_tier3_3_pre_a", delay = 2, parent = "" },
-		delivery_naboo_privateer_tier3_3b = { zone = "space_lok", credit = 0, side = "survival_naboo_privateer_tier3_3c", delay = 4, parent = "inspect_naboo_privateer_tier3_3a" },
+		-- rsf-tier3-renames (AC-1): delivery_no_pickup 3b replaces the delivery global; split delay 0 + 5
+		delivery_no_pickup_naboo_privateer_tier3_3b = { zone = "space_lok", credit = 0, side = "survival_naboo_privateer_tier3_3c", delay = 5, parent = "inspect_naboo_privateer_tier3_3a" },
 		delivery_corellia_rebel_tier3_2_a = { zone = "space_lok", credit = 0, side = "survival_corellia_rebel_tier3_2_b", delay = 3, parent = "inspect_corellia_rebel_tier3_2" },
 		delivery_corellia_rebel_tier3_3 = { zone = "space_endor", credit = 0, side = "assassinate_corellia_rebel_tier3_3_a", delay = 2, parent = "" },
 		delivery_no_pickup_corellia_rebel_tier4_2_a = { zone = "space_dathomir", credit = 0, side = "", delay = 2, parent = "assassinate_corellia_rebel_tier4_2" },

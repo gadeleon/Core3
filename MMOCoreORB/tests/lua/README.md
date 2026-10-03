@@ -222,6 +222,9 @@ these: oracle values from fixtures, spies on every other quest, `sc:start()`, `s
 - `activateJournalQuest` on an entry that has an owner is a no-op, as on the server
   (`PlayerObjectImplementation.cpp:3189-3194`); `completeJournalQuest` keeps the owner, so a
   completed entry can only be re-taken after `clearJournalQuest`.
+- `completeJournalQuest` on an entry that was never activated does nothing, as on the server
+  (`PlayerObjectImplementation.cpp:3212-3217`): a completed entry can only be written as activate, then complete
+  (rsf-tier3-renames; `test_space_helpers_migration.lua` pins the fake).
 - Fake missions carry a quest CRC (`getQuestCRC`), and `failQuestMission` / `removeQuestMission`
   remove the datapad mission; the fake creature records failed CRCs in `failedMissions` (`harness/fakes.lua:233`).
 - `duty_rules_scenario.lua` has shared builders for the duty-rule tests.
@@ -254,6 +257,14 @@ of the trainer with missions 1..n-1 won and rewarded. `T.driveToStart(tr, n, bui
 (breadth-first) to a start screen of mission n. Fake creatures also answer `getObjectName` (NPC name for the datapad mission),
 `doAnimation` (recorded in `creature.animations`) and `getGender`. `Factions::FACTIONREBEL` is a C++ value the harness cannot resolve, so
 `T.load()` defines it as `getHashCode("rebel")` when it is missing.
+
+### Progress migration (rsf-tier3-renames)
+
+`migration_scenario.lua` (not a test file) builds legacy state without any quest global: `M.startRun(player, type, name)` leaves an
+active run the way a started quest does (journal entry, datapad mission, persistent `ZONESWITCHED` observer, `<id>:<class>:waypointID`
+key and waypoint), `M.finish` writes a completed entry (activate, then complete), `M.leftovers` / `M.clean` check "no trace left", and
+`M.snapshot` / `M.sideEffects` prove "nothing changed" and "no message, music or event". `surprise_replay.lua` replays SWG's
+`destroy_surpriseattack` spawn loop on a fixture (`R.replay`, `R.runs`).
 
 ### SWG-Source fixtures
 

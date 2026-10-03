@@ -21,7 +21,7 @@ local S = {}
 
 S.SQUADRONS = { "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay" }
 
--- The 7 survival quests that have a SWG-Source .tab (the 8th, naboo_privateer_tier3_4c, has none).
+-- The 7 survival quests of Core3, all with a SWG-Source .tab (the 8th, the RSF 4c placeholder, was removed by rsf-tier3-renames).
 S.NAMES = {
 	"corellia_privateer_tier3_2_a",
 	"corellia_privateer_tier3_4_a",

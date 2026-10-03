@@ -23,11 +23,12 @@ local D = {}
 
 D.SQUADRONS = S.SQUADRONS
 
--- The 6 delivery quests of Core3: { type, name }. All of them have a SWG-Source .tab.
+-- The 6 delivery and delivery_no_pickup quests of Core3: { type, name }. All of them have a SWG-Source .tab.
 D.QUESTS = {
 	{ "delivery", "corellia_privateer_tier3_2_b" },
 	{ "delivery", "corellia_privateer_tier3_3" },
-	{ "delivery", "naboo_privateer_tier3_3b" },
+	-- rsf-tier3-renames (AC-1): SWG type delivery_no_pickup; the old delivery global is gone
+	{ "delivery_no_pickup", "naboo_privateer_tier3_3b" },
 	{ "delivery", "corellia_rebel_tier3_2_a" },
 	{ "delivery", "corellia_rebel_tier3_3" },
 	{ "delivery_no_pickup", "corellia_rebel_tier4_2_a" },

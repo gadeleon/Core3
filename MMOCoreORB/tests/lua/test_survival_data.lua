@@ -18,8 +18,9 @@ S.load()
 local LEGACY_KEYS = { "survivalTime", "survivalPoint", "attackDelay", "attackShips", "survivalWaves", "waveDelay" }
 
 local ALL_SURVIVAL = {
+	-- rsf-tier3-renames (AC-3): the 4c placeholder is gone, 7 survival quests remain
 	"survival_corellia_privateer_tier3_2_a", "survival_corellia_privateer_tier3_4_a", "survival_naboo_privateer_tier3_3c",
-	"survival_naboo_privateer_tier3_4c", "survival_corellia_rebel_tier3_2_b", "survival_corellia_rebel_tier3_4_d",
+	"survival_corellia_rebel_tier3_2_b", "survival_corellia_rebel_tier3_4_d",
 	"survival_corellia_rebel_tier4_1", "survival_corellia_rebel_tier4_3_b",
 }
 
@@ -203,30 +204,23 @@ function TestSurvivalContract:test_no_survival_quest_keeps_a_legacy_data_key()
 end
 
 -- I-3, AC-2
-function TestSurvivalContract:test_only_the_rsf_placeholder_has_its_own_start_quest()
-	for _, n in ipairs(survivalGlobals()) do
-		local own = rawget(_G[n], "startQuest")
+-- rsf-tier3-renames: the placeholder and its startQuest override are gone, so every survival quest inherits
+function TestSurvivalContract:test_no_survival_quest_has_its_own_start_quest()
+	-- the 7 of ALL_SURVIVAL plus RSF tier 4's survival_naboo_privateer_tier4_3c (nine before the placeholder was removed)
+	lu.assertEquals(#survivalGlobals(), 8, "number of survival quest globals")
 
-		if n == "survival_naboo_privateer_tier3_4c" then
-			lu.assertEquals(type(own), "function", n .. ": local override of startQuest (decision D-3)")
-		else
-			lu.assertNil(own, n .. ": must inherit startQuest from SpaceSurvivalScreenplay")
-		end
+	for _, n in ipairs(survivalGlobals()) do
+		lu.assertNil(rawget(_G[n], "startQuest"), n .. ": must inherit startQuest from SpaceSurvivalScreenplay")
 	end
 end
 
 -- I-3
-function TestSurvivalContract:test_every_survival_quest_but_the_placeholder_has_a_transmission_point()
+function TestSurvivalContract:test_every_survival_quest_has_a_transmission_point()
 	for _, n in ipairs(survivalGlobals()) do
 		local point = _G[n].transmissionPoint
 
 		lu.assertEquals(type(point), "table", n .. ": transmissionPoint is a table")
-
-		if n == "survival_naboo_privateer_tier3_4c" then
-			lu.assertNil(point.patrolPointName, n .. ": the placeholder has no SWG survival data")
-		else
-			lu.assertEquals(type(point.patrolPointName), "string", n .. ": transmissionPoint.patrolPointName")
-		end
+		lu.assertEquals(type(point.patrolPointName), "string", n .. ": transmissionPoint.patrolPointName")
 	end
 end
 
@@ -239,8 +233,7 @@ function TestSurvivalContract:test_wiring_rewards_and_parents_are_untouched()
 		survival_corellia_privateer_tier3_2_a = { creditReward = 0, parent = "inspect_corellia_privateer_tier3_2", side = "delivery_corellia_privateer_tier3_2_b", split = SPLIT.COMPLETION, delay = 4 },
 		survival_corellia_privateer_tier3_4_a = { creditReward = 0, parent = "assassinate_corellia_privateer_tier3_4", side = "inspect_corellia_privateer_tier3_4_b", split = SPLIT.COMPLETION, delay = 5 },
 		-- rsf-tier3-data (AC-1, AC-2, AC-7): the reward moved to the mission head and 3c now splits to destroy_surpriseattack 3e
-		survival_naboo_privateer_tier3_3c = { creditReward = 0, parent = "delivery_naboo_privateer_tier3_3b", side = "destroy_surpriseattack_naboo_privateer_tier3_3e", split = SPLIT.COMPLETION, delay = 5 },
-		survival_naboo_privateer_tier3_4c = { creditReward = 0, parent = "space_battle_naboo_privateer_tier3_4b", side = "assassinate_naboo_privateer_tier3_4f", split = SPLIT.COMPLETION, delay = 3 },
+		survival_naboo_privateer_tier3_3c = { creditReward = 0, parent = "delivery_no_pickup_naboo_privateer_tier3_3b", side = "destroy_surpriseattack_naboo_privateer_tier3_3e", split = SPLIT.COMPLETION, delay = 5 },
 		survival_corellia_rebel_tier3_2_b = { creditReward = 0, parent = "delivery_corellia_rebel_tier3_2_a", side = "escort_corellia_rebel_tier3_2_c", split = SPLIT.COMPLETION, delay = 0 },
 		survival_corellia_rebel_tier3_4_d = { creditReward = 0, parent = "space_battle_corellia_rebel_tier3_4_c", side = false },
 		survival_corellia_rebel_tier4_1 = { creditReward = 10000, parent = "", side = "space_battle_corellia_rebel_tier4_1_a", split = SPLIT.BIDIRECTIONAL, fail = "space_battle_corellia_rebel_tier4_1_b", delay = 2 },
@@ -269,21 +262,4 @@ function TestSurvivalContract:test_wiring_rewards_and_parents_are_untouched()
 			lu.assertEquals(q.sideFailQuestType .. "_" .. q.sideFailQuestName, e.fail, n .. ": failure split quest")
 		end
 	end
-end
-
-TestSurvivalPlaceholder = {}
-
-function TestSurvivalPlaceholder:setUp()
-	H.reset()
-end
-
--- AC-2 (D-3)
-function TestSurvivalPlaceholder:test_the_rsf_placeholder_has_no_survival_data_left()
-	local q = H.expectGlobal("survival_naboo_privateer_tier3_4c")
-
-	lu.assertNil(rawget(q, "survivalWaves"), "survivalWaves")
-	lu.assertNil(rawget(q, "waveDelay"), "waveDelay")
-	lu.assertEquals(q.questZone, "space_lok")
-	lu.assertEquals(q.questType, "survival")
-	lu.assertEquals(q.questName, "naboo_privateer_tier3_4c")
 end

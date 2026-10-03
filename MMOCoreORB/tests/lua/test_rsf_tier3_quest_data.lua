@@ -7,9 +7,9 @@
 -- fixtures/script/conversation/, never the Core3 tables under test. The values spelled out in the spec tables
 -- are repeated as anchors so a misparsed fixture cannot make a wrong table look right.
 --
--- Conformance exceptions (spec E-1, E-2): until F2 replaces the three tables below, 3a still splits to the
--- `delivery` global (SWG: delivery_no_pickup), 3c's parent is that global, 4b still splits to the `survival`
--- placeholder 4c (SWG: destroy_surpriseattack) and 4f's parent is the placeholder. Those cells are literals.
+-- rsf-tier3-renames (F2) ended the conformance exceptions E-1 and E-2: 3a splits to delivery_no_pickup 3b, 3c's
+-- parent is that global, 4b splits to destroy_surpriseattack 4c and 4f's parent is destroy_surpriseattack 4e, all
+-- equal to the fixtures. The payload of the four new tables is tested in test_rsf_tier3_renames_data.lua.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -33,12 +33,12 @@ local W = {
 	{ g("destroy_surpriseattack", "2c"), true, SPLIT.COMPLETION, g("space_battle", "2d"), 5, nil, g("escort", "2a") },
 	{ g("space_battle", "2d"), true, SPLIT.COMPLETION, g("rescue", "2e"), 5, nil, g("destroy_surpriseattack", "2c") },
 	{ g("rescue", "2e"), false, nil, nil, nil, nil, g("space_battle", "2d") },
-	{ g("inspect", "3a"), true, SPLIT.COMPLETION, g("delivery", "3b"), 10, nil, "" }, -- E-1: side target is the delivery global
-	{ g("survival", "3c"), true, SPLIT.COMPLETION, g("destroy_surpriseattack", "3e"), 5, nil, g("delivery", "3b") }, -- E-1: parent is the delivery global
+	{ g("inspect", "3a"), true, SPLIT.COMPLETION, g("delivery_no_pickup", "3b"), 10, nil, "" },
+	{ g("survival", "3c"), true, SPLIT.COMPLETION, g("destroy_surpriseattack", "3e"), 5, nil, g("delivery_no_pickup", "3b") },
 	{ g("destroy_surpriseattack", "3e"), false, nil, nil, nil, nil, g("survival", "3c") },
 	{ g("assassinate", "4a"), true, SPLIT.COMPLETION, g("space_battle", "4b"), 5, nil, "" },
-	{ g("space_battle", "4b"), true, SPLIT.COMPLETION, g("survival", "4c"), 5, nil, g("assassinate", "4a") }, -- E-2: side target is the survival placeholder
-	{ g("assassinate", "4f"), false, nil, nil, nil, nil, g("survival", "4c") }, -- E-2: parent is the placeholder
+	{ g("space_battle", "4b"), true, SPLIT.COMPLETION, g("destroy_surpriseattack", "4c"), 5, nil, g("assassinate", "4a") },
+	{ g("assassinate", "4f"), false, nil, nil, nil, nil, g("destroy_surpriseattack", "4e") },
 }
 
 -- The four mission heads and the four chain ends (the rewards move from the ends to the heads)
@@ -54,14 +54,14 @@ local REWARDS = {
 	{ g("assassinate", "4a"), "assassinate", "naboo_privateer_tier3_4a", C .. "armor/arm_mission_reward_neutral_kse_handcrafted.iff", 249 },
 }
 
--- The globals Dulios can reach (invariant I-2): the 14 of table W, delivery 3b, survival 4c and the legacy 4_initial.
--- That is 17 distinct tables: the spec's "18" counts destroy_surpriseattack 3e twice (it is in W and listed again).
+-- The globals Dulios can reach (invariant I-2, rsf-tier3-renames I-2/I-5): the 14 of table W plus delivery_no_pickup 3b
+-- and the surprise attacks 4c, 4d, 4e. That is 18 distinct tables (the 18 chain members of rsf-tier3-renames I-5).
 local DULIOS_REACHABLE = {
 	g("recovery", "1a"), g("patrol", "1b"), g("destroy_surpriseattack", "1c"), g("assassinate", "1d"),
 	g("escort", "2a"), g("destroy_surpriseattack", "2c"), g("space_battle", "2d"), g("rescue", "2e"),
 	g("inspect", "3a"), g("survival", "3c"), g("destroy_surpriseattack", "3e"),
 	g("assassinate", "4a"), g("space_battle", "4b"), g("assassinate", "4f"),
-	g("delivery", "3b"), g("survival", "4c"), g("destroy_surpriseattack", "4_initial"),
+	g("delivery_no_pickup", "3b"), g("destroy_surpriseattack", "4c"), g("destroy_surpriseattack", "4d"), g("destroy_surpriseattack", "4e"),
 }
 
 local function quest(global) return H.expectGlobal(global, "RSF tier 3 quest table") end
@@ -157,7 +157,7 @@ function TestRsfTier3Rewards:test_exactly_the_four_heads_pay_among_the_dulios_re
 		heads[name] = true
 	end
 
-	lu.assertEquals(#DULIOS_REACHABLE, 17, "setup: the reachable list (delivery_no_pickup 3b only exists after F2)")
+	lu.assertEquals(#DULIOS_REACHABLE, 18, "setup: the reachable list (the 18 chain members)")
 
 	for _, name in ipairs(DULIOS_REACHABLE) do
 		local q = quest(name)
@@ -243,14 +243,8 @@ function TestRsfTier3Wiring:test_the_fixtures_carry_the_trigger_values_the_spec_
 	lu.assertEquals(trigger("assassinate", "naboo_privateer_tier3_4f"), { "none", "triggerOn", nil, 0, nil }, "assassinate 4f")
 end
 
--- AC-2, I-4: every derived value equals the Core3 field (E-1 and E-2 cells are the literals of table W).
+-- AC-2, I-4: every derived value equals the Core3 field (no exceptions after rsf-tier3-renames).
 function TestRsfTier3Wiring:test_split_wiring_equals_the_fixture_by_the_spec_rules()
-	-- E-1, E-2: until F2 renames the targets, these tables keep the Core3 type name
-	local exception = {
-		[g("inspect", "3a")] = { sideQuestType = "delivery" },
-		[g("space_battle", "4b")] = { sideQuestType = "survival" },
-	}
-
 	for _, row in ipairs(W) do
 		local name = row[1]
 		local q = quest(name)
@@ -259,10 +253,6 @@ function TestRsfTier3Wiring:test_split_wiring_equals_the_fixture_by_the_spec_rul
 		if rec:get("triggerEvent") == "splitquest" then
 			local sideType, sideName = H.Tab.splitQuestRef(rec:get("triggerArg"))
 			local delay = rec:num("triggerDelay") or 0
-
-			if exception[name] then
-				sideType = exception[name].sideQuestType
-			end
 
 			lu.assertTrue(q.sideQuest, name .. ": sideQuest (triggerEvent=splitquest)")
 			lu.assertEquals(q.sideQuestType, sideType, name .. ": sideQuestType (triggerArg)")
@@ -333,9 +323,11 @@ function TestRsfTier3Wiring:test_every_split_target_exists_and_names_its_splitti
 		tables[#tables + 1] = row[1]
 	end
 
-	-- the two tables F2 replaces take part in the chains too (the legacy 4_initial is unreachable and excluded)
-	tables[#tables + 1] = g("delivery", "3b")
-	tables[#tables + 1] = g("survival", "4c")
+	-- rsf-tier3-renames (I-3, no exceptions): the four new tables take part in the chains too
+	tables[#tables + 1] = g("delivery_no_pickup", "3b")
+	tables[#tables + 1] = g("destroy_surpriseattack", "4c")
+	tables[#tables + 1] = g("destroy_surpriseattack", "4d")
+	tables[#tables + 1] = g("destroy_surpriseattack", "4e")
 
 	for _, name in ipairs(tables) do
 		local q = quest(name)
@@ -352,21 +344,12 @@ function TestRsfTier3Wiring:test_every_split_target_exists_and_names_its_splitti
 	end
 end
 
--- Content contract 1: the tables F2 replaces stay exactly as they are (E-1, E-2, D-2). Values pinned from the
--- tree before F1; already true today.
-function TestRsfTier3Wiring:test_the_three_tables_f2_replaces_are_untouched()
-	local delivery, placeholder, initial = quest(g("delivery", "3b")), quest(g("survival", "4c")), quest(g("destroy_surpriseattack", "4_initial"))
-
-	lu.assertEquals({ delivery.questType, delivery.questZone, delivery.creditReward, delivery.parentQuest }, { "delivery", "space_lok", 0, g("inspect", "3a") }, "delivery 3b: type, zone, reward, parent")
-	lu.assertEquals({ delivery.sideQuest, delivery.sideQuestType .. "_" .. delivery.sideQuestName, delivery.sideQuestSplitType, delivery.sideQuestDelay }, { true, g("survival", "3c"), SPLIT.COMPLETION, 4 }, "delivery 3b: split")
-
-	lu.assertEquals({ placeholder.questType, placeholder.questZone, placeholder.creditReward, placeholder.parentQuest }, { "survival", "space_lok", 0, g("space_battle", "4b") }, "survival 4c: type, zone, reward, parent")
-	lu.assertEquals({ placeholder.sideQuest, placeholder.sideQuestType .. "_" .. placeholder.sideQuestName, placeholder.sideQuestSplitType, placeholder.sideQuestDelay }, { true, g("assassinate", "4f"), SPLIT.COMPLETION, 3 }, "survival 4c: split")
-	lu.assertEquals(type(rawget(placeholder, "startQuest")), "function", "survival 4c: keeps its startQuest override (placeholder)")
-
-	lu.assertEquals({ initial.questZone, initial.creditReward, initial.parentQuest }, { "space_naboo", 0, "" }, "4_initial: zone, reward, parent")
-	lu.assertEquals({ initial.sideQuest, initial.sideQuestType .. "_" .. initial.sideQuestName, initial.sideQuestSplitType, initial.sideQuestDelay }, { true, g("assassinate", "4a"), SPLIT.COMPLETION, 3 }, "4_initial: split")
-	lu.assertEquals(initial.surpriseAttackShips, { zone = "space_naboo", spawns = { { count = 5, shipName = "blacksun_marauder_tier3" } } }, "4_initial: ships")
+-- rsf-tier3-renames (AC-3, Content contract 1): the three tables F2 replaces are deleted, not just renamed.
+function TestRsfTier3Wiring:test_the_three_tables_f2_replaced_are_deleted_and_unregistered()
+	for _, name in ipairs({ g("delivery", "3b"), g("survival", "4c"), g("destroy_surpriseattack", "4_initial") }) do
+		lu.assertNil(rawget(_G, name), name .. ": global must be gone")
+		lu.assertNil(H.registered(name), name .. ": registerScreenPlay must be gone")
+	end
 end
 
 ---------------------------------------------------------------------------------------------
@@ -377,10 +360,9 @@ TestRsfTier3Identity = {}
 
 function TestRsfTier3Identity:setUp() H.reset() end
 
--- I-1: nothing is added, removed or renamed. Count of space quest globals over the three squadrons, pinned
--- from the tree before F1 (F1 renames nothing and adds no table).
-function TestRsfTier3Identity:test_the_set_of_space_quest_globals_is_unchanged()
-	lu.assertEquals(#H.questGlobals(), 163, "number of space quest globals (CorSec, Havoc and RSF loaded)")
+-- I-1 (rsf-tier3-renames): 163 minus the three deleted tables plus four new ones.
+function TestRsfTier3Identity:test_the_set_of_space_quest_globals_has_the_f2_count()
+	lu.assertEquals(#H.questGlobals(), 164, "number of space quest globals (CorSec, Havoc and RSF loaded)")
 end
 
 -- I-1
@@ -400,8 +382,8 @@ function TestRsfTier3Identity:test_the_four_chains_walk_from_each_head_in_order(
 	local expected = {
 		[g("recovery", "1a")] = { g("recovery", "1a"), g("patrol", "1b"), g("destroy_surpriseattack", "1c"), g("assassinate", "1d") },
 		[g("escort", "2a")] = { g("escort", "2a"), g("destroy_surpriseattack", "2c"), g("space_battle", "2d"), g("rescue", "2e") },
-		[g("inspect", "3a")] = { g("inspect", "3a"), g("delivery", "3b"), g("survival", "3c"), g("destroy_surpriseattack", "3e") },
-		[g("assassinate", "4a")] = { g("assassinate", "4a"), g("space_battle", "4b"), g("survival", "4c"), g("assassinate", "4f") },
+		[g("inspect", "3a")] = { g("inspect", "3a"), g("delivery_no_pickup", "3b"), g("survival", "3c"), g("destroy_surpriseattack", "3e") },
+		[g("assassinate", "4a")] = { g("assassinate", "4a"), g("space_battle", "4b"), g("destroy_surpriseattack", "4c"), g("destroy_surpriseattack", "4d"), g("destroy_surpriseattack", "4e"), g("assassinate", "4f") },
 	}
 
 	for _, head in ipairs(sortedKeys(expected)) do

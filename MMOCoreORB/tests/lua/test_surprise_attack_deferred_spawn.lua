@@ -520,7 +520,7 @@ end
 function TestSurpriseAttackInZoneRegression:test_every_existing_surprise_attack_still_spawns_immediately_in_its_own_zone()
 	local names = surpriseAttacks()
 
-	lu.assertEquals(#names, 17, "setup: surprise attack quest tables of CorSec, Havoc and RSF")
+	lu.assertEquals(#names, 19, "setup: surprise attack quest tables of CorSec, Havoc and RSF (rsf-tier3-renames: 4_initial gone, 4c, 4d, 4e added)")
 
 	for _, global in ipairs(names) do
 		local q, player = started(global, quest(global).questZone)

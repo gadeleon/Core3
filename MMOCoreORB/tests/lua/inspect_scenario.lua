@@ -39,9 +39,9 @@ I.REP = "corellia_rebel_tier3_2"        -- the representative quest: space_endor
 I.SINGLE = "corellia_privateer_15"      -- one spawner, no side quest
 I.MISSING = "naboo_privateer_15"        -- RSF tier 2 mission 3: no SWG inspect table, no schema fields (D-5)
 
--- Core3 keeps the side quest type `delivery` for RSF tier 3 3a although the .tab says delivery_no_pickup
--- (spec Scope Out: RSF tier 3 reconciliation).
-I.CORE3_SIDE_TYPE = { naboo_privateer_tier3_3a = "delivery" }
+-- rsf-tier3-renames (E-1 ends): RSF tier 3 3a splits to delivery_no_pickup like the .tab, so Core3's side type
+-- equals the fixture for every inspect quest; the override table stays (empty) for the next exception.
+I.CORE3_SIDE_TYPE = {}
 
 -- Spec constants (ms and ids).
 I.SETUP_DELAY = 1000

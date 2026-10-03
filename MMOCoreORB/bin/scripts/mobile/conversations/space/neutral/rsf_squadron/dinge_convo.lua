@@ -557,28 +557,16 @@ first_training_lesson = ConvoScreen:new {
 	id = "first_training_lesson",
 	leftDialog = "@conversation/naboo_privateer_trainer_1:s_140",
 	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_141", "first_training_done"},
-	}
-}
-dinge_convo_template:addScreen(first_training_lesson);
-
-first_training_done = ConvoScreen:new {
-	id = "first_training_done",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_142",
-	stopConversation = "true",
 	options = {}
 }
-dinge_convo_template:addScreen(first_training_done);
+dinge_convo_template:addScreen(first_training_lesson);
 
 more_training = ConvoScreen:new {
 	id = "more_training",
 	leftDialog = "@conversation/naboo_privateer_trainer_1:s_122b0165",
 	stopConversation = "false",
 	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_143", "train_droid"},
-	}
+	options = {}
 }
 dinge_convo_template:addScreen(more_training);
 

@@ -9,6 +9,14 @@ kaydineConvoHandler = conv_handler:new {
 	}
 }
 
+-- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order
+kaydineConvoHandler.TRAIN_CHOICES = {
+	{ "pilot_neutral_starships_02", "@conversation/naboo_privateer_trainer_2:s_45b71b4d", "train_starships" },
+	{ "pilot_neutral_weapons_02", "@conversation/naboo_privateer_trainer_2:s_197f4f94", "train_weapons" },
+	{ "pilot_neutral_procedures_02", "@conversation/naboo_privateer_trainer_2:s_8f5942fa", "train_procedures" },
+	{ "pilot_neutral_droid_02", "@conversation/naboo_privateer_trainer_2:s_eff66f4d", "train_droid" }
+}
+
 function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (pPlayer == nil or pNpc == nil or pConvTemplate == nil) then
 		return nil
@@ -174,19 +182,14 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	end
 
 	if (screenID == "ready_train_pilot") then
-		-- Offer the first skill the pilot lacks, in SWG's order (naboo_privateer_trainer_2.java:2204-2330)
-		local link = "train_droid"
-
-		if (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS.train_starships)) then
-			link = "train_starships"
-		elseif (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS.train_weapons)) then
-			link = "train_weapons"
-		elseif (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS.train_procedures)) then
-			link = "train_procedures"
-		end
-
+		-- Offer every skill the pilot lacks (pre-NGE free choice instead of naboo_privateer_trainer_2.java:2204-2330)
 		clonedConversation:removeAllOptions()
-		clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_187", link)
+
+		for _, choice in ipairs(self.TRAIN_CHOICES) do
+			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
+				clonedConversation:addOption(choice[2], choice[3])
+			end
+		end
 
 	-- Duty Missions (naboo_privateer_trainer_2.java:248-259, branch 55)
 	elseif (screenID == "accept_duty_escort") then

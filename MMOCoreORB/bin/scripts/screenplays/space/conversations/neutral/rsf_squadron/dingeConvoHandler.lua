@@ -8,6 +8,14 @@ dingeConvoHandler.TRAIN_SCREENS = {
 	train_droid = "pilot_neutral_droid_01"
 }
 
+-- Pre-NGE free choice of the next skill: { skill, reply, purchase screen, closing screen }, in SWG order
+dingeConvoHandler.TRAIN_CHOICES = {
+	{ "pilot_neutral_starships_01", "@conversation/naboo_privateer_trainer_1:s_e94f494b", "train_starships", "trained_starships" },
+	{ "pilot_neutral_weapons_01", "@conversation/naboo_privateer_trainer_1:s_939b6844", "train_weapons", "trained_weapons" },
+	{ "pilot_neutral_procedures_01", "@conversation/naboo_privateer_trainer_1:s_ac00d21e", "train_procedures", "trained_procedures" },
+	{ "pilot_neutral_droid_01", "@conversation/naboo_privateer_trainer_1:s_1726d8a5", "train_droid", "trained_droid" }
+}
+
 -- Any of Dinge's story chains or duties is running (the journal checks of getInitialScreen)
 function dingeConvoHandler:isOnMission(pPlayer)
 	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_naboo_privateer_1")
@@ -46,17 +54,37 @@ function dingeConvoHandler:getLastScreenID(pPlayer)
 	return LuaConversationScreen(pLastScreen):getScreenID()
 end
 
--- Choosing the option on first_training_lesson grants the free starships skill; on a train_<x> screen it
--- buys that skill (once). Both happen before the closing line (naboo_privateer_trainer_1.java:3164, 3310-3355)
+-- Choosing an option on first_training_lesson grants the chosen skill free (pre-NGE free choice instead of
+-- the starships grant of naboo_privateer_trainer_1.java:3164); on a train_<x> screen it buys that skill (once).
+-- Both happen before the closing line (naboo_privateer_trainer_1.java:3310-3355)
 function dingeConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, selectedOption, pNpc)
 	local lastScreen = self:getLastScreenID(pPlayer) or ""
 	local skill = self.TRAIN_SCREENS[lastScreen]
 
 	if (lastScreen == "first_training_lesson") then
-		if (self:isReadyForFirstTraining(pPlayer)) then
-			SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_starships_01", false)
+		local link = nil
+		local convSession = CreatureObject(pPlayer):getConversationSession()
 
-			return LuaConversationTemplate(pConvTemplate):getScreen("first_training_done")
+		if (convSession ~= nil) then
+			local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+
+			if (pLastScreen ~= nil) then
+				link = LuaConversationScreen(pLastScreen):getOptionLink(selectedOption)
+			end
+		end
+
+		local chosen = nil
+
+		for _, choice in ipairs(self.TRAIN_CHOICES) do
+			if (choice[4] == link) then
+				chosen = choice[1]
+			end
+		end
+
+		if (chosen ~= nil and self:isReadyForFirstTraining(pPlayer)) then
+			SpaceHelpers:grantSpaceSkill(pPlayer, chosen, false)
+
+			return LuaConversationTemplate(pConvTemplate):getScreen(link)
 		end
 
 		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -249,18 +277,23 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	end
 
 	if (screenID == "more_training") then
-		-- The first skill the pilot lacks, in SWG order (naboo_privateer_trainer_1.java:3177-3300)
-		local link = "train_droid"
+		-- Every skill the pilot lacks (pre-NGE free choice instead of naboo_privateer_trainer_1.java:3177-3300)
+		clonedConversation:removeAllOptions()
 
-		for _, screen in ipairs({"train_starships", "train_weapons", "train_procedures"}) do
-			if (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS[screen])) then
-				link = screen
-				break
+		for _, choice in ipairs(self.TRAIN_CHOICES) do
+			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
+				clonedConversation:addOption(choice[2], choice[3])
 			end
 		end
-
+	elseif (screenID == "first_training_lesson") then
+		-- Free first skill: the pilot picks which one (pre-NGE free choice instead of naboo_privateer_trainer_1.java:3142-3171)
 		clonedConversation:removeAllOptions()
-		clonedConversation:addOption("@conversation/naboo_privateer_trainer_1:s_143", link)
+
+		for _, choice in ipairs(self.TRAIN_CHOICES) do
+			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
+				clonedConversation:addOption(choice[2], choice[4])
+			end
+		end
 	elseif (screenID == "non_rsf_pilot") then
 		-- Off-track pilots may fly a duty (naboo_privateer_trainer_1.java:983-1059)
 		clonedConversation:removeAllOptions()

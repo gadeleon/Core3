@@ -169,15 +169,13 @@ accept_duty_destroy = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(accept_duty_destroy);
 
--- Training (naboo_privateer_trainer_2.java:2200-3700); the handler points the option of ready_train_pilot at the first missing skill
+-- Training (naboo_privateer_trainer_2.java:2200-3700); the handler offers one reply per missing skill on ready_train_pilot (pre-NGE free choice)
 ready_train_pilot = ConvoScreen:new {
 	id = "ready_train_pilot",
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_76e6f264",
 	stopConversation = "false",
 	animation = "salute1",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_187", "train_droid"},
-	}
+	options = {}
 }
 kaydine_convo_template:addScreen(ready_train_pilot);
 

@@ -1359,9 +1359,7 @@ imler_convo_template:addScreen(ConvoScreen:new {
 	id = "ready_train",
 	leftDialog = "@conversation/naboo_privateer_tier4:s_d91c04b2",
 	animation = "check_wrist_device",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_438", "train_droid"},
-	}
+	options = {}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "intro",

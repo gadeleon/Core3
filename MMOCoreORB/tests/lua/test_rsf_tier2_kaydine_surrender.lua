@@ -205,7 +205,7 @@ function TestKaydineSurrender:test_a_rejoined_pilot_is_offered_mission_1_and_pai
 	local transcript = T.converse(tr, player)
 
 	lu.assertNotNil(transcript[1], "first screen exists")
-	lu.assertEquals(transcript[1].id, "first_mission", "first screen")
+	lu.assertEquals(transcript[1].id, "mission1_ready", "first screen")
 	lu.assertEquals(rec.rewards, {}, "rewardPlayer calls after the reset")
 	lu.assertEquals(rec.starts, {}, "startQuest calls")
 end

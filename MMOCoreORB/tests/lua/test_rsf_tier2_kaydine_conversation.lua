@@ -6,7 +6,8 @@
 -- Migration is already done in every test here (the player builder seeds the marker "2"), so none of them depends on the
 -- legacy names; test_rsf_tier2_kaydine_migration.lua covers those. The data-driven suites (test_trainer_fixes_routing / _retry /
 -- _reset / _veterans / _chain_helper) run over the new chains through trainer_fixes_data.lua; this file adds what is specific
--- to F4. Screen ids keep their old names (D-9): accept_escort starts the destroy mission, accept_inspect the recovery.
+-- to F4. rsf-tier2-kaydine-convo: the story screens have SWG's dialogue and Imler-style ids (mission{n}_ready / _accept /
+-- _failed / _complete / _reward); the failure line re-grants the mission (D-14) and mission 2 pays on its first screen.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -122,7 +123,7 @@ function TestKaydineRouting:test_1a_and_1b_complete_without_1c_is_not_a_win_and_
 	local rec = T.spyRewards()
 
 	lu.assertEquals(H.getQuestStatus(player, "naboo_privateer_tier2_1a:attempted"), "1", "setup: tier2_1a:attempted")
-	lu.assertEquals(firstScreen(player), "failed_first_mission", "first screen")
+	lu.assertEquals(firstScreen(player), "mission1_failed", "first screen")
 	lu.assertEquals(rec.rewards, {}, "rewardPlayer calls")
 	lu.assertNil(H.getQuestStatus(player, "naboo_privateer_tier2_1a:reward"), "tier2_1a:reward")
 end
@@ -131,19 +132,19 @@ end
 function TestKaydineRouting:test_1a_alone_complete_shows_the_failed_screen_too()
 	local player = pilot(1, { complete = { A1 } })
 
-	lu.assertEquals(firstScreen(player), "failed_first_mission", "first screen")
+	lu.assertEquals(firstScreen(player), "mission1_failed", "first screen")
 end
 
 -- AC-6 C2: the failed screen needs the :attempted key
 function TestKaydineRouting:test_1a_and_1b_complete_without_the_attempted_key_shows_the_offer()
 	local player = pilot(1, { complete = { A1, A2 }, attempted = false })
 
-	lu.assertEquals(firstScreen(player), "first_mission", "first screen")
+	lu.assertEquals(firstScreen(player), "mission1_ready", "first screen")
 end
 
 -- AC-6 C2: a pilot with no quest state is offered mission 1
 function TestKaydineRouting:test_a_pilot_without_quest_state_is_offered_mission_1()
-	lu.assertEquals(firstScreen(pilot(1, { attempted = false })), "first_mission", "first screen")
+	lu.assertEquals(firstScreen(pilot(1, { attempted = false })), "mission1_ready", "first screen")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -154,25 +155,26 @@ TestKaydineRewards = {}
 
 function TestKaydineRewards:setUp() H.reset() end
 
--- mission, complete list, reward-pending screen, reward screen ids, head, next screen once paid
+-- mission, complete list, first screen of the reward state, pay screen ids, head, next screen once paid.
+-- Mission 2 pays on its first screen (mission2_reward, SWG K:4194); the others pay one option later.
 local WINS = {
-	{ 1, CHAIN1, "complete_first_mission", { "according_to_plan", "first_mission_success" }, A1, "second_mission" },
-	{ 2, { D13 }, "complete_second_mission", { "duty_calls", "here_is_pay" }, D13, "third_mission" },
-	{ 3, { R14 }, "complete_third_mission", { "turnover_intelligence" }, R14, "fourth_mission" },
-	{ 4, { E15 }, "complete_fourth_mission", { "fourth_mission_success" }, E15, "here_for_work" },
+	{ 1, CHAIN1, "mission1_complete", { "mission1_reward" }, A1, "mission2_ready" },
+	{ 2, { D13 }, "mission2_reward", { "mission2_reward" }, D13, "mission3_ready" },
+	{ 3, { R14 }, "mission3_complete", { "mission3_reward" }, R14, "mission4_ready" },
+	{ 4, { E15 }, "mission4_complete", { "mission4_reward" }, E15, "here_for_work" },
 }
 
 for _, w in ipairs(WINS) do
 	local n, complete, pending, screens, head, nextScreen = w[1], w[2], w[3], w[4], w[5], w[6]
 
 	-- AC-6 C3/C5/C6/C7
-	TestKaydineRewards["test_mission_" .. n .. "_won_and_unpaid_shows_" .. pending .. "_without_paying"] = function()
+	TestKaydineRewards["test_mission_" .. n .. "_won_and_unpaid_shows_" .. pending .. (n == 2 and "_and_pays_on_display" or "_without_paying")] = function()
 		local player = pilot(n, { complete = complete })
 		local rec = T.spyRewards()
 
 		lu.assertEquals(firstScreen(player), pending, "first screen")
-		lu.assertEquals(rec.rewards, {}, "rewardPlayer calls on the routing screen")
-		lu.assertNil(H.getQuestStatus(player, KEYS[n] .. ":reward"), KEYS[n] .. ":reward")
+		lu.assertEquals(rec.rewards, n == 2 and { head } or {}, "rewardPlayer calls on the first screen")
+		lu.assertEquals(H.getQuestStatus(player, KEYS[n] .. ":reward"), n == 2 and "1" or nil, KEYS[n] .. ":reward")
 	end
 
 	for _, id in ipairs(screens) do
@@ -199,7 +201,12 @@ for _, w in ipairs(WINS) do
 		local rec = T.spyRewards()
 
 		lu.assertEquals(firstScreen(player), pending, "first visit")
-		enterScreen(player, screens[1])
+
+		if n ~= 2 then
+			-- mission 2 was paid by its first screen
+			enterScreen(player, screens[1])
+		end
+
 		lu.assertEquals(firstScreen(player), nextScreen, "second visit")
 		lu.assertEquals(firstScreen(player), nextScreen, "third visit")
 		lu.assertEquals(rec.rewards, { head }, "rewardPlayer calls over three visits")
@@ -219,14 +226,14 @@ end
 function TestKaydineRewards:test_1c_complete_is_the_win_of_mission_1_whatever_1a_and_1b_are()
 	local player = pilot(1, { complete = { A3 } })
 
-	lu.assertEquals(firstScreen(player), "complete_first_mission", "first screen")
+	lu.assertEquals(firstScreen(player), "mission1_complete", "first screen")
 end
 
 -- AC-6 C3: mission 1's reward is keyed on the chain head, not on 1c
 function TestKaydineRewards:test_the_reward_of_mission_1_is_the_tier2_1a_key_not_a_1c_key()
 	local player = pilot(1, { complete = CHAIN1 })
 
-	enterScreen(player, "according_to_plan")
+	enterScreen(player, "mission1_reward")
 	lu.assertEquals(H.getQuestStatus(player, "naboo_privateer_tier2_1a:reward"), "1", "tier2_1a:reward")
 	lu.assertNil(H.getQuestStatus(player, "naboo_privateer_tier2_1c:reward"), "tier2_1c:reward")
 	lu.assertNil(H.getQuestStatus(player, "naboo_privateer_tier2_1b:reward"), "tier2_1b:reward")
@@ -263,15 +270,15 @@ end
 ---------------------------------------------------------------------------------------------
 
 -- AC-6 C4
-function TestKaydineRouting:test_1c_complete_and_paid_with_mission_2_never_started_shows_second_mission()
+function TestKaydineRouting:test_1c_complete_and_paid_with_mission_2_never_started_shows_mission2_ready()
 	local player = pilot(2, { attempted = false })
 
-	lu.assertEquals(firstScreen(player), "second_mission", "first screen")
+	lu.assertEquals(firstScreen(player), "mission2_ready", "first screen")
 end
 
 -- AC-6 C4: the next mission's failed screen needs that mission's own key
 function TestKaydineRouting:test_each_failed_screen_reads_the_attempted_key_of_its_own_mission()
-	local failed = { "failed_first_mission", "failed_second_mission", "failed_third_mission", "failed_fourth_mission" }
+	local failed = { "mission1_failed", "mission2_failed", "mission3_failed", "mission4_failed" }
 
 	for n = 1, 4 do
 		H.reset()
@@ -364,10 +371,10 @@ TestKaydineStarts = {}
 function TestKaydineStarts:setUp() H.reset() end
 
 local START_SCREENS = {
-	{ "start_first_mission", "try_first_mission", "cant_wait_first" },
-	{ "accept_escort", "back_to_escort", "now_is_good", "be_smarter" },
-	{ "accept_inspect", "on_your_way", "take_it_serious", "bad_liar" },
-	{ "accept_assassinate", "nonsense", "let_me_know", "report_back_success", "key_to_success", "just_malfunctioned" },
+	{ "mission1_accept", "mission1_accept_male", "mission1_failed" },
+	{ "mission2_accept", "mission2_failed" },
+	{ "mission3_accept", "mission3_failed" },
+	{ "mission4_accept", "mission4_failed" },
 }
 
 -- every :attempted key a player carries
@@ -434,14 +441,14 @@ for n = 1, 4 do
 end
 
 -- AC-7: the retry of mission 1 after 1a and 1b were won and 1c was not
-function TestKaydineStarts:test_try_first_mission_with_1a_and_1b_complete_clears_all_three_and_starts_1a()
+function TestKaydineStarts:test_mission1_failed_with_1a_and_1b_complete_clears_all_three_and_starts_1a()
 	local seen
 	local starts = H.spyOn(_G[A1], "startQuest", function(self, pPlayer)
 		seen = { T.state(pPlayer, A1), T.state(pPlayer, A2), T.state(pPlayer, A3) }
 	end)
 	local player = pilot(1, { complete = { A1, A2 }, attempted = false })
 
-	enterScreen(player, "try_first_mission")
+	enterScreen(player, "mission1_failed")
 
 	lu.assertEquals(#starts, 1, "startQuest calls on 1a")
 	lu.assertEquals(seen, { "none", "none", "none" }, "journal state of 1a, 1b, 1c when the head's startQuest ran")
@@ -449,20 +456,20 @@ function TestKaydineStarts:test_try_first_mission_with_1a_and_1b_complete_clears
 end
 
 -- AC-7: the same through the real helper, ending with the head active and nothing else
-function TestKaydineStarts:test_try_first_mission_with_1a_and_1b_complete_ends_with_only_1a_active()
+function TestKaydineStarts:test_mission1_failed_with_1a_and_1b_complete_ends_with_only_1a_active()
 	local player = pilot(1, { complete = { A1, A2 }, attempted = false })
 
-	enterScreen(player, "try_first_mission")
+	enterScreen(player, "mission1_failed")
 	lu.assertEquals({ T.state(player, A1), T.state(player, A2), T.state(player, A3) }, { "active", "none", "none" }, "1a, 1b, 1c")
 end
 
 -- AC-7: a running member blocks the retake
-function TestKaydineStarts:test_try_first_mission_while_1b_is_active_starts_nothing_and_clears_nothing()
+function TestKaydineStarts:test_mission1_failed_while_1b_is_active_starts_nothing_and_clears_nothing()
 	local starts = H.spyOn(_G[A1], "startQuest")
 	local player = pilot(1, { complete = { A1 }, active = { A2 }, attempted = false })
 	local clears = H.spyOn(player.ghost, "clearJournalQuest")
 
-	enterScreen(player, "try_first_mission")
+	enterScreen(player, "mission1_failed")
 
 	lu.assertEquals(#starts, 0, "startQuest calls")
 	lu.assertEquals(#clears, 0, "clearJournalQuest calls")
@@ -539,7 +546,7 @@ function TestKaydineRuntime:test_completing_1a_then_1b_starts_the_next_member_5_
 
 	local player = pilot(1, { attempted = false, zone = "space_naboo", ship = true })
 
-	enterScreen(player, "start_first_mission")
+	enterScreen(player, "mission1_accept")
 	lu.assertEquals(chainStates(player), { "active", "none", "none" }, "after accepting")
 	lu.assertEquals(firstScreen(player), "on_mission", "Kaydine with 1a running")
 
@@ -567,7 +574,7 @@ function TestKaydineRuntime:test_completing_1a_then_1b_starts_the_next_member_5_
 		lu.assertEquals(T.state(player, name), "none", name .. " was never started")
 	end
 
-	lu.assertEquals(firstScreen(player), "complete_first_mission", "Kaydine after the chain")
+	lu.assertEquals(firstScreen(player), "mission1_complete", "Kaydine after the chain")
 end
 
 -- AC-7: failing the middle of the chain leaves the pilot on the retry screen with the key set
@@ -576,7 +583,7 @@ function TestKaydineRuntime:test_a_pilot_who_won_1a_and_1b_and_waits_for_nothing
 
 	local player = pilot(1, { attempted = false, zone = "space_naboo", ship = true })
 
-	enterScreen(player, "start_first_mission")
+	enterScreen(player, "mission1_accept")
 	_G[A1]:completeQuest(player, "false")
 	H.advance(5250)
 	_G[A2]:completeQuest(player, "false")
@@ -586,5 +593,5 @@ function TestKaydineRuntime:test_a_pilot_who_won_1a_and_1b_and_waits_for_nothing
 	_G[A3]:failQuest(player, "false")
 
 	lu.assertEquals(chainStates(player), { "complete", "complete", "none" }, "chain after losing 1c")
-	lu.assertEquals(firstScreen(player), "failed_first_mission", "Kaydine")
+	lu.assertEquals(firstScreen(player), "mission1_failed", "Kaydine")
 end

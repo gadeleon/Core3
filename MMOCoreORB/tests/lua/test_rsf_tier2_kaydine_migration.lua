@@ -64,11 +64,13 @@ for _, m in ipairs(SHIFT) do
 	ALL_KEYS[m[2]] = true
 end
 
-local OFFER = { "first_mission", "second_mission", "third_mission", "fourth_mission" }
-local FAILED = { "failed_first_mission", "failed_second_mission", "failed_third_mission", "failed_fourth_mission" }
-local PENDING = { "complete_first_mission", "complete_second_mission", "complete_third_mission", "complete_fourth_mission" }
-local AFTER_PAID = { "second_mission", "third_mission", "fourth_mission", "here_for_work" }
-local PAY_SCREEN = { "according_to_plan", "duty_calls", "turnover_intelligence", "fourth_mission_success" }
+-- rsf-tier2-kaydine-convo: SWG's story dialogue under Imler-style ids. Mission 2 is paid by its first screen (PENDING[2] is also its
+-- pay screen), so a pending mission 2 pays when it is shown; the failed screens re-grant the mission (D-14).
+local OFFER = { "mission1_ready", "mission2_ready", "mission3_ready", "mission4_ready" }
+local FAILED = { "mission1_failed", "mission2_failed", "mission3_failed", "mission4_failed" }
+local PENDING = { "mission1_complete", "mission2_reward", "mission3_complete", "mission4_complete" }
+local AFTER_PAID = { "mission2_ready", "mission3_ready", "mission4_ready", "here_for_work" }
+local PAY_SCREEN = { "mission1_reward", "mission2_reward", "mission3_reward", "mission4_reward" }
 
 -- Tier 3 legacy of step 1 (F2): the completed legacy delivery 3b and the 4_initial status keys
 local OLD3 = { "delivery", "naboo_privateer_tier3_3b" }
@@ -224,9 +226,9 @@ function TestKaydineMigrationRows:test_t1_a_completed_13a_shows_the_pay_screen_o
 
 	M.finish(player, "destroy", "naboo_privateer_13a")
 
-	lu.assertEquals(kaydineScreen(player), "complete_first_mission", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission1_complete", "first screen")
 	lu.assertEquals(rec.rewards, {}, "rewardPlayer calls on the routing screen")
-	enterScreen(player, "according_to_plan")
+	enterScreen(player, "mission1_reward")
 	lu.assertEquals(rec.rewards, { HEADS[1] }, "rewardPlayer calls after the pay screen")
 end
 
@@ -365,7 +367,7 @@ function TestKaydineMigrationRows:test_t7_a_pilot_who_won_and_was_paid_the_old_m
 	history(player, 3, "none")
 	-- history(3, none) won positions 1 and 2 and paid them
 	lu.assertEquals(H.getQuestStatus(player, "naboo_privateer_14:reward"), "1", "setup: old 14:reward")
-	lu.assertEquals(kaydineScreen(player), "third_mission", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission3_ready", "first screen")
 	lu.assertEquals(rec.rewards, {}, "rewardPlayer calls")
 	assertMission(player, 1, "complete")
 	assertMission(player, 2, "complete")
@@ -386,11 +388,11 @@ function TestKaydineMigrationRows:test_t8_the_old_mission_3_attempt_becomes_the_
 end
 
 -- AC-8 T8: and it shows as the failed mission 3 when missions 1 and 2 are won
-function TestKaydineMigrationRows:test_t8_an_old_mission_3_attempt_with_missions_1_and_2_won_shows_failed_third_mission()
+function TestKaydineMigrationRows:test_t8_an_old_mission_3_attempt_with_missions_1_and_2_won_shows_mission3_failed()
 	local player = bare({ marker = "1" })
 
 	history(player, 3, "attempted")
-	lu.assertEquals(kaydineScreen(player), "failed_third_mission", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission3_failed", "first screen")
 end
 
 -- AC-8 T9: no legacy state: only the marker changes
@@ -410,7 +412,7 @@ end
 function TestKaydineMigrationRows:test_t9_a_never_started_pilot_is_offered_mission_1_and_gets_the_marker_2()
 	local player = bare()
 
-	lu.assertEquals(kaydineScreen(player), "first_mission", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission1_ready", "first screen")
 	lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
 end
 
@@ -479,15 +481,30 @@ for k = 1, 4 do
 
 			lu.assertEquals(kaydineScreen(player), expectedScreen(k, mode), "first screen")
 
+			-- D-14: the failed screen of a mission re-grants it, so its head is running after the first screen
+			local regrant = mode == "attempted" or mode == "active"
+
 			for m = 1, 4 do
-				assertMission(player, m, (m < k or (m == k and (mode == "complete" or mode == "paid"))) and "complete" or "none", "mission " .. m .. ": ")
+				if m == k and regrant then
+					lu.assertEquals(state(player, NEW[m][1]), "active", "mission " .. m .. ": " .. label(NEW[m][1]) .. ": journal state (re-granted by the failed screen)")
+				else
+					assertMission(player, m, (m < k or (m == k and (mode == "complete" or mode == "paid"))) and "complete" or "none", "mission " .. m .. ": ")
+				end
 			end
 
 			assertLegacyClean(player)
+
+			-- the first screen of a pending mission 2 pays it (mission2_reward), which writes 13:reward (it came from the legacy 14:reward)
+			if k == 2 and mode == "complete" then
+				set["naboo_privateer_14:reward"] = "1"
+			end
+
 			assertShifted(player, set)
 			lu.assertEquals(H.getQuestStatus(player, MARKER), "2", "marker")
-			lu.assertEquals(rec.rewards, {}, "rewardPlayer calls on the routing screen")
-			lu.assertEquals(M.sideEffects(player).music, before.music, "music")
+			-- the pending screen of mission 2 is its pay screen (mission2_reward): shown, it pays the head once
+			lu.assertEquals(rec.rewards, (k == 2 and mode == "complete") and { HEADS[2] } or {}, "rewardPlayer calls on the first screen")
+			-- a re-grant by the failed screen plays the start music; nothing else makes noise
+			lu.assertEquals(M.sideEffects(player).music, before.music + (regrant and 1 or 0), "music")
 			lu.assertEquals(M.sideEffects(player).events, before.events, "createEvent calls")
 		end
 	end
@@ -499,7 +516,12 @@ for k = 1, 4 do
 
 		history(player, k, "complete")
 		lu.assertEquals(kaydineScreen(player), PENDING[k], "first screen")
-		enterScreen(player, PAY_SCREEN[k])
+
+		if k ~= 2 then
+			-- mission 2 is paid by its first screen
+			enterScreen(player, PAY_SCREEN[k])
+		end
+
 		lu.assertEquals(kaydineScreen(player), AFTER_PAID[k], "next visit")
 		lu.assertEquals(rec.rewards, { HEADS[k] }, "rewardPlayer calls")
 		lu.assertEquals(H.getQuestStatus(player, NEWKEY[k] .. ":reward"), "1", NEWKEY[k] .. ":reward")
@@ -525,7 +547,7 @@ function TestKaydineMigrationPositions:test_a_pilot_without_a_marker_gets_both_s
 	local player = bare()
 	local set = history(player, 3, "complete")
 
-	lu.assertEquals(kaydineScreen(player), "complete_third_mission", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission3_complete", "first screen")
 	assertMission(player, 1, "complete")
 	assertMission(player, 2, "complete")
 	assertMission(player, 3, "complete")
@@ -535,7 +557,7 @@ function TestKaydineMigrationPositions:test_a_pilot_without_a_marker_gets_both_s
 end
 
 -- AC-8: old 14 complete with 14:reward unset is the old mission 2 won and unpaid
-function TestKaydineMigrationPositions:test_escort_14_complete_with_the_reward_unset_gives_complete_second_mission_and_pays_destroy_13_once()
+function TestKaydineMigrationPositions:test_escort_14_complete_with_the_reward_unset_gives_mission2_reward_and_pays_destroy_13_once()
 	local player = bare({ marker = "1" })
 	local rec = T.spyRewards()
 
@@ -544,9 +566,9 @@ function TestKaydineMigrationPositions:test_escort_14_complete_with_the_reward_u
 	M.finish(player, "escort", "naboo_privateer_14")
 	H.setQuestStatus(player, "naboo_privateer_14:attempted", "1")
 
-	lu.assertEquals(kaydineScreen(player), "complete_second_mission", "first screen")
-	enterScreen(player, "duty_calls")
-	kaydineScreen(player)
+	-- mission 2 is paid by its first screen (mission2_reward); the next visit pays nothing more
+	lu.assertEquals(kaydineScreen(player), "mission2_reward", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission3_ready", "second visit")
 	lu.assertEquals(rec.rewards, { "destroy_naboo_privateer_13" }, "rewardPlayer calls")
 end
 
@@ -590,10 +612,10 @@ function TestKaydineMigrationPositions:test_a_pilot_with_all_four_old_entries_co
 	end
 
 	-- the handler offers the last pending reward first
-	lu.assertEquals(kaydineScreen(player), "complete_fourth_mission", "first screen")
-	enterScreen(player, "fourth_mission_success")
-	lu.assertEquals(kaydineScreen(player), "complete_third_mission", "second screen")
-	enterScreen(player, "turnover_intelligence")
+	lu.assertEquals(kaydineScreen(player), "mission4_complete", "first screen")
+	enterScreen(player, "mission4_reward")
+	lu.assertEquals(kaydineScreen(player), "mission3_complete", "second screen")
+	enterScreen(player, "mission3_reward")
 	lu.assertEquals(kaydineScreen(player), "here_for_work", "third screen")
 	lu.assertEquals(rec.rewards, { HEADS[4], HEADS[3] }, "rewardPlayer calls")
 end
@@ -646,10 +668,11 @@ local function bothTiers(player)
 	return history(player, 3, "active")
 end
 
-local function assertBothMigrated(player, set)
+local function assertBothMigrated(player, set, regranted)
 	assertMission(player, 1, "complete")
 	assertMission(player, 2, "complete")
-	assertMission(player, 3, "none")
+	-- opening Kaydine shows mission3_failed, which re-grants mission 3 (D-14); opening Dulios does not
+	lu.assertEquals(state(player, NEW[3][1]), regranted and "active" or "none", "mission 3: head")
 	assertLegacyClean(player)
 	assertShifted(player, set)
 	lu.assertEquals(M.leftovers(player, OLD3[1], OLD3[2]), M.clean(), "legacy delivery 3b leftovers")
@@ -668,9 +691,9 @@ function TestKaydineMigrationSteps:test_opening_kaydine_with_both_tiers_of_legac
 
 	wrapMethod(RsfSquadronScreenplay, "migrateLegacyTier3", "step1", log)
 	wrapMethod(RsfSquadronScreenplay, "migrateLegacyTier2", "step2", log)
-	lu.assertEquals(kaydineScreen(player), "failed_third_mission", "first screen")
+	lu.assertEquals(kaydineScreen(player), "mission3_failed", "first screen")
 	lu.assertEquals(log, { "step1", "step2" }, "steps run, in order")
-	assertBothMigrated(player, set)
+	assertBothMigrated(player, set, true)
 end
 
 -- AC-9, D-7: opening Dulios instead gives the same result

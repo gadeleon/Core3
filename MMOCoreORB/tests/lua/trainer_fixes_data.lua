@@ -122,7 +122,8 @@ T.TRAINERS.kaydine = {
 	handler = "space/conversations/neutral/rsf_squadron/kaydineConvoHandler.lua",
 	usesAttempted = true,
 	-- rsf-tier2-kaydine-missions (AC-5, AC-6, AC-7): SWG's four tier 2 missions; mission 1 is the 1a/1b/1c assassination chain.
-	-- The screen ids keep their old names (D-9: accept_escort starts the destroy mission, and so on).
+	-- rsf-tier2-kaydine-convo (spec section 3): the story screens have SWG's dialogue and Imler-style ids (D-9 resolved);
+	-- the accept screens and the failure lines (which re-grant, D-14) start the mission.
 	chains = {
 		{ "assassinate_naboo_privateer_tier2_1a", "assassinate_naboo_privateer_tier2_1b", "assassinate_naboo_privateer_tier2_1c" },
 		{ "destroy_naboo_privateer_13" },
@@ -130,10 +131,10 @@ T.TRAINERS.kaydine = {
 		{ "escort_naboo_privateer_15" },
 	},
 	starts = {
-		starts("+start_first_mission", "+try_first_mission", "+cant_wait_first"),
-		starts("+accept_escort", "+back_to_escort", "+now_is_good", "+be_smarter"),
-		starts("+accept_inspect", "+on_your_way", "+take_it_serious", "+bad_liar"),
-		starts("+accept_assassinate", "+nonsense", "+let_me_know", "+report_back_success", "+key_to_success", "+just_malfunctioned"),
+		starts("+mission1_accept", "+mission1_accept_male", "+mission1_failed"),
+		starts("+mission2_accept", "+mission2_failed"),
+		starts("+mission3_accept", "+mission3_failed"),
+		starts("+mission4_accept", "+mission4_failed"),
 	},
 	-- Migration is already done for these pilots (marker "2" = both steps ran): without it the status keys the builder seeds
 	-- (the new 14: and 15: names) would be read as legacy keys and moved. The migration tests set the marker themselves.

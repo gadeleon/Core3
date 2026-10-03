@@ -566,7 +566,8 @@ recovery_corellia_privateer_tier3_1 = SpaceRecoveryScreenplay:new {
 
 	questZone = "space_lok",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = { {species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_neutral_subpro_military.iff"} },
 
 	sideQuest = true,
 	sideQuestType = "patrol",
@@ -717,7 +718,8 @@ inspect_corellia_privateer_tier3_2 = SpaceInspectScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = { {species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_neutral_mandal_inferno.iff"} },
 
 	parentQuest = "",
 	parentQuestType = "",
@@ -859,7 +861,8 @@ delivery_corellia_privateer_tier3_3 = SpaceDeliveryScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 100,
+	creditReward = 25000,
+	itemReward = { {species = {-1}, item = "object/tangible/ship/components/weapon_capacitor/cap_mission_reward_neutral_sorosuub_v1.iff"} },
 
 	parentQuest = "",
 	parentQuestType = "",
@@ -973,12 +976,7 @@ assassinate_corellia_privateer_tier3_3d = SpaceAssassinateScreenplay:new {
 	parentQuestName = "corellia_privateer_tier3_3_a",
 
 	sideQuest = false,
-	sideQuestType = "space_battle",
-	sideQuestName = "corellia_privateer_tier4_3c_win",
-	sideFailQuestType = "space_battle",
-	sideFailQuestName = "corellia_privateer_tier4_3c_lose",
-	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL,
-	sideQuestDelay = 1, -- Time in seconds to wait to trigger side quest
+	sideQuestType = "",
 
 	-- Screenplay Specific Variables
 
@@ -1009,8 +1007,8 @@ assassinate_corellia_privateer_tier3_4 = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_endor",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 25000,
+	itemReward = { {species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_neutral_kse_handcrafted.iff"} },
 
 	sideQuest = true,
 	sideQuestType = "survival",
@@ -1057,9 +1055,11 @@ survival_corellia_privateer_tier3_4_a = SpaceSurvivalScreenplay:new {
 	parentQuestType = "assassinate",
 	parentQuestName = "corellia_privateer_tier3_4",
 
-	sideQuest = false,
-	sideQuestType = "",
-	sideQuestName = "",
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "corellia_privateer_tier3_4_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
 
 	-- Screenplay Specific Variables (survival/corellia_privateer_tier3_4_a.tab)
 	transmissionPoint = {patrolPointName = "corellia_privateer_tier3_endor_survival_1", x = 3250, z = 5631, y = 6980},
@@ -1080,6 +1080,77 @@ survival_corellia_privateer_tier3_4_a = SpaceSurvivalScreenplay:new {
 }
 
 registerScreenPlay("survival_corellia_privateer_tier3_4_a", true)
+
+-- CorSec Tier 3 Mission 4b: Inspect (Endor)
+-- Ported from SWG-Source: datatables/spacequest/inspect/corellia_privateer_tier3_4_b.tab
+-- Trainer: Ramna (tier 3)  SWG-Source series: corellia_privateer  Slice: corsec-tier3-extensions
+inspect_corellia_privateer_tier3_4_b = SpaceInspectScreenplay:new {
+	className = "inspect_corellia_privateer_tier3_4_b",
+
+	questName = "corellia_privateer_tier3_4_b",
+	questType = "inspect",
+
+	questZone = "space_endor",
+
+	creditReward = 0,
+	itemReward = {},
+
+	parentQuest = "survival_corellia_privateer_tier3_4_a",
+	parentQuestType = "survival",
+	parentQuestName = "corellia_privateer_tier3_4_a",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "corellia_privateer_tier3_4_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	shipList = {"evil_raider_tyrant_tier3"},
+	validSpawns = {
+		{spawnName = "corellia_privateer_tier3_inspect_spawner", x = 1317, z = -455, y = -2876},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "stolen_data",
+}
+
+registerScreenPlay("inspect_corellia_privateer_tier3_4_b", true)
+
+-- CorSec Tier 3 Mission 4c: Delivery, no pickup (Endor)
+-- Ported from SWG-Source: datatables/spacequest/delivery_no_pickup/corellia_privateer_tier3_4_c.tab
+-- Trainer: Ramna (tier 3)  SWG-Source series: corellia_privateer  Slice: corsec-tier3-extensions
+delivery_no_pickup_corellia_privateer_tier3_4_c = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_corellia_privateer_tier3_4_c",
+
+	questName = "corellia_privateer_tier3_4_c",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_endor",
+
+	creditReward = 0,
+	itemReward = {},
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_corellia_privateer_tier3_4_b",
+	parentQuestType = "inspect",
+	parentQuestName = "corellia_privateer_tier3_4_b",
+
+	deliveryShip = "corsec_lancer_tier3",
+
+	deliveryPoint = {patrolPointName = "corellia_privateer_tier3_delivery", x = 4942, z = 2775, y = -2471},
+
+	attackShipLists = {
+		{"evil_raider_tyrant_tier3", "evil_raider_fighter_tier3", "evil_raider_fighter_tier3", "evil_raider_fighter_tier3"},
+		{"evil_raider_tyrant_tier3", "evil_raider_cutthroat_tier3", "evil_raider_cutthroat_tier3", "evil_raider_cutthroat_tier3"},
+	},
+
+	attackPeriod = 65,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.RANDOM,
+}
+
+registerScreenPlay("delivery_no_pickup_corellia_privateer_tier3_4_c", true)
 
 --[[
 	Tier 4 -- Adwan Turoldine Main Missions
@@ -1813,6 +1884,8 @@ CorsecSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_3_SIDE3 = {type = "assassinate", name = "corellia_privateer_tier3_3d"},
 	TIER3_QUEST_STRING_4 = {type = "assassinate", name = "corellia_privateer_tier3_4"},
 	TIER3_QUEST_STRING_4_SIDE1 = {type = "survival", name = "corellia_privateer_tier3_4_a"},
+	TIER3_QUEST_STRING_4_SIDE2 = {type = "inspect", name = "corellia_privateer_tier3_4_b"},
+	TIER3_QUEST_STRING_4_SIDE3 = {type = "delivery_no_pickup", name = "corellia_privateer_tier3_4_c"},
 
 	-- Tier4
 	TIER4_QUEST_STRING_1 = {type = "patrol", name = "corellia_privateer_tier4_1a"},
@@ -1969,8 +2042,12 @@ function CorsecSquadronScreenplay:resetRamnaQuests(pPlayer)
 	-- Mission 4
 	assassinate_corellia_privateer_tier3_4:resetQuest(pPlayer)
 	survival_corellia_privateer_tier3_4_a:resetQuest(pPlayer)
+	inspect_corellia_privateer_tier3_4_b:resetQuest(pPlayer)
+	delivery_no_pickup_corellia_privateer_tier3_4_c:resetQuest(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4.type, self.TIER3_QUEST_STRING_4.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE1.type, self.TIER3_QUEST_STRING_4_SIDE1.name, false)
+	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE2.type, self.TIER3_QUEST_STRING_4_SIDE2.name, false)
+	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE3.type, self.TIER3_QUEST_STRING_4_SIDE3.name, false)
 
 	local playerID = SceneObject(pPlayer):getObjectID()
 

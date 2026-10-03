@@ -1,3 +1,4 @@
+-- Ramna (CorSec tier 3, Corellia) conversation; ported from SWG-Source corellia_privateer_tier3.java (conversation/corellia_privateer_tier3). Second go_back_get_some screen renamed counting_on_you: feature corsec-tier3-extensions.
 ramna_convo_template = ConvoTemplate:new {
 	initialScreen = "",
 	templateType = "Lua",
@@ -1279,20 +1280,20 @@ on_the_job = ConvoScreen:new {
 	playerAnimation = "",
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_privateer_tier3:s_77b0e9f8", "go_back_get_some"}, -- No. I can do it.
+		{"@conversation/corellia_privateer_tier3:s_77b0e9f8", "counting_on_you"}, -- No. I can do it.
 	}
 }
 ramna_convo_template:addScreen(on_the_job);
 
-go_back_get_some = ConvoScreen:new {
-	id = "go_back_get_some",
+counting_on_you = ConvoScreen:new {
+	id = "counting_on_you",
 	leftDialog = "@conversation/corellia_privateer_tier3:s_a26f4215", -- OK. I'm counting on you.
 	animation = "rub_chin_thoughtful",
 	playerAnimation = "shake_head_no",
 	stopConversation = "true",
 	options = {}
 }
-ramna_convo_template:addScreen(go_back_get_some);
+ramna_convo_template:addScreen(counting_on_you);
 
 complete_mission3 = ConvoScreen:new {
 	id = "complete_mission3",

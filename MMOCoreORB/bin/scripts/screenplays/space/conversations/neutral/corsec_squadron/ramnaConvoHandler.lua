@@ -1,4 +1,4 @@
--- Ramna (CorSec tier 3) conversation handler; ported from SWG-Source corellia_privateer_tier3.java. Chain retry/won-check routing: feature space-trainer-fixes.
+-- Ramna (CorSec tier 3) conversation handler; ported from SWG-Source corellia_privateer_tier3.java. Chain retry/won-check routing: feature space-trainer-fixes. Mission 4 won-check and veteran branch: feature corsec-tier3-extensions.
 ramnaConvoHandler = conv_handler:new {}
 
 function ramnaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -57,12 +57,17 @@ function ramnaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 							SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE2.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE2.name) or
 							SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.name)
 	local questFourStarted = SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4.name) or
-							SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.name)
+							SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.name) or
+							SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE2.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE2.name) or
+							SpaceHelpers:isSpaceQuestActive(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE3.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE3.name)
 
 	local questOneComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE3.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE3.name)
 	local questTwoComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE3.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE3.name)
 	local questThreeComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_3_SIDE3.name)
-	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.name)
+	-- Win is the chain end (4_c). Pilots who collected the reward under the old 4_a win still count as won.
+	local questFourComplete = SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE3.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE3.name) or
+							(SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.type, CorsecSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1.name) and
+							getQuestStatus(playerID .. CorsecSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":reward") == "1")
 
 	local completedTier3 = SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3)
 
@@ -239,7 +244,7 @@ function ramnaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 
 		--	Give fourth mission to player
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_corellia_privateer_tier3_4")
-	elseif (screenID == "dant_operations" or screenID == "go_back_get_some") then
+	elseif (screenID == "dant_operations" or screenID == "go_back_get_some" or screenID == "counting_on_you") then
 		setQuestStatus(playerID .. CorsecSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":attempted", 1)
 
 		--	Give third mission to player

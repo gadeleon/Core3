@@ -1,5 +1,42 @@
 duliosConvoHandler = conv_handler:new {}
 
+local PT = "@conversation/naboo_privateer_tier3:"
+
+duliosConvoHandler.REWARD_SCREENS = { complete_mission1 = 1, complete_mission2 = 2, complete_mission3 = 3, complete_mission4 = 4 }
+
+duliosConvoHandler.START_SCREENS = {
+	m1_e1e07205 = 1, m1_70 = 1, m1_78 = 1, m1_100 = 1, m1_118 = 1, m1_139 = 1, m1_165 = 1, m1_182 = 1,
+	m1_retry_2bcd2d13 = 1, m1_retry_ff7bebda = 1,
+	m2_61968e69 = 2, m2_233 = 2, m2_b8955212 = 2, m2_274 = 2,
+	m2_retry_327eb2d6 = 2, m2_retry_145dcab = 2,
+	m3_c4095762 = 3, m3_3fa8b6f1 = 3, m3_331 = 3, m3_349 = 3,
+	m3_retry_2852c031 = 3, m3_retry_b679efe = 3,
+	m4_d9c145dd = 4, m4_46eb0ec8 = 4,
+	m4_retry_57d34626 = 4, m4_retry_ff5d0ba8 = 4
+}
+
+-- Skill, choice option sid, training screen id
+duliosConvoHandler.TRAIN_CHOICES = {
+	{ "pilot_neutral_starships_03", "s_aa766bd6", "train_warships" },
+	{ "pilot_neutral_weapons_03", "s_a70b470e", "train_components" },
+	{ "pilot_neutral_procedures_03", "s_da0e8cd0", "train_techniques" },
+	{ "pilot_neutral_droid_03", "s_c28a300f", "train_programming" }
+}
+
+local MISSION_HEADS = {
+	"recovery_naboo_privateer_tier3_1a",
+	"escort_naboo_privateer_tier3_2a",
+	"inspect_naboo_privateer_tier3_3a",
+	"assassinate_naboo_privateer_tier3_4a"
+}
+
+local MISSION_QUESTS = {
+	RsfSquadronScreenplay.TIER3_QUEST_STRING_1,
+	RsfSquadronScreenplay.TIER3_QUEST_STRING_2,
+	RsfSquadronScreenplay.TIER3_QUEST_STRING_3,
+	RsfSquadronScreenplay.TIER3_QUEST_STRING_4
+}
+
 function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (pPlayer == nil or pNpc == nil or pConvTemplate == nil) then
 		return nil
@@ -14,7 +51,15 @@ function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 
 	-- JTL is disabled
 	if (not isJtlEnabled()) then
-		return convoTemplate:getScreen("not_tier3")
+		return convoTemplate:getScreen("not_pilot")
+	end
+
+	if (not SpaceHelpers:isPilot(pPlayer)) then
+		return convoTemplate:getScreen("not_pilot")
+	end
+
+	if (not SpaceHelpers:isNeutralPilot(pPlayer)) then
+		return convoTemplate:getScreen("wrong_faction")
 	end
 
 	-- Check if player is RSF Pilot
@@ -25,13 +70,13 @@ function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
 	if (pGhost == nil) then
-		return convoTemplate:getScreen("not_tier3")
+		return convoTemplate:getScreen("not_pilot")
 	end
 
 	local ghost = LuaPlayerObject(pGhost)
 
 	if (ghost == nil) then
-		return convoTemplate:getScreen("not_tier3")
+		return convoTemplate:getScreen("not_pilot")
 	end
 
 	-- RSF neutral pilot has not completed Tier2
@@ -90,40 +135,12 @@ function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 
 	-- Reward Checks. Tier3 grants a skill box for each mission
 	if (questFourComplete and tier3SkillCount == 3) then
-		if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":reward") ~= "1") then
-			setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":reward", 1)
-
-			-- Grant Reward
-			assassinate_naboo_privateer_tier3_4a:rewardPlayer(pPlayer)
-		end
-
 		return convoTemplate:getScreen("complete_mission4")
 	elseif (questThreeComplete and tier3SkillCount == 2) then
-		if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":reward") ~= "1") then
-			setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":reward", 1)
-
-			-- Grant Reward
-			inspect_naboo_privateer_tier3_3a:rewardPlayer(pPlayer)
-		end
-
 		return convoTemplate:getScreen("complete_mission3")
 	elseif (questTwoComplete and tier3SkillCount == 1) then
-		if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":reward") ~= "1") then
-			setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":reward", 1)
-
-			-- Grant Reward
-			escort_naboo_privateer_tier3_2a:rewardPlayer(pPlayer)
-		end
-
 		return convoTemplate:getScreen("complete_mission2")
 	elseif (questOneComplete and tier3SkillCount < 1) then
-		if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":reward") ~= "1") then
-			setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":reward", 1)
-
-			-- Grant Reward
-			recovery_naboo_privateer_tier3_1a:rewardPlayer(pPlayer)
-		end
-
 		return convoTemplate:getScreen("complete_mission1")
 
 	-- Mission Starters
@@ -160,7 +177,8 @@ function duliosConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		end
 	end
 
-	return convoTemplate:getScreen("not_tier3")
+	-- Fewer than four skills but the last mission is done: the old dead end shows the last reward screen
+	return convoTemplate:getScreen("complete_mission4")
 end
 
 function duliosConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
@@ -190,68 +208,59 @@ function duliosConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		return pClonedScreen
 	end
 
-	if (string.find(screenID, "complete_mission")) then
+	local rewardMission = duliosConvoHandler.REWARD_SCREENS[screenID]
+
+	if (rewardMission ~= nil) then
+		local statusKey = playerID .. MISSION_QUESTS[rewardMission].name .. ":reward"
+
+		if (getQuestStatus(statusKey) ~= "1") then
+			setQuestStatus(statusKey, 1)
+
+			-- Grant Reward
+			_G[MISSION_HEADS[rewardMission]]:rewardPlayer(pPlayer)
+		end
+
 		local screenAppend = ""
 
-		if (screenID == "complete_mission4") then
+		if (SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 3) == 3) then
 			screenAppend = "_final"
 		end
 
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_starships_03")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_tier3:s_aa766bd6", "train_warships" .. screenAppend) -- I want to know about special warships.
+		for i = 1, #duliosConvoHandler.TRAIN_CHOICES do
+			local choice = duliosConvoHandler.TRAIN_CHOICES[i]
+
+			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
+				clonedConversation:addOption(PT .. choice[2], choice[3] .. screenAppend)
+			end
 		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_weapons_03")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_tier3:s_a70b470e", "train_components" .. screenAppend) -- I want to know about advanced starship components.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_procedures_03")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_tier3:s_da0e8cd0", "train_techniques" .. screenAppend) -- I want to know about advanced techniques.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_droid_03")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_tier3:s_c28a300f", "train_programming" .. screenAppend) -- I want to know about system balance programming.
-		end
+
+		return pClonedScreen
+	end
 
 	-- Handle Skill box granting
-	elseif (string.find(screenID, "train_")) then
-		if (string.find(screenID, "train_warships")) then
-			-- Train player Skill Box
-			SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_starships_03", false)
-		elseif (string.find(screenID, "train_components")) then
-			-- Train player Skill Box
-			SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_weapons_03", false)
-		elseif (string.find(screenID, "train_techniques")) then
-			-- Train player Skill Box
-			SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_procedures_03", false)
-		elseif (string.find(screenID, "train_programming")) then
-			-- Train player Skill Box
-			SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_droid_03", false)
-		end
+	for i = 1, #duliosConvoHandler.TRAIN_CHOICES do
+		local choice = duliosConvoHandler.TRAIN_CHOICES[i]
 
-		if (ghost:getPilotTier() <= 3 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3)) then
-			-- If player has all of the Tier 3 skills, increment their pilot tier
-			ghost:incrementPilotTier()
+		if (screenID == choice[3] or screenID == choice[3] .. "_final") then
+			-- Train player Skill Box
+			SpaceHelpers:grantSpaceSkill(pPlayer, choice[1], false)
+
+			if (ghost:getPilotTier() <= 3 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3)) then
+				-- If player has all of the Tier 3 skills, increment their pilot tier
+				ghost:incrementPilotTier()
+			end
+
+			return pClonedScreen
 		end
+	end
 
 	-- Give Missions
-	elseif (screenID == "accept_fourth_mission" or screenID == "nothing_cant_handle") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":attempted", 1)
+	local startMission = duliosConvoHandler.START_SCREENS[screenID]
 
-		--	Give fourth mission to player
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier3_4a")
-	elseif (screenID == "accept_third_mission" or screenID == "i_was_better") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":attempted", 1)
+	if (startMission ~= nil) then
+		setQuestStatus(playerID .. MISSION_QUESTS[startMission].name .. ":attempted", 1)
 
-		--	Give third mission to player
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "inspect_naboo_privateer_tier3_3a")
-	elseif (screenID == "accept_second_mission" or screenID == "stories_about_me") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":attempted", 1)
-
-		--	Give second mission to player
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "escort_naboo_privateer_tier3_2a")
-	elseif (screenID == "accept_first_mission" or screenID == "try_first_again") then
-		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":attempted", 1)
-
-		--	Give First mission to player
-		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "recovery_naboo_privateer_tier3_1a")
+		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, MISSION_HEADS[startMission])
 	end
 
 	return pClonedScreen

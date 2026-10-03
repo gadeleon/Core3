@@ -193,7 +193,8 @@ TestDuliosRenamesAccept = {}
 
 function TestDuliosRenamesAccept:setUp() H.reset() end
 
-for _, id in ipairs({ "accept_fourth_mission", "nothing_cant_handle" }) do
+-- rsf-tier3-dulios-convo (Superseded): one offer-path start screen and one failure-reply start screen of mission 4
+for _, id in ipairs({ "m4_46eb0ec8", "m4_retry_57d34626" }) do
 	-- AC-5
 	TestDuliosRenamesAccept["test_" .. id .. "_sets_the_4a_attempted_key_and_never_a_4_initial_key"] = function()
 		local player = pilot(4, { attempted = false })
@@ -236,7 +237,8 @@ for _, id in ipairs({ "accept_fourth_mission", "nothing_cant_handle" }) do
 end
 
 -- AC-5: mission 3 accepts the dnp 3b chain the same way
-for _, id in ipairs({ "accept_third_mission", "i_was_better" }) do
+-- rsf-tier3-dulios-convo (Superseded): one offer-path start screen and one failure-reply start screen of mission 3
+for _, id in ipairs({ "m3_c4095762", "m3_retry_2852c031" }) do
 	-- AC-5
 	TestDuliosRenamesAccept["test_" .. id .. "_clears_delivery_no_pickup_3b_with_the_rest_of_the_chain"] = function()
 		local head = tr.chains[3][1]

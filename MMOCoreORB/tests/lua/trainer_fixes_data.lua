@@ -233,11 +233,12 @@ T.TRAINERS.dulios = {
 	-- rsf-tier3-data (D-8): mission 3 is won by survival 3c, so a failed 3e leaves 3a..3c complete and Dulios pays
 	-- (complete_mission3); there is no retry state at position 4. Positions 2 and 3 stay distinct failed states.
 	failPositions = { [3] = { 2, 3 } },
+	-- rsf-tier3-dulios-convo (spec section 3): SWG's briefing trees; the 18 offer-path end lines and the 8 failure replies (D-9) start the mission.
 	starts = {
-		starts("+accept_first_mission", "+try_first_again"),
-		starts("+accept_second_mission", "+stories_about_me"),
-		starts("+accept_third_mission", "+i_was_better"),
-		starts("+accept_fourth_mission", "+nothing_cant_handle"),
+		starts("+m1_e1e07205", "+m1_70", "+m1_78", "+m1_100", "+m1_118", "+m1_139", "+m1_165", "+m1_182", "+m1_retry_2bcd2d13", "+m1_retry_ff7bebda"),
+		starts("+m2_61968e69", "+m2_233", "+m2_b8955212", "+m2_274", "+m2_retry_327eb2d6", "+m2_retry_145dcab"),
+		starts("+m3_c4095762", "+m3_3fa8b6f1", "+m3_331", "+m3_349", "+m3_retry_2852c031", "+m3_retry_b679efe"),
+		starts("+m4_d9c145dd", "+m4_46eb0ec8", "+m4_retry_57d34626", "+m4_retry_ff5d0ba8"),
 	},
 	skillGate = true,
 	player = function(n)

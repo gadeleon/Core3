@@ -578,11 +578,12 @@ function TestRsfRenamesMigrationPlacement:test_the_step_runs_before_any_journal_
 end
 
 -- AC-9, D-6: before the JTL and squadron checks
-function TestRsfRenamesMigrationPlacement:test_it_runs_for_a_player_who_gets_the_not_tier3_screen_because_jtl_is_off()
+function TestRsfRenamesMigrationPlacement:test_it_runs_for_a_player_who_gets_the_not_pilot_screen_because_jtl_is_off()
 	local player = pilot(3, { complete = { Q.a3, Q.oldDelivery } })
 
 	H.Engine.config.jtlEnabled = false
-	lu.assertEquals(firstScreen(player), "not_tier3", "first screen")
+	-- rsf-tier3-dulios-convo (Superseded, E-5): JTL off shows not_pilot (SWG's first gate), no longer not_tier3
+	lu.assertEquals(firstScreen(player), "not_pilot", "first screen")
 	assertState(player, Q.dnp3b, "complete")
 	lu.assertEquals(H.getQuestStatus(player, MARKER), "3", "marker")
 	H.Engine.config.jtlEnabled = true

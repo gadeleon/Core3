@@ -186,7 +186,8 @@ local function enterScreen(player, id)
 end
 
 -- AC-9: entering a mission 3 start screen with 3a, 3b, 3c and 3e all complete.
-for _, id in ipairs({ "accept_third_mission", "i_was_better" }) do
+-- rsf-tier3-dulios-convo (Superseded): one offer-path start screen and one failure-reply start screen of mission 3
+for _, id in ipairs({ "m3_c4095762", "m3_retry_2852c031" }) do
 	TestDuliosMission3Retry["test_" .. id .. "_with_all_four_members_complete_clears_them_and_starts_the_head"] = function()
 		local seen = {}
 		local starts = H.spyOn(_G[CHAIN3[1]], "startQuest", function(self, pPlayer)

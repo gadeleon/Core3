@@ -11,6 +11,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_duties_data")
 local C = require("rsf_tier2_kaydine_convo_data")
+local TR = require("rsf_tier2_kaydine_training_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -114,13 +115,14 @@ function TestKaydineDutyScreens:test_accept_duty_destroy1_is_deleted_and_nothing
 	end
 end
 
--- AC-4: the template still has 77 screens and no dead link or duplicate id
-function TestKaydineDutyScreens:test_the_template_has_77_screens_and_no_dead_links_or_duplicate_ids()
-	lu.assertEquals(#template().screens, 77, "kaydine_convo_template: number of screens")
+-- AC-4: the template has 87 screens (77 before rsf-tier2-kaydine-training: 77 - 20 + 30) and no dead link or duplicate id
+function TestKaydineDutyScreens:test_the_template_has_87_screens_and_no_dead_links_or_duplicate_ids()
+	lu.assertEquals(#template().screens, 87, "kaydine_convo_template: number of screens")
 	lu.assertEquals(H.conversationProblems(C.TEMPLATE), {})
 end
 
--- AC-4: "every other screen is unchanged": the 77 screens are the 72 of the earlier features' answer keys plus the five duty screens
+-- AC-4: "every other screen is unchanged": the 87 screens are the 51 of the earlier features' answer keys, the five duty screens and (rsf-tier2-kaydine-training,
+-- spec section 1) ready_train_pilot with the 30 training screens. The count was 72 + 5 = 77 before the training port removed 21 rows from C.KEPT.
 function TestKaydineDutyScreens:test_every_screen_is_one_of_the_earlier_answer_keys_or_one_of_the_five_duty_screens()
 	local expected = {}
 
@@ -132,10 +134,16 @@ function TestKaydineDutyScreens:test_every_screen_is_one_of_the_earlier_answer_k
 		expected[id] = true
 	end
 
-	lu.assertEquals(#sortedKeys(expected), 72, "screens in the earlier answer keys (46 rows and 27 kept screens, not_ready twice)")
+	lu.assertEquals(#sortedKeys(expected), 51, "screens in the earlier answer keys (46 rows and 6 kept screens, not_ready twice)")
 
 	for _, id in ipairs({ "here_for_work", "duty_options", "accept_duty_escort", "accept_duty_recovery", "accept_duty_destroy" }) do
 		lu.assertNil(expected[id], id .. " must not be in the earlier answer keys any more")
+		expected[id] = true
+	end
+
+	expected["ready_train_pilot"] = true
+
+	for _, id in ipairs(TR.newIds()) do
 		expected[id] = true
 	end
 
@@ -177,7 +185,7 @@ function TestKaydineDutyScreens:test_the_non_duty_screens_still_equal_the_earlie
 		checked = checked + 1
 	end
 
-	lu.assertTrue(checked >= 70, "screens checked: " .. checked)
+	lu.assertTrue(checked >= 50, "screens checked: " .. checked .. " (46 rows and 6 kept screens, not_ready twice, since rsf-tier2-kaydine-training)")
 end
 
 ---------------------------------------------------------------------------------------------

@@ -31,6 +31,23 @@ local HEADS = { A1, D13, R14, E15 }
 
 local function pilot(n, opts) return T.player(tr, n, opts) end
 
+-- rsf-tier2-kaydine-training (D-11, Superseded S1/S3): the state "mission n is won and paid" for a pilot who expects the next screen.
+-- S1: the pilot already holds the skill that unlocks mission n + 1 (the first n + 1 tier 2 skills in SWG's order).
+-- S3: after mission 4 the first three skills only, with 0 XP, so canTrain is false and the screen stays here_for_work.
+local ORDER_02 = { "pilot_neutral_starships_02", "pilot_neutral_weapons_02", "pilot_neutral_procedures_02", "pilot_neutral_droid_02" }
+
+local function paidSetup(n, opts)
+	opts = opts or {}
+
+	if n < 4 then
+		opts.skills = { ORDER_02[n + 1] }
+	else
+		opts.baseSkills = { ORDER_02[1], ORDER_02[2], ORDER_02[3] }
+	end
+
+	return opts
+end
+
 local function firstScreen(player)
 	local transcript = T.converse(tr, player)
 
@@ -191,7 +208,7 @@ for _, w in ipairs(WINS) do
 
 	-- AC-6 C3/C5/C6/C7: the key set by the screen ends the offer of the reward screen
 	TestKaydineRewards["test_mission_" .. n .. "_is_paid_once_over_the_screen_and_two_later_visits"] = function()
-		local player = pilot(n, { complete = complete })
+		local player = pilot(n, paidSetup(n, { complete = complete }))
 		local rec = T.spyRewards()
 
 		lu.assertEquals(firstScreen(player), pending, "first visit")
@@ -208,7 +225,7 @@ for _, w in ipairs(WINS) do
 
 	-- AC-6 C4: with the key already set, the complete screen is not offered
 	TestKaydineRewards["test_mission_" .. n .. "_won_and_paid_does_not_offer_the_reward_screen_and_pays_nothing"] = function()
-		local player = pilot(n, { complete = complete, questStatus = { [KEYS[n] .. ":reward"] = "1" } })
+		local player = pilot(n, paidSetup(n, { complete = complete, questStatus = { [KEYS[n] .. ":reward"] = "1" } }))
 		local rec = T.spyRewards()
 
 		lu.assertEquals(firstScreen(player), nextScreen, "first screen")
@@ -300,62 +317,8 @@ function TestKaydineRouting:test_all_four_skills_with_only_recovery_14_complete_
 	lu.assertNotEquals(firstScreen(player), "completed_kaydine", "first screen")
 end
 
--- AC-6 C9
-function TestKaydineRouting:test_ready_train_pilot_uses_the_prefix_mission2_when_1c_is_complete()
-	local player = pilot(2, {})
-
-	player.ghost.experience.space_combat_general = 100000
-
-	local transcript = T.converse(tr, player)
-
-	lu.assertEquals(transcript[1].id, "ready_train_pilot", "first screen")
-
-	local links = {}
-
-	for i, o in ipairs(transcript[1].options) do
-		links[i] = o.link
-	end
-
-	table.sort(links)
-	lu.assertEquals(links, { "mission2_train_algorithms", "mission2_train_components", "mission2_train_techniques" }, "training option links")
-end
-
--- AC-6 C9: 1a complete only is not the win of mission 1
-function TestKaydineRouting:test_ready_train_pilot_uses_the_prefix_initial_when_only_1a_is_complete()
-	local player = pilot(1, { complete = { A1 } })
-
-	player.ghost.experience.space_combat_general = 100000
-
-	local transcript = T.converse(tr, player)
-
-	lu.assertEquals(transcript[1].id, "ready_train_pilot", "first screen")
-
-	local links = {}
-
-	for i, o in ipairs(transcript[1].options) do
-		links[i] = o.link
-	end
-
-	table.sort(links)
-	lu.assertEquals(links, { "initial_train_algorithms", "initial_train_components", "initial_train_techniques" }, "training option links")
-end
-
--- AC-6 C9: the later wins pick their prefixes from the heads of missions 2, 3 and 4
-function TestKaydineRouting:test_ready_train_pilot_prefixes_follow_the_won_mission()
-	local cases = {
-		{ pilot(3, { win = { 1, 2 } }), "mission3_" },
-		{ pilot(4, { win = { 1, 2, 3 } }), "mission4_" },
-	}
-
-	for _, c in ipairs(cases) do
-		c[1].ghost.experience.space_combat_general = 100000
-
-		local transcript = T.converse(tr, c[1])
-
-		lu.assertEquals(transcript[1].id, "ready_train_pilot", c[2] .. ": first screen")
-		lu.assertEquals(transcript[1].options[1].link:sub(1, #c[2]), c[2], c[2] .. ": prefix of the first training option")
-	end
-end
+-- rsf-tier2-kaydine-training: the three "prefix" tests of F4 (ready_train_pilot options named after the won mission) are replaced by the
+-- SWG training port; see test_rsf_tier2_kaydine_training_routing.lua (AC-3, AC-4).
 
 ---------------------------------------------------------------------------------------------
 -- AC-7: start screens

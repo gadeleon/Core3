@@ -403,7 +403,8 @@ end
 
 -- AC-7: after the purge of an active legacy duty, accepting escort 9 succeeds in the same conversation (no duty_already)
 function TestDutyMigrationSilence:test_after_purging_an_active_legacy_duty_escort_9_can_be_accepted()
-	local player = T.player(kay, 4, { complete = { "escort_naboo_privateer_15" }, questStatus = { ["naboo_privateer_15:reward"] = "1", [MARKER] = "2" } })
+	-- rsf-tier2-kaydine-training (D-11, Superseded S3): the first three tier 2 skills only, so the pilot is not sent to completed_kaydine
+	local player = T.player(kay, 4, { complete = { "escort_naboo_privateer_15" }, baseSkills = { "pilot_neutral_starships_02", "pilot_neutral_weapons_02", "pilot_neutral_procedures_02" }, questStatus = { ["naboo_privateer_15:reward"] = "1", [MARKER] = "2" } })
 
 	staleRun(player, LEG[1])
 	lu.assertEquals(#DR.flaggedMissions(player), 1, "setup: the legacy duty holds the one-duty guard")

@@ -4,7 +4,7 @@
 -- Everything below is copied from the spec, not read from kaydine_convo.lua / kaydineConvoHandler.lua, so a wrong
 -- production value makes a test fail instead of agreeing with itself:
 --   D.ROWS     Appendix A, 46 rows (status "new" | "chg" | "kept"), options as {sid, link id}
---   D.KEPT     the 27 screens that stay byte-identical, copied from kaydine_convo.lua at 74247cbede
+--   D.KEPT     the 6 screens that stay byte-identical, copied from kaydine_convo.lua at 74247cbede (rsf-tier2-kaydine-training removed the 21 training rows)
 --   D.DELETED  the 36 screens F4 had for the story missions
 --   D.PAYS / D.STARTS  the handler contract (Content contract 2)
 --   D.OFFER_CHAIN      the screens the "ready" option walks through, per mission
@@ -13,7 +13,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 77
+D.SCREEN_COUNT = 87 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1, E-2, E-3, E-5).
 D.ROWS = {
@@ -74,28 +74,7 @@ D.KEPT = {
 	["non_rsf_missions"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_7458c693", stopConversation = "true", options = {  } },
 	["not_ready_tier2"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_eac39719", stopConversation = "true", options = {  } },
 	["on_mission"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_e95a95a5", stopConversation = "true", options = {  } },
-	["ready_train_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8a84109d", stopConversation = "false", options = {  } },
 	["not_ready"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_943f6352", stopConversation = "true", options = {  } },
-	["initial_train_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", stopConversation = "true", options = {  } },
-	["initial_train_components"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", stopConversation = "true", options = {  } },
-	["initial_train_techniques"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", stopConversation = "true", options = {  } },
-	["initial_train_algorithms"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", stopConversation = "true", options = {  } },
-	["mission2_train_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", stopConversation = "true", options = {  } },
-	["mission2_train_components"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", stopConversation = "true", options = {  } },
-	["mission2_train_techniques"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", stopConversation = "true", options = {  } },
-	["mission2_train_algorithms"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", stopConversation = "true", options = {  } },
-	["mission3_train_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", stopConversation = "true", options = {  } },
-	["mission3_train_components"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", stopConversation = "true", options = {  } },
-	["mission3_train_techniques"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", stopConversation = "true", options = {  } },
-	["mission3_train_algorithms"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", stopConversation = "true", options = {  } },
-	["mission4_train_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", stopConversation = "true", options = {  } },
-	["mission4_train_components"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", stopConversation = "true", options = {  } },
-	["mission4_train_techniques"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", stopConversation = "true", options = {  } },
-	["mission4_train_algorithms"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", stopConversation = "true", options = {  } },
-	["final_train_fighters"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", stopConversation = "true", options = {  } },
-	["final_train_components"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", stopConversation = "true", options = {  } },
-	["final_train_techniques"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", stopConversation = "true", options = {  } },
-	["final_train_algorithms"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", stopConversation = "true", options = {  } },
 }
 
 -- Content contract 1: the 36 deleted story screens
@@ -104,8 +83,9 @@ D.DELETED = {
 }
 
 -- Sids the KC/KH may carry that are not in the java (I-3)
-D.KC_FOREIGN = { s_2e7b17f3 = true, s_4aa3066e = true, s_8ad6a62e = true, s_f32117e = true, s_fd75abb = true }
-D.KH_FOREIGN = { s_45b71b4d = true, s_197f4f94 = true, s_8f5942fa = true, s_eff66f4d = true }
+-- rsf-tier2-kaydine-training (spec section 3): the eight old training sids are gone from both files, so nothing is foreign any more
+D.KC_FOREIGN = {}
+D.KH_FOREIGN = {}
 D.F4_STORY_STRINGS = { "s_3cef63a0", "s_c4ef0e93", "s_ec671b3f", "s_a80d9308", "s_ff45f1fd", "s_225b33f", "s_2d67b7a8", "s_a6c7fa2b" }
 
 -- Mission head, :attempted / :reward key base, per mission
@@ -120,6 +100,7 @@ D.PAYS = {
 }
 D.STARTS = {
 	mission1_accept = 1, mission1_accept_male = 1, mission1_failed = 1,
+	mission1_intro_accept = 1, mission1_intro_accept_male = 1, -- rsf-tier2-kaydine-training I-5: the two new M1 start screens
 	mission2_accept = 2, mission2_failed = 2,
 	mission3_accept = 3, mission3_failed = 3,
 	mission4_accept = 4, mission4_failed = 4,

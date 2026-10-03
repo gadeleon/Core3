@@ -30,7 +30,15 @@ local function veteran(opts)
 		complete[#complete + 1] = g
 	end
 
-	return T.player(tr, 4, { complete = complete, active = opts.active, skills = opts.skills, zone = opts.zone, ship = opts.ship,
+	-- rsf-tier2-kaydine-training (D-11, Superseded S3): player(4) holds all four tier 2 skills and would be sent to completed_kaydine, so a veteran
+	-- that does not bring SKILLS_02 holds the first three only (0 XP: canTrain is false and the first screen stays here_for_work)
+	local base = nil
+
+	if opts.skills == nil then
+		base = { "pilot_neutral_starships_02", "pilot_neutral_weapons_02", "pilot_neutral_procedures_02" }
+	end
+
+	return T.player(tr, 4, { complete = complete, active = opts.active, skills = opts.skills, baseSkills = base, zone = opts.zone, ship = opts.ship,
 		questStatus = { ["naboo_privateer_15:reward"] = "1" } })
 end
 

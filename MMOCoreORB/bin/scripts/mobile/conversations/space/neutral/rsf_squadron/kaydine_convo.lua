@@ -126,179 +126,320 @@ accept_duty_destroy = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(accept_duty_destroy);
 
--- Training screen (options added dynamically)
+-- Training (naboo_privateer_trainer_2.java:2200-3700); the handler points the option of ready_train_pilot at the first missing skill
 ready_train_pilot = ConvoScreen:new {
 	id = "ready_train_pilot",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8a84109d", -- It must be your lucky day. I actually do have some elective duty missions. Take a look and tell me what you want.
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_76e6f264",
 	stopConversation = "false",
-	options = {}
+	animation = "salute1",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_187", "train_droid"},
+	}
 }
 kaydine_convo_template:addScreen(ready_train_pilot);
 
--- Training completion screens
-initial_train_fighters = ConvoScreen:new {
-	id = "initial_train_fighters",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", -- Ah yes! Good choice! Learning to fly many different types of ships makes an effective pilot!
-	stopConversation = "true",
-	options = {}
+train_starships = ConvoScreen:new {
+	id = "train_starships",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_188",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_192", "trained_starships_mission4"},
+	}
 }
-kaydine_convo_template:addScreen(initial_train_fighters);
+kaydine_convo_template:addScreen(train_starships);
 
-initial_train_components = ConvoScreen:new {
-	id = "initial_train_components",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", -- You bet! New components should make your ship more than a match against a dozen Ay'Nat Ghost Fighters!
-	stopConversation = "true",
-	options = {}
+train_weapons = ConvoScreen:new {
+	id = "train_weapons",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_189",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_194", "trained_weapons_mission4"},
+	}
 }
-kaydine_convo_template:addScreen(initial_train_components);
+kaydine_convo_template:addScreen(train_weapons);
 
-initial_train_techniques = ConvoScreen:new {
-	id = "initial_train_techniques",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", -- You bet! New defense procedures should make you more than a match against a dozen Ay'Nat Ghost Fighters!
-	stopConversation = "true",
-	options = {}
+train_procedures = ConvoScreen:new {
+	id = "train_procedures",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_190",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_196", "trained_procedures_mission4"},
+	}
 }
-kaydine_convo_template:addScreen(initial_train_techniques);
+kaydine_convo_template:addScreen(train_procedures);
 
-initial_train_algorithms = ConvoScreen:new {
-	id = "initial_train_algorithms",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", -- You bet! New droid algorithms in there should make you more than a match against a dozen Ay'Nat Ghost Fighters!
-	stopConversation = "true",
-	options = {}
+train_droid = ConvoScreen:new {
+	id = "train_droid",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_191",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_198", "trained_droid_mission4"},
+	}
 }
-kaydine_convo_template:addScreen(initial_train_algorithms);
+kaydine_convo_template:addScreen(train_droid);
 
--- Mission 2 training screens
-mission2_train_fighters = ConvoScreen:new {
-	id = "mission2_train_fighters",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", -- Ah yes! Good choice!
-	stopConversation = "true",
-	options = {}
+trained_starships_mission1 = ConvoScreen:new {
+	id = "trained_starships_mission1",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_224",
+	stopConversation = "false",
+	animation = "applause_polite",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_226", "mission1_intro_a1"},
+		{"@conversation/naboo_privateer_trainer_2:s_248", "mission1_intro_b1"},
+	}
 }
-kaydine_convo_template:addScreen(mission2_train_fighters);
+kaydine_convo_template:addScreen(trained_starships_mission1);
 
-mission2_train_components = ConvoScreen:new {
-	id = "mission2_train_components",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", -- You bet! New components...
-	stopConversation = "true",
-	options = {}
+trained_starships_mission2 = ConvoScreen:new {
+	id = "trained_starships_mission2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_270",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission2_train_components);
+kaydine_convo_template:addScreen(trained_starships_mission2);
 
-mission2_train_techniques = ConvoScreen:new {
-	id = "mission2_train_techniques",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", -- You bet! New defense procedures...
-	stopConversation = "true",
-	options = {}
+trained_starships_mission3 = ConvoScreen:new {
+	id = "trained_starships_mission3",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_284",
+	stopConversation = "false",
+	animation = "shake_head_disgust",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_286", "mission3_intro"},
+	}
 }
-kaydine_convo_template:addScreen(mission2_train_techniques);
+kaydine_convo_template:addScreen(trained_starships_mission3);
 
-mission2_train_algorithms = ConvoScreen:new {
-	id = "mission2_train_algorithms",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", -- You bet! New droid algorithms...
-	stopConversation = "true",
-	options = {}
+trained_starships_mission4 = ConvoScreen:new {
+	id = "trained_starships_mission4",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_294",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission2_train_algorithms);
+kaydine_convo_template:addScreen(trained_starships_mission4);
 
--- Mission 3 training screens
-mission3_train_fighters = ConvoScreen:new {
-	id = "mission3_train_fighters",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e",
-	stopConversation = "true",
-	options = {}
+trained_weapons_mission1 = ConvoScreen:new {
+	id = "trained_weapons_mission1",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_216",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission3_train_fighters);
+kaydine_convo_template:addScreen(trained_weapons_mission1);
 
-mission3_train_components = ConvoScreen:new {
-	id = "mission3_train_components",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e",
-	stopConversation = "true",
-	options = {}
+trained_weapons_mission2 = ConvoScreen:new {
+	id = "trained_weapons_mission2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_218",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission3_train_components);
+kaydine_convo_template:addScreen(trained_weapons_mission2);
 
-mission3_train_techniques = ConvoScreen:new {
-	id = "mission3_train_techniques",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e",
-	stopConversation = "true",
-	options = {}
+trained_weapons_mission3 = ConvoScreen:new {
+	id = "trained_weapons_mission3",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_220",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+	}
 }
-kaydine_convo_template:addScreen(mission3_train_techniques);
+kaydine_convo_template:addScreen(trained_weapons_mission3);
 
-mission3_train_algorithms = ConvoScreen:new {
-	id = "mission3_train_algorithms",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb",
-	stopConversation = "true",
-	options = {}
+trained_weapons_mission4 = ConvoScreen:new {
+	id = "trained_weapons_mission4",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_222",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission3_train_algorithms);
+kaydine_convo_template:addScreen(trained_weapons_mission4);
 
--- Mission 4 training screens
-mission4_train_fighters = ConvoScreen:new {
-	id = "mission4_train_fighters",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e",
-	stopConversation = "true",
-	options = {}
+trained_procedures_mission1 = ConvoScreen:new {
+	id = "trained_procedures_mission1",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_208",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission4_train_fighters);
+kaydine_convo_template:addScreen(trained_procedures_mission1);
 
-mission4_train_components = ConvoScreen:new {
-	id = "mission4_train_components",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e",
-	stopConversation = "true",
-	options = {}
+trained_procedures_mission2 = ConvoScreen:new {
+	id = "trained_procedures_mission2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_210",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission4_train_components);
+kaydine_convo_template:addScreen(trained_procedures_mission2);
 
-mission4_train_techniques = ConvoScreen:new {
-	id = "mission4_train_techniques",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e",
-	stopConversation = "true",
-	options = {}
+trained_procedures_mission3 = ConvoScreen:new {
+	id = "trained_procedures_mission3",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_212",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+	}
 }
-kaydine_convo_template:addScreen(mission4_train_techniques);
+kaydine_convo_template:addScreen(trained_procedures_mission3);
 
-mission4_train_algorithms = ConvoScreen:new {
-	id = "mission4_train_algorithms",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb",
-	stopConversation = "true",
-	options = {}
+trained_procedures_mission4 = ConvoScreen:new {
+	id = "trained_procedures_mission4",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_214",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+	}
 }
-kaydine_convo_template:addScreen(mission4_train_algorithms);
+kaydine_convo_template:addScreen(trained_procedures_mission4);
 
--- Final training screens
-final_train_fighters = ConvoScreen:new {
-	id = "final_train_fighters",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e",
-	stopConversation = "true",
-	options = {}
+trained_droid_mission1 = ConvoScreen:new {
+	id = "trained_droid_mission1",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_200",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+	}
 }
-kaydine_convo_template:addScreen(final_train_fighters);
+kaydine_convo_template:addScreen(trained_droid_mission1);
 
-final_train_components = ConvoScreen:new {
-	id = "final_train_components",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e",
-	stopConversation = "true",
-	options = {}
+trained_droid_mission2 = ConvoScreen:new {
+	id = "trained_droid_mission2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_202",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+	}
 }
-kaydine_convo_template:addScreen(final_train_components);
+kaydine_convo_template:addScreen(trained_droid_mission2);
 
-final_train_techniques = ConvoScreen:new {
-	id = "final_train_techniques",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e",
-	stopConversation = "true",
-	options = {}
+trained_droid_mission3 = ConvoScreen:new {
+	id = "trained_droid_mission3",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_204",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+	}
 }
-kaydine_convo_template:addScreen(final_train_techniques);
+kaydine_convo_template:addScreen(trained_droid_mission3);
 
-final_train_algorithms = ConvoScreen:new {
-	id = "final_train_algorithms",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb",
+trained_droid_mission4 = ConvoScreen:new {
+	id = "trained_droid_mission4",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_206",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+	}
+}
+kaydine_convo_template:addScreen(trained_droid_mission4);
+
+mission1_intro_a1 = ConvoScreen:new {
+	id = "mission1_intro_a1",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_228",
+	stopConversation = "false",
+	animation = "nod_head_once",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_230", "mission1_intro_a2"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_a1);
+
+mission1_intro_a2 = ConvoScreen:new {
+	id = "mission1_intro_a2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_232",
+	stopConversation = "false",
+	animation = "shrug_shoulders",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_234", "mission1_intro_a3"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_a2);
+
+mission1_intro_a3 = ConvoScreen:new {
+	id = "mission1_intro_a3",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_236",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_a3);
+
+mission1_intro_b1 = ConvoScreen:new {
+	id = "mission1_intro_b1",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_250",
+	stopConversation = "false",
+	animation = "shake_head_disgust",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_252", "mission1_intro_b2"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_b1);
+
+mission1_intro_b2 = ConvoScreen:new {
+	id = "mission1_intro_b2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_254",
+	stopConversation = "false",
+	animation = "shrug_shoulders",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_256", "mission1_intro_b3"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_b2);
+
+mission1_intro_b3 = ConvoScreen:new {
+	id = "mission1_intro_b3",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_258",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_260", "mission1_intro_b4"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_b3);
+
+mission1_intro_b4 = ConvoScreen:new {
+	id = "mission1_intro_b4",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_262",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_264", "mission1_intro_accept"},
+	}
+}
+kaydine_convo_template:addScreen(mission1_intro_b4);
+
+mission1_intro_accept_male = ConvoScreen:new {
+	id = "mission1_intro_accept_male",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_266",
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(final_train_algorithms);
+kaydine_convo_template:addScreen(mission1_intro_accept_male);
+
+mission1_intro_accept = ConvoScreen:new {
+	id = "mission1_intro_accept",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_268",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(mission1_intro_accept);
+
+mission3_intro = ConvoScreen:new {
+	id = "mission3_intro",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_288",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+	}
+}
+kaydine_convo_template:addScreen(mission3_intro);
 
 -- Story missions (SWG naboo_privateer_trainer_2 dialogue)
 mission1_ready = ConvoScreen:new {

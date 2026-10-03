@@ -107,6 +107,15 @@ local function bare(opts)
 	return player
 end
 
+-- rsf-tier2-kaydine-training (D-11, Superseded S2): SWG offers mission n only with at least n tier 2 skills. A pilot who is expected to be
+-- offered mission 2, 3 or 4 holds all four skills (no state here has mission 4 won, so completed_kaydine and canTrain stay out of it);
+-- every other screen does not depend on the skills, so those pilots keep the builder's single skill.
+local function offerSkills(expectedScreen)
+	local n = tonumber(expectedScreen:match("^mission(%d)_ready$"))
+
+	return (n ~= nil and n >= 2) and SKILLS_02 or nil
+end
+
 -- Sets a legacy status key and remembers it in `want` (suffix -> value)
 local function setStatus(player, want, suffix, value)
 	H.setQuestStatus(player, suffix, value)
@@ -361,7 +370,7 @@ end
 
 -- AC-8 T7: the old mission 2 was won and paid; by name this pilot would be paid M3's reward for it
 function TestKaydineMigrationRows:test_t7_a_pilot_who_won_and_was_paid_the_old_mission_2_is_offered_mission_3_and_is_paid_nothing()
-	local player = bare({ marker = "1" })
+	local player = bare({ marker = "1", skills = SKILLS_02 })
 	local rec = T.spyRewards()
 
 	history(player, 3, "none")
@@ -474,7 +483,7 @@ for k = 1, 4 do
 	for _, mode in ipairs({ "none", "attempted", "active", "complete", "paid" }) do
 		-- AC-8
 		TestKaydineMigrationPositions["test_position_" .. k .. "_" .. mode .. "_migrates_to_the_new_state_and_shows_" .. expectedScreen(k, mode)] = function()
-			local player = bare({ marker = "1" })
+			local player = bare({ marker = "1", skills = offerSkills(expectedScreen(k, mode)) })
 			local set = history(player, k, mode)
 			local rec = T.spyRewards()
 			local before = M.sideEffects(player)
@@ -511,7 +520,7 @@ for k = 1, 4 do
 
 	-- AC-8: the won and unpaid mission is paid once, by its head
 	TestKaydineMigrationPositions["test_position_" .. k .. "_won_and_unpaid_is_paid_once_by_the_new_head"] = function()
-		local player = bare({ marker = "1" })
+		local player = bare({ marker = "1", skills = offerSkills(AFTER_PAID[k]) })
 		local rec = T.spyRewards()
 
 		history(player, k, "complete")
@@ -529,7 +538,7 @@ for k = 1, 4 do
 
 	-- AC-8: the won and paid mission is never paid again, on three visits
 	TestKaydineMigrationPositions["test_position_" .. k .. "_won_and_paid_is_not_paid_again_over_three_visits"] = function()
-		local player = bare({ marker = "1" })
+		local player = bare({ marker = "1", skills = offerSkills(AFTER_PAID[k]) })
 		local rec = T.spyRewards()
 
 		history(player, k, "paid")
@@ -558,7 +567,7 @@ end
 
 -- AC-8: old 14 complete with 14:reward unset is the old mission 2 won and unpaid
 function TestKaydineMigrationPositions:test_escort_14_complete_with_the_reward_unset_gives_mission2_reward_and_pays_destroy_13_once()
-	local player = bare({ marker = "1" })
+	local player = bare({ marker = "1", skills = SKILLS_02 })
 	local rec = T.spyRewards()
 
 	M.finish(player, "destroy", "naboo_privateer_13a")

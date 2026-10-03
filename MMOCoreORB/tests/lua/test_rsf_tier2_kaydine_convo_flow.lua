@@ -416,7 +416,18 @@ for n = 1, 4 do
 
 	-- AC-6: a second conversation shows the next state's first screen and pays nothing
 	TestKaydineRewards["test_after_paying_mission_" .. n .. "_the_next_visit_shows_" .. D.AFTER_PAID[n] .. "_and_pays_nothing"] = function()
-		local player = T.player(tr, n, { complete = WON[n] })
+		-- rsf-tier2-kaydine-training (D-11, Superseded S1/S3): n < 4 the pilot holds the skill that unlocks mission n + 1 (the first n + 1
+		-- tier 2 skills in SWG's order); n == 4 the first three only, with 0 XP, so the screen stays here_for_work
+		local order = { "pilot_neutral_starships_02", "pilot_neutral_weapons_02", "pilot_neutral_procedures_02", "pilot_neutral_droid_02" }
+		local setup = { complete = WON[n] }
+
+		if n < 4 then
+			setup.skills = { order[n + 1] }
+		else
+			setup.baseSkills = { order[1], order[2], order[3] }
+		end
+
+		local player = T.player(tr, n, setup)
 		local rec = T.spyRewards()
 
 		-- the pay screen is the first screen for mission 2, and one option away for the others; the tail is option 1
@@ -544,8 +555,8 @@ function TestKaydineMission3Reward:test_a_pilot_who_can_train_is_offered_s_78_an
 	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
 end
 
--- AC-7
-function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_ready_train_pilot_with_the_mission4_training_options()
+-- AC-9 (rsf-tier2-kaydine-training): the training option leads to the SWG greeting s_76e6f264 with the one option s_187
+function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_the_swg_training_greeting_with_the_single_option_s_187()
 	local player = T.player(tr, 3, { complete = { R14 } })
 
 	canTrain(player)
@@ -553,15 +564,9 @@ function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_ready_train_pi
 	local transcript = T.converse(tr, player, { 0, "s_45d20070" })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward", "ready_train_pilot" }, "screens")
-
-	local links = {}
-
-	for i, o in ipairs(transcript[3].options) do
-		links[i] = o.link
-	end
-
-	table.sort(links)
-	lu.assertEquals(links, { "mission4_train_algorithms", "mission4_train_components", "mission4_train_techniques" }, "training option links")
+	lu.assertEquals(transcript[3].text, D.PREFIX .. "s_76e6f264", "ready_train_pilot: greeting")
+	lu.assertEquals(#transcript[3].options, 1, "ready_train_pilot: number of options")
+	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_187", "ready_train_pilot: option text")
 end
 
 -- AC-7
@@ -731,24 +736,7 @@ function TestKaydineNeighbours:test_the_duty_screens_start_their_duty_quests()
 	end
 end
 
--- AC-9: ready_train_pilot keeps its prefixes
-function TestKaydineNeighbours:test_ready_train_pilot_prefixes_still_follow_the_won_mission()
-	local cases = {
-		{ T.player(tr, 1, { complete = { A1 } }), "initial_" },
-		{ T.player(tr, 2, {}), "mission2_" },
-		{ T.player(tr, 3, { win = { 1, 2 } }), "mission3_" },
-		{ T.player(tr, 4, { win = { 1, 2, 3 } }), "mission4_" },
-	}
-
-	for _, c in ipairs(cases) do
-		c[1].ghost.experience.space_combat_general = 100000
-
-		local transcript = T.converse(tr, c[1])
-
-		lu.assertEquals(transcript[1].id, "ready_train_pilot", c[2] .. ": first screen")
-		lu.assertEquals(transcript[1].options[1].link:sub(1, #c[2]), c[2], c[2] .. ": prefix of the first training option")
-	end
-end
+-- rsf-tier2-kaydine-training: the F4 "prefix" test is replaced by the SWG training port (test_rsf_tier2_kaydine_training_routing.lua).
 
 ---------------------------------------------------------------------------------------------
 -- AC-10: only the listed screens pay or start (I-4, I-5), recorded while entering every screen

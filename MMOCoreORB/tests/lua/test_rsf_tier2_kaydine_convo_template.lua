@@ -109,17 +109,17 @@ function TestKaydineConvoTemplate:test_appendix_a_has_46_rows_43_new_2_changed_1
 
 	lu.assertEquals(count, { new = 43, chg = 2, kept = 1 }, "Appendix A rows by status")
 	lu.assertEquals(#sortedKeys(inScopeSids()), 42, "distinct NPC sids in Appendix A")
-	lu.assertEquals(#sortedKeys(D.KEPT), 27, "kept screens")
+	lu.assertEquals(#sortedKeys(D.KEPT), 6, "kept screens (rsf-tier2-kaydine-training: the 21 training rows left the list)")
 	lu.assertEquals(#D.DELETED, 36, "deleted screens")
 end
 
 -- AC-1
-function TestKaydineConvoTemplate:test_the_template_keeps_its_name_and_handler_and_has_77_screens()
+function TestKaydineConvoTemplate:test_the_template_keeps_its_name_and_handler_and_has_87_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "kaydineConvoHandler", "kaydine_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "kaydine_convo_template: templateType")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (70 - 36 + 43)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30, rsf-tier2-kaydine-training)")
 end
 
 -- AC-1
@@ -191,8 +191,8 @@ function TestKaydineConvoTemplate:test_completed_kaydine_and_finished_tier3_have
 	lu.assertEquals(byId.finished_tier3.leftDialog, D.PREFIX .. "s_2d86b58b", "finished_tier3: leftDialog (unchanged)")
 end
 
--- AC-1, I-7: the gate, duty and training screens equal their definitions at 74247cbede
-function TestKaydineConvoTemplate:test_the_27_kept_screens_equal_their_definitions_at_74247cbede()
+-- AC-1, I-7: the gate screens equal their definitions at 74247cbede
+function TestKaydineConvoTemplate:test_the_6_kept_screens_equal_their_definitions_at_74247cbede()
 	local byId = screensById()
 
 	for _, id in ipairs(sortedKeys(D.KEPT)) do
@@ -210,14 +210,8 @@ function TestKaydineConvoTemplate:test_the_template_has_no_dead_links_or_duplica
 	lu.assertEquals(H.conversationProblems(D.TEMPLATE), {})
 end
 
--- AC-1, I-6: KH's skill branch matches the substring "_train_", so no screen outside the kept training ones may contain it
-function TestKaydineConvoTemplate:test_no_new_screen_id_contains_train()
-	for _, s in ipairs(template().screens) do
-		if D.KEPT[s.id] == nil then
-			lu.assertNil(s.id:find("_train_", 1, true), "screen '" .. s.id .. "' contains _train_ (KH treats it as a skill purchase)")
-		end
-	end
-end
+-- rsf-tier2-kaydine-training (Superseded): the "no new id contains _train_" guard is gone, KH no longer matches that substring.
+-- Its job (handler and template agree) is the I-6 tests of test_rsf_tier2_kaydine_training_template.lua.
 
 ---------------------------------------------------------------------------------------------
 -- AC-2: SWG conformance against the parsed java
@@ -360,7 +354,7 @@ function TestKaydineConvoConformance:test_every_string_of_kaydine_convo_is_in_th
 	end
 end
 
--- AC-2, I-3: every string id KH adds is a response of the java, except the four training options
+-- AC-2, I-3: every string id KH adds is a response of the java
 function TestKaydineConvoConformance:test_every_string_kaydine_convo_handler_adds_is_a_java_response_except_the_training_options()
 	local text = readFile(H.SCRIPTS .. "screenplays/space/conversations/neutral/rsf_squadron/kaydineConvoHandler.lua")
 	local seen = 0
@@ -374,7 +368,7 @@ function TestKaydineConvoConformance:test_every_string_kaydine_convo_handler_add
 	end
 
 	-- the handler must still add the M1 gender option and the M3 reward options (Content contract 2)
-	lu.assertTrue(seen >= 7, "string ids in kaydineConvoHandler.lua: " .. seen .. " (4 training options + s_242 + s_78 + s_45d20070 + s_6114e8b7)")
+	lu.assertTrue(seen >= 6, "string ids in kaydineConvoHandler.lua: " .. seen .. " (s_187 + s_264 + s_242 + s_78 + s_45d20070 + s_6114e8b7)")
 end
 
 -- AC-2, I-3: the eight story strings of F4 that are not in the java are gone from both files

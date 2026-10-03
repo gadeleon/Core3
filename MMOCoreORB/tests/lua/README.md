@@ -279,6 +279,14 @@ deleted duties through Kaydine and Dulios for every marker. The trainer-fixes Ka
 class chain reaches `SpaceRecoveryScreenplay` at run time and builds one test pair per quest (area entries before capture change nothing, a captured ship
 completes once); "captured" means `<shipID>:<className>:recoveryShipProgress:` holds the number of recovery points.
 
+Step 4 (rsf-tier2-kaydine-training): `rsf_tier2_kaydine_training_data.lua` holds the spec's Appendix A (31 training screens plus the four
+existing ones they link), the 16 intro walks and `D.drive(tr, player, screenId, choices)`, which starts a conversation as if the pilot had just
+chosen an option on `screenId` (reaches prompts no first screen leads to). `T.player` takes `baseSkills` (replaces the trainer's own skills) and
+`experience` (replaces `{ space_combat_general = 0 }`); the Kaydine pilot for mission n holds the first n tier 2 skills (D-11).
+`H.Engine.config.skillXpCosts = { [skill] = cost }` is an opt-in model of `SkillManager::awardSkill`: the XP-deducting grant charges
+`space_combat_general` and refuses (grants nothing) when the pilot has less; without it nothing is charged. `H.reset()` clears it.
+`fixtures/skill/skills.pilot_neutral_02.tab` is an excerpt of SWG `skills.tab` (header rows plus the four `_02` rows, lines 1, 2, 644, 648, 652, 656).
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

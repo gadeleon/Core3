@@ -417,8 +417,24 @@ end
 
 -- XP-deducting grant (SkillManager:awardSkill) as used by SpaceHelpers:grantSpaceSkill(p, skill, true).
 -- The fake does not model the XP cost; production code gates on hasExperienceForTraining first.
+-- Opt-in XP model (rsf-tier2-kaydine-training): H.Engine.config.skillXpCosts = { [skill] = cost } charges `cost`
+-- space_combat_general from the player's ghost and refuses the skill (nothing granted, nothing charged) when the
+-- pilot has less, like SkillManager::awardSkill. Without the table nothing is charged. H.reset() clears the config.
 function skillManagerAwardSkill(pPlayer, skillName)
 	record("skillManagerAwardSkill", pPlayer, skillName)
+
+	local costs = Engine.config.skillXpCosts
+	local cost = costs and costs[skillName]
+
+	if cost ~= nil and pPlayer ~= nil and pPlayer.ghost ~= nil then
+		local have = pPlayer.ghost.experience.space_combat_general or 0
+
+		if have < cost then
+			return
+		end
+
+		pPlayer.ghost.experience.space_combat_general = have - cost
+	end
 
 	if pPlayer ~= nil and pPlayer.skills ~= nil then
 		pPlayer.skills[skillName] = true

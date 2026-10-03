@@ -131,7 +131,7 @@ T.TRAINERS.kaydine = {
 		{ "escort_naboo_privateer_15" },
 	},
 	starts = {
-		starts("+mission1_accept", "+mission1_accept_male", "+mission1_failed"),
+		starts("+mission1_accept", "+mission1_accept_male", "+mission1_failed", "+mission1_intro_accept", "+mission1_intro_accept_male"),
 		starts("+mission2_accept", "+mission2_failed"),
 		starts("+mission3_accept", "+mission3_failed"),
 		starts("+mission4_accept", "+mission4_failed"),
@@ -139,9 +139,18 @@ T.TRAINERS.kaydine = {
 	-- Migration is already done for these pilots (marker "3" = all three steps ran): without it the status keys the builder seeds
 	-- (the new 14: and 15: names) would be read as legacy keys and moved, and step 3 would purge the legacy duties.
 	-- The migration tests set the marker themselves.
+	-- rsf-tier2-kaydine-training (D-11): SWG offers mission n only to a pilot with at least n tier 2 skills, so the pilot in front of
+	-- Kaydine for mission n holds the first n of them, in SWG's purchase order (starships, weapons, procedures, droid).
 	player = function(n)
+		local order = { "pilot_neutral_starships_02", "pilot_neutral_weapons_02", "pilot_neutral_procedures_02", "pilot_neutral_droid_02" }
+		local skills = {}
+
+		for i = 1, math.min(n, #order) do
+			skills[i] = order[i]
+		end
+
 		return {
-			pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 2, skills = { "pilot_neutral_starships_02" },
+			pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 2, skills = skills,
 			questStatus = { ["RsfSquadronScreenplay:legacyVersion"] = "3" },
 		}
 	end,
@@ -472,7 +481,8 @@ end
 -- opts: complete / active (lists of quest globals of mission n), attempted (default: the trainer's usesAttempted;
 --   sets mission n's :attempted flag), skills (extra skills), questStatus (extra suffix -> value),
 --   win (list of missions, default 1..n-1, whose whole chain is complete and :reward is set), zone / ship (H.newPlayer: a pilot
---   standing in a ship in that space zone)
+--   standing in a ship in that space zone), baseSkills (list: replaces the trainer's own skills for n; skills is still appended),
+--   experience (table: replaces { space_combat_general = 0 })
 function T.player(tr, n, opts)
 	opts = opts or {}
 
@@ -537,8 +547,8 @@ function T.player(tr, n, opts)
 		squadronType = base.squadronType,
 		faction = base.faction,
 		pilotTier = base.pilotTier,
-		skills = concat(base.skills or {}, opts.skills or {}),
-		experience = { space_combat_general = 0 },
+		skills = concat(opts.baseSkills or base.skills or {}, opts.skills or {}),
+		experience = opts.experience or { space_combat_general = 0 },
 		factionStanding = { rebel = 0, corsec = 0 },
 		completedQuests = completed,
 		activeQuests = active,

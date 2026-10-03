@@ -258,6 +258,65 @@ function H.messageLog(player)
 	return out
 end
 
+-- The datapad abort of a space quest, in the order of MissionManagerImplementation::handleMissionAbort
+-- (space-quest-abort-cleanup, invariant I-1):
+--   1. find the datapad mission of the quest (error if there is none: the server only aborts what exists)
+--   2. mission:abort()
+--   3. <type>_<name>:abortQuest(player), called directly (not through the event queue)
+--   4. clear the journal entry only if it is still active (the safety net for a missing or failing hook)
+--   5. send @space/quest:quest_aborted (TO = the quest title) and play the fail music
+--   6. remove the mission from the datapad if it is still there
+-- Returns the aborted mission object.
+function H.abortMission(player, questType, questName)
+	H.boot()
+
+	local crc = Fakes.questCrc(questType, questName)
+	local mission
+
+	for _, item in ipairs(player.datapad.items) do
+		if item.getQuestCRC and item:getQuestCRC() == crc then
+			mission = item
+			break
+		end
+	end
+
+	if mission == nil then
+		error(string.format("H.abortMission: %s_%s has no mission on the datapad; the server can only abort an existing mission", questType, questName), 2)
+	end
+
+	mission:abort()
+
+	local quest = rawget(_G, questType .. "_" .. questName)
+
+	assert(quest ~= nil, "H.abortMission: expected global '" .. questType .. "_" .. questName .. "' (handleMissionAbort looks it up by that name)")
+	if type(quest.abortQuest) ~= "function" then
+		require("luaunit").fail("expected " .. questType .. "_" .. questName .. ":abortQuest to be a function "
+			.. "(SpaceQuestLogic:abortQuest in screenplays/space/SpaceQuestLogic.lua, the hook handleMissionAbort calls)")
+	end
+
+	quest:abortQuest(player)
+
+	local ghost = player.ghost
+
+	if ghost:isJournalQuestActive(crc) then
+		ghost:clearJournalQuest(crc, false)
+	end
+
+	local aborted = LuaStringIdChatParameter("@space/quest:quest_aborted")
+	aborted:setTO("@spacequest/" .. questType .. "/" .. questName .. ":title")
+	CreatureObject(player):sendSystemMessage(aborted:_getObject())
+	CreatureObject(player):playMusicMessage("sound/music_themequest_fail_criminal.snd")
+
+	for i, item in ipairs(player.datapad.items) do
+		if item == mission then
+			table.remove(player.datapad.items, i)
+			break
+		end
+	end
+
+	return mission
+end
+
 ---------------------------------------------------------------------------------------------
 -- Loading production scripts
 ---------------------------------------------------------------------------------------------

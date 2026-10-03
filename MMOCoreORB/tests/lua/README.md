@@ -110,6 +110,7 @@ end
 | `H.messageLog(player)` | Everything `sendSystemMessage` got, with times: `{t, id, TO, DI, plain}` |
 | `H.Engine.timedCallsTo(fn)` | Like `callsTo`, entries are `{t = ms, args}` |
 | `H.Engine.sharedMemoryKeys()` | Sorted `"<kind>\|<key>"` list of every shared-memory key set |
+| `H.abortMission(player, type, name)` | The datapad abort in the order of the new `handleMissionAbort`: find the mission (error if absent), `mission:abort()`, `_G[type_name]:abortQuest(player)` called directly, clear the journal entry only if still active, send `@space/quest:quest_aborted` (TO = the quest title) and the fail music, remove the mission. Returns the mission. Fails with a message if the quest has no `abortQuest` |
 
 ### Space simulation: clock, observers, ships
 
@@ -200,6 +201,21 @@ records `agent.engaged` (ships) and `agent.engageLog` (`{t, target}`).
 `survival_scenario.lua` (not a test file) is a worked example of a scenario builder on top of
 these: oracle values from fixtures, spies on every other quest, `sc:start()`, `sc:arrive()`,
 `sc:at(ms)`, message timeline helpers.
+
+### Datapad abort (space-quest-abort-cleanup)
+
+- `FakeMission:abort()` / `isAborted()` (default `false`) model `MissionObject::abort`. `failQuestMission` still records the
+  CRC but skips aborted missions (`LuaCreatureObject.cpp:1514`); `removeQuestMission` does not skip them.
+- `H.abortMission` (API table) is the one model of `MissionManagerImplementation::handleMissionAbort`. The C++ order itself
+  is only checked statically (`test_abort_cleanup_cpp_order.lua` reads the source).
+- `abort_cleanup_scenario.lua` builds a running quest of each of the 16 types (`AC.build(type)`, `AC.TYPES`), aborts it
+  (`AC.abort`) and holds the shared checks (`AC.assertI3`, `AC.ownKeys`, `AC.shipProblems`, `AC.snapshot`,
+  `AC.eventsSince`, `AC.messagesSince`). `AC.started(q, {isolate = true | {global = true}, zone = ...})` starts any quest in a
+  flyable ship and optionally records every other quest's `startQuest` / `failQuest`; `AC.escortRun(global, isolate)`,
+  `AC.resolveRecoveryPoints(q)` (call `AC.tearDown()` from `tearDown`). Surprise attack, escort, assassinate and recovery
+  spawns needed more `ShipAiAgent` setters; the fake agent records `setMinimumGuardPatrol`, `setMaximumGuardPatrol`,
+  `setGuardPatrol`, `setDespawnOnNoPlayerInRange`, `setShipFactionString` and a ship answers `getShipFactionString`
+  (default `"rebel"`); `test_harness_abort_fakes.lua` checks the names against the `Lua*` binding tables.
 
 ### Journal and datapad fakes (space-quest-duty-rules)
 

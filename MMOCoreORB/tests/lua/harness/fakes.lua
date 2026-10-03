@@ -338,11 +338,13 @@ end
 -- Datapad mission bookkeeping (SpaceHelpers:completeSpaceQuest / failSpaceQuest).
 -- Both remove the first datapad mission whose quest CRC matches (a mission built without a
 -- quest type/name has no CRC and never matches).
-local function removeDatapadMission(creature, crc)
+-- skipAborted: LuaCreatureObject::failQuestMission ignores missions that have isAborted() set
+-- (LuaCreatureObject.cpp:1514); removeQuestMission does not (space-quest-abort-cleanup).
+local function removeDatapadMission(creature, crc, skipAborted)
 	local items = creature.datapad and creature.datapad.items or {}
 
 	for i, item in ipairs(items) do
-		if item.getQuestCRC and item:getQuestCRC() == crc then
+		if item.getQuestCRC and item:getQuestCRC() == crc and not (skipAborted and item.isAborted and item:isAborted()) then
 			table.remove(items, i)
 			return true
 		end
@@ -357,7 +359,7 @@ end
 
 function FakeCreature:failQuestMission(crc)
 	self.failedMissions[#self.failedMissions + 1] = crc
-	removeDatapadMission(self, crc)
+	removeDatapadMission(self, crc, true)
 end
 
 -- Bank credits (LuaCreatureObject::addBankCredits): every call is recorded in order.
@@ -426,6 +428,9 @@ function FakeShip:getPilot() return self.pilot end
 function FakeShip:getPilotID() return self.pilot and self.pilot.objectID or 0 end
 function FakeShip:getShipFactionHash() return self.factionHash end
 function FakeShip:setHyperspacing(b) self.hyperspacing = b end
+-- LuaShipObject::getShipFactionString (SpaceHelpers:getPlayerShipFactionString); defaults to "rebel"
+function FakeShip:getShipFactionString() return self.shipFactionString or "rebel" end
+
 function FakeShip:setPosition(x, z, y) self.x, self.z, self.y = x, z, y end
 
 function FakeShip:getSpawnPointInFrontOfShip(min, max)
@@ -610,6 +615,14 @@ function FakeAgent:tauntPlayer(pPlayer, msg)
 	end
 end
 
+-- Setters the surprise attack, escort and assassinate spawns call (space-quest-abort-cleanup drives those types
+-- for the first time). They only record; test_harness_abort_fakes.lua checks the names against the bindings.
+function FakeAgent:setMinimumGuardPatrol(v) self.minimumGuardPatrol = v end
+function FakeAgent:setMaximumGuardPatrol(v) self.maximumGuardPatrol = v end
+function FakeAgent:setGuardPatrol() self.guardPatrol = true end
+function FakeAgent:setDespawnOnNoPlayerInRange(b) self.despawnOnNoPlayerInRange = b end
+function FakeAgent:setShipFactionString(s) self.shipFactionString = s end
+
 function FakeAgent:dropFromSquadron() self.squadronLeader = nil; self.isSquadronLeader = false end
 
 -- Active area returned by spawnSpaceActiveArea.
@@ -657,11 +670,14 @@ FakeMission.__index = FakeMission
 sceneMethods(FakeMission)
 
 function Fakes.newMission()
-	return register(setmetatable({ spaceDuty = false }, FakeMission))
+	return register(setmetatable({ spaceDuty = false, aborted = false }, FakeMission))
 end
 
 function FakeMission:isMissionObject() return true end
 function FakeMission:isSpaceDutyMission() return self.spaceDuty end
+-- MissionObject::abort / isAborted (space-quest-abort-cleanup): the datapad abort marks the mission first.
+function FakeMission:abort() self.aborted = true end
+function FakeMission:isAborted() return self.aborted end
 function FakeMission:getQuestCRC()
 	if self.questType and self.questName then
 		return Fakes.questCrc(self.questType, self.questName)

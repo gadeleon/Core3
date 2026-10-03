@@ -221,6 +221,10 @@ function SpaceEscortScreenplay:setupEscort(pPlayer)
 		return
 	end
 
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
 	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
 	if (pGhost == nil) then
@@ -298,6 +302,10 @@ end
 function SpaceEscortScreenplay:spawnEscortShip(pPlayer)
 	if (pPlayer == nil) then
 		Logger:log(self.className .. " -- Quest: " .. self.questName .. " Type: " .. self.questType .. " -- Failed to spawnEscortShip due to pPlayer being nil.", LT_ERROR)
+		return
+	end
+
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
 		return
 	end
 

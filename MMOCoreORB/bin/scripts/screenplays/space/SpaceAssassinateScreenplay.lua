@@ -187,6 +187,10 @@ function SpaceAssassinateScreenplay:deployTargets(pPlayer)
 		return
 	end
 
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
 	local primaryTarget = self.assassinateSpawns.target
 	local escortShips = self.assassinateSpawns.escorts
 	local spawnZone = self.questZone

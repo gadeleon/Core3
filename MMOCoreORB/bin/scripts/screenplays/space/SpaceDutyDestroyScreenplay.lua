@@ -99,6 +99,20 @@ function SpaceDutyDestroyScreenplay:startQuest(pPlayer, pNpc)
 	end
 end
 
+-- Drops the area observer and destroys the target area (space-quest-abort-cleanup); shared by completion, failure, abort and round end
+function SpaceDutyDestroyScreenplay:destroyTargetArea(playerID)
+	local areaID = readData(playerID .. ":" .. self.className .. ":targetArea:")
+	deleteData(playerID .. ":" .. self.className .. ":targetArea:")
+
+	local pQuestArea = getSceneObject(areaID)
+
+	if (pQuestArea ~= nil and SceneObject(pQuestArea):isActiveArea()) then
+		dropObserver(ENTEREDAREA, self.className, "notifyEnteredQuestArea", pQuestArea)
+
+		SceneObject(pQuestArea):destroyObjectFromWorld()
+	end
+end
+
 function SpaceDutyDestroyScreenplay:failQuest(pPlayer, notifyClient)
 	if (pPlayer == nil) then
 		Logger:log(self.questName .. " Type: " .. self.questType .. " -- Failed to failQuest due to pPlayer being nil.", LT_ERROR)
@@ -131,16 +145,7 @@ function SpaceDutyDestroyScreenplay:failQuest(pPlayer, notifyClient)
 	local playerID = SceneObject(pPlayer):getObjectID()
 
 	-- Destroy the active area
-	local areaID = writeData(playerID .. ":" .. self.className .. ":targetArea:", questAreaID)
-	deleteData(playerID .. ":" .. self.className .. ":targetArea:")
-
-	local pQuestArea = getSceneObject(areaID)
-
-	if (pQuestArea ~= nil and SceneObject(pQuestArea):isActiveArea()) then
-		dropObserver(ENTEREDAREA, self.className, "notifyEnteredQuestArea", pQuestArea)
-
-		destroyObjectFromWorld(pQuestArea)
-	end
+	self:destroyTargetArea(playerID)
 
 	-- Remove any remaining ships
 	self:removeAttackShips(pPlayer)
@@ -184,16 +189,7 @@ function SpaceDutyDestroyScreenplay:resetQuest(pPlayer)
 	local playerID = SceneObject(pPlayer):getObjectID()
 
 	-- Destroy the active area
-	local areaID = writeData(playerID .. ":" .. self.className .. ":targetArea:", questAreaID)
-	deleteData(playerID .. ":" .. self.className .. ":targetArea:")
-
-	local pQuestArea = getSceneObject(areaID)
-
-	if (pQuestArea ~= nil and SceneObject(pQuestArea):isActiveArea()) then
-		dropObserver(ENTEREDAREA, self.className, "notifyEnteredQuestArea", pQuestArea)
-
-		destroyObjectFromWorld(pQuestArea)
-	end
+	self:destroyTargetArea(playerID)
 
 	-- Remove any remaining ships
 	self:removeAttackShips(pPlayer)
@@ -233,16 +229,7 @@ function SpaceDutyDestroyScreenplay:completeQuest(pPlayer, notifyClient)
 	local playerID = SceneObject(pPlayer):getObjectID()
 
 	-- Destroy the active area
-	local areaID = writeData(playerID .. ":" .. self.className .. ":targetArea:", questAreaID)
-	deleteData(playerID .. ":" .. self.className .. ":targetArea:")
-
-	local pQuestArea = getSceneObject(areaID)
-
-	if (pQuestArea ~= nil and SceneObject(pQuestArea):isActiveArea()) then
-		dropObserver(ENTEREDAREA, self.className, "notifyEnteredQuestArea", pQuestArea)
-
-		destroyObjectFromWorld(pQuestArea)
-	end
+	self:destroyTargetArea(playerID)
 
 	-- Remove any remaining ships
 	self:removeAttackShips(pPlayer)
@@ -259,6 +246,10 @@ end
 
 function SpaceDutyDestroyScreenplay:getTargetLocation(pPlayer, initial)
 	if (pPlayer == nil) then
+		return
+	end
+
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
 		return
 	end
 
@@ -687,14 +678,7 @@ function SpaceDutyDestroyScreenplay:notifyBossShipDestroyed(pBossShip, pKillerSh
 	end
 
 	-- Destroy the area
-	local playerAreaID = readData(missionOwnerID .. ":" .. self.className .. ":targetArea:")
-	deleteData(missionOwnerID .. ":" .. self.className .. ":targetArea:", questAreaID)
-
-	local pQuestArea = getSceneObject(questAreaID)
-
-	if (pQuestArea ~= nil) then
-		destroyObjectFromWorld(pQuestArea)
-	end
+	self:destroyTargetArea(missionOwnerID)
 
 	-- Remove from Attack Ships Vector
 	local shipIDs = readStringVectorSharedMemory(missionOwnerID .. self.className .. ":attackShips:")
@@ -891,14 +875,7 @@ function SpaceDutyDestroyScreenplay:notifyAttackShipDestroyed(pShipAgent, pKille
 			SpaceHelpers:spaceCreditReward(pPlayer, rewardCredits)
 
 			-- Destroy the area
-			local playerAreaID = readData(missionOwnerID .. ":" .. self.className .. ":targetArea:")
-			deleteData(missionOwnerID .. ":" .. self.className .. ":targetArea:", questAreaID)
-
-			local pQuestArea = getSceneObject(questAreaID)
-
-			if (pQuestArea ~= nil) then
-				destroyObjectFromWorld(pQuestArea)
-			end
+			self:destroyTargetArea(missionOwnerID)
 
 			-- Remove waypoint
 			SpaceHelpers:clearQuestWaypoint(pPlayer, self.className)

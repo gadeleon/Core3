@@ -130,7 +130,7 @@ function arkonConvoHandler:hasAttempted(pPlayer, n)
 end
 
 function arkonConvoHandler:canFlyNonTrackDuty(pPlayer)
-	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "rebel_navy", 3) and not self:isOnMission(pPlayer)
+	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "rebel_navy", 3) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
 end
 
 function arkonConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)

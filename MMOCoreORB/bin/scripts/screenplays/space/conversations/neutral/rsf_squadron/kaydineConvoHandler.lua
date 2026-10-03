@@ -1,5 +1,13 @@
 -- Kaydine (RSF tier 2) conversation handler; ported from SWG-Source naboo_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes.
-kaydineConvoHandler = conv_handler:new {}
+kaydineConvoHandler = conv_handler:new {
+	-- Purchase prompt screen => the skill bought when its option is chosen (naboo_privateer_trainer_2.java:2335, 3033, 3302, 3571)
+	TRAIN_SCREENS = {
+		train_starships = "pilot_neutral_starships_02",
+		train_weapons = "pilot_neutral_weapons_02",
+		train_procedures = "pilot_neutral_procedures_02",
+		train_droid = "pilot_neutral_droid_02"
+	}
+}
 
 function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (pPlayer == nil or pNpc == nil or pConvTemplate == nil) then
@@ -65,6 +73,7 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local destroyDutyActive = SpaceHelpers:isSpaceQuestActive(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_DUTY_3.name)
 
 	local completedTier2 = SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 2)
+	local skillCount = SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 2)
 
 	--[[
 			Quests
@@ -92,15 +101,12 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			return convoTemplate:getScreen("mission2_reward")
 	elseif (questOneComplete and getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":reward") ~= "1") then
 			return convoTemplate:getScreen("mission1_complete")
-	-- Pilot is able to train
-	elseif (not completedTier2 and SpaceHelpers:hasExperienceForTraining(pPlayer, 2)) then
-		return convoTemplate:getScreen("ready_train_pilot")
 	elseif (not questFourComplete) then
 		-- Player is able to start fourth mission
 		if (questThreeComplete and not questFourStarted) then
 			if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":attempted") == "1") then
 				return convoTemplate:getScreen("mission4_failed")
-			else
+			elseif (skillCount >= 4) then
 				return convoTemplate:getScreen("mission4_ready")
 			end
 
@@ -108,24 +114,29 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		elseif (questTwoComplete and not questThreeStarted) then
 			if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name .. ":attempted") == "1") then
 				return convoTemplate:getScreen("mission3_failed")
-			else
+			elseif (skillCount >= 3) then
 				return convoTemplate:getScreen("mission3_ready")
 			end
 		-- Player is able to start second mission
 		elseif (questOneComplete and not questTwoStarted) then
 			if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":attempted") == "1") then
 				return convoTemplate:getScreen("mission2_failed")
-			else
+			elseif (skillCount >= 2) then
 				return convoTemplate:getScreen("mission2_ready")
 			end
 		-- Player is ready for first mission
-		elseif (not questOneComplete and SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 2)) then
+		elseif (not questOneComplete) then
 			if (getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":attempted") == "1") then
 				return convoTemplate:getScreen("mission1_failed")
-			else
+			elseif (skillCount >= 1) then
 				return convoTemplate:getScreen("mission1_ready")
 			end
 		end
+	end
+
+	-- Pilot is able to train
+	if (self:canTrain(pPlayer)) then
+		return convoTemplate:getScreen("ready_train_pilot")
 	end
 
 	return convoTemplate:getScreen("here_for_work")
@@ -159,60 +170,19 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	end
 
 	if (screenID == "ready_train_pilot") then
-		local skillManager = LuaSkillManager()
+		-- Offer the first skill the pilot lacks, in SWG's order (naboo_privateer_trainer_2.java:2204-2330)
+		local link = "train_droid"
 
-		local responseString = "initial_"
-
-		if (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name)) then
-			responseString = "final_"
-		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_3.name)) then
-			responseString = "mission4_"
-		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name)) then
-			responseString = "mission3_"
-		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2.name)) then
-			responseString = "mission2_"
+		if (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS.train_starships)) then
+			link = "train_starships"
+		elseif (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS.train_weapons)) then
+			link = "train_weapons"
+		elseif (not CreatureObject(pPlayer):hasSkill(self.TRAIN_SCREENS.train_procedures)) then
+			link = "train_procedures"
 		end
 
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_starships_02") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_starships_02")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_45b71b4d", responseString .. "train_fighters") -- I am interested in advanced fighters.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_weapons_02") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_weapons_02")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_197f4f94", responseString .. "train_components") -- I am interested in intermediate starship component use.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_procedures_02") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_procedures_02")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_8f5942fa", responseString .. "train_techniques") -- I am interested in starship defense training.
-		end
-		if (not CreatureObject(pPlayer):hasSkill("pilot_neutral_droid_02") and skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_droid_02")) then
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_eff66f4d", responseString .. "train_algorithms") -- I am interested in reactor engineering algorithms.
-		end
-
-	-- Handle Skill box granting
-	elseif (string.find(screenID, "_train_")) then
-		local skillManager = LuaSkillManager()
-
-		if (string.find(screenID, "train_fighters")) then
-			if (skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_starships_02")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_starships_02", true)
-			end
-		elseif (string.find(screenID, "train_components")) then
-			if (skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_weapons_02")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_weapons_02", true)
-			end
-		elseif (string.find(screenID, "train_techniques")) then
-			if (skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_procedures_02")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_procedures_02", true)
-			end
-		elseif (string.find(screenID, "train_algorithms")) then
-			if (skillManager:fulfillsSkillPrerequisitesAndXp(pPlayer, "pilot_neutral_droid_02")) then
-				SpaceHelpers:grantSpaceSkill(pPlayer, "pilot_neutral_droid_02", true)
-			end
-		end
-
-		if (ghost:getPilotTier() <= 2 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 2)) then
-			ghost:incrementPilotTier()
-		end
-
-		return pClonedScreen
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_187", link)
 
 	-- Duty Missions (naboo_privateer_trainer_2.java:248-259, branch 55)
 	elseif (screenID == "accept_duty_escort") then
@@ -233,7 +203,7 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 		clonedConversation:removeAllOptions()
 		clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_78", "mission3_reward_end")
 
-		if (not SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 2) and SpaceHelpers:hasExperienceForTraining(pPlayer, 2)) then
+		if (self:canTrain(pPlayer)) then
 			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_45d20070", "ready_train_pilot")
 		else
 			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_6114e8b7", "mission3_reward_duty")
@@ -252,6 +222,13 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_242", "mission1_accept_male")
 		end
 
+	-- Mission 1 introduction: male pilots get a different last line
+	elseif (screenID == "mission1_intro_b4") then
+		if (CreatureObject(pPlayer):getGender() == 0) then
+			clonedConversation:removeAllOptions()
+			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_264", "mission1_intro_accept_male")
+		end
+
 	-- Give Missions
 	elseif (screenID == "mission4_accept" or screenID == "mission4_failed") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":attempted", 1)
@@ -262,10 +239,91 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	elseif (screenID == "mission2_accept" or screenID == "mission2_failed") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_13")
-	elseif (screenID == "mission1_accept" or screenID == "mission1_accept_male" or screenID == "mission1_failed") then
+	elseif (screenID == "mission1_accept" or screenID == "mission1_accept_male" or screenID == "mission1_failed" or screenID == "mission1_intro_accept" or screenID == "mission1_intro_accept_male") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier2_1a")
 	end
 
 	return pClonedScreen
+end
+
+-- The story mission the pilot is on: 5 once mission 4 is won, else 1 + the number of missions won in order
+function kaydineConvoHandler:getNextMission(pPlayer)
+	local won = function(quest)
+		return SpaceHelpers:isSpaceQuestComplete(pPlayer, quest.type, quest.name)
+	end
+
+	if (won(RsfSquadronScreenplay.TIER2_QUEST_STRING_4)) then
+		return 5
+	elseif (won(RsfSquadronScreenplay.TIER2_QUEST_STRING_3)) then
+		return 4
+	elseif (won(RsfSquadronScreenplay.TIER2_QUEST_STRING_2)) then
+		return 3
+	elseif (won(RsfSquadronScreenplay.TIER2_QUEST_STRING_1_SIDE2)) then
+		return 2
+	end
+
+	return 1
+end
+
+-- SWG's isReadyForMoreTraining, with the skill count below the next mission (one skill per mission)
+function kaydineConvoHandler:canTrain(pPlayer)
+	return not SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 2)
+		and SpaceHelpers:hasExperienceForTraining(pPlayer, 2)
+		and SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 2) < self:getNextMission(pPlayer)
+end
+
+-- The id of the screen the player chose an option on (the session still holds it while the next
+-- screen is picked and handled)
+function kaydineConvoHandler:getLastScreenID(pPlayer)
+	local convSession = CreatureObject(pPlayer):getConversationSession()
+
+	if (convSession == nil) then
+		return nil
+	end
+
+	local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+
+	if (pLastScreen == nil) then
+		return nil
+	end
+
+	return LuaConversationScreen(pLastScreen):getScreenID()
+end
+
+-- Choosing the option on a train_<x> screen buys the skill (once), then the pilot is introduced to
+-- the mission the skill count unlocks (naboo_privateer_trainer_2.java:2335-2479)
+function kaydineConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, selectedOption, pNpc)
+	local lastScreen = self:getLastScreenID(pPlayer) or ""
+	local skill = self.TRAIN_SCREENS[lastScreen]
+
+	if (skill == nil) then
+		return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+	end
+
+	if (not CreatureObject(pPlayer):hasSkill(skill) and SpaceHelpers:hasExperienceForTraining(pPlayer, 2) and LuaSkillManager():fulfillsSkillPrerequisitesAndXp(pPlayer, skill)) then
+		SpaceHelpers:grantSpaceSkill(pPlayer, skill, true)
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost ~= nil) then
+		local ghost = LuaPlayerObject(pGhost)
+
+		if (ghost ~= nil and ghost:getPilotTier() <= 2 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 2)) then
+			ghost:incrementPilotTier()
+		end
+	end
+
+	local nextMission = self:getNextMission(pPlayer)
+	local skillCount = SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 2)
+
+	if (nextMission <= 4 and skillCount >= nextMission) then
+		local name = string.gsub(lastScreen, "^train_", "")
+
+		return LuaConversationTemplate(pConvTemplate):getScreen("trained_" .. name .. "_mission" .. nextMission)
+	end
+
+	-- Nothing to introduce (pilot behind on skills, or all missions won): start over
+	return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 end

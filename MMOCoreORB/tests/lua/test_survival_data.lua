@@ -237,7 +237,7 @@ function TestSurvivalContract:test_wiring_rewards_and_parents_are_untouched()
 
 	local expected = {
 		survival_corellia_privateer_tier3_2_a = { creditReward = 0, parent = "inspect_corellia_privateer_tier3_2", side = "delivery_corellia_privateer_tier3_2_b", split = SPLIT.COMPLETION, delay = 4 },
-		survival_corellia_privateer_tier3_4_a = { creditReward = 0, parent = "assassinate_corellia_privateer_tier3_4", side = false },
+		survival_corellia_privateer_tier3_4_a = { creditReward = 0, parent = "assassinate_corellia_privateer_tier3_4", side = "inspect_corellia_privateer_tier3_4_b", split = SPLIT.COMPLETION, delay = 5 },
 		survival_naboo_privateer_tier3_3c = { creditReward = 25000, parent = "delivery_naboo_privateer_tier3_3b", side = false },
 		survival_naboo_privateer_tier3_4c = { creditReward = 0, parent = "space_battle_naboo_privateer_tier3_4b", side = "assassinate_naboo_privateer_tier3_4f", split = SPLIT.COMPLETION, delay = 3 },
 		survival_corellia_rebel_tier3_2_b = { creditReward = 0, parent = "delivery_corellia_rebel_tier3_2_a", side = "escort_corellia_rebel_tier3_2_c", split = SPLIT.COMPLETION, delay = 0 },

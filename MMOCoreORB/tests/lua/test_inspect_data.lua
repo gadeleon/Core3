@@ -213,8 +213,9 @@ function TestInspectDataInvariants:test_the_class_defines_the_public_methods_the
 	end
 end
 
--- Scope: only the 7 inspect globals exist, 6 with data (RSF tier 4 adds inspect_naboo_privateer_tier4_2a, tested in test_rsf_tier4_quest_data.lua)
-function TestInspectDataInvariants:test_there_are_exactly_the_seven_inspect_quests()
+-- Scope: only the 8 inspect globals exist, 7 with data (RSF tier 4 adds inspect_naboo_privateer_tier4_2a, tested in test_rsf_tier4_quest_data.lua;
+-- corsec-tier3-extensions adds inspect_corellia_privateer_tier3_4_b, tested in test_corsec_tier3_quest_data.lua)
+function TestInspectDataInvariants:test_there_are_exactly_the_eight_inspect_quests()
 	local got = {}
 
 	for _, n in ipairs(H.questGlobals()) do
@@ -223,7 +224,7 @@ function TestInspectDataInvariants:test_there_are_exactly_the_seven_inspect_ques
 		end
 	end
 
-	local expected = { I.global(I.MISSING), "inspect_naboo_privateer_tier4_2a" }
+	local expected = { I.global(I.MISSING), "inspect_naboo_privateer_tier4_2a", "inspect_corellia_privateer_tier3_4_b" }
 
 	for _, name in ipairs(I.NAMES) do
 		expected[#expected + 1] = I.global(name)

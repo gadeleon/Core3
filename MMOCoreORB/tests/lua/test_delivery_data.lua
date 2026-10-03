@@ -151,7 +151,7 @@ local function deliveryGlobals()
 end
 
 -- I-2
-function TestDeliveryDataInvariants:test_there_are_exactly_the_seven_delivery_quests()
+function TestDeliveryDataInvariants:test_there_are_exactly_the_eight_delivery_quests()
 	local expected = {}
 
 	for _, q in ipairs(D.QUESTS) do
@@ -160,6 +160,9 @@ function TestDeliveryDataInvariants:test_there_are_exactly_the_seven_delivery_qu
 
 	-- RSF tier 4 (rsf-tier4) adds one delivery quest; its data is tested in test_rsf_tier4_quest_data.lua.
 	expected[#expected + 1] = "delivery_naboo_privateer_tier4_3a"
+
+	-- CorSec tier 3 extensions (corsec-tier3-extensions) adds one delivery_no_pickup quest; tested in test_corsec_tier3_quest_data.lua.
+	expected[#expected + 1] = "delivery_no_pickup_corellia_privateer_tier3_4_c"
 
 	table.sort(expected)
 
@@ -233,7 +236,7 @@ end
 function TestDeliveryDataInvariants:test_class_names_quest_types_and_rewards_are_unchanged()
 	local expected = {
 		delivery_corellia_privateer_tier3_2_b = { zone = "space_dathomir", credit = 0, side = "destroy_surpriseattack_corellia_privateer_tier3_2_c", delay = 5, parent = "survival_corellia_privateer_tier3_2_a" },
-		delivery_corellia_privateer_tier3_3 = { zone = "space_dantooine", credit = 100, side = "escort_corellia_privateer_tier3_3_pre_a", delay = 2, parent = "" },
+		delivery_corellia_privateer_tier3_3 = { zone = "space_dantooine", credit = 25000, side = "escort_corellia_privateer_tier3_3_pre_a", delay = 2, parent = "" },
 		delivery_naboo_privateer_tier3_3b = { zone = "space_lok", credit = 0, side = "survival_naboo_privateer_tier3_3c", delay = 4, parent = "inspect_naboo_privateer_tier3_3a" },
 		delivery_corellia_rebel_tier3_2_a = { zone = "space_lok", credit = 0, side = "survival_corellia_rebel_tier3_2_b", delay = 3, parent = "inspect_corellia_rebel_tier3_2" },
 		delivery_corellia_rebel_tier3_3 = { zone = "space_endor", credit = 0, side = "assassinate_corellia_rebel_tier3_3_a", delay = 2, parent = "" },

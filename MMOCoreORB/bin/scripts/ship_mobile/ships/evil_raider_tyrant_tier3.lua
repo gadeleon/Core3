@@ -22,6 +22,7 @@ evil_raider_tyrant_tier3 = ShipAgent:new {
 	color2 = 56,
 	texture = 3,
 	questLoot = "stolen_data",
+	cargoString = "stolen_data", -- stolen_data: space_mobile.tab cargoString; inspect quest corellia_privateer_tier3_4_b (feature corsec-tier3-extensions)
 	appearance = "generic_pirate",
 
 	tauntType = "generic",

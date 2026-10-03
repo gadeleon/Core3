@@ -146,12 +146,12 @@ T.TRAINERS.ramna = {
 		{ "recovery_corellia_privateer_tier3_1", "patrol_corellia_privateer_tier3_1_a", "escort_corellia_privateer_tier3_1_b", "destroy_surpriseattack_corellia_privateer_tier3_1_c" },
 		{ "inspect_corellia_privateer_tier3_2", "survival_corellia_privateer_tier3_2_a", "delivery_corellia_privateer_tier3_2_b", "destroy_surpriseattack_corellia_privateer_tier3_2_c" },
 		{ "delivery_corellia_privateer_tier3_3", "escort_corellia_privateer_tier3_3_pre_a", "patrol_corellia_privateer_tier3_3_a", "assassinate_corellia_privateer_tier3_3d" },
-		{ "assassinate_corellia_privateer_tier3_4", "survival_corellia_privateer_tier3_4_a" },
+		{ "assassinate_corellia_privateer_tier3_4", "survival_corellia_privateer_tier3_4_a", "inspect_corellia_privateer_tier3_4_b", "delivery_no_pickup_corellia_privateer_tier3_4_c" },
 	},
 	starts = {
 		starts("+dont_care", "+keep_going", "+exactly1"),
 		starts("+good_luck_mission2", "+good_luck_mission2_2", "+need_good_news", "+then_go_fight"),
-		starts("+dant_operations", "+go_back_get_some"),
+		starts("+dant_operations", "+go_back_get_some", "+counting_on_you"),
 		starts("+intercept_in_endor", "+get_back_out", "+see_you_soon"),
 	},
 	skillGate = true, -- the reward and skill count gates of the tier 3 trainers (count = n - 1 when mission n starts)

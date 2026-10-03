@@ -996,11 +996,6 @@ space_naboo = SpacePatrolPointTable:new {
 	{patrolPointName = "commerce_route_1_02", x = 371, z = 1057, y = -1805},
 	{patrolPointName = "commerce_route_1_03", x = 785, z = 1161, y = -2395},
 	{patrolPointName = "commerce_route_1_04", x = 987, z = 1211, y = -2681},
-	-- RSF Tier 1 Mission 3: Escort Freighter
-	{patrolPointName = "privateer_escort_1", x = 3200, z = -400, y = 2600},
-	{patrolPointName = "privateer_escort_2", x = 2800, z = -450, y = 3200},
-	{patrolPointName = "privateer_escort_3", x = 2400, z = -400, y = 4000},
-	{patrolPointName = "privateer_escort_4", x = 2000, z = -350, y = 4800},
 }
 
 SpacePatrolPoints:addSpacePatrolPoints(space_naboo, "space_naboo")

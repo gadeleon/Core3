@@ -10,6 +10,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_training_data")
 local C = require("rsf_tier2_kaydine_convo_data")
+local G = require("rsf_gate_screens_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -116,12 +117,12 @@ function TestKaydineTrainingTemplate:test_appendix_a_has_one_changed_30_new_and_
 end
 
 -- AC-1
-function TestKaydineTrainingTemplate:test_the_template_keeps_its_name_and_handler_and_has_87_screens()
+function TestKaydineTrainingTemplate:test_the_template_keeps_its_name_and_handler_and_has_91_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "kaydineConvoHandler", "kaydine_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "kaydine_convo_template: templateType")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30 + 4, rsf-gate-screens)")
 end
 
 -- AC-1
@@ -207,6 +208,11 @@ function TestKaydineTrainingTemplate:test_the_template_is_the_56_earlier_screens
 	expected.ready_train_pilot = true
 
 	for _, id in ipairs(D.newIds()) do
+		expected[id] = true
+	end
+
+	-- rsf-gate-screens (Appendix A-K): the four new gate screens
+	for _, id in ipairs(G.KAYDINE_NEW) do
 		expected[id] = true
 	end
 

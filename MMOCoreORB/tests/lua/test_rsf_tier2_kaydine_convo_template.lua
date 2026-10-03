@@ -114,12 +114,12 @@ function TestKaydineConvoTemplate:test_appendix_a_has_46_rows_43_new_2_changed_1
 end
 
 -- AC-1
-function TestKaydineConvoTemplate:test_the_template_keeps_its_name_and_handler_and_has_87_screens()
+function TestKaydineConvoTemplate:test_the_template_keeps_its_name_and_handler_and_has_91_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "kaydineConvoHandler", "kaydine_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "kaydine_convo_template: templateType")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30, rsf-tier2-kaydine-training)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30 + 4, rsf-tier2-kaydine-training and rsf-gate-screens)")
 end
 
 -- AC-1
@@ -191,8 +191,9 @@ function TestKaydineConvoTemplate:test_completed_kaydine_and_finished_tier3_have
 	lu.assertEquals(byId.finished_tier3.leftDialog, D.PREFIX .. "s_2d86b58b", "finished_tier3: leftDialog (unchanged)")
 end
 
--- AC-1, I-7: the gate screens equal their definitions at 74247cbede
-function TestKaydineConvoTemplate:test_the_6_kept_screens_equal_their_definitions_at_74247cbede()
+-- AC-1, I-7: the six kept screens equal their definitions at 74247cbede; pilot_not_rsf, not_ready_tier2 and on_mission as Appendix A-K of
+-- rsf-gate-screens defines them (AC-2)
+function TestKaydineConvoTemplate:test_the_6_kept_screens_equal_their_definitions_after_rsf_gate_screens()
 	local byId = screensById()
 
 	for _, id in ipairs(sortedKeys(D.KEPT)) do
@@ -200,7 +201,7 @@ function TestKaydineConvoTemplate:test_the_6_kept_screens_equal_their_definition
 		local want = D.KEPT[id]
 
 		lu.assertNotNil(screen, "kept screen '" .. id .. "' is missing")
-		lu.assertEquals(shape(screen), { leftDialog = want.leftDialog, stopConversation = want.stopConversation, options = want.options }, "kept screen '" .. id .. "' changed")
+		lu.assertEquals(shape(screen), { leftDialog = want.leftDialog, stopConversation = want.stopConversation, animation = want.animation, options = want.options }, "kept screen '" .. id .. "' changed")
 	end
 end
 

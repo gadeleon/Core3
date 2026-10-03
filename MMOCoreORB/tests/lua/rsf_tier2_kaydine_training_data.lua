@@ -17,7 +17,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 87
+D.SCREEN_COUNT = 91 -- 87 + the 4 gate screens of rsf-gate-screens
 
 -- Appendix A. options are { option sid, static link }.
 D.ROWS = {
@@ -166,8 +166,9 @@ for _, p in ipairs({ "initial", "mission2", "mission3", "mission4", "final" }) d
 	end
 end
 
--- The 9 sids of the old training (8 replies and the old greeting s_8a84109d) that are not in the java (convo spec I-3)
-D.OLD_SIDS = { "s_8a84109d", "s_4aa3066e", "s_8ad6a62e", "s_f32117e", "s_fd75abb", "s_45b71b4d", "s_197f4f94", "s_8f5942fa", "s_eff66f4d" }
+-- The 8 reply sids of the old training that are not in the java (convo spec I-3). The old greeting s_8a84109d left this list with rsf-gate-screens:
+-- it is the java's off-track duty line now (Kaydine non_rsf_duty_options)
+D.OLD_SIDS = { "s_4aa3066e", "s_8ad6a62e", "s_f32117e", "s_fd75abb", "s_45b71b4d", "s_197f4f94", "s_8f5942fa", "s_eff66f4d" }
 
 ---------------------------------------------------------------------------------------------
 -- Driver

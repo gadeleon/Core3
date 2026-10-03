@@ -10,6 +10,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier1_dinge_training_data")
 local C = require("rsf_tier1_dinge_convo_data")
+local G = require("rsf_gate_screens_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -183,13 +184,13 @@ TestDingeTrainingTemplate = {}
 function TestDingeTrainingTemplate:setUp() H.reset() end
 
 -- AC-1
-function TestDingeTrainingTemplate:test_the_template_has_72_screens_and_keeps_its_name_handler_and_initial_screen()
+function TestDingeTrainingTemplate:test_the_template_has_73_screens_and_keeps_its_name_handler_and_initial_screen()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "dingeConvoHandler", "dinge_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "dinge_convo_template: templateType")
 	lu.assertEquals(t.initialScreen, "", "dinge_convo_template: initialScreen")
-	lu.assertEquals(#t.screens, 72, "dinge_convo_template: number of screens (67 - 6 + 11)")
+	lu.assertEquals(#t.screens, 73, "dinge_convo_template: number of screens (67 - 6 + 11, + non_rsf_duty_offer from rsf-gate-screens)")
 end
 
 -- AC-1
@@ -246,8 +247,8 @@ function TestDingeTrainingTemplate:test_the_60_story_screens_still_match_the_con
 	end
 end
 
--- AC-1, I-7: the 9 kept literals
-function TestDingeTrainingTemplate:test_the_9_kept_screens_equal_their_literals_from_4eefa91216()
+-- AC-1, I-7: the 9 kept literals (rebel_pilot and imperial_pilot as rsf-gate-screens defined them, AC-5: 7 literally unchanged)
+function TestDingeTrainingTemplate:test_the_9_kept_screens_equal_their_literals_after_rsf_gate_screens()
 	local byId = screensById()
 	local n = 0
 
@@ -262,8 +263,8 @@ function TestDingeTrainingTemplate:test_the_9_kept_screens_equal_their_literals_
 	lu.assertEquals(n, 9, "kept screens")
 end
 
--- AC-1: the template has exactly the 60 story screens and the 12 training screens
-function TestDingeTrainingTemplate:test_the_template_has_exactly_the_60_story_and_12_training_screens()
+-- AC-1: the template has exactly the 60 story screens, the 12 training screens and (rsf-gate-screens) non_rsf_duty_offer
+function TestDingeTrainingTemplate:test_the_template_has_exactly_the_60_story_12_training_and_the_gate_screen()
 	local known = {}
 
 	for _, row in ipairs(C.ROWS) do
@@ -272,6 +273,10 @@ function TestDingeTrainingTemplate:test_the_template_has_exactly_the_60_story_an
 
 	for _, row in ipairs(D.ROWS) do
 		known[row.id] = true
+	end
+
+	for _, id in ipairs(G.DINGE_NEW) do
+		known[id] = true
 	end
 
 	local extra = {}
@@ -398,8 +403,8 @@ function TestDingeTrainingConformance:test_the_5_old_foreign_sids_are_in_neither
 	end
 end
 
--- AC-2, I-3: the 72 screens show 72 distinct NPC lines
-function TestDingeTrainingConformance:test_the_72_screens_have_72_distinct_left_dialogs()
+-- AC-2, I-3: the 73 screens (rsf-gate-screens) show 73 distinct NPC lines
+function TestDingeTrainingConformance:test_the_73_screens_have_73_distinct_left_dialogs()
 	local seen, n = {}, 0
 
 	for _, s in ipairs(template().screens) do
@@ -408,7 +413,7 @@ function TestDingeTrainingConformance:test_the_72_screens_have_72_distinct_left_
 		seen[s.leftDialog] = s.id
 	end
 
-	lu.assertEquals(n, 72, "screens")
+	lu.assertEquals(n, 73, "screens")
 end
 
 -- Every java string DC and DH use (NPC lines as leftDialog, responses as option text or DH literal)
@@ -440,8 +445,8 @@ local function usedSids()
 	return used
 end
 
--- AC-2, I-3: DC + DH use 119 of the java's 120 strings (72 NPC lines + 47 responses); only s_1e029d90 (item 24) is unused
-function TestDingeTrainingConformance:test_the_two_files_use_119_of_the_120_java_strings_and_only_s_1e029d90_is_unused()
+-- AC-2, I-3: DC + DH use all 120 of the java's strings (73 NPC lines + 47 responses): rsf-gate-screens uses s_1e029d90
+function TestDingeTrainingConformance:test_the_two_files_use_all_120_java_strings()
 	local used = usedSids()
 	local n, npc, resp = 0, 0, 0
 
@@ -451,7 +456,7 @@ function TestDingeTrainingConformance:test_the_two_files_use_119_of_the_120_java
 		if GRAPH.nodes[sid] then npc = npc + 1 else resp = resp + 1 end
 	end
 
-	lu.assertEquals({ n, npc, resp }, { 119, 72, 47 }, "java strings used (total, NPC lines, responses)")
+	lu.assertEquals({ n, npc, resp }, { 120, 73, 47 }, "java strings used (total, NPC lines, responses)")
 
 	local unused = {}
 
@@ -464,7 +469,7 @@ function TestDingeTrainingConformance:test_the_two_files_use_119_of_the_120_java
 	end
 
 	table.sort(unused)
-	lu.assertEquals(unused, { D.UNUSED_SID }, "java strings no file uses")
+	lu.assertEquals(unused, {}, "java strings no file uses")
 end
 
 -- AC-2: each of the 18 newly used sids is used now

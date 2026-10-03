@@ -17,6 +17,7 @@ rebel_pilot = ConvoScreen:new {
 	id = "rebel_pilot",
 	leftDialog = "@conversation/naboo_privateer_trainer_1:s_72f94b8e", -- I think you're a pilot for the Rebel Alliance! Look, the Royal Security Forces don't have any use for the likes of you. I think you should leave now.
 	stopConversation = "true",
+	animation = "slow_down",
 	options = {}
 }
 dinge_convo_template:addScreen(rebel_pilot);
@@ -25,6 +26,7 @@ imperial_pilot = ConvoScreen:new {
 	id = "imperial_pilot",
 	leftDialog = "@conversation/naboo_privateer_trainer_1:s_7217d77", -- Greetings officer! Nothing to worry about here, we've got everything under control.
 	stopConversation = "true",
+	animation = "salute1",
 	options = {}
 }
 dinge_convo_template:addScreen(imperial_pilot);
@@ -38,6 +40,20 @@ non_rsf_pilot = ConvoScreen:new {
 	}
 }
 dinge_convo_template:addScreen(non_rsf_pilot);
+
+non_rsf_duty_offer = ConvoScreen:new {
+	id = "non_rsf_duty_offer",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_1e029d90",
+	stopConversation = "false",
+	animation = "dismiss",
+	options = {
+		{"@conversation/naboo_privateer_trainer_1:s_6106187c", "what_is_duty"},
+		{"@conversation/naboo_privateer_trainer_1:s_e814cf37", "duty_options"},
+		{"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "duty_no_training"},
+		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "duty_not_now"},
+	}
+}
+dinge_convo_template:addScreen(non_rsf_duty_offer);
 
 non_rsf_duty_missions = ConvoScreen:new {
 	id = "non_rsf_duty_missions",

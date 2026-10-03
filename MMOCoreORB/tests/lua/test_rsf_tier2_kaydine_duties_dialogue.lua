@@ -12,6 +12,7 @@ local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_duties_data")
 local C = require("rsf_tier2_kaydine_convo_data")
 local TR = require("rsf_tier2_kaydine_training_data")
+local G = require("rsf_gate_screens_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -115,9 +116,9 @@ function TestKaydineDutyScreens:test_accept_duty_destroy1_is_deleted_and_nothing
 	end
 end
 
--- AC-4: the template has 87 screens (77 before rsf-tier2-kaydine-training: 77 - 20 + 30) and no dead link or duplicate id
-function TestKaydineDutyScreens:test_the_template_has_87_screens_and_no_dead_links_or_duplicate_ids()
-	lu.assertEquals(#template().screens, 87, "kaydine_convo_template: number of screens")
+-- AC-4: the template has 91 screens (87 before rsf-gate-screens, 77 before rsf-tier2-kaydine-training: 77 - 20 + 30 + 4) and no dead link or duplicate id
+function TestKaydineDutyScreens:test_the_template_has_91_screens_and_no_dead_links_or_duplicate_ids()
+	lu.assertEquals(#template().screens, 91, "kaydine_convo_template: number of screens")
 	lu.assertEquals(H.conversationProblems(C.TEMPLATE), {})
 end
 
@@ -144,6 +145,11 @@ function TestKaydineDutyScreens:test_every_screen_is_one_of_the_earlier_answer_k
 	expected["ready_train_pilot"] = true
 
 	for _, id in ipairs(TR.newIds()) do
+		expected[id] = true
+	end
+
+	-- rsf-gate-screens (Appendix A-K): the four new gate screens
+	for _, id in ipairs(G.KAYDINE_NEW) do
 		expected[id] = true
 	end
 
@@ -181,7 +187,7 @@ function TestKaydineDutyScreens:test_the_non_duty_screens_still_equal_the_earlie
 
 	for id, want in pairs(C.KEPT) do
 		lu.assertNotNil(byId[id], "kept screen '" .. id .. "' is missing")
-		lu.assertEquals(shape(byId[id]), { leftDialog = want.leftDialog, stopConversation = want.stopConversation, options = want.options }, "kept screen '" .. id .. "' changed")
+		lu.assertEquals(shape(byId[id]), { leftDialog = want.leftDialog, stopConversation = want.stopConversation, animation = want.animation, options = want.options }, "kept screen '" .. id .. "' changed")
 		checked = checked + 1
 	end
 

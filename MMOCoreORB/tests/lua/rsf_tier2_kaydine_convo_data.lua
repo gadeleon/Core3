@@ -13,7 +13,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 87 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones
+D.SCREEN_COUNT = 91 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones, then rsf-gate-screens: + 4 gate screens
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1, E-2, E-3, E-5).
 D.ROWS = {
@@ -65,15 +65,17 @@ D.ROWS = {
 	{ id = "completed_kaydine_end", status = "new", sid = "s_aa83c988", animation = "", stop = true, options = {  }, exceptions = {  } },
 }
 
+-- rsf-gate-screens (Appendix A-K): pilot_not_rsf, not_ready_tier2 and on_mission changed; their entries below are the definitions after that
+-- feature (the other three kept screens are literally unchanged).
 -- Content contract 1: the 27 screens kept byte-identical (definitions at 74247cbede; the five duty screens here_for_work, duty_options,
 -- accept_duty_destroy1, accept_duty_escort and accept_duty_recovery left this list in rsf-tier2-kaydine-duties, see
 -- test_rsf_tier2_kaydine_duties_dialogue.lua)
 D.KEPT = {
 	["not_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_3db3463f", stopConversation = "true", options = {  } },
-	["pilot_not_rsf"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_7ac0f961", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_2:s_c1ff5062", "non_rsf_missions"} } },
+	["pilot_not_rsf"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_c89c3456", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_2:s_c1ff5062", "non_rsf_missions"} } },
 	["non_rsf_missions"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_7458c693", stopConversation = "true", options = {  } },
-	["not_ready_tier2"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_eac39719", stopConversation = "true", options = {  } },
-	["on_mission"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_e95a95a5", stopConversation = "true", options = {  } },
+	["not_ready_tier2"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_394f0902", stopConversation = "false", animation = "bow", options = { {"@conversation/naboo_privateer_trainer_2:s_b0704da1", "not_ready_tier2_end"} } },
+	["on_mission"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_e95a95a5", stopConversation = "true", animation = "rub_chin_thoughtful", options = {  } },
 	["not_ready"] = { leftDialog = "@conversation/naboo_privateer_trainer_2:s_943f6352", stopConversation = "true", options = {  } },
 }
 

@@ -12,6 +12,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier1_dinge_convo_data")
 local TD = require("rsf_tier1_dinge_training_data")
+local G = require("rsf_gate_screens_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -124,7 +125,7 @@ function TestDingeConvoAnswerKey:test_appendix_a_has_60_rows_40_new_11_changed_9
 	lu.assertEquals(#sortedKeys(sids), 60, "distinct NPC sids in Appendix A")
 	lu.assertEquals(#sortedKeys(D.KEPT), 9, "kept screens (rsf-tier1-dinge-training: the 7 training screens left)")
 	lu.assertEquals(#D.DELETED, 20, "deleted screens")
-	lu.assertEquals(D.SCREEN_COUNT, 47 - 20 + 40 - 6 + 11, "screen count (72)")
+	lu.assertEquals(D.SCREEN_COUNT, 47 - 20 + 40 - 6 + 11 + 1, "screen count (73, rsf-gate-screens: + non_rsf_duty_offer)")
 end
 
 -- AC-2: the java fixture is the file the spec cites
@@ -203,13 +204,13 @@ TestDingeConvoTemplate = {}
 function TestDingeConvoTemplate:setUp() H.reset() end
 
 -- AC-1
-function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_72_screens()
+function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_73_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "dingeConvoHandler", "dinge_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "dinge_convo_template: templateType")
 	lu.assertEquals(t.initialScreen, "", "dinge_convo_template: initialScreen")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "dinge_convo_template: number of screens (67 - 6 + 11)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "dinge_convo_template: number of screens (67 - 6 + 11 + 1)")
 end
 
 -- AC-1
@@ -285,7 +286,7 @@ function TestDingeConvoTemplate:test_the_e1_link_and_the_shared_option_lists_are
 	end
 end
 
--- AC-1: no screen carries an animation field that Appendix A does not list (D-8, E-6)
+-- AC-1: no screen carries an animation field that Appendix A does not list (D-8; E-6 retired by rsf-gate-screens)
 function TestDingeConvoTemplate:test_screens_without_an_appendix_animation_have_no_animation_field()
 	local byId = screensById()
 
@@ -296,8 +297,9 @@ function TestDingeConvoTemplate:test_screens_without_an_appendix_animation_have_
 	end
 end
 
--- AC-1, I-7: the 9 screens listed as kept equal their definitions at 4eefa91216
-function TestDingeConvoTemplate:test_the_9_kept_screens_equal_their_definitions_at_4eefa91216()
+-- AC-1, I-7: the 9 screens listed as kept equal their definitions at 4eefa91216 (rebel_pilot and imperial_pilot with the animations
+-- rsf-gate-screens gave them, AC-5): the 7 others are literally unchanged
+function TestDingeConvoTemplate:test_the_9_kept_screens_equal_their_definitions_after_rsf_gate_screens()
 	local byId = screensById()
 
 	for _, id in ipairs(sortedKeys(D.KEPT)) do
@@ -331,13 +333,14 @@ function TestDingeConvoTemplate:test_no_new_screen_id_contains_train_player_or_e
 	end
 end
 
--- AC-1: every screen of the template is a convo Appendix A row or one of the 12 training Appendix A rows, nothing else
-function TestDingeConvoTemplate:test_the_template_has_exactly_the_appendix_screens_and_the_training_screens()
+-- AC-1: every screen of the template is a convo Appendix A row, one of the 12 training Appendix A rows or (rsf-gate-screens, AC-5) the new
+-- gate screen non_rsf_duty_offer, nothing else
+function TestDingeConvoTemplate:test_the_template_has_exactly_the_appendix_screens_the_training_screens_and_non_rsf_duty_offer()
 	local rows = rowsById()
 	local extra = {}
 
 	for _, s in ipairs(template().screens) do
-		if rows[s.id] == nil and not TRAINING[s.id] then
+		if rows[s.id] == nil and not TRAINING[s.id] and not G.contains(G.DINGE_NEW, s.id) then
 			extra[#extra + 1] = s.id
 		end
 	end
@@ -387,8 +390,8 @@ function TestDingeConvoConformance:test_every_appendix_screen_matches_the_java_g
 		lu.assertEquals(sidOf(screen.leftDialog), row.sid, "screen '" .. row.id .. "': NPC line")
 		lu.assertEquals(screen.stopConversation == "true", node.isEnd, "screen '" .. row.id .. "' (" .. row.sid .. "): stopConversation == \"true\" iff the java ends the conversation")
 
-		-- E-6: the two gate screens keep no animation although the java has one
-		lu.assertEquals(screen.animation or "", D.JAVA_ONLY_ANIMATION[row.id] and "" or node.animation, "screen '" .. row.id .. "' (" .. row.sid .. "): animation")
+		-- rsf-gate-screens: E-6 is retired, the gate screens carry the java animation
+		lu.assertEquals(screen.animation or "", row.animation, "screen '" .. row.id .. "' (" .. row.sid .. "): animation")
 
 		if row.id ~= "yes_enlist" then -- E-2: the handler builds this screen's one option
 			local got = {}
@@ -477,8 +480,8 @@ function TestDingeConvoConformance:test_the_foreign_string_s_e9c7c6bb_is_in_neit
 	lu.assertNil(readFile(DH_PATH):find(D.GONE_SID, 1, true), "dingeConvoHandler.lua still carries " .. D.GONE_SID)
 end
 
--- AC-2, I-3: with the training port only the off-track line s_1e029d90 (item 24) is unused
-function TestDingeConvoConformance:test_the_template_uses_119_of_the_120_java_strings()
+-- AC-2, I-3: with the gate screens port (rsf-gate-screens) the off-track line s_1e029d90 is used too: all 120 strings
+function TestDingeConvoConformance:test_the_template_uses_all_120_java_strings()
 	local used = {}
 
 	for _, s in ipairs(template().screens) do
@@ -509,7 +512,7 @@ function TestDingeConvoConformance:test_the_template_uses_119_of_the_120_java_st
 		n = n + 1
 	end
 
-	lu.assertEquals(n, 119, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (72 NPC lines + 47 responses)")
+	lu.assertEquals(n, 120, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (73 NPC lines + 47 responses)")
 end
 
 ---------------------------------------------------------------------------------------------

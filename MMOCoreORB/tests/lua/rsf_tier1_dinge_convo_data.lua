@@ -15,13 +15,13 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_1:"
 D.TEMPLATE = "dinge_convo_template"
-D.SCREEN_COUNT = 72 -- 47 - 20 deleted + 40 new, then rsf-tier1-dinge-training: - 6 deleted + 11 new
+D.SCREEN_COUNT = 73 -- 47 - 20 deleted + 40 new, then rsf-tier1-dinge-training: - 6 deleted + 11 new, then rsf-gate-screens: + non_rsf_duty_offer
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1).
 D.ROWS = {
 	{ id = "no_jtl", status = "kept", sid = "s_7c1fe68f", animation = "", stop = true, options = {  } },
-	{ id = "rebel_pilot", status = "kept", sid = "s_72f94b8e", animation = "", stop = true, options = {  } },
-	{ id = "imperial_pilot", status = "kept", sid = "s_7217d77", animation = "", stop = true, options = {  } },
+	{ id = "rebel_pilot", status = "kept", sid = "s_72f94b8e", animation = "slow_down", stop = true, options = {  } },
+	{ id = "imperial_pilot", status = "kept", sid = "s_7217d77", animation = "salute1", stop = true, options = {  } },
 	{ id = "non_rsf_pilot", status = "kept", sid = "s_6b25cc31", animation = "", stop = false, options = { {"s_c1ff5062", "non_rsf_duty_missions"} } },
 	{ id = "non_rsf_duty_missions", status = "kept", sid = "s_38d8b2c4", animation = "", stop = true, options = {  } },
 	{ id = "recruitment", status = "chg", sid = "s_465e6eeb", animation = "greet", stop = false, options = { {"s_d70dba34", "yes_enlist"}, {"s_4c695dbd", "no_enlist"} } },
@@ -81,14 +81,15 @@ D.ROWS = {
 	{ id = "not_ready", status = "kept", sid = "s_792ad840", animation = "", stop = true, options = {  } },
 }
 
--- E-6: the java animation the two gate screens lack (kept without animation; gate screens are gap report item 24)
-D.JAVA_ONLY_ANIMATION = { rebel_pilot = "slow_down", imperial_pilot = "salute1" }
+-- E-6 is retired by rsf-gate-screens (spec section 4, AC-5): the two gate screens carry the java animation now, so no row differs from the java
+D.JAVA_ONLY_ANIMATION = {}
 
--- Content contract 1: the 9 screens kept byte-identical (definitions at 4eefa91216)
+-- Content contract 1: the 9 screens kept byte-identical (definitions at 4eefa91216), except rebel_pilot and imperial_pilot, which
+-- rsf-gate-screens (Appendix A-D) gave their java animation: their entries below are the definitions after that feature.
 D.KEPT = {
 	["no_jtl"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_7c1fe68f", stopConversation = "true", options = {  } },
-	["rebel_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_72f94b8e", stopConversation = "true", options = {  } },
-	["imperial_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_7217d77", stopConversation = "true", options = {  } },
+	["rebel_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_72f94b8e", stopConversation = "true", animation = "slow_down", options = {  } },
+	["imperial_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_7217d77", stopConversation = "true", animation = "salute1", options = {  } },
 	["non_rsf_pilot"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_6b25cc31", stopConversation = "false", options = { {"@conversation/naboo_privateer_trainer_1:s_c1ff5062", "non_rsf_duty_missions"} } },
 	["non_rsf_duty_missions"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_38d8b2c4", stopConversation = "true", options = {  } },
 	["not_ready"] = { leftDialog = "@conversation/naboo_privateer_trainer_1:s_792ad840", stopConversation = "true", options = {  } },

@@ -223,8 +223,8 @@ TestDingeTrainingHandlerSweep = {}
 function TestDingeTrainingHandlerSweep:setUp() H.reset() end
 function TestDingeTrainingHandlerSweep:tearDown() end
 
--- AC-8, I-5: entering any one of the 72 screens grants no skill, charges no XP and changes no skill
-function TestDingeTrainingHandlerSweep:test_entering_each_of_the_72_screens_grants_no_skill()
+-- AC-8, I-5: entering any one of the 73 screens grants no skill, charges no XP and changes no skill
+function TestDingeTrainingHandlerSweep:test_entering_each_of_the_73_screens_grants_no_skill()
 	local entered = 0
 	local dh = handler()
 
@@ -251,7 +251,7 @@ function TestDingeTrainingHandlerSweep:test_entering_each_of_the_72_screens_gran
 		lu.assertEquals(player.ghost.experience.space_combat_general, 5 * D.COST, screen.id .. ": space_combat_general")
 	end
 
-	lu.assertEquals(entered, 72, "template screens entered")
+	lu.assertEquals(entered, 73, "template screens entered")
 end
 
 -- AC-8, I-5: more_training's runtime link re-points s_143 without granting (checked per screen state too)

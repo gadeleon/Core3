@@ -14,16 +14,47 @@ not_pilot = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(not_pilot);
 
--- Pilot but not RSF
+-- Rebel pilot (naboo_privateer_trainer_2.java:3887-3892)
+rebel_pilot = ConvoScreen:new {
+	id = "rebel_pilot",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_7ac0f961",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(rebel_pilot);
+
+-- Imperial pilot (naboo_privateer_trainer_2.java:3893-3898)
+imperial_pilot = ConvoScreen:new {
+	id = "imperial_pilot",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_6c6f3940",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(imperial_pilot);
+
+-- Pilot but not RSF; the option is re-pointed at non_rsf_duty_options by the handler when the pilot can fly a duty (naboo_privateer_trainer_2.java:3899-3927)
 pilot_not_rsf = ConvoScreen:new {
 	id = "pilot_not_rsf",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_7ac0f961", -- How do you do. Captain Kaydine, at your service.
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_c89c3456",
 	stopConversation = "false",
 	options = {
 		{"@conversation/naboo_privateer_trainer_2:s_c1ff5062", "non_rsf_missions"}, -- I'm looking for a mission. Do you have any?
 	}
 }
 kaydine_convo_template:addScreen(pilot_not_rsf);
+
+-- Off-track duty offer (naboo_privateer_trainer_2.java:282-334, branch 55 at 2160)
+non_rsf_duty_options = ConvoScreen:new {
+	id = "non_rsf_duty_options",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8a84109d",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_9b73da8", "accept_duty_escort"},
+		{"@conversation/naboo_privateer_trainer_2:s_30297e22", "accept_duty_recovery"},
+		{"@conversation/naboo_privateer_trainer_2:s_c892e540", "accept_duty_destroy"},
+	}
+}
+kaydine_convo_template:addScreen(non_rsf_duty_options);
 
 non_rsf_missions = ConvoScreen:new {
 	id = "non_rsf_missions",
@@ -36,11 +67,22 @@ kaydine_convo_template:addScreen(non_rsf_missions);
 -- Not ready for Tier 2 yet
 not_ready_tier2 = ConvoScreen:new {
 	id = "not_ready_tier2",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_394f0902",
+	stopConversation = "false",
+	animation = "bow",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_b0704da1", "not_ready_tier2_end"},
+	}
+}
+kaydine_convo_template:addScreen(not_ready_tier2);
+
+not_ready_tier2_end = ConvoScreen:new {
+	id = "not_ready_tier2_end",
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_eac39719", -- Sorry, kiddo. You're still in need of training! Come back when you've learned to handle yourself better.
 	stopConversation = "true",
 	options = {}
 }
-kaydine_convo_template:addScreen(not_ready_tier2);
+kaydine_convo_template:addScreen(not_ready_tier2_end);
 
 -- Already finished Tier 3
 finished_tier3 = ConvoScreen:new {
@@ -58,6 +100,7 @@ on_mission = ConvoScreen:new {
 	id = "on_mission",
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_e95a95a5", -- I believe you have some business to attend to... in space?
 	stopConversation = "true",
+	animation = "rub_chin_thoughtful",
 	options = {}
 }
 kaydine_convo_template:addScreen(on_mission);

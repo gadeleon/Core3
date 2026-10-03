@@ -1369,9 +1369,7 @@ arkon_convo:addScreen(ConvoScreen:new {
 	id = "ready_train",
 	leftDialog = "@conversation/corellia_rebel_tier4:s_8907c99",
 	animation = "beckon",
-	options = {
-		{"@conversation/corellia_rebel_tier4:s_421", "train_droid"},
-	}
+	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "intro",

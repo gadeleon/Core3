@@ -49,6 +49,15 @@ arkonConvoHandler.TRAINED_SCREENS = {
 	trained_droid = "pilot_rebel_navy_droid_04",
 }
 
+-- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order.
+-- The replies are the skill names.
+arkonConvoHandler.TRAIN_CHOICES = {
+	{ "pilot_rebel_navy_starships_04", "@skl_n:pilot_rebel_navy_starships_04", "train_starships" },
+	{ "pilot_rebel_navy_weapons_04", "@skl_n:pilot_rebel_navy_weapons_04", "train_weapons" },
+	{ "pilot_rebel_navy_procedures_04", "@skl_n:pilot_rebel_navy_procedures_04", "train_procedures" },
+	{ "pilot_rebel_navy_droid_04", "@skl_n:pilot_rebel_navy_droid_04", "train_droid" }
+}
+
 arkonConvoHandler.MET_SUFFIX = "HavocSquadronScreenplay:StartedArkon"
 
 function arkonConvoHandler:questInfo(constant)
@@ -292,20 +301,15 @@ function arkonConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 		clonedConversation:removeAllOptions()
 		clonedConversation:addOption("@conversation/corellia_rebel_tier4:s_6222b64d", link)
 
-	-- Training menu: send the pilot to the first tier 4 skill they lack
+	-- Training menu: one choice per tier 4 skill the pilot lacks
 	elseif (screenID == "ready_train") then
-		local link = "train_droid"
-
-		if (not CreatureObject(pPlayer):hasSkill("pilot_rebel_navy_starships_04")) then
-			link = "train_starships"
-		elseif (not CreatureObject(pPlayer):hasSkill("pilot_rebel_navy_weapons_04")) then
-			link = "train_weapons"
-		elseif (not CreatureObject(pPlayer):hasSkill("pilot_rebel_navy_procedures_04")) then
-			link = "train_procedures"
-		end
-
 		clonedConversation:removeAllOptions()
-		clonedConversation:addOption("@conversation/corellia_rebel_tier4:s_421", link)
+
+		for _, choice in ipairs(self.TRAIN_CHOICES) do
+			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
+				clonedConversation:addOption(choice[2], choice[3])
+			end
+		end
 
 	elseif (self.TRAINED_SCREENS[screenID] ~= nil) then
 		local skill = self.TRAINED_SCREENS[screenID]

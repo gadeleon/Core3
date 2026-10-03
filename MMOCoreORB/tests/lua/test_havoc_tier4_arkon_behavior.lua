@@ -640,26 +640,8 @@ local function trainer(held)
 	return pilot({ tier4 = held, hist = count, xp = XP_FOR_TIER4, met = true })
 end
 
-local LINKS = {
-	{ "no_skills_links_to_starships", {}, "train_starships" },
-	{ "only_weapons_held_still_links_to_starships", { "weapons" }, "train_starships" },
-	{ "starships_held_links_to_weapons", { "starships" }, "train_weapons" },
-	{ "starships_and_procedures_held_links_to_weapons", { "starships", "procedures" }, "train_weapons" },
-	{ "starships_and_weapons_held_links_to_procedures", { "starships", "weapons" }, "train_procedures" },
-	{ "three_held_links_to_droid", { "starships", "weapons", "procedures" }, "train_droid" },
-	{ "all_but_starships_links_to_starships", { "weapons", "procedures", "droid" }, "train_starships" },
-}
-
-for _, row in ipairs(LINKS) do
-	-- AC-7
-	TestArkonTraining["test_ready_train_option_s_421_" .. row[1]] = function()
-		-- a held set of one needs its reward paid to be out of the mission offer, which trainer() does via hist
-		local transcript = converse(trainer(row[2]), { "s_421" })
-
-		lu.assertEquals(transcript[1].id, "ready_train", "first screen")
-		lu.assertEquals(transcript[2].id, row[3], "screen after s_421 with held skills {" .. table.concat(row[2], ",") .. "}")
-	end
-end
+-- The old fixed-order tests (ready_train's single reply s_421 linking to the first missing skill) are superseded by
+-- havoc-tier4-arkon-free-choice AC-1/AC-2: see test_havoc_tier4_arkon_free_choice.lua.
 
 local TRAINED = {
 	{ "starships", {}, "trained_starships" },
@@ -669,6 +651,7 @@ local TRAINED = {
 }
 
 -- Choices that walk ready_train -> trained_<x>, with an optional hook just before the last choice.
+-- (path[1] is SWG's s_421; under havoc-tier4-arkon-free-choice the pick is the skill-name reply.)
 local function trainingChoices(screen, hook)
 	local path = pathBetween("ready_train", screen)
 	local choices = {}
@@ -676,6 +659,11 @@ local function trainingChoices(screen, hook)
 	for i, sid in ipairs(path) do
 		if i == #path and hook then
 			choices[#choices + 1] = hook
+		end
+
+		-- havoc-tier4-arkon-free-choice: the first reply is the pilot's pick of the skill of the target screen, not SWG's s_421
+		if i == 1 then
+			sid = "@skl_n:pilot_rebel_navy_" .. screen:match("^trained_(%a+)$") .. "_04"
 		end
 
 		choices[#choices + 1] = sid

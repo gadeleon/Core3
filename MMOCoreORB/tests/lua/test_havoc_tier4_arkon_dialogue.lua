@@ -6,6 +6,7 @@
 local lu = require("luaunit")
 local H = require("harness")
 local D = require("havoc_tier4_data")
+local FC = require("havoc_tier4_arkon_free_choice_data")
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -234,20 +235,30 @@ function TestArkonDialogue:test_options_are_the_swg_responses_in_order_and_link_
 
 		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
 
+		-- havoc-tier4-arkon-free-choice, E-AK1: ready_train's single SWG reply s_421 is replaced by handler-added choice replies
+		local exceptions = FC.EXCEPTIONS[screen.id] or {}
+		local wanted = {}
+
+		for _, optionSid in ipairs(node.options) do
+			if not exceptions[optionSid] then
+				wanted[#wanted + 1] = optionSid
+			end
+		end
+
 		local got = {}
 
 		for i, option in ipairs(screen.options or {}) do
 			got[i] = sidOf(option[1])
 		end
 
-		lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
+		lu.assertEquals(got, wanted, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
 
-		for i, optionSid in ipairs(node.options) do
+		for i, optionSid in ipairs(wanted) do
 			local successors = GRAPH.successorsOf(sid, optionSid)
 
 			lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
 
-			-- Conditional successors (s_6222b64d, s_421): the static link is the unconditional default,
+			-- Conditional successors (s_6222b64d): the static link is the unconditional default,
 			-- which is the last successor in the java.
 			local expected = successors[#successors]
 			local target = byId[screen.options[i][2]]
@@ -263,7 +274,8 @@ function TestArkonDialogue:test_the_two_conditional_options_default_to_the_spec_
 	local byId = screensById(template())
 
 	lu.assertEquals(byId.not_my_track.options[1][2], "nontrack_no_duty", "not_my_track: default link of s_6222b64d")
-	lu.assertEquals(byId.ready_train.options[1][2], "train_droid", "ready_train: default link of s_421")
+	-- havoc-tier4-arkon-free-choice AC-1/AC-4, E-AK1: the handler adds the choice replies
+	lu.assertEquals(byId.ready_train.options, {}, "ready_train: static options")
 end
 
 -- AC-2

@@ -155,7 +155,9 @@ T.TRAINERS.kaydine = {
 
 		return {
 			pilot = "neutral", squadronType = rawget(_G, "RSF_SQUADRON"), pilotTier = 2, skills = skills,
-			questStatus = { ["RsfSquadronScreenplay:legacyVersion"] = "3" },
+			-- rsf-tier2-kaydine-signup (R-3): every Kaydine test pilot has already signed up (the first-meeting dialog set the flag); tests of the sign-up
+			-- remove it: removeQuestStatus(player.objectID .. "RsfSquadronScreenplay:StartedKaydine")
+			questStatus = { ["RsfSquadronScreenplay:legacyVersion"] = "3", ["RsfSquadronScreenplay:StartedKaydine"] = "1" },
 		}
 	end,
 }

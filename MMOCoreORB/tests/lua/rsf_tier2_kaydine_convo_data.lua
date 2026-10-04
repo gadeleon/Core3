@@ -13,7 +13,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 91 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones, then rsf-gate-screens: + 4 gate screens
+D.SCREEN_COUNT = 100 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones, then rsf-gate-screens: + 4 gate screens, then rsf-tier2-kaydine-signup: + 9
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1, E-2, E-3, E-5).
 D.ROWS = {

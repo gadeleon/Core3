@@ -9,6 +9,9 @@ kaydineConvoHandler = conv_handler:new {
 	}
 }
 
+-- Met-Kaydine flag, SWG space flag rsfTier2 (naboo_privateer_trainer_2.java:195-199)
+kaydineConvoHandler.SIGNUP_SUFFIX = "RsfSquadronScreenplay:StartedKaydine"
+
 -- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order
 kaydineConvoHandler.TRAIN_CHOICES = {
 	{ "pilot_neutral_starships_02", "@conversation/naboo_privateer_trainer_2:s_45b71b4d", "train_starships" },
@@ -16,6 +19,37 @@ kaydineConvoHandler.TRAIN_CHOICES = {
 	{ "pilot_neutral_procedures_02", "@conversation/naboo_privateer_trainer_2:s_8f5942fa", "train_procedures" },
 	{ "pilot_neutral_droid_02", "@conversation/naboo_privateer_trainer_2:s_eff66f4d", "train_droid" }
 }
+
+-- Has the pilot met Kaydine? SWG: space flag rsfTier2 (java:78-81); also true for pilots with tier 2 progress. Writes nothing.
+function kaydineConvoHandler:isSignedUp(pPlayer)
+	local playerID = CreatureObject(pPlayer):getObjectID()
+
+	if (getQuestStatus(playerID .. self.SIGNUP_SUFFIX) == "1") then
+		return true
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost ~= nil) then
+		local ghost = LuaPlayerObject(pGhost)
+
+		if (ghost ~= nil and ghost:getPilotTier() >= 3) then
+			return true
+		end
+	end
+
+	if (SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 2) >= 1 or self:getNextMission(pPlayer) > 1) then
+		return true
+	end
+
+	for _, quest in ipairs({ RsfSquadronScreenplay.TIER2_QUEST_STRING_1, RsfSquadronScreenplay.TIER2_QUEST_STRING_2, RsfSquadronScreenplay.TIER2_QUEST_STRING_3, RsfSquadronScreenplay.TIER2_QUEST_STRING_4 }) do
+		if (getQuestStatus(playerID .. quest.name .. ":attempted") == "1" or getQuestStatus(playerID .. quest.name .. ":reward") == "1") then
+			return true
+		end
+	end
+
+	return false
+end
 
 function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (pPlayer == nil or pNpc == nil or pConvTemplate == nil) then
@@ -51,13 +85,13 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
 	if (pGhost == nil) then
-		return convoTemplate:getScreen("not_pilot")
+		return convoTemplate:getScreen("fallthrough")
 	end
 
 	local ghost = LuaPlayerObject(pGhost)
 
 	if (ghost == nil) then
-		return convoTemplate:getScreen("not_pilot")
+		return convoTemplate:getScreen("fallthrough")
 	end
 
 	-- RSF neutral pilot has completed Tier 3
@@ -95,6 +129,10 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (questOneStarted or questTwoStarted or questThreeStarted or questFourStarted or escortDutyActive or recoveryDutyActive or destroyDutyActive) then
 
 		return convoTemplate:getScreen("on_mission")
+
+	-- First meeting: the recruitment dialog (naboo_privateer_trainer_2.java:3965, isPilot_NOT_RSF_Tier2)
+	elseif (not self:isSignedUp(pPlayer)) then
+		return convoTemplate:getScreen("signup")
 
 	-- Check if players have all the tier2 skill boxes and finished the last mission, then send them to next trainer.
 	elseif (questFourComplete and completedTier2 and getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward") == "1") then
@@ -181,7 +219,12 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 		return pClonedScreen
 	end
 
-	if (screenID == "ready_train_pilot") then
+	if (screenID == "signup_accept") then
+		-- signup_RSF_Tier2 (naboo_privateer_trainer_2.java:195-199)
+		setQuestStatus(playerID .. self.SIGNUP_SUFFIX, 1)
+		CreatureObject(pPlayer):playMusicMessage("sound/music_themequest_acc_general.snd")
+
+	elseif (screenID == "ready_train_pilot") then
 		-- Offer every skill the pilot lacks (pre-NGE free choice instead of naboo_privateer_trainer_2.java:2204-2330)
 		clonedConversation:removeAllOptions()
 

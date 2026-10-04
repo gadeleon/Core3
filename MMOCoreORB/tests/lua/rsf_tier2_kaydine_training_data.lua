@@ -17,7 +17,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 91 -- 87 + the 4 gate screens of rsf-gate-screens
+D.SCREEN_COUNT = 100 -- 87 + the 4 gate screens of rsf-gate-screens + the 9 sign-up screens of rsf-tier2-kaydine-signup
 
 -- Appendix A. options are { option sid, static link }.
 D.ROWS = {

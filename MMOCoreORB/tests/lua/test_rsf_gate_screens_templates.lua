@@ -9,6 +9,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local T = require("trainer_fixes_data")
 local G = require("rsf_gate_screens_data")
+local SU = require("rsf_tier2_kaydine_signup_data") -- rsf-tier2-kaydine-signup: the nine new Kaydine screens
 local P = require("pilot_training_free_choice_data") -- pilot-training-free-choice (spec: .claude/work/pilot-training-free-choice/01-spec.md)
 local Swgjava = require("harness.swgjava")
 
@@ -256,9 +257,13 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 		lu.assertEquals(checked, OLD_COUNT[trainer] - #CHANGED[trainer] - #DELETED[trainer], "screens compared with " .. BASE)
 
+		local signup = {}
+
+		for _, id in ipairs(trainer == "kaydine" and SU.IDS or {}) do signup[id] = true end
+
 		for id in pairs(new) do
 			if old[id] == nil then
-				lu.assertTrue(touched[id] == true, files.template .. ": unexpected new screen '" .. id .. "'")
+				lu.assertTrue(touched[id] == true or signup[id] == true, files.template .. ": unexpected new screen '" .. id .. "'")
 			end
 		end
 	end
@@ -472,12 +477,12 @@ function TestGateConformance:test_dinge_uses_72_of_73_npc_lines_and_45_of_47_rep
 	lu.assertTrue(set["s_1e029d90"] == true, "s_1e029d90 (the off-track duty line) is used")
 end
 
--- AC-2, I-3; pilot-training-free-choice: Kaydine uses 87 of 99 NPC lines and 48 of 59 replies; the unused ones are the signup dialog, the fallthrough (D-10)
--- and the retired single reply s_187
-function TestGateConformance:test_kaydine_uses_87_of_99_npc_lines_and_48_of_59_replies_and_the_unused_ones_are_the_deferred_signup_and_s_187()
+-- AC-2, I-3; pilot-training-free-choice, rsf-tier2-kaydine-signup (I-6): Kaydine uses 96 of 99 NPC lines and 55 of 59 replies; the unused ones are the NGE-only
+-- branch B lines (s_29 .. s_39, D-8) and the retired single reply s_187
+function TestGateConformance:test_kaydine_uses_96_of_99_npc_lines_and_55_of_59_replies_and_the_unused_ones_are_the_nge_only_signup_lines_and_s_187()
 	local set, npc, resp = used("kaydine")
 
-	lu.assertEquals({ npc, resp }, { 87, 48 }, "java strings used by kaydine_convo.lua and kaydineConvoHandler.lua (NPC lines, replies)")
+	lu.assertEquals({ npc, resp }, { 96, 55 }, "java strings used by kaydine_convo.lua and kaydineConvoHandler.lua (NPC lines, replies)")
 
 	local unusedNpc, unusedResp = {}, {}
 

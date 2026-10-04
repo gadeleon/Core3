@@ -114,12 +114,12 @@ function TestKaydineConvoTemplate:test_appendix_a_has_46_rows_43_new_2_changed_1
 end
 
 -- AC-1
-function TestKaydineConvoTemplate:test_the_template_keeps_its_name_and_handler_and_has_91_screens()
+function TestKaydineConvoTemplate:test_the_template_keeps_its_name_and_handler_and_has_100_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "kaydineConvoHandler", "kaydine_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "kaydine_convo_template: templateType")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30 + 4, rsf-tier2-kaydine-training and rsf-gate-screens)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30 + 4 + 9, rsf-tier2-kaydine-training, rsf-gate-screens and rsf-tier2-kaydine-signup)")
 end
 
 -- AC-1

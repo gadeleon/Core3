@@ -316,6 +316,14 @@ the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`,
 (choices by reply sid, so an out-of-order pick does not depend on the order of the list); `test_pilot_training_free_choice_conformance.lua` pins the
 `TRAIN_CHOICES` tables, the string ids and "nothing else moves" against commit 1092dfb3fd through `git show`.
 
+### Kaydine sign-up (rsf-tier2-kaydine-signup)
+
+`rsf_tier2_kaydine_signup_data.lua` holds the spec's Appendix A (the nine new screens, `S.ROWS` / `S.IDS`), the two walks, the flag suffix, the music file, the eight
+tier 2 keys and `S.pilot{...}`, the unsigned RSF tier 2 pilot. The shared trainer-fixes Kaydine pilot is seeded as signed up (`StartedKaydine` = "1"), so every other
+Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conversation/naboo_privateer_trainer_2.sids` is the list of the 123 string ids of the client
+`.stf` (generated read-only from `/tre/patch_12_00.tre`, spec Appendix B; regenerate it, never edit it). The missing-ghost returns are reached by replacing
+`SpaceHelpers.isRSFSquadron` (nil ghost) or the global `LuaPlayerObject` (nil wrapper) for the test and restoring them in `tearDown`.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

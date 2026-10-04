@@ -13,6 +13,7 @@ local D = require("rsf_tier2_kaydine_duties_data")
 local C = require("rsf_tier2_kaydine_convo_data")
 local TR = require("rsf_tier2_kaydine_training_data")
 local G = require("rsf_gate_screens_data")
+local SU = require("rsf_tier2_kaydine_signup_data")
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -116,9 +117,9 @@ function TestKaydineDutyScreens:test_accept_duty_destroy1_is_deleted_and_nothing
 	end
 end
 
--- AC-4: the template has 91 screens (87 before rsf-gate-screens, 77 before rsf-tier2-kaydine-training: 77 - 20 + 30 + 4) and no dead link or duplicate id
-function TestKaydineDutyScreens:test_the_template_has_91_screens_and_no_dead_links_or_duplicate_ids()
-	lu.assertEquals(#template().screens, 91, "kaydine_convo_template: number of screens")
+-- AC-4: the template has 100 screens (91 before rsf-tier2-kaydine-signup; 87 before rsf-gate-screens, 77 before rsf-tier2-kaydine-training: 77 - 20 + 30 + 4) and no dead link or duplicate id
+function TestKaydineDutyScreens:test_the_template_has_100_screens_and_no_dead_links_or_duplicate_ids()
+	lu.assertEquals(#template().screens, 100, "kaydine_convo_template: number of screens (91 + the 9 sign-up screens of rsf-tier2-kaydine-signup)")
 	lu.assertEquals(H.conversationProblems(C.TEMPLATE), {})
 end
 
@@ -150,6 +151,11 @@ function TestKaydineDutyScreens:test_every_screen_is_one_of_the_earlier_answer_k
 
 	-- rsf-gate-screens (Appendix A-K): the four new gate screens
 	for _, id in ipairs(G.KAYDINE_NEW) do
+		expected[id] = true
+	end
+
+	-- rsf-tier2-kaydine-signup (Appendix A): the nine new screens
+	for _, id in ipairs(SU.IDS) do
 		expected[id] = true
 	end
 

@@ -11,6 +11,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local C = require("pilot_training_free_choice_data")
 local Swgjava = require("harness.swgjava")
+local SU = require("rsf_tier2_kaydine_signup_data") -- rsf-tier2-kaydine-signup: the nine new Kaydine screens
 
 T.load()
 H.loadMobile("conversations/space/neutral/rsf_squadron/imler_convo.lua") -- T.load() does not load Imler
@@ -323,10 +324,10 @@ for _, name in ipairs(ORDER) do
 end
 
 -- AC-9: the screen counts the spec names
-function TestFreeChoiceGraph:test_the_screen_counts_are_87_plus_4_for_kaydine_72_for_dinge_and_182_for_imler()
+function TestFreeChoiceGraph:test_the_screen_counts_are_100_for_kaydine_72_for_dinge_and_182_for_imler()
 	local function count(name) return #H.conversationTemplateTable(TRAINERS[name].template).screens end
 
-	lu.assertEquals(count("kaydine"), 91, "kaydine_convo_template screens (87 + the 4 gate screens)")
+	lu.assertEquals(count("kaydine"), 100, "kaydine_convo_template screens (87 + the 4 gate screens + the 9 sign-up screens of rsf-tier2-kaydine-signup)")
 	lu.assertEquals(count("dinge"), 72, "dinge_convo_template screens (73 - first_training_done)")
 	lu.assertEquals(count("imler"), 182, "imler_convo_template screens")
 end
@@ -419,8 +420,13 @@ for _, name in ipairs(ORDER) do
 			end
 		end
 
+		-- rsf-tier2-kaydine-signup (spec AC-10): Kaydine gains the nine Appendix A screens
+		local signup = {}
+
+		for _, id in ipairs(name == "kaydine" and SU.IDS or {}) do signup[id] = true end
+
 		for id in pairs(new) do
-			lu.assertNotNil(old[id], TRAINERS[name].convo .. ": unexpected new screen '" .. id .. "'")
+			lu.assertTrue(old[id] ~= nil or signup[id] == true, TRAINERS[name].convo .. ": unexpected new screen '" .. id .. "'")
 		end
 
 		local changed = 0
@@ -476,7 +482,7 @@ end
 
 -- the functions each feature rewrites (the rest must be the very text of the base commit)
 local REWRITTEN = {
-	kaydine = { ["kaydineConvoHandler:runScreenHandlers"] = true },
+	kaydine = { ["kaydineConvoHandler:runScreenHandlers"] = true, ["kaydineConvoHandler:getInitialScreen"] = true }, -- rsf-tier2-kaydine-signup: the sign-up route and fallthrough
 	dinge = { ["dingeConvoHandler:runScreenHandlers"] = true, ["dingeConvoHandler:getNextConversationScreen"] = true },
 	imler = { ["imlerConvoHandler:runScreenHandlers"] = true },
 }
@@ -498,8 +504,11 @@ for _, name in ipairs(ORDER) do
 
 		lu.assertTrue(checked >= 4, TRAINERS[name].handler .. ": functions compared with " .. BASE .. ": " .. checked)
 
+		-- rsf-tier2-kaydine-signup (spec Content contract KH 2): Kaydine gains the predicate isSignedUp
+		local added = { kaydine = { ["kaydineConvoHandler:isSignedUp"] = true } }
+
 		for fn in pairs(new) do
-			lu.assertNotNil(old[fn], TRAINERS[name].handler .. ": unexpected new function " .. fn)
+			lu.assertTrue(old[fn] ~= nil or (added[name] or {})[fn] == true, TRAINERS[name].handler .. ": unexpected new function " .. fn)
 		end
 	end
 end

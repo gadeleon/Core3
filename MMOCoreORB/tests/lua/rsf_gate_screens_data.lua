@@ -19,7 +19,7 @@ G.PK = "@conversation/naboo_privateer_trainer_2:"
 G.PJ = "@conversation/naboo_privateer_trainer_1:"
 G.KAYDINE_TEMPLATE = "kaydine_convo_template"
 G.DINGE_TEMPLATE = "dinge_convo_template"
-G.KAYDINE_SCREEN_COUNT = 91 -- 87 + rebel_pilot, imperial_pilot, not_ready_tier2_end, non_rsf_duty_options
+G.KAYDINE_SCREEN_COUNT = 100 -- 87 + rebel_pilot, imperial_pilot, not_ready_tier2_end, non_rsf_duty_options + the nine sign-up screens (rsf-tier2-kaydine-signup)
 G.DINGE_SCREEN_COUNT = 72 -- 72 + non_rsf_duty_offer, - first_training_done (pilot-training-free-choice D-6)
 
 -- Appendix A-K. options are { option sid, static link }.
@@ -66,10 +66,10 @@ G.EXCEPTIONS = {
 G.KAYDINE_REACH = { "accept_duty_destroy", "accept_duty_escort", "accept_duty_recovery", "non_rsf_duty_options", "non_rsf_missions", "pilot_not_rsf" }
 G.DINGE_REACH = { "destroy_duty", "duty_no_training", "duty_not_now", "duty_options", "escort_duty", "non_rsf_duty_missions", "non_rsf_duty_offer", "non_rsf_pilot", "not_ready", "what_is_duty" }
 
--- String usage after this feature: Kaydine 87/99 NPC lines + 49/59 replies (the signup dialog and the fallthrough stay out, D-10);
--- pilot-training-free-choice: 48/59 replies, s_187 is no longer used
-G.KAYDINE_UNUSED_NPC = { "s_2847218", "s_24d86e89", "s_31", "s_35", "s_35fb22d6", "s_39", "s_464cfc61", "s_6cd96c01", "s_7cc7c206", "s_837686a5", "s_9ea46a82", "s_d8472b3c" }
-G.KAYDINE_UNUSED_RESP = { "s_29", "s_33", "s_37", "s_7614c65", "s_8f2e1055", "s_9560d48e", "s_d70dba34", "s_f6ae3b07", "s_f93088f1", "s_36a4e374", "s_187" }
+-- String usage: rsf-gate-screens left the signup dialog and the fallthrough unused (87/99 NPC lines); pilot-training-free-choice retired s_187;
+-- rsf-tier2-kaydine-signup (I-6) uses them: 96/99 NPC lines and 55/59 replies, only the NGE-only branch B lines (D-8) and s_187 stay unused
+G.KAYDINE_UNUSED_NPC = { "s_31", "s_35", "s_39" }
+G.KAYDINE_UNUSED_RESP = { "s_29", "s_33", "s_37", "s_187" }
 
 G.TIER1_SKILLS = { "pilot_neutral_droid_01", "pilot_neutral_procedures_01", "pilot_neutral_starships_01", "pilot_neutral_weapons_01" }
 

@@ -9,6 +9,11 @@
 --
 -- Q1 (user answer): completing space_battle 4c_lose counts as winning mission 4.
 --
+-- space-convo-client-strings-imler-b (.claude/work/space-convo-client-strings-imler-b/01-spec.md, Appendix C): the 52 TestImlerMissionGrants tests are updated. The 13 grant screens of the
+-- NGE subtrees are 7 now (rsf_tier4_data.lua D.GRANT_SCREENS): the 28 tests of the kept grant ids walk Appendix P (the reply sids from the brief) instead of the I4 path and keep their
+-- assertions; the 24 tests of the 6 removed ids (mission1_accept_b/c, mission2_accept_c, mission3_accept_c/d/e) are retired, since test_space_convo_client_strings_imler_b.lua AC-5 / AC-6
+-- cover every remaining route.
+--
 -- space-convo-client-strings-imler-a (.claude/work/space-convo-client-strings-imler-a/01-spec.md, Appendix C): the 64 tests listed there are updated to the pre-NGE shape.
 -- The duty chains walk the briefing's first reply by its twin s_3f68df7d (the java still says s_416; rsf_tier4_imler_client_strings_data.lua D.TWIN). Training is one click: the
 -- reply of the skill on ready_train (Imler's own "Teach me about ..." line) buys the skill when chosen and lands on mission<k>_brief (k = the skill count after the grant), which sets
@@ -19,6 +24,7 @@ local H = require("harness")
 local D = require("rsf_tier4_data")
 local C = require("pilot_training_free_choice_data") -- pilot-training-free-choice: the Imler choice replies
 local DS = require("rsf_tier4_imler_client_strings_data") -- space-convo-client-strings-imler-a: the twins of the NGE ids
+local FB = require("rsf_tier4_imler_b_client_strings_data") -- space-convo-client-strings-imler-b: Appendix P, the paths from the brief to the 7 grant screens
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -664,7 +670,7 @@ local ROUTES_TO_GRANT = {
 	-- briefing reached from ready_mission (flag set, N skills)
 	ready_mission = function(n, target)
 		local player = pilot({ skillCount = n, hist = n - 1, ready = true })
-		local path = concat({ "s_39e697de" }, pathBetween("mission" .. n .. "_brief", target))
+		local path = concat({ "s_39e697de" }, FB.PATHS[target] or pathBetween("mission" .. n .. "_brief", target))
 
 		return player, path, "ready_mission"
 	end,
@@ -677,7 +683,7 @@ local ROUTES_TO_GRANT = {
 		end
 
 		local player = pilot({ tier4 = held, hist = n - 1, xp = XP_FOR_TIER4, met = true })
-		local path = concat({ REPLY[D.SKILLS[n]] }, pathBetween("mission" .. n .. "_brief", target))
+		local path = concat({ REPLY[D.SKILLS[n]] }, FB.PATHS[target] or pathBetween("mission" .. n .. "_brief", target))
 
 		return player, path, "ready_train"
 	end,

@@ -293,779 +293,477 @@ imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission4_brief",
 	leftDialog = "@conversation/naboo_privateer_tier4:s_e4bbe441",
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_453", "s_455"},
-		{"@conversation/naboo_privateer_tier4:s_473", "s_475"},
+		{"@conversation/naboo_privateer_tier4:s_e9ea6fec", "s_76701ff2"}, -- Good. Because I want to go after them.
+		{"@conversation/naboo_privateer_tier4:s_983ebe8d", "s_3af6b354"}, -- They're going after the RSF pretty hard.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission3_brief",
 	leftDialog = "@conversation/naboo_privateer_tier4:s_ff6e1247",
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_491", "s_493"},
-		{"@conversation/naboo_privateer_tier4:s_539", "s_541"},
-		{"@conversation/naboo_privateer_tier4:s_587", "s_589"},
+		{"@conversation/naboo_privateer_tier4:s_3210ae50", "s_2035fbe6"}, -- Haha! They sure did.
+		{"@conversation/naboo_privateer_tier4:s_5b5570cd", "s_55453170"}, -- I didn't like the fact they tried to kill me.
+		{"@conversation/naboo_privateer_tier4:s_9d4ab52b", "s_ebcc7726"}, -- What was the cargo?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission2_brief",
 	leftDialog = "@conversation/naboo_privateer_tier4:s_bdc28bb4",
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_625", "s_627"},
-		{"@conversation/naboo_privateer_tier4:s_709", "s_711"},
+		{"@conversation/naboo_privateer_tier4:s_39500c68", "s_f803a81b"}, -- What did you find?
+		{"@conversation/naboo_privateer_tier4:s_841d27db", "s_105bb565"}, -- Why?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission1_brief",
 	leftDialog = "@conversation/naboo_privateer_tier4:s_9312a850",
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_739", "s_741"},
-		{"@conversation/naboo_privateer_tier4:s_819", "s_821"},
+		{"@conversation/naboo_privateer_tier4:s_68441a06", "s_3d333deb"}, -- Action packed.
+		{"@conversation/naboo_privateer_tier4:s_6cee1a83", "s_ebb2f602"}, -- Not so much.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_455",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_455",
+	id = "s_3af6b354",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_3af6b354", -- No, my friend. They're going against YOU pretty hard. You're good at what you do. And that means you're getting in their way. Black Suns don't like people getting in their way.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_457", "s_459"},
+		{"@conversation/naboo_privateer_tier4:s_cdbde300", "s_16106529"}, -- Well I'm not going to stop.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_475",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_475",
-	animation = "laugh_titter",
+	id = "s_16106529",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_16106529", -- Well, this is a new problem in Yavin. We'll just have to deal with it. I'm not going to wait for them to come to us.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_477", "s_479"},
+		{"@conversation/naboo_privateer_tier4:s_63e5cad0", "s_fd271a84"}, -- Send me out there.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_493",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_493",
-	animation = "laugh",
+	id = "s_76701ff2",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_76701ff2", -- You're about to get your wish. But this time, you're not going alone. We need a show of force. You'll be joining a fleet of RSF pilots up around Yavin in a sortie against the Black Sun.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_495", "s_497"},
+		{"@conversation/naboo_privateer_tier4:s_63c379c4", "s_2271ff14"}, -- These other pilots. Are they any good?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_541",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_541",
-	animation = "laugh",
+	id = "s_fd271a84",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_fd271a84", -- You read my mind. But this time, you're not going alone. We need a show of force. You'll be joining a fleet of RSF pilots in a sortie against the Black Sun.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_543", "s_545"},
+		{"@conversation/naboo_privateer_tier4:s_63c379c4", "s_80714a31"}, -- These other pilots. Are they any good?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_589",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_589",
-	animation = "laugh",
+	id = "s_2271ff14",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_2271ff14", -- I think so. But you can be the judge of that.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_591", "s_593"},
+		{"@conversation/naboo_privateer_tier4:s_bbd611b4", "s_237b421d"}, -- What about the Imperials?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_627",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_627",
-	animation = "check_wrist_device",
+	id = "s_80714a31",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_80714a31", -- I think so. But you can be the judge of that. Ready to go?
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_629", "s_631"},
-		{"@conversation/naboo_privateer_tier4:s_665", "s_667"},
+		{"@conversation/naboo_privateer_tier4:s_eb2cfdac", "mission4_accept_a"}, -- You bet.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_711",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_711",
+	id = "s_237b421d",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_237b421d", -- They're not going to get involved. They've got other things to worry about. You just take care of those Black Suns. Ready to go?
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_713", "s_715"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_741",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_741",
-	animation = "laugh",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_743", "s_745"},
-		{"@conversation/naboo_privateer_tier4:s_783", "s_785"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_821",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_821",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_823", "s_825"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_459",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_459",
-	animation = "salute1",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_461", "s_463"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_463",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_463",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_465", "s_467"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_467",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_467",
-	animation = "rub_chin_thoughtful",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_469", "mission4_accept_a"},
+		{"@conversation/naboo_privateer_tier4:s_556c01dc", "mission4_accept_b"}, -- Just get me up there.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission4_accept_a",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_471",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_9281abbb", -- Go get 'em, tiger.
 	animation = "salute1",
 	stopConversation = "true",
 	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_479",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_479",
-	animation = "rub_chin_thoughtful",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_481", "s_483"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_483",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_483",
-	animation = "shake_head_no",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_485", "mission4_accept_b"},
-	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission4_accept_b",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_487",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_8a0c5ce7", -- I'll talk to you when you get back.
 	animation = "salute1",
 	stopConversation = "true",
 	options = {}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_497",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_497",
-	animation = "shiver",
+	id = "s_2035fbe6",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_2035fbe6", -- You're lucky you made it back in one piece.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_499", "s_501"},
+		{"@conversation/naboo_privateer_tier4:s_db51959a", "s_f453a7fa"}, -- Luck had nothing to do with it.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_501",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_501",
-	animation = "point_to_self",
+	id = "s_f453a7fa",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_f453a7fa", -- I like your attitude. I was right about that freighter, wasn't I?
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_503", "s_505"},
+		{"@conversation/naboo_privateer_tier4:s_27e6d728", "s_840f4ebe"}, -- You were right. They were packed to the gills with contraband.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_505",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_505",
-	animation = "explain",
+	id = "s_840f4ebe",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_840f4ebe", -- What can I say? I've got a nose for these kinds of  things.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_507", "s_509"},
-		{"@conversation/naboo_privateer_tier4:s_515", "s_517"},
+		{"@conversation/naboo_privateer_tier4:s_9d4ab52b", "s_ebcc7726"}, -- What was the cargo?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_509",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_509",
-	animation = "explain",
+	id = "s_55453170",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_55453170", -- Not this time. But they'll try again.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_511", "mission3_accept_a"},
+		{"@conversation/naboo_privateer_tier4:s_cdbde300", "s_4cae7d37"}, -- Well I'm not going to stop.
+		{"@conversation/naboo_privateer_tier4:s_9299cabe", "s_27cad067"}, -- What's going on with the Black Suns?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_517",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_517",
+	id = "s_27cad067",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_27cad067", -- Don't think I can help you there.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_519", "s_521"},
+		{"@conversation/naboo_privateer_tier4:s_7f9b8387", "s_720204b2"}, -- Why not?
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_4cae7d37",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_4cae7d37", -- Of course not. Forget about them for now. I have a new mission for you.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_1adbadc4", "s_b5ee61ed"}, -- I'm ready.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_720204b2",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_720204b2", -- Let me worry about the Black Suns. I have a new mission for you.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_a11918f3", "s_b5ee61ed"}, -- OK.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_ebcc7726",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_ebcc7726", -- 'Materials for an explosives plant. If they had moved them into this system undetected... well, they didn't. That's all that matters.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_dfb50fb1", "s_41799e3b"}, -- I think you're right.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_41799e3b",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_41799e3b", -- You did good. I have a new mission for you.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_8289ab5b", "s_b5ee61ed"}, -- I'm ready for my next mission.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_b5ee61ed",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_b5ee61ed", -- A pair of Imperial freighters have entered Yavin space. They need a go-between for a supply transfer. And that go-between would be you.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_c290ec08", "s_9252108e"}, -- Imperials!
+		{"@conversation/naboo_privateer_tier4:s_5b6fb4cf", "s_539c8d41"}, -- Why? For what reason?
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_539c8d41",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_539c8d41", -- The head honchos like to know EVERYTHING happening in this system. You must have figured  that out by now.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_fb1b0124", "s_4e740301"}, -- They're paranoid, I know that.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_4e740301",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_4e740301", -- You would be, too, if half the galaxy was gunning for you. And besides, the Imperials are awfully active down here.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_fadf51b5", "s_9252108e"}, -- Imperials.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_9252108e",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_9252108e", -- Not your favorites, I take it?
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_a2989575", "s_841d27db"}, -- They're lowlifes.
+		{"@conversation/naboo_privateer_tier4:s_f4146fa1", "s_babb0d0c"}, -- Lowlifes with guns.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_841d27db",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_841d27db", -- Why?
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_a5795662", "s_917f4150"}, -- Because they're bloodthirsty lunatics, I guess.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_917f4150",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_917f4150", -- Well THAT'S not a good enough reason! You're pretty bloodthirsty, too.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_f0583774", "s_babb0d0c"}, -- Yeah, but...well...
+		{"@conversation/naboo_privateer_tier4:s_1f2b0388", "s_babb0d0c"}, -- Not any more.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_babb0d0c",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_babb0d0c", -- Look, this isn't an ethics class. We're all just here to do our job.
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_ba8f5de7", "s_7378bc13"}, -- I see what you're saying.
+	}
+})
+imler_convo_template:addScreen(ConvoScreen:new {
+	id = "s_7378bc13",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_7378bc13", -- You know how testy Imperial freighter captains can be. They think they own the universe. Especially these two. They're a real couple of killjoys. But they're our friends, so make nice, OK?
+	options = {
+		{"@conversation/naboo_privateer_tier4:s_3fdc63be", "mission3_accept_a"}, -- Because we love the Empire so much.
+		{"@conversation/naboo_privateer_tier4:s_18a76ec8", "mission3_accept_a"}, -- Who cares what they think?
+		{"@conversation/naboo_privateer_tier4:s_e4399cac", "mission3_accept_b"}, -- What about the Black Suns?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission3_accept_a",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_513",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_ff66ed8b", -- You don't have  to love 'em. You just have to keep 'em happy. Get out there and take care of those captains.
 	animation = "wave_on_dismissing",
 	stopConversation = "true",
 	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_521",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_521",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_523", "s_525"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_525",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_525",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_527", "s_529"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_529",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_529",
-	animation = "dismiss",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_531", "s_533"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_533",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_533",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_535", "mission3_accept_b"},
-	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission3_accept_b",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_537",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_48621561", -- What about  them? Look, they don't bother us, we don't bother them. Right now, Imperial happiness is your only concern. Get out there and take care of those captains.
 	animation = "wave_on_dismissing",
 	stopConversation = "true",
 	options = {}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_545",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_545",
-	animation = "nod_head_once",
+	id = "s_f803a81b",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_f803a81b", -- Nothing definite. Black Suns know how to cover their tracks. But they're definitely active in this system. And that's a problem, considering the Imperial crackdown.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_547", "s_549"},
+		{"@conversation/naboo_privateer_tier4:s_c0540c7f", "s_d56fe8b0"}, -- What Imperial crackdown?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_549",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_549",
-	animation = "explain",
+	id = "s_d56fe8b0",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_d56fe8b0", -- Boy, where have YOU been? The Empire's tightening the leash.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_551", "s_553"},
-		{"@conversation/naboo_privateer_tier4:s_563", "s_565"},
+		{"@conversation/naboo_privateer_tier4:s_841d27db", "s_d3c9b4d0"}, -- Why?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_553",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_553",
-	animation = "explain",
+	id = "s_d3c9b4d0",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_d3c9b4d0", -- Beats me! Something about trouble with the prison. And word is that the Vortex is gunning for the Inquisitors.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_555", "s_557"},
+		{"@conversation/naboo_privateer_tier4:s_ec5dca32", "s_c60b4787"}, -- Vortex? Inquisitors?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_565",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_565",
+	id = "s_c60b4787",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_c60b4787", -- Hey! You want to know more, ask somebody who cares. All I know is, They want everything in this system to be ship-shape. No illegal activity of any kind. And of course we are going to comply.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_567", "s_569"},
+		{"@conversation/naboo_privateer_tier4:s_77e48d5b", "s_3c53afd8"}, -- What do you mean?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_557",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_557",
-	animation = "snap_finger1",
+	id = "s_3c53afd8",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_3c53afd8", -- I mean, the Empire's number one problem is that prison, but their radar is up, if you know what I mean. They're looking for trouble across the board. So we're going  to watch our step. We're going to watch everybody ELSE'S steps, too.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_559", "mission3_accept_c"},
+		{"@conversation/naboo_privateer_tier4:s_fc00cf40", "s_9145ef83"}, -- I see what you mean.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "mission3_accept_c",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_561",
-	animation = "dismiss",
-	stopConversation = "true",
-	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_569",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_569",
+	id = "s_105bb565",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_105bb565", -- The head honchos like to know EVERYTHING that happens in this system. You must have figured  that out by now.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_571", "s_573"},
+		{"@conversation/naboo_privateer_tier4:s_3c9a53fb", "s_c5eae735"}, -- I've noticed.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_573",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_573",
+	id = "s_c5eae735",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_c5eae735", -- Then maybe you've noticed that the Imperials aren't exactly tolerant of troublemakers. They'll stay out of our hair, as long as we keep running a tight ship.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_575", "s_577"},
+		{"@conversation/naboo_privateer_tier4:s_85a73c8b", "s_9e779014"}, -- So do you have a mission for me?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_577",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_577",
-	animation = "gesticulate_wildly",
+	id = "s_9145ef83",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_9145ef83", -- Listen. There's a heavy mining freighter passing through Endor space.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_579", "s_581"},
+		{"@conversation/naboo_privateer_tier4:s_25f8ac14", "s_88678c75"}, -- What's it carrying?
+		{"@conversation/naboo_privateer_tier4:s_d9177ade", "s_31c66e02"}, -- This is another escort mission?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_581",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_581",
-	animation = "explain",
+	id = "s_9e779014",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_9e779014", -- Always. There's a heavy mining freighter passing through Endor space.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_583", "mission3_accept_d"},
+		{"@conversation/naboo_privateer_tier4:s_25f8ac14", "s_88678c75"}, -- What's it carrying?
+		{"@conversation/naboo_privateer_tier4:s_d9177ade", "s_31c66e02"}, -- This is another escort mission?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "mission3_accept_d",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_585",
-	animation = "wave_on_dismissing",
-	stopConversation = "true",
-	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_593",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_593",
-	animation = "pose_proudly",
+	id = "s_88678c75",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_88678c75", -- Supplies, a few passengers, nothing special.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_595", "s_597"},
+		{"@conversation/naboo_privateer_tier4:s_963212ec", "s_4d02fd15"}, -- OK...
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_597",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_597",
+	id = "s_4d02fd15",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_4d02fd15", -- That's what they SAY they're carrying. But I'm not so sure. I'd like you to take a closer look.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_599", "s_601"},
+		{"@conversation/naboo_privateer_tier4:s_8462774c", "s_87246f3e"}, -- So I should inspect the ship.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_601",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_601",
-	animation = "shake_head_no",
+	id = "s_31c66e02",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_31c66e02", -- Not exactly. Since the Black Suns are willing to fight RSF pilots, they must have something to hide. So we're going to start taking a closer look at all activity in this system.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_603", "s_605"},
+		{"@conversation/naboo_privateer_tier4:s_79387096", "s_ba2102e3"}, -- An inspect mission?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_605",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_605",
+	id = "s_87246f3e",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_87246f3e", -- You got it. Go check it out. And I don't mean one quick pass, either. Take a GOOD look. Because if they're carrying any contraband, we better find it before the Imperials do. Otherwise, the Empire might think we're pirate-friendly. And that would be a problem.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_607", "s_609"},
+		{"@conversation/naboo_privateer_tier4:s_89aa28bd", "s_aa07a17b"}, -- Any idea what I should be looking for?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_609",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_609",
-	animation = "explain",
+	id = "s_ba2102e3",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_ba2102e3", -- You got it. So check it out. And I don't mean one quick pass, either. Take a GOOD look. Because if they're carrying any contraband, we better find it before the Imperials do. Otherwise, the Empire might think we're pirate-friendly. And that would be a problem.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_611", "s_613"},
+		{"@conversation/naboo_privateer_tier4:s_89aa28bd", "s_aa07a17b"}, -- Any idea what I should be looking for?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_613",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_613",
-	animation = "explain",
+	id = "s_aa07a17b",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_aa07a17b", -- Spice? Sliced weapons? Who knows. Anything's possible. And I mean ANYTHING. So keep your eyes open and your blasters primed.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_615", "s_617"},
+		{"@conversation/naboo_privateer_tier4:s_9e7f84ea", "s_d9008914"}, -- I always do.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_617",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_617",
-	animation = "shrug_shoulders",
+	id = "s_d9008914",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_d9008914", -- And listen. Don't be too gung-ho, okay? If you find some contraband, you know, tell me first.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_619", "mission3_accept_e"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "mission3_accept_e",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_621",
-	animation = "wave_on_dismissing",
-	stopConversation = "true",
-	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_631",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_631",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_633", "s_635"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_667",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_667",
-	animation = "smack_self",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_669", "s_671"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_635",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_635",
-	animation = "sigh_deeply",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_637", "s_639"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_639",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_639",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_641", "s_643"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_643",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_643",
-	animation = "tap_head",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_645", "s_647"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_647",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_647",
-	animation = "nod_head_once",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_649", "s_651"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_651",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_651",
-	animation = "shrug_hands",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_653", "s_655"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_655",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_655",
-	animation = "whisper",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_657", "s_659"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_659",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_659",
-	animation = "rub_chin_thoughtful",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_661", "mission2_accept_a"},
+		{"@conversation/naboo_privateer_tier4:s_84c002ae", "mission2_accept_a"}, -- Looking for a taste?
+		{"@conversation/naboo_privateer_tier4:s_2836e6b5", "mission2_accept_b"}, -- OK.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission2_accept_a",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_663",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_e7515ed5", -- Go on. I'm busy. I've got things to do.
 	animation = "dismiss",
 	stopConversation = "true",
 	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_671",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_671",
-	animation = "gesticulate_wildly",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_673", "s_675"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_675",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_675",
-	animation = "snap_finger1",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_677", "s_679"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_679",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_679",
-	animation = "laugh",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_681", "s_683"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_683",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_683",
-	animation = "nod_head_once",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_685", "s_687"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_687",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_687",
-	animation = "rub_chin_thoughtful",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_689", "s_691"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_691",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_691",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_693", "s_695"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_695",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_695",
-	animation = "shrug_shoulders",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_697", "s_699"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_699",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_699",
-	animation = "whisper",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_701", "s_703"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_703",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_703",
-	animation = "embarrassed",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_705", "mission2_accept_b"},
-	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission2_accept_b",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_707",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_90422eb5", -- Good luck.
 	animation = "dismiss",
 	stopConversation = "true",
 	options = {}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_715",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_715",
+	id = "s_3d333deb",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_3d333deb", -- Well, you'll get more of the same here, if you're lucky. Are you a good pilot?
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_717", "s_719"},
+		{"@conversation/naboo_privateer_tier4:s_d9cced1f", "s_cab61bc8"}, -- Absolutely.
+		{"@conversation/naboo_privateer_tier4:s_5277eec5", "s_ab0e62"}, -- You tell me.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_719",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_719",
+	id = "s_cab61bc8",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_cab61bc8", -- I've met pilots like you before. Raring to go. It's pilots like you that die first.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_721", "s_723"},
+		{"@conversation/naboo_privateer_tier4:s_afec8242", "s_d6a8a04d"}, -- Not THIS pilot.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_723",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_723",
+	id = "s_d6a8a04d",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_d6a8a04d", -- Oo. I can't wait to see you in action.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_725", "s_727"},
+		{"@conversation/naboo_privateer_tier4:s_e5235eff", "s_a82676b8"}, -- Do you have a mission for me?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_727",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_727",
+	id = "s_ab0e62",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_ab0e62", -- Mm!  Good answer, %TU.I should warn you, though. I don't like telling people what I'm thinking.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_729", "s_731"},
+		{"@conversation/naboo_privateer_tier4:s_65f98b49", "s_df2f398b"}, -- Maybe you'll make an exception for me.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_731",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_731",
+	id = "s_df2f398b",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_df2f398b", -- Don't hold your breath. We're wasting time here. I have a mission for you.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_733", "mission2_accept_c"},
+		{"@conversation/naboo_privateer_tier4:s_d9177ade", "s_a284d393"}, -- This is another escort mission?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "mission2_accept_c",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_735",
-	stopConversation = "true",
-	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_745",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_745",
+	id = "s_ebb2f602",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_ebb2f602", -- He didn't dazzle you with his charm?
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_747", "s_749"},
+		{"@conversation/naboo_privateer_tier4:s_a087e986", "s_e4254ae2"}, -- Not exactly.
+		{"@conversation/naboo_privateer_tier4:s_e87166ba", "s_d76f1ea3"}, -- He'd like to start a one-man war against the Gungans.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_785",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_785",
-	animation = "laugh",
+	id = "s_e4254ae2",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_e4254ae2", -- Aw, come on. That guy's harmless. I like his negative attitude. It cheers me up.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_787", "s_789"},
+		{"@conversation/naboo_privateer_tier4:s_d1f589da", "s_d76f1ea3"}, -- Ridiculous.
+		{"@conversation/naboo_privateer_tier4:s_2befd882", "s_d76f1ea3"}, -- Well...
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_749",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_749",
-	animation = "slit_throat",
+	id = "s_d76f1ea3",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_d76f1ea3", -- What do you expect? He's a lifer here on Naboo. It's all he knows. Maybe you're more enlightened.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_751", "s_753"},
+		{"@conversation/naboo_privateer_tier4:s_dfb50fb1", "s_44b1cd3c"}, -- I think you're right.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_753",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_753",
-	animation = "rub_chin_thoughtful",
+	id = "s_44b1cd3c",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_44b1cd3c", -- Mm. We'll see. Let's get you going on a new mission.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_755", "s_757"},
+		{"@conversation/naboo_privateer_tier4:s_9a74f227", "s_a284d393"}, -- So I see. This one's an escort job.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_757",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_757",
+	id = "s_a284d393",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_a284d393", -- Something like that.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_759", "s_761"},
+		{"@conversation/naboo_privateer_tier4:s_d7ffd6a9", "s_a224e8fe"}, -- What am I escorting?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_761",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_761",
+	id = "s_a82676b8",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_a82676b8", -- Royal Security Forces are using a deep space scan vessel in Endor space.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_763", "s_765"},
+		{"@conversation/naboo_privateer_tier4:s_3f68df7d", "s_7cc97d1a"}, -- Sounds easy enough.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_765",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_765",
+	id = "s_a224e8fe",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_a224e8fe", -- A deep space scan vessel. It's an RSF ship. We're using it to investigate Endor space.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_767", "s_769"},
+		{"@conversation/naboo_privateer_tier4:s_2836e6b5", "s_9405f2ce"}, -- OK.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_769",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_769",
-	animation = "explain",
+	id = "s_7cc97d1a",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_7cc97d1a", -- Well, apparently there are some Black Suns in the area, and they'd prefer to keep their activities private. So they're launching an attack against our vessel.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_771", "s_773"},
+		{"@conversation/naboo_privateer_tier4:s_9525d65c", "s_b47b0542"}, -- Any idea what the Black Suns are up to?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_773",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_773",
+	id = "s_9405f2ce",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_9405f2ce", -- So apparently there are some Black Suns in the area, and they'd prefer to keep their activities private. So they're launching an attack against our vessel.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_775", "s_777"},
+		{"@conversation/naboo_privateer_tier4:s_9525d65c", "s_b47b0542"}, -- Any idea what the Black Suns are up to?
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_777",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_777",
+	id = "s_b47b0542",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_b47b0542", -- I don't know, and right now, I don't care. The only thing that matters right now is that deep space scan. It's an expensive piece of equipment. We'd hate to lose it.
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_779", "mission1_accept_a"},
+		{"@conversation/naboo_privateer_tier4:s_9422ee24", "mission1_accept_a"}, -- You won't.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "mission1_accept_a",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_781",
-	animation = "dismiss",
-	stopConversation = "true",
-	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_789",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_789",
-	animation = "snap_finger1",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_791", "s_793"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_793",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_793",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_795", "s_797"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_797",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_797",
-	animation = "tap_head",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_799", "s_801"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_801",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_801",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_803", "s_805"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_805",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_805",
-	animation = "tap_head",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_807", "s_809"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_809",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_809",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_811", "s_813"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_813",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_813",
-	animation = "shake_head_no",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_815", "mission1_accept_b"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "mission1_accept_b",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_817",
-	animation = "dismiss",
-	stopConversation = "true",
-	options = {}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_825",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_825",
-	animation = "hair_flip",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_827", "s_829"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_829",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_829",
-	animation = "yawn",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_831", "s_833"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_833",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_833",
-	animation = "nod_head_once",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_835", "s_837"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_837",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_837",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_839", "s_841"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_841",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_841",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_843", "s_845"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "s_845",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_845",
-	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_847", "mission1_accept_c"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "mission1_accept_c",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_849",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_42d6c3ee", -- Go on. Your ship is waiting.
 	animation = "dismiss",
 	stopConversation = "true",
 	options = {}

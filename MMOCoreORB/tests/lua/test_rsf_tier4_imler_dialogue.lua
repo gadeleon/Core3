@@ -14,6 +14,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local D = require("rsf_tier4_data")
 local DS = require("rsf_tier4_imler_client_strings_data")
+local FB = require("rsf_tier4_imler_b_client_strings_data") -- space-convo-client-strings-imler-b: Appendix G, the pool and the removed ids
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -52,6 +53,16 @@ end
 local function twin(sid)
 	return DS.TWIN[sid] or sid
 end
+
+-- space-convo-client-strings-imler-b (E-IM2, Appendix C): the subtrees under the four briefs follow Appendix G, not I4. The 196 NGE ids (s_453 .. s_849) of the java are not mirrored
+-- by Core3 any more; the briefs keep their lines, ids and animations, but their options are Appendix G's (test_space_convo_client_strings_imler_b.lua pins them)
+local SUBTREE = {}
+
+for _, id in ipairs(DS.REMAINING) do
+	SUBTREE[id] = true
+end
+
+local BRIEF_NPC = { s_9312a850 = true, s_bdc28bb4 = true, s_ff6e1247 = true, s_e4bbe441 = true }
 
 -- the NGE training NPC lines (E-IM1): not mirrored by Core3
 local TRAINING_NPC = {}
@@ -205,7 +216,8 @@ end
 -- training replies are the handler's)
 local CLIENT_ONLY = {}
 
-for _, id in ipairs(DS.CLIENT_ONLY) do
+-- space-convo-client-strings-imler-b (Appendix C): the client-only set is all 130 ids (the 126 pool lines of Appendix G and the 4 training replies)
+for _, id in ipairs(FB.CLIENT_ONLY) do
 	CLIENT_ONLY[id] = true
 end
 
@@ -236,13 +248,16 @@ function TestImlerDialogue:test_every_string_is_a_tier4_sid_that_exists_in_the_s
 		end
 	end
 
-	-- the template's only line that is not in the java is the twin s_3f68df7d "Sounds easy enough." (D-13); the four training replies are the handler's
-	local got = {}
+	-- the template's lines that are not in the java are exactly the 126 pool lines (Appendix G, with the twin s_3f68df7d); the four training replies are the handler's
+	local got, want = {}, {}
 
 	for sid in pairs(foreign) do got[#got + 1] = sid end
+	for sid in pairs(FB.TEXT) do want[#want + 1] = sid end
 
 	table.sort(got)
-	lu.assertEquals(got, { "s_3f68df7d" }, "ids of imler_convo_template that are not in the SWG java")
+	table.sort(want)
+	lu.assertEquals(#want, 126, "Appendix B: the pool")
+	lu.assertEquals(got, want, "ids of imler_convo_template that are not in the SWG java")
 end
 
 -- AC-2; space-convo-client-strings-imler-a (Appendix D): every shown SWG NPC line has exactly one screen by id, a pre-NGE line is shown on as many screens as it has copies, and
@@ -261,6 +276,8 @@ function TestImlerDialogue:test_every_swg_npc_line_has_exactly_one_screen()
 	for _, sid in ipairs(GRAPH.order) do
 		if TRAINING_NPC[sid] then
 			lu.assertNil(count[D.PREFIX .. sid], "number of screens whose leftDialog is the training NPC line " .. sid)
+		elseif SUBTREE[sid] then
+			lu.assertNil(count[D.PREFIX .. sid], "number of screens whose leftDialog is the NGE subtree line " .. sid .. " (E-IM2: removed)")
 		else
 			shown = shown + 1
 
@@ -271,8 +288,8 @@ function TestImlerDialogue:test_every_swg_npc_line_has_exactly_one_screen()
 		end
 	end
 
-	lu.assertEquals(shown, 174, "SWG NPC lines other than the training dialogue")
-	lu.assertEquals(#t.screens, 174, "number of screens in imler_convo_template (one per shown NPC line)")
+	lu.assertEquals(shown, 76, "SWG NPC lines other than the training dialogue and the 98 of the subtrees")
+	lu.assertEquals(#t.screens, FB.SCREEN_COUNT, "number of screens in imler_convo_template (76 SWG lines + the 62 screens of Appendix G)")
 end
 
 -- AC-2, E-IM1 (replaces pilot-training-free-choice E-PN4): ready_train's one reply s_438 (conditional successor = first missing skill) is replaced by the choice the
@@ -285,7 +302,7 @@ function TestImlerDialogue:test_options_are_the_swg_responses_in_order_and_link_
 	local byId = screensById(t)
 
 	for _, sid in ipairs(GRAPH.order) do
-		if not TRAINING_NPC[sid] then
+		if not TRAINING_NPC[sid] and not SUBTREE[sid] and not BRIEF_NPC[sid] then
 			local node = GRAPH.nodes[sid]
 			local screen = screenFor(t, sid)
 
@@ -347,7 +364,7 @@ function TestImlerDialogue:test_stop_conversation_is_true_exactly_on_swg_end_lin
 	local t = template()
 
 	for _, sid in ipairs(GRAPH.order) do
-		if not TRAINING_NPC[sid] then
+		if not TRAINING_NPC[sid] and not SUBTREE[sid] then
 			local screen = screenFor(t, sid)
 
 			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
@@ -362,7 +379,7 @@ function TestImlerDialogue:test_animation_matches_the_swg_doAnimationAction()
 	local t = template()
 
 	for _, sid in ipairs(GRAPH.order) do
-		if not TRAINING_NPC[sid] then
+		if not TRAINING_NPC[sid] and not SUBTREE[sid] then
 			local screen = screenFor(t, sid)
 
 			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")

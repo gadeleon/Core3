@@ -26,10 +26,12 @@ D.SCREENS = {
 	ready_train = "s_d91c04b2",
 	-- space-convo-client-strings-imler-a (D-14): train_<x> and trained_mission<k> (s_439-s_442, s_737, s_623, s_489, s_451) are deleted; training is one click on ready_train.
 	-- wrong_faction keeps the I4 sid s_4: the answer key stays the java graph and the tests map it through rsf_tier4_imler_client_strings_data.lua D.TWIN (D-9)
-	mission1_accept_a = "s_781", mission1_accept_b = "s_817", mission1_accept_c = "s_849",
-	mission2_accept_a = "s_663", mission2_accept_b = "s_707", mission2_accept_c = "s_735",
-	mission3_accept_a = "s_513", mission3_accept_b = "s_537", mission3_accept_c = "s_561", mission3_accept_d = "s_585", mission3_accept_e = "s_621",
-	mission4_accept_a = "s_471", mission4_accept_b = "s_487",
+	-- space-convo-client-strings-imler-b (E-IM2, .claude/work/space-convo-client-strings-imler-b/01-spec.md Content contract 4): the 13 grant screens are the 7 of Appendix G, each with its pre-NGE
+	-- send-off line. The I4 answer key no longer reaches them (the subtrees follow Appendix G, not I4).
+	mission1_accept_a = "s_42d6c3ee",
+	mission2_accept_a = "s_e7515ed5", mission2_accept_b = "s_90422eb5",
+	mission3_accept_a = "s_ff66ed8b", mission3_accept_b = "s_48621561",
+	mission4_accept_a = "s_9281abbb", mission4_accept_b = "s_8a0c5ce7",
 	intro = "s_cdffba3e", duty_info = "s_5603b2a1", duty_info_end = "s_9192ecb",
 	tier4_incomplete = "s_3f76a413", no_master = "s_256dbbde", here_for_work = "s_bd35f50b",
 }
@@ -96,9 +98,10 @@ D.MISSION = {
 
 -- Screens that grant mission N (Appendix A: grantMissionOne..Four).
 D.GRANT_SCREENS = {
-	[1] = { "mission1_retry_a", "mission1_retry_b", "mission1_accept_a", "mission1_accept_b", "mission1_accept_c" },
-	[2] = { "mission2_retry_a", "mission2_retry_b", "mission2_accept_a", "mission2_accept_b", "mission2_accept_c" },
-	[3] = { "mission3_retry_a", "mission3_retry_b", "mission3_accept_a", "mission3_accept_b", "mission3_accept_c", "mission3_accept_d", "mission3_accept_e" },
+	-- space-convo-client-strings-imler-b (E-IM2): the kept grant ids of Appendix G (13 -> 7)
+	[1] = { "mission1_retry_a", "mission1_retry_b", "mission1_accept_a" },
+	[2] = { "mission2_retry_a", "mission2_retry_b", "mission2_accept_a", "mission2_accept_b" },
+	[3] = { "mission3_retry_a", "mission3_retry_b", "mission3_accept_a", "mission3_accept_b" },
 	[4] = { "mission4_retry_a", "mission4_retry_b", "mission4_accept_a", "mission4_accept_b" },
 }
 

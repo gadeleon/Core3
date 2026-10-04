@@ -26,6 +26,8 @@ local C = require("pilot_training_free_choice_data")
 local Swgjava = require("harness.swgjava")
 local SU = require("rsf_tier2_kaydine_signup_data") -- rsf-tier2-kaydine-signup: the nine new Kaydine screens
 local KS = require("rsf_tier2_kaydine_client_strings_data") -- space-convo-client-strings-kaydine: the 35 pre-NGE-only ids
+local FB = require("rsf_tier4_imler_b_client_strings_data") -- space-convo-client-strings-imler-b (F6b, Appendix C): Imler's subtrees follow Appendix G
+local FA = require("rsf_tier4_imler_client_strings_data") -- space-convo-client-strings-imler-a: D.REMAINING, the 196 NGE ids of the subtrees
 
 T.load()
 H.loadMobile("conversations/space/neutral/rsf_squadron/imler_convo.lua") -- T.load() does not load Imler
@@ -267,7 +269,9 @@ end
 
 -- I-6, AC-9 (space-convo-client-strings-imler-a, AC-2, AC-8): Imler's files carry only naboo_privateer_tier4 ids; the ones that are not in the java are exactly the 5
 -- client-only lines (the twin s_3f68df7d and the four "Teach me about ..." replies, the last four carried by the handler only); no corellia_privateer_tier4 id is left
-function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4_ids_of_the_java_plus_the_five_client_only_ids()
+-- space-convo-client-strings-imler-b (F6b, 01-spec.md Appendix C): the client-only ids are the 126 pool lines of Appendix G and the four choice replies (130). Renamed from
+-- test_imler_files_carry_only_naboo_privateer_tier4_ids_of_the_java_plus_the_five_client_only_ids.
+function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4_ids_of_the_java_plus_the_130_client_only_ids()
 	local java = Swgjava.read(H.FIXTURES .. "script/conversation/naboo_privateer_tier4.java")
 	local foreignOwn = {}
 
@@ -286,7 +290,7 @@ function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4
 	for sid in pairs(foreignOwn) do got[#got + 1] = sid end
 
 	table.sort(got)
-	lu.assertEquals(got, { "s_1813de4d", "s_25506b23", "s_3f68df7d", "s_ada4db16", "s_fd7e4ac8" }, "naboo_privateer_tier4 ids that are not in the java")
+	lu.assertEquals(got, FB.CLIENT_ONLY, "naboo_privateer_tier4 ids that are not in the java")
 
 	-- the four choice replies are carried by the handler only
 	local fromConvo = {}
@@ -318,7 +322,9 @@ function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4
 end
 
 -- AC-9 (space-convo-client-strings-imler-a AC-8): Imler uses 172 of 182 NPC lines and 152 of 158 replies; the unused ones are s_4, s_9, s_416, s_438-s_449, s_451, s_489, s_623 and s_737
-function TestFreeChoiceStrings:test_imler_uses_172_of_182_npc_lines_and_152_of_158_replies_s_438_and_the_training_ids_are_unused()
+-- space-convo-client-strings-imler-b (F6b, Appendix C): 74 of 182 NPC lines and 54 of 158 replies; the 196 ids of the subtrees join the unused ones. Renamed from
+-- test_imler_uses_172_of_182_npc_lines_and_152_of_158_replies_s_438_and_the_training_ids_are_unused.
+function TestFreeChoiceStrings:test_imler_uses_74_of_182_npc_lines_and_54_of_158_replies_s_438_the_training_ids_and_the_196_subtree_ids_are_unused()
 	local java = Swgjava.read(H.FIXTURES .. "script/conversation/naboo_privateer_tier4.java")
 	local used = {}
 	local function sid(text) return type(text) == "string" and text:match("^@conversation/naboo_privateer_tier4:(s_[%w_]+)$") or nil end
@@ -345,7 +351,11 @@ function TestFreeChoiceStrings:test_imler_uses_172_of_182_npc_lines_and_152_of_1
 		if java.nodes[x] then npc = npc + 1 else resp = resp + 1 end
 	end
 
-	lu.assertEquals({ npc, resp }, { 172, 152 }, "naboo_privateer_tier4 strings used (NPC lines, replies)")
+	lu.assertEquals({ npc, resp }, { 74, 54 }, "naboo_privateer_tier4 strings used (NPC lines, replies)")
+
+	for _, x in ipairs(FA.REMAINING) do
+		lu.assertNil(used[x], x .. " (an NGE subtree id) must be unused")
+	end
 
 	for _, x in ipairs({ "s_4", "s_9", "s_416", "s_438", "s_439", "s_440", "s_441", "s_442", "s_443", "s_445", "s_447", "s_449", "s_451", "s_489", "s_623", "s_737" }) do
 		lu.assertNil(used[x], x .. " must be unused")
@@ -375,12 +385,13 @@ for _, name in ipairs(ORDER) do
 end
 
 -- AC-9: the screen counts the specs name (Dinge: 64 since space-convo-client-strings-dinge Content contract 1)
-function TestFreeChoiceGraph:test_the_screen_counts_are_89_for_kaydine_64_for_dinge_and_174_for_imler()
+-- space-convo-client-strings-imler-b (F6b, Appendix C): Imler has 138 screens (174 - 98 + 62). Renamed from test_the_screen_counts_are_89_for_kaydine_64_for_dinge_and_174_for_imler.
+function TestFreeChoiceGraph:test_the_screen_counts_are_89_for_kaydine_64_for_dinge_and_138_for_imler()
 	local function count(name) return #H.conversationTemplateTable(TRAINERS[name].template).screens end
 
 	lu.assertEquals(count("kaydine"), 89, "kaydine_convo_template screens (100 - 11 deleted by space-convo-client-strings-kaydine)")
 	lu.assertEquals(count("dinge"), 64, "dinge_convo_template screens (72 - 8 deleted by space-convo-client-strings-dinge)")
-	lu.assertEquals(count("imler"), 174, "imler_convo_template screens (182 - the 8 training screens deleted by space-convo-client-strings-imler-a)")
+	lu.assertEquals(count("imler"), FB.SCREEN_COUNT, "imler_convo_template screens (182 - 8 training screens (imler-a) - 98 subtree screens + 62 of Appendix G (imler-b))")
 end
 
 -- F2 D-6, R-3: none of Dinge's 64 screens shows an NGE lesson or closing line, and the only NPC lines shown by more than one screen are the three
@@ -485,6 +496,14 @@ for _, id in ipairs({ "train_starships", "train_weapons", "train_procedures", "t
 	CHANGED_SCREENS.imler[id] = true
 end
 
+-- space-convo-client-strings-imler-b (Appendix C, E-IM2): the 98 screens of the four subtrees (91 removed, 7 grant screens with new content) and the 4 briefs (new options) are not the text of BASE any more
+local IMLER_B_NEW = {}
+
+for _, id in ipairs(FB.REMOVED) do CHANGED_SCREENS.imler[id] = true end
+for _, id in ipairs(FB.GRANT_IDS) do CHANGED_SCREENS.imler[id] = true end
+for _, id in ipairs(FB.BRIEF_ORDER) do CHANGED_SCREENS.imler[id] = true end
+for _, row in ipairs(FB.SCREENS) do IMLER_B_NEW[row.id] = true end
+
 for id in pairs(DINGE_F2) do
 	CHANGED_SCREENS.dinge[id] = true
 end
@@ -519,7 +538,7 @@ for _, name in ipairs(ORDER) do
 		for _, id in ipairs(name == "kaydine" and SU.IDS or {}) do signup[id] = true end
 
 		for id in pairs(new) do
-			lu.assertTrue(old[id] ~= nil or signup[id] == true, TRAINERS[name].convo .. ": unexpected new screen '" .. id .. "'")
+			lu.assertTrue(old[id] ~= nil or signup[id] == true or (name == "imler" and IMLER_B_NEW[id] == true), TRAINERS[name].convo .. ": unexpected new screen '" .. id .. "'")
 		end
 
 		local changed = 0
@@ -537,6 +556,24 @@ for _, name in ipairs(ORDER) do
 
 			for _, id in ipairs({ "s_9", "duty_info", "wrong_faction" }) do
 				lu.assertNotEquals(new[id], old[id], "imler: screen '" .. id .. "' is still the very text of " .. BASE)
+			end
+
+			-- space-convo-client-strings-imler-b: the 91 NGE subtree screens are gone, the 7 grant screens and the 4 briefs really changed, the 62 screens of Appendix G exist
+			for _, id in ipairs(FB.REMOVED) do
+				lu.assertNotNil(old[id], "imler: screen '" .. id .. "' exists at " .. BASE)
+				lu.assertNil(new[id], "imler: screen '" .. id .. "' must be deleted")
+			end
+
+			for _, id in ipairs(FB.GRANT_IDS) do
+				lu.assertNotEquals(new[id], old[id], "imler: grant screen '" .. id .. "' is still the very text of " .. BASE)
+			end
+
+			for _, id in ipairs(FB.BRIEF_ORDER) do
+				lu.assertNotEquals(new[id], old[id], "imler: screen '" .. id .. "' is still the very text of " .. BASE)
+			end
+
+			for id in pairs(IMLER_B_NEW) do
+				lu.assertNotNil(new[id], "imler: Appendix G screen '" .. id .. "' is missing")
 			end
 		end
 

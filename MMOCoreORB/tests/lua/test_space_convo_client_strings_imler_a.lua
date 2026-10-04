@@ -20,6 +20,7 @@ local D = require("rsf_tier4_data") -- the I4 answer key (screen ids -> SWG sid)
 local C = require("pilot_training_free_choice_data")
 local KD = require("space_convo_client_strings_data")
 local DS = require("rsf_tier4_imler_client_strings_data") -- Appendix A, B, D, E, F
+local FB = require("rsf_tier4_imler_b_client_strings_data") -- space-convo-client-strings-imler-b (F6b): Appendix G, the 126 pool lines, Appendix P
 local Swgjava = require("harness.swgjava")
 
 H.loadSquadron("RsfSquadronScreenplay")
@@ -100,6 +101,13 @@ local function copy(list)
 end
 
 local function twin(sid) return DS.TWIN[sid] or sid end
+
+-- space-convo-client-strings-imler-b (E-IM2, Appendix C): the 196 NGE ids of the four subtrees are not mirrored by Core3 any more, and the briefs' options are Appendix G's
+local SUBTREE = {}
+
+for _, id in ipairs(DS.REMAINING) do SUBTREE[id] = true end
+
+local BRIEF_SCREENS = { mission1_brief = true, mission2_brief = true, mission3_brief = true, mission4_brief = true }
 
 local function sanitize(s) return (s:gsub("[^%w]+", "_"):gsub("_+$", "")) end
 
@@ -300,30 +308,18 @@ TestF6aImlerStaticUnresolved = {}
 
 function TestF6aImlerStaticUnresolved:setUp() H.reset() end
 
--- AC-1 (I-1): 211 before; exactly the 196 ids of Appendix F now
-function TestF6aImlerStaticUnresolved:test_imlers_files_show_exactly_the_196_ids_of_appendix_f_that_the_client_cannot_resolve()
-	local want = {}
-
-	for i, id in ipairs(DS.REMAINING) do want[i] = FILE .. ":" .. id end
-
-	table.sort(want)
-	lu.assertEquals(CS.unresolved(SOURCES), want, "Imler: ids the pre-NGE client cannot resolve")
+-- AC-1 (I-1): 211 before F6a, 196 after it; none after space-convo-client-strings-imler-b (F6b, 01-spec.md Appendix C). Renamed from
+-- test_imlers_files_show_exactly_the_196_ids_of_appendix_f_that_the_client_cannot_resolve.
+function TestF6aImlerStaticUnresolved:test_imlers_files_show_no_id_that_the_client_cannot_resolve()
+	lu.assertEquals(CS.unresolved(SOURCES), {}, "Imler: ids the pre-NGE client cannot resolve")
 end
 
--- AC-1: KNOWN_GAPS has one file with the 196 ids, in the scan's sorted order
-function TestF6aImlerStaticUnresolved:test_known_gaps_hold_the_one_file_with_the_196_f6b_ids_and_none_of_the_15_f6a_ids()
-	local want = copy(DS.REMAINING)
-
-	table.sort(want)
-	lu.assertEquals(sortedKeys(KD.KNOWN_GAPS), { FILE }, "KNOWN_GAPS files")
-	lu.assertEquals(#KD.KNOWN_GAPS[FILE], 196, "KNOWN_GAPS count of Imler's file")
-	lu.assertEquals(KD.KNOWN_GAPS[FILE], want, "KNOWN_GAPS ids of Imler's file")
-
-	local held = {}
-
-	for _, id in ipairs(KD.KNOWN_GAPS[FILE]) do held[id] = true end
-
-	for _, id in ipairs(DS.F6A_IDS) do lu.assertNil(held[id], "KNOWN_GAPS still lists the F6a id " .. id) end
+-- AC-1: KNOWN_GAPS is empty (space-convo-client-strings-imler-b, Appendix C). Renamed from
+-- test_known_gaps_hold_the_one_file_with_the_196_f6b_ids_and_none_of_the_15_f6a_ids.
+function TestF6aImlerStaticUnresolved:test_known_gaps_is_empty_and_lists_none_of_the_211_ids_of_imlers_file()
+	lu.assertEquals(KD.KNOWN_GAPS, {}, "KNOWN_GAPS")
+	lu.assertEquals(sortedKeys(KD.KNOWN_GAPS), {}, "KNOWN_GAPS files")
+	lu.assertNil(KD.KNOWN_GAPS[FILE], "KNOWN_GAPS entry of Imler's file")
 end
 
 -- AC-1: the scan of every space conversation source equals the ratchet exactly
@@ -403,8 +399,9 @@ function TestF6aImlerPreNgeOnly:test_imlers_files_reference_no_corellia_privatee
 	end
 end
 
--- AC-2, AC-8: IC and IH use 329 distinct ids of their own file: 172 NPC lines, 152 replies and 5 client-only lines
-function TestF6aImlerPreNgeOnly:test_the_files_use_329_distinct_ids_172_npc_lines_152_replies_and_5_client_only_lines()
+-- AC-2, AC-8: IC and IH use 258 distinct ids of their own file (the whole client file but s_0 and do_not_edit): 74 NPC lines, 54 replies and 130 client-only lines
+-- (space-convo-client-strings-imler-b, Appendix C). Renamed from test_the_files_use_329_distinct_ids_172_npc_lines_152_replies_and_5_client_only_lines.
+function TestF6aImlerPreNgeOnly:test_the_files_use_258_distinct_ids_74_npc_lines_54_replies_and_130_client_only_lines()
 	local used, npc, resp, other = {}, 0, 0, {}
 
 	for _, lit in ipairs(CS.literals(SOURCES)) do
@@ -422,9 +419,16 @@ function TestF6aImlerPreNgeOnly:test_the_files_use_329_distinct_ids_172_npc_line
 	end
 
 	table.sort(other)
-	lu.assertEquals({ npc, resp, #other }, { 172, 152, 5 }, "distinct ids used (NPC lines, replies, client-only)")
-	lu.assertEquals(count(used), 329, "distinct ids used")
-	lu.assertEquals(other, DS.CLIENT_ONLY, "the ids that are not in the java")
+	lu.assertEquals({ npc, resp, #other }, { 74, 54, 130 }, "distinct ids used (NPC lines, replies, client-only)")
+	lu.assertEquals(count(used), 258, "distinct ids used")
+	lu.assertEquals(other, FB.CLIENT_ONLY, "the ids that are not in the java")
+
+	local client = {}
+
+	for id in pairs(assert(CS.sids(FILE))) do client[id] = true end
+
+	client.s_0, client.do_not_edit = nil, nil
+	lu.assertEquals(sortedKeys(used), sortedKeys(client), "the ids used are the ids of the client file but s_0 and do_not_edit")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -456,7 +460,8 @@ for _, site in ipairs(DS.SITES) do
 		end
 
 		-- the source line of a swap that sits before the deleted block keeps its number; after it the lines move up
-		local shift = site.line > DS.DELETED_TO and (DS.AC_LINES - DS.AC_BASE_LINES) or 0
+		-- space-convo-client-strings-imler-b (Appendix C): the replaced subtree block (base 8c4e07808b lines 325-1072) also sits before wrong_faction, so it moves up by 302 more lines
+		local shift = site.line > DS.DELETED_TO and (FB.AC_LINES - DS.AC_BASE_LINES) or 0
 		local line = linesOf(readFile(IC))[site.line + shift]
 
 		lu.assertNotNil(line, label .. ": source line")
@@ -546,10 +551,11 @@ for _, row in ipairs(DS.DELETED) do
 end
 
 -- AC-4: 174 screens, no dead link or duplicate id
-function TestF6aImlerTrainingTemplate:test_the_template_has_174_screens_and_no_dead_links_or_duplicate_ids()
+-- space-convo-client-strings-imler-b (Appendix C): 138 screens (174 - 98 + 62). Renamed from test_the_template_has_174_screens_and_no_dead_links_or_duplicate_ids.
+function TestF6aImlerTrainingTemplate:test_the_template_has_138_screens_and_no_dead_links_or_duplicate_ids()
 	local _, t = screens()
 
-	lu.assertEquals(#t.screens, 174, "imler_convo_template: number of screens (182 - 8)")
+	lu.assertEquals(#t.screens, FB.SCREEN_COUNT, "imler_convo_template: number of screens (182 - 8 - 98 + 62)")
 	lu.assertEquals(H.conversationProblems(TEMPLATE), {})
 end
 
@@ -933,10 +939,11 @@ for k = 1, 4 do
 
 		local player = trainee(held)
 		local pick = DS.TRAINING[k]
-		local path = i4Path("mission" .. k .. "_brief", grant)
+		-- space-convo-client-strings-imler-b (E-IM2, Appendix C): the path inside the subtree is Appendix P's, not I4's
+		local path = FB.PATHS[grant]
 		local choices = { pick.sid }
 
-		for _, opt in ipairs(path) do choices[#choices + 1] = twin(opt) end
+		for _, opt in ipairs(path) do choices[#choices + 1] = opt end
 
 		local transcript = converse(player, choices)
 
@@ -989,7 +996,9 @@ TestF6aImlerNothingElseMoves = {}
 
 function TestF6aImlerNothingElseMoves:setUp() H.reset() end
 
--- AC-7: IC is the base minus lines 396-460, with exactly the 3 Appendix A lines changed (the NGE id on the twin and ` -- <client text>` appended)
+-- AC-7: IC is the base minus lines 396-460, with exactly the 3 Appendix A lines changed (the NGE id on the twin and ` -- <client text>` appended).
+-- space-convo-client-strings-imler-b (Appendix C): this base stays 57664ade04, and the F6b ranges (the 9 brief option lines and the subtree block, 8c4e07808b lines 296-297, 304-306,
+-- 313-314, 321-322 and 325-1072, which become 446 lines) are excepted here; test_space_convo_client_strings_imler_b.lua AC-7 pins them against 8c4e07808b.
 function TestF6aImlerNothingElseMoves:test_imler_convo_equals_the_base_without_lines_396_to_460_and_with_the_3_swaps()
 	local now, old = linesOf(readFile(IC)), linesOf(baseFile(IC))
 	local bySite = {}
@@ -1015,11 +1024,29 @@ function TestF6aImlerNothingElseMoves:test_imler_convo_equals_the_base_without_l
 	end
 
 	lu.assertEquals(#old, DS.AC_BASE_LINES, "number of lines of imler_convo.lua at the base " .. BASE)
-	lu.assertEquals(#want, DS.AC_LINES, "number of lines of the expected imler_convo.lua")
-	lu.assertEquals(#now, DS.AC_LINES, "number of lines of imler_convo.lua")
+	lu.assertEquals(#want, DS.AC_LINES, "number of lines of the expected imler_convo.lua (the state of 8c4e07808b)")
+	lu.assertEquals(#now, FB.AC_LINES, "number of lines of imler_convo.lua (the state of 8c4e07808b with the F6b ranges replaced)")
 
-	for i = 1, math.max(#now, #want) do
-		lu.assertEquals(now[i], want[i], "imler_convo.lua line " .. i .. " (base " .. BASE .. " minus the 8 screens plus the 3 swaps)")
+	-- drop the F6b ranges from both sides: lines 1-324 keep their numbers, the block 325-1072 of `want` is the 446 lines 325-770 of `now`
+	local function outside(list, blockTo)
+		local out, brief = {}, {}
+
+		for _, n in ipairs(FB.REPLACED.briefLines) do brief[n] = true end
+
+		for i, line in ipairs(list) do
+			if not brief[i] and not (i >= FB.REPLACED.blockFrom and i <= blockTo) then out[#out + 1] = line end
+		end
+
+		return out
+	end
+
+	local nowRest = outside(now, FB.REPLACED.blockFrom + 446 - 1)
+	local wantRest = outside(want, FB.REPLACED.blockTo)
+
+	lu.assertEquals(#nowRest, #wantRest, "lines outside the F6b ranges")
+
+	for i = 1, math.max(#nowRest, #wantRest) do
+		lu.assertEquals(nowRest[i], wantRest[i], "imler_convo.lua line " .. i .. " outside the F6b ranges (base " .. BASE .. " minus the 8 screens plus the 3 swaps)")
 	end
 end
 
@@ -1125,12 +1152,13 @@ local TRAINING_NPC = {}
 for _, id in ipairs({ "s_439", "s_440", "s_441", "s_442", "s_451", "s_489", "s_623", "s_737" }) do TRAINING_NPC[id] = true end
 
 -- AC-8 (I-3): every I4 NPC line Core3 shows is on the screen of that id with the twin as its line, I4's stop flag and animation (the training dialogue is E-IM1)
+-- space-convo-client-strings-imler-b (E-IM2, Appendix C): the 98 NPC lines of the subtrees are Appendix G's now, so 76 I4 lines are checked
 function TestF6aImlerConformance:test_every_shown_i4_npc_line_is_on_its_screen_as_its_twin_with_the_i4_stop_and_animation()
 	local byId = screens()
 	local seen = 0
 
 	for _, sid in ipairs(GRAPH.order) do
-		if not TRAINING_NPC[sid] then
+		if not TRAINING_NPC[sid] and not SUBTREE[sid] then
 			local id = REVERSE[sid] or sid
 			local screen = byId[id]
 
@@ -1142,42 +1170,46 @@ function TestF6aImlerConformance:test_every_shown_i4_npc_line_is_on_its_screen_a
 		end
 	end
 
-	lu.assertEquals(seen, 174, "I4 NPC lines checked (182 - the 8 of the training dialogue)")
+	lu.assertEquals(seen, 76, "I4 NPC lines checked (182 - the 8 of the training dialogue - the 98 of the subtrees)")
 end
 
 -- AC-8: every screen's options are the twins of the I4 replies, with the same links (ready_train's reply s_438 is E-IM1)
+-- space-convo-client-strings-imler-b (E-IM2, Appendix C): the 98 subtree lines are Appendix G's; the briefs keep their lines but their options are Appendix G's (only the count is compared)
 function TestF6aImlerConformance:test_every_shown_i4_npc_line_has_the_twins_of_its_replies_in_order_with_the_i4_successor_as_link()
 	local byId, t = screens()
 	local shown = 0
 
 	for _, sid in ipairs(GRAPH.order) do
-		if not TRAINING_NPC[sid] then
+		if not TRAINING_NPC[sid] and not SUBTREE[sid] then
 			local id = REVERSE[sid] or sid
 			local screen = byId[id]
 			local node = GRAPH.nodes[sid]
 			local wanted = {}
-
-			if id ~= "ready_train" then
-				for _, optionSid in ipairs(node.options) do wanted[#wanted + 1] = twin(optionSid) end
-			end
-
 			local got = {}
 
 			for i, option in ipairs(screen.options or {}) do got[i] = option[1]:match("^@conversation/naboo_privateer_tier4:(s_[%w_]+)$") end
 
-			lu.assertEquals(got, wanted, "screen '" .. id .. "' (" .. sid .. "): option sids in order (twins of the I4 replies)")
+			if BRIEF_SCREENS[id] then
+				lu.assertEquals(#got, #node.options, "screen '" .. id .. "': number of options (E-IM2: the options are Appendix G's)")
+			else
+				if id ~= "ready_train" then
+					for _, optionSid in ipairs(node.options) do wanted[#wanted + 1] = twin(optionSid) end
+				end
 
-			if id ~= "ready_train" then
-				for i, optionSid in ipairs(node.options) do
-					local successors = GRAPH.successorsOf(sid, optionSid)
+				lu.assertEquals(got, wanted, "screen '" .. id .. "' (" .. sid .. "): option sids in order (twins of the I4 replies)")
 
-					lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
+				if id ~= "ready_train" then
+					for i, optionSid in ipairs(node.options) do
+						local successors = GRAPH.successorsOf(sid, optionSid)
 
-					-- Conditional successors: the static link is the unconditional default, the last successor in the java
-					local target = byId[screen.options[i][2]]
+						lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
 
-					lu.assertNotNil(target, "screen '" .. id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
-					lu.assertEquals(target.leftDialog, P .. twin(successors[#successors]), "screen '" .. id .. "' option " .. optionSid .. " -> successor NPC line")
+						-- Conditional successors: the static link is the unconditional default, the last successor in the java
+						local target = byId[screen.options[i][2]]
+
+						lu.assertNotNil(target, "screen '" .. id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
+						lu.assertEquals(target.leftDialog, P .. twin(successors[#successors]), "screen '" .. id .. "' option " .. optionSid .. " -> successor NPC line")
+					end
 				end
 			end
 
@@ -1185,12 +1217,13 @@ function TestF6aImlerConformance:test_every_shown_i4_npc_line_has_the_twins_of_i
 		end
 	end
 
-	lu.assertEquals(shown, 174, "screens compared")
-	lu.assertEquals(#t.screens, 174, "screens in the template")
+	lu.assertEquals(shown, 76, "screens compared")
+	lu.assertEquals(#t.screens, FB.SCREEN_COUNT, "screens in the template")
 end
 
--- AC-8: usage is 172 of 182 NPC lines and 152 of 158 replies; the unused sids are exactly the twin keys plus s_438-s_449, s_451, s_489, s_623, s_737
-function TestF6aImlerConformance:test_the_files_use_172_of_182_npc_lines_and_152_of_158_replies_and_the_unused_are_the_twin_keys_plus_the_training_ids()
+-- AC-8: usage is 74 of 182 NPC lines and 54 of 158 replies; the unused sids are exactly the twin keys plus s_438-s_449, s_451, s_489, s_623, s_737 and the 196 of the subtrees
+-- (space-convo-client-strings-imler-b, Appendix C). Renamed from test_the_files_use_172_of_182_npc_lines_and_152_of_158_replies_and_the_unused_are_the_twin_keys_plus_the_training_ids.
+function TestF6aImlerConformance:test_the_files_use_74_of_182_npc_lines_and_54_of_158_replies_and_the_unused_are_the_twin_keys_the_training_ids_and_the_196_subtree_ids()
 	local usedNpc, usedResp = {}, {}
 
 	for _, lit in ipairs(CS.literals(SOURCES)) do
@@ -1212,14 +1245,20 @@ function TestF6aImlerConformance:test_the_files_use_172_of_182_npc_lines_and_152
 
 	local wantNpc, wantResp = copy(DS.UNUSED_NPC), copy(DS.UNUSED_REPLIES)
 
+	for _, id in ipairs(DS.REMAINING) do
+		if GRAPH.nodes[id] then wantNpc[#wantNpc + 1] = id else wantResp[#wantResp + 1] = id end
+	end
+
 	table.sort(unusedNpc)
 	table.sort(unusedResp)
 	table.sort(wantNpc)
 	table.sort(wantResp)
 	lu.assertEquals(#GRAPH.order, 182, "I4 NPC lines")
 	lu.assertEquals(count(GRAPH.responses), 158, "I4 replies")
-	lu.assertEquals(count(usedNpc), 172, "I4 NPC lines used")
-	lu.assertEquals(count(usedResp), 152, "I4 replies used")
-	lu.assertEquals(unusedNpc, wantNpc, "unused NPC lines (s_4, s_9 and the 8 training lines)")
-	lu.assertEquals(unusedResp, wantResp, "unused replies (s_416, s_438 and the 4 buy replies)")
+	lu.assertEquals(count(usedNpc), 74, "I4 NPC lines used")
+	lu.assertEquals(count(usedResp), 54, "I4 replies used")
+	lu.assertEquals(#unusedNpc, 108, "unused NPC lines")
+	lu.assertEquals(#unusedResp, 104, "unused replies")
+	lu.assertEquals(unusedNpc, wantNpc, "unused NPC lines (s_4, s_9, the 8 training lines and the 98 of the subtrees)")
+	lu.assertEquals(unusedResp, wantResp, "unused replies (s_416, s_438, the 4 buy replies and the 98 of the subtrees)")
 end

@@ -100,6 +100,7 @@ function SpaceSurpriseAttackScreenplay:completeQuest(pPlayer, notifyClient)
 	SpaceHelpers:completeSpaceQuest(pPlayer, self.questType, self.questName, notifyBool)
 
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned")
+	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":runID")
 
 	-- Remove the zone entry observer
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
@@ -145,6 +146,7 @@ function SpaceSurpriseAttackScreenplay:failQuest(pPlayer, notifyClient)
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":Count")
 
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned")
+	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":runID")
 
 	-- Remove the zone entry observer
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
@@ -184,6 +186,7 @@ function SpaceSurpriseAttackScreenplay:resetQuest(pPlayer)
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":Count")
 
 	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":spawned")
+	deleteData(SceneObject(pPlayer):getObjectID() .. self.className .. ":runID")
 
 	-- Remove the zone entry observer
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
@@ -222,6 +225,7 @@ function SpaceSurpriseAttackScreenplay:spawnSurpriseAttack(pPilot)
 
 	local totalSpawned = 0
 	local shipIDs = {}
+	local runID = 0
 
 	for i = 1, #shipsTable, 1 do
 		local count = shipsTable[i].count
@@ -260,6 +264,13 @@ function SpaceSurpriseAttackScreenplay:spawnSurpriseAttack(pPilot)
 
 				shipIDs[#shipIDs + 1] = agentID
 
+				-- The run id is the object id of the run's first ship
+				if (runID == 0) then
+					runID = agentID
+				end
+
+				writeData(agentID .. self.className .. ":runID", runID)
+
 				-- Add aggo and set the escort ship as ShipAgents Defender
 				ShipAiAgent(pShipAgent):engageShipTarget(pPilotShip)
 
@@ -281,6 +292,14 @@ function SpaceSurpriseAttackScreenplay:spawnSurpriseAttack(pPilot)
 	end
 
 	writeData(pilotID .. self.className .. ":spawned", 1)
+
+	if (runID ~= 0) then
+		writeData(pilotID .. self.className .. ":runID", runID)
+	end
+
+	-- The attackers are out: the run is in progress (SWG _setQuestInProgress)
+	SpaceHelpers:completeSpaceQuestTask(pPilot, self.questType, self.questName, 0, false)
+	SpaceHelpers:activateSpaceQuestTask(pPilot, self.questType, self.questName, 1, false)
 
 	-- Player effect for player
 	CreatureObject(pPilot):playEffect("clienteffect/ui_quest_spawn_wave.cef", "")
@@ -332,7 +351,7 @@ function SpaceSurpriseAttackScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		return 0
 	end
 
-	if (spaceQuestHash ~= zoneNameHash and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then
+	if (spaceQuestHash ~= zoneNameHash and readData(playerID .. self.className .. ":spawned") == 1 and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then
 		createEvent(2000, self.className, "failQuest", pPlayer, "true")
 		return 1
 	end
@@ -345,6 +364,11 @@ function SpaceSurpriseAttackScreenplay:notifyShipDestroyed(pShipAgent, pKillerSh
 		return 1
 	end
 
+	local agentID = SceneObject(pShipAgent):getObjectID()
+
+	local shipRunID = readData(agentID .. self.className .. ":runID")
+	deleteData(agentID .. self.className .. ":runID")
+
 	local missionOwnerID = ShipAiAgent(pShipAgent):getMissionOwnerID()
 	local pPlayer = getSceneObject(missionOwnerID)
 
@@ -352,10 +376,8 @@ function SpaceSurpriseAttackScreenplay:notifyShipDestroyed(pShipAgent, pKillerSh
 		return 1
 	end
 
-	local agentID = SceneObject(pShipAgent):getObjectID()
-
-	-- Quest was aborted or ended, the ship no longer counts
-	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+	-- Quest was aborted or ended, or the ship belongs to an earlier run: the ship no longer counts
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName) or shipRunID ~= readData(missionOwnerID .. self.className .. ":runID")) then
 		CreatureObject(pPlayer):removeSpaceMissionObject(agentID, false)
 		return 1
 	end

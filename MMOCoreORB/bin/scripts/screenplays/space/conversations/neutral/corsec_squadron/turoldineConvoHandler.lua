@@ -162,6 +162,24 @@ function turoldineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	return convoTemplate:getScreen("here_for_work2")
 end
 
+function turoldineConvoHandler:isOnMission(pPlayer)
+	local c = CorsecSquadronScreenplay
+
+	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_privateer_tier4_1a")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_corellia_privateer_tier4_2a")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "space_battle_corellia_privateer_tier4_3a")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_corellia_privateer_tier4_4a")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.TIER4_QUEST_STRING_DUTY_1.type, c.TIER4_QUEST_STRING_DUTY_1.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.TIER4_QUEST_STRING_DUTY_2.type, c.TIER4_QUEST_STRING_DUTY_2.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.TIER4_QUEST_STRING_DUTY_3.type, c.TIER4_QUEST_STRING_DUTY_3.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.TIER4_QUEST_STRING_DUTY_4.type, c.TIER4_QUEST_STRING_DUTY_4.name)
+end
+
+-- SWG canFlyNonTrackDuty (corellia_privateer_tier4.java:195-202): all four tier 3 skills and no space quest
+function turoldineConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
+end
+
 function turoldineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
 	if (pPlayer == nil or pConvScreen == nil) then
 		return
@@ -191,7 +209,10 @@ function turoldineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 		return pClonedScreen
 	end
 
-	if (screenID == "ready_train_pilot") then
+	if (screenID == "pilot_not_corsec") then
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/corellia_privateer_tier4:s_c1ff5062", self:canFlyNonTrackDuty(pPlayer) and "here_for_work" or "non_corsec_no_missions") -- I'm looking for a mission. Do you have any?
+	elseif (screenID == "ready_train_pilot") then
 		local skillManager = LuaSkillManager()
 
 		local responseString = "initial_"

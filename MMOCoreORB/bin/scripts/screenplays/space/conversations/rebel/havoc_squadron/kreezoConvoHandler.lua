@@ -171,6 +171,22 @@ function kreezoConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	return convoTemplate:getScreen("no_jtl")
 end
 
+function kreezoConvoHandler:isOnMission(pPlayer)
+	local h = HavocSquadronScreenplay
+
+	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_rebel_1")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "destroy_corellia_rebel_2")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_rebel_3")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_corellia_rebel_4")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, h.QUEST_STRING_DUTY_1.type, h.QUEST_STRING_DUTY_1.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, h.QUEST_STRING_DUTY_2.type, h.QUEST_STRING_DUTY_2.name)
+end
+
+-- SWG canFlyNonTrackDuty (corellia_rebel_trainer_1.java:181-188): any tier 1 skill and no space quest
+function kreezoConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasPilotTierSkill(pPlayer, "rebel_navy", 1) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
+end
+
 function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
 	if (pPlayer == nil or pConvScreen == nil) then
 		return
@@ -195,6 +211,11 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 
 	if (ghost == nil) then
 		return pClonedScreen
+	end
+
+	if (screenID == "non_havoc_pilot") then
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/corellia_rebel_trainer_1:s_1583743c", self:canFlyNonTrackDuty(pPlayer) and "non_havoc_duty_options" or "non_havoc_no_missions") -- Do you have any missions I could fly?
 	end
 
 	-- Handle first free training after completing all 4 missions (player chooses which skill)
@@ -259,9 +280,9 @@ function kreezoConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 		end
 
 		return pClonedScreen
-	elseif (screenID == "destroy_duty") then
+	elseif (screenID == "destroy_duty" or screenID == "non_havoc_destroy_duty") then
 		destroy_duty_corellia_rebel_6:startQuest(pPlayer, pNpc)
-	elseif (screenID == "escort_duty") then
+	elseif (screenID == "escort_duty" or screenID == "non_havoc_escort_duty") then
 		escort_duty_corellia_rebel_7:startQuest(pPlayer, pNpc)
 	-- Recruitment flow - gender-based branching for "I want to join the Rebellion!"
 	elseif (screenID == "yes_join") then

@@ -25,10 +25,19 @@ pilot_not_corsec = ConvoScreen:new {
 	playerAnimation = "",
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_privateer_tier4:s_c1ff5062", "here_for_work"}, --  I'm looking for a mission. Do you have any?
+		{"@conversation/corellia_privateer_tier4:s_c1ff5062", "non_corsec_no_missions"}, --  I'm looking for a mission. Do you have any?
 	}
 }
 turoldine_convo_template:addScreen(pilot_not_corsec);
+
+non_corsec_no_missions = ConvoScreen:new {
+	id = "non_corsec_no_missions",
+	leftDialog = "@conversation/corellia_privateer_tier4:s_784ca15", -- There's always work to do here at CorSec. Unfortunately for you, that work is reserved for CorSec pilots. If you're looking for action, you're going to have to go through your own contacts.
+	animation = "shake_head_no",
+	stopConversation = "true",
+	options = {}
+}
+turoldine_convo_template:addScreen(non_corsec_no_missions);
 
 not_proper_tier = ConvoScreen:new {
 	id = "not_proper_tier",

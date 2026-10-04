@@ -40,10 +40,53 @@ viopa_convo_non_havoc_pilot = ConvoScreen:new {
 	leftDialog = "@conversation/lok_rebel_trainer_2:s_148ee1c2", -- What are you doing here? I heard that you were working for a different part of the Alliance Navy.
 	stopConversation = "false",
 	options = {
-		{"@conversation/lok_rebel_trainer_2:s_1583743c", "duty_missions"}, -- Do you have any missions I could fly?
+		{"@conversation/lok_rebel_trainer_2:s_1583743c", "non_havoc_no_missions"}, -- Do you have any missions I could fly?
 	}
 }
 viopa_convo:addScreen(viopa_convo_non_havoc_pilot)
+
+viopa_convo_non_havoc_no_missions = ConvoScreen:new {
+	id = "non_havoc_no_missions",
+	leftDialog = "@conversation/lok_rebel_trainer_2:s_990019e5", -- Sorry. Fresh out of missions right now. Why don't you try talking to your commanding officer?
+	stopConversation = "true",
+	options = {
+	}
+}
+viopa_convo:addScreen(viopa_convo_non_havoc_no_missions)
+
+viopa_convo_non_havoc_duty_offer = ConvoScreen:new {
+	id = "non_havoc_duty_offer",
+	leftDialog = "@conversation/lok_rebel_trainer_2:s_9d922723", -- I don't have any missions right now, but I do have some elective duty tasks that you might be interested in. What do you think, sweetie?
+	stopConversation = "false",
+	options = {
+		{"@conversation/lok_rebel_trainer_2:s_e84d85e2", "non_havoc_duty_options"}, -- Sounds great.
+		{"@conversation/lok_rebel_trainer_2:s_e87a40f8", "non_havoc_duty_decline"}, -- I'd rather not right now.
+	}
+}
+viopa_convo:addScreen(viopa_convo_non_havoc_duty_offer)
+
+viopa_convo_non_havoc_duty_options = ConvoScreen:new {
+	id = "non_havoc_duty_options",
+	leftDialog = "@conversation/lok_rebel_trainer_2:s_565951d5", -- Lord Nym has asked for our help in stealing some Corsair ships. We have some smugglers that require an escort through Imperial areas and we have the chance to strike a blow to the Empire by attacking some of their patrols. We want you to assist with these duties until you feel you have enough experience to proceed with training but they are strictly volunteer assignments and can be aborted at any time.
+	animation = "explain",
+	stopConversation = "false",
+	options = {
+		{"@conversation/lok_rebel_trainer_2:s_e02126d9", "intro_recovery_duty"}, -- Stealing some Corsair ships sounds like fun.
+		{"@conversation/lok_rebel_trainer_2:s_cd3e2b38", "intro_escort_duty"}, -- I'll help some of our smugglers sneak by the Empire.
+		{"@conversation/lok_rebel_trainer_2:s_1dfeca09", "intro_destroy_duty"}, -- I've been itching to take down some TIE fighters.
+		{"@conversation/lok_rebel_trainer_2:s_cd1a5817", "intro_duty_goodbye"}, -- I have some quick things I need to fix first. I will be back.
+	}
+}
+viopa_convo:addScreen(viopa_convo_non_havoc_duty_options)
+
+viopa_convo_non_havoc_duty_decline = ConvoScreen:new {
+	id = "non_havoc_duty_decline",
+	leftDialog = "@conversation/lok_rebel_trainer_2:s_39e697de", -- Whatever you say.
+	stopConversation = "true",
+	options = {
+	}
+}
+viopa_convo:addScreen(viopa_convo_non_havoc_duty_decline)
 
 -- Not Rebel Pilot (rebel non-member)
 viopa_convo_not_rebel_pilot = ConvoScreen:new {

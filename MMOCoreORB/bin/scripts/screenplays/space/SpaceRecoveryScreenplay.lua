@@ -8,6 +8,7 @@ SpaceRecoveryScreenplay = SpaceQuestLogic:new {
 	arrivalDelay = 5, -- In Seconds
 
 	recoverShip = "",
+	recoverShips = {}, -- Optional list, one is picked at random per spawn
 	recoveryConversationMobile = "",
 
 	preRecoveryPoints = {
@@ -376,7 +377,13 @@ function SpaceRecoveryScreenplay:spawnRecoveryShip(pPlayer)
 	end
 
 	-- Spawn the ship to be recovered
-	local pShipAgent = spawnShipAgent(self.recoverShip, self.questZone, spawnLocation.x, spawnLocation.z, spawnLocation.y)
+	local recoverShipName = self.recoverShip
+
+	if (self.recoverShips ~= nil and #self.recoverShips > 0) then
+		recoverShipName = self.recoverShips[getRandomNumber(1, #self.recoverShips)]
+	end
+
+	local pShipAgent = spawnShipAgent(recoverShipName, self.questZone, spawnLocation.x, spawnLocation.z, spawnLocation.y)
 
 	if (pShipAgent == nil) then
 		self:failQuest(pPlayer, "true")
@@ -580,7 +587,7 @@ function SpaceRecoveryScreenplay:startRecovery(pRecoveryShip)
 		print(self.className .. ":startRecovery -- Called for Recovered ShipAgent Object: " .. ShipObject(pRecoveryShip):getShipName() .. " Recovering Player: " .. SceneObject(pPlayer):getDisplayedName())
 	end
 
-	local tauntString = "@spacequest/" .. self.questType .. "/" .. self.questName .. ":capture_phase_1"
+	local tauntString = "@spacequest/" .. self.questType .. "/" .. self.questName .. ":" .. self:capturePhraseKey(1)
 
 	ShipAiAgent(pRecoveryShip):tauntPlayer(pPlayer, tauntString)
 
@@ -624,7 +631,7 @@ function SpaceRecoveryScreenplay:continueRecovery(pRecoveryShip)
 		print(self.className .. ":continueRecovery -- Called for Destructed ShipAgent Object: " .. ShipObject(pRecoveryShip):getShipName() .. " Mission Owner: " .. SceneObject(pPlayer):getDisplayedName())
 	end
 
-	local tauntString = "@spacequest/" .. self.questType .. "/" .. self.questName .. ":capture_phase_2"
+	local tauntString = "@spacequest/" .. self.questType .. "/" .. self.questName .. ":" .. self:capturePhraseKey(2)
 
 	ShipAiAgent(pRecoveryShip):tauntPlayer(pPlayer, tauntString)
 
@@ -717,7 +724,7 @@ function SpaceRecoveryScreenplay:assignRecoveryPoints(pRecoveryShip)
 	writeData(SceneObject(pRecoveryShip):getObjectID() .. ":" .. self.className .. ":recoveryShipProgress:", totalPoints)
 
 	-- Re-add to the mission object list
-	CreatureObject(pPlayer):addSpaceMissionObject(recoveryAgentID, true)
+	CreatureObject(pPlayer):addSpaceMissionObject(SceneObject(pRecoveryShip):getObjectID(), true)
 
 	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
@@ -806,8 +813,9 @@ function SpaceRecoveryScreenplay:spawnAttackWave(pRecoveryShip)
 	-- Get the proper table of ships
 	spawnTable = self.attackShips[attackShipsGroup]
 
-	local shipIDs = readStringVectorSharedMemory(missionOwnerID .. self.className .. ":spawnedShips:")
-	deleteStringVectorSharedMemory(missionOwnerID .. self.className .. ":spawnedShips:")
+	-- Append to the attack ships still alive; escorts stay in their own list
+	local shipIDs = readStringVectorSharedMemory(missionOwnerID .. self.className .. ":attackShips:")
+	deleteStringVectorSharedMemory(missionOwnerID .. self.className .. ":attackShips:")
 
 	local newShipIDs = {}
 
@@ -1076,6 +1084,15 @@ function SpaceRecoveryScreenplay:notifyEscortShipDestroyed(pShipAgent, pKillerSh
 	return 1
 end
 
+-- Hook for subclasses, called once per destroyed attack ship with the number still alive
+function SpaceRecoveryScreenplay:onAttackShipKilled(pPlayer, remaining)
+end
+
+-- Key of the capture taunts in the quest string file
+function SpaceRecoveryScreenplay:capturePhraseKey(phase)
+	return "capture_phase_" .. phase
+end
+
 function SpaceRecoveryScreenplay:notifyAttackShipDestroyed(pShipAgent, pKillerShip)
 	if (pShipAgent == nil or not SceneObject(pShipAgent):isShipAiAgent()) then
 		return 1
@@ -1133,11 +1150,15 @@ function SpaceRecoveryScreenplay:notifyAttackShipDestroyed(pShipAgent, pKillerSh
 	if (#remainingShips > 0) then
 		writeStringVectorSharedMemory(missionOwnerID .. self.className .. ":attackShips:", remainingShips)
 
+		self:onAttackShipKilled(pPlayer, #remainingShips)
+
 		local messageString = LuaStringIdChatParameter("@space/quest:destroy_duty_targets_remaining")
 		messageString:setDI(#remainingShips)
 
 		CreatureObject(pPlayer):sendSystemMessage(messageString:_getObject())
 	else
+		self:onAttackShipKilled(pPlayer, 0)
+
 		-- Player Notifications
 		CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_destroyed_wave.cef", "")
 		CreatureObject(pPlayer):sendSystemMessage("@spacequest/" .. self.questType .. "/" .. self.questName .. ":attack_stopped")

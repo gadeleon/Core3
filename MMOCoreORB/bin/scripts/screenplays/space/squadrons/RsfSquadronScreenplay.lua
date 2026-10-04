@@ -515,7 +515,8 @@ recovery_duty_naboo_privateer_10 = SpaceDutyRecoveryScreenplay:new {
 	questZone = "space_naboo",
 
 	creditReward = 2500,
-	killReward = 200,
+	creditKillBonus = 200,
+	numResponses = 5,
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -1885,7 +1886,8 @@ recovery_duty_naboo_privateer_tier4_1 = SpaceDutyRecoveryScreenplay:new {
 	questZone = "space_yavin4",
 
 	creditReward = 5000,
-	killReward = 300,
+	creditKillBonus = 300,
+	numResponses = 2,
 
 	sideQuest = false,
 	sideQuestType = "",

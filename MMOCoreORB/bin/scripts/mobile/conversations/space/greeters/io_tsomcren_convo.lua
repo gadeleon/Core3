@@ -34,13 +34,4 @@ thats_too_bad = ConvoScreen:new {
 }
 io_tsomcren_convo_template:addScreen(thats_too_bad);
 
-wow_you_helped = ConvoScreen:new {
-	id = "wow_you_helped",
-	leftDialog = "@conversation/greeter_coronet_shipwright_indifferent:s_7", -- Wow, you helped find our missing shipment. That's really great. It's too bad that it's all being held as evidence by CorSec, but at least we know where it is.
-	stopConversation = "true",
-	options = {
-	}
-}
-io_tsomcren_convo_template:addScreen(wow_you_helped);
-
 addConversationTemplate("io_tsomcren_convo_template", io_tsomcren_convo_template);

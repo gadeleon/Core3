@@ -279,7 +279,7 @@ kreezo_convo:addScreen(kreezo_convo_male_destiny)
 -- Female response - pretty face (You don't know me path)
 kreezo_convo_female_pretty_face = ConvoScreen:new {
 	id = "female_pretty_face",
-	leftDialog = "@conversation/corellia_rebel_trainer_1:s_4df7e8e8", -- Oh, but I do! Such a pretty face as yours is hard to forget!
+	leftDialog = "@conversation/corellia_rebel_trainer_1:s_4df7e8e8", -- Oh, but I do! I do! I could never forget such a pretty face. Come on - let me slide you into the Alliance piloting ranks. You'll love it!
 	stopConversation = "false",
 	animation = "beckon",
 	options = {
@@ -316,7 +316,7 @@ kreezo_convo:addScreen(kreezo_convo_no_join)
 -- Of course - You don't know me response
 kreezo_convo_of_course = ConvoScreen:new {
 	id = "of_course",
-	leftDialog = "@conversation/corellia_rebel_trainer_1:s_44e3a645", -- Of course. You look like a Rebel to me... Do you have a ship?
+	leftDialog = "@conversation/corellia_rebel_trainer_1:s_4df7e8e8", -- Oh, but I do! I do! I could never forget such a pretty face. Come on - let me slide you into the Alliance piloting ranks. You'll love it! (routing screen, replaced by the handler with male_destiny or female_pretty_face)
 	stopConversation = "false",
 	animation = "check_wrist_device",
 	options = {}

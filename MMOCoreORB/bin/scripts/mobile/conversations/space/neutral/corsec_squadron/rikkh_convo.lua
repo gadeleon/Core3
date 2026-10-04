@@ -25,6 +25,29 @@ pilot_not_corsec = ConvoScreen:new {
 }
 rikkh_convo_template:addScreen(pilot_not_corsec);
 
+non_corsec_duty_options = ConvoScreen:new {
+	id = "non_corsec_duty_options",
+	leftDialog = "@conversation/corellia_privateer_trainer_2:s_285c3698", -- I do have some elective duty missions, actually. They're not the most exciting work, but they do need to be done. Take a look and tell me what you want to do.
+	animation = "explain",
+	stopConversation = "false",
+	options = {
+		{"@conversation/corellia_privateer_trainer_2:s_fa5c5669", "destroy_duty1"}, -- Destroy Duty
+		{"@conversation/corellia_privateer_trainer_2:s_56e162f2", "escort_duty"}, -- Escort Duty
+		{"@conversation/corellia_privateer_trainer_2:s_fa5c5669", "destroy_duty2"}, -- Destroy Duty
+		{"@conversation/corellia_privateer_trainer_2:s_28ea80d", "recovery_duty"}, -- Recovery Duty
+	}
+}
+rikkh_convo_template:addScreen(non_corsec_duty_options);
+
+non_corsec_missions = ConvoScreen:new {
+	id = "non_corsec_missions",
+	leftDialog = "@conversation/corellia_privateer_trainer_2:s_7b7fb169", -- It's not that I don't think you'd do a good job, but I don't have anything to assign right now. You may want to try talking to your own contacts.
+	animation = "slow_down",
+	stopConversation = "true",
+	options = {}
+}
+rikkh_convo_template:addScreen(non_corsec_missions);
+
 finished_tier3 = ConvoScreen:new {
 	id = "finished_tier3",
 	leftDialog = "@conversation/corellia_privateer_trainer_2:s_447b4291", -- %TU!  Long time no see.  I've heard Commander Ramna was quite pleased with your performance.

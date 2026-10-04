@@ -916,4 +916,94 @@ not_ready = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(not_ready);
 
+-- First-meeting sign-up (naboo_privateer_trainer_2.java:401-744, 3965-4000); fallthrough is s_837686a5 (java:4408)
+signup = ConvoScreen:new {
+	id = "signup",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_464cfc61",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_9560d48e", "signup_palace"},
+	}
+}
+kaydine_convo_template:addScreen(signup);
+
+signup_palace = ConvoScreen:new {
+	id = "signup_palace",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9ea46a82",
+	stopConversation = "false",
+	animation = "point_left",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_36a4e374", "signup_welcome"},
+		{"@conversation/naboo_privateer_trainer_2:s_f93088f1", "signup_security"},
+	}
+}
+kaydine_convo_template:addScreen(signup_palace);
+
+signup_welcome = ConvoScreen:new {
+	id = "signup_welcome",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_d8472b3c",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_f6ae3b07", "signup_job"},
+	}
+}
+kaydine_convo_template:addScreen(signup_welcome);
+
+signup_job = ConvoScreen:new {
+	id = "signup_job",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2847218",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_8f2e1055", "signup_duty"},
+	}
+}
+kaydine_convo_template:addScreen(signup_job);
+
+signup_duty = ConvoScreen:new {
+	id = "signup_duty",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_6cd96c01",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_7614c65", "signup_accept"},
+	}
+}
+kaydine_convo_template:addScreen(signup_duty);
+
+signup_accept = ConvoScreen:new {
+	id = "signup_accept",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_24d86e89",
+	stopConversation = "true",
+	animation = "manipulate_high",
+	options = {}
+}
+kaydine_convo_template:addScreen(signup_accept);
+
+signup_security = ConvoScreen:new {
+	id = "signup_security",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_35fb22d6",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_d70dba34", "signup_security_welcome"},
+	}
+}
+kaydine_convo_template:addScreen(signup_security);
+
+signup_security_welcome = ConvoScreen:new {
+	id = "signup_security_welcome",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_7cc7c206",
+	stopConversation = "false",
+	options = {
+		{"@conversation/naboo_privateer_trainer_2:s_f6ae3b07", "signup_job"},
+	}
+}
+kaydine_convo_template:addScreen(signup_security_welcome);
+
+fallthrough = ConvoScreen:new {
+	id = "fallthrough",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_837686a5",
+	stopConversation = "true",
+	options = {}
+}
+kaydine_convo_template:addScreen(fallthrough);
+
 addConversationTemplate("kaydine_convo_template", kaydine_convo_template)

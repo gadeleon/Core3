@@ -1,7 +1,5 @@
 duliosConvoHandler = conv_handler:new {}
 
-local PT = "@conversation/naboo_privateer_tier3:"
-
 duliosConvoHandler.REWARD_SCREENS = { complete_mission1 = 1, complete_mission2 = 2, complete_mission3 = 3, complete_mission4 = 4 }
 
 duliosConvoHandler.START_SCREENS = {
@@ -15,12 +13,12 @@ duliosConvoHandler.START_SCREENS = {
 	m4_retry_57d34626 = 4, m4_retry_ff5d0ba8 = 4
 }
 
--- Skill, choice option sid, training screen id
+-- Skill, choice option string id, training screen id
 duliosConvoHandler.TRAIN_CHOICES = {
-	{ "pilot_neutral_starships_03", "s_aa766bd6", "train_warships" },
-	{ "pilot_neutral_weapons_03", "s_a70b470e", "train_components" },
-	{ "pilot_neutral_procedures_03", "s_da0e8cd0", "train_techniques" },
-	{ "pilot_neutral_droid_03", "s_c28a300f", "train_programming" }
+	{ "pilot_neutral_starships_03", "@conversation/naboo_privateer_tier3:s_aa766bd6", "train_warships" },
+	{ "pilot_neutral_weapons_03", "@conversation/naboo_privateer_tier3:s_a70b470e", "train_components" },
+	{ "pilot_neutral_procedures_03", "@conversation/naboo_privateer_tier3:s_da0e8cd0", "train_techniques" },
+	{ "pilot_neutral_droid_03", "@conversation/naboo_privateer_tier3:s_c28a300f", "train_programming" }
 }
 
 local MISSION_HEADS = {
@@ -230,7 +228,7 @@ function duliosConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 			local choice = duliosConvoHandler.TRAIN_CHOICES[i]
 
 			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
-				clonedConversation:addOption(PT .. choice[2], choice[3] .. screenAppend)
+				clonedConversation:addOption(choice[2], choice[3] .. screenAppend)
 			end
 		end
 

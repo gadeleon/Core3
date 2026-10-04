@@ -4,10 +4,16 @@
 -- harness/swgjava.lua. Every NPC line, option, successor, animation and end flag is compared with it.
 -- Dialogue actions are NOT taken from the parser (it misattributes the skill purchases and the
 -- setMetMe); they are tested as behavior in test_rsf_tier4_imler_behavior.lua from spec Appendix A.
+--
+-- space-convo-client-strings-imler-a (.claude/work/space-convo-client-strings-imler-a/01-spec.md, Appendix C): the 7 tests listed there compare through the twin table
+-- (rsf_tier4_imler_client_strings_data.lua D.TWIN: Core3 shows the pre-NGE twin of s_4, s_9 and s_416) and treat training as the one exception E-IM1: the NPC lines s_439-s_442,
+-- s_451, s_489, s_623 and s_737 have no screen, and ready_train's reply s_438 is replaced by the choice the handler adds. Screens are found by id (a pre-NGE line can be shown by
+-- two screens), not by their line.
 
 local lu = require("luaunit")
 local H = require("harness")
 local D = require("rsf_tier4_data")
+local DS = require("rsf_tier4_imler_client_strings_data")
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -42,14 +48,27 @@ local function screensById(t)
 	return byId
 end
 
-local function screensByDialog(t)
-	local byDialog = {}
+-- Core3 shows the pre-NGE twin of each of the 3 NGE-numbered ids (space-convo-client-strings-imler-a)
+local function twin(sid)
+	return DS.TWIN[sid] or sid
+end
 
-	for _, s in ipairs(t.screens) do
-		byDialog[s.leftDialog] = s
-	end
+-- the NGE training NPC lines (E-IM1): not mirrored by Core3
+local TRAINING_NPC = {}
 
-	return byDialog
+for _, id in ipairs({ "s_439", "s_440", "s_441", "s_442", "s_451", "s_489", "s_623", "s_737" }) do
+	TRAINING_NPC[id] = true
+end
+
+-- the template screen that shows SWG NPC line `sid`: the screen with that id, or the descriptive id the mandatory-screen table names for it
+local REVERSE = {}
+
+for id, sid in pairs(D.SCREENS) do
+	REVERSE[sid] = id
+end
+
+local function screenFor(t, sid)
+	return screensById(t)[REVERSE[sid] or sid]
 end
 
 local function sidOf(text)
@@ -159,7 +178,7 @@ function TestImlerWiring:test_every_mandatory_screen_id_exists_with_its_sid()
 		local screen = byId[id]
 
 		lu.assertNotNil(screen, "imler_convo_template: missing mandatory screen '" .. id .. "'")
-		lu.assertEquals(screen.leftDialog, D.PREFIX .. D.SCREENS[id], "imler_convo_template: leftDialog of screen '" .. id .. "'")
+		lu.assertEquals(screen.leftDialog, D.PREFIX .. twin(D.SCREENS[id]), "imler_convo_template: leftDialog of screen '" .. id .. "'")
 	end
 end
 
@@ -182,83 +201,129 @@ function TestImlerDialogue:test_answer_key_has_182_npc_lines_and_158_distinct_re
 	lu.assertEquals(count, 158, "distinct response sids in naboo_privateer_tier4.java")
 end
 
+-- AC-2, I-1; space-convo-client-strings-imler-a AC-8 [D-13]: the only ids outside the SWG java are the client-only lines (the twin s_3f68df7d is on a screen; the four
+-- training replies are the handler's)
+local CLIENT_ONLY = {}
+
+for _, id in ipairs(DS.CLIENT_ONLY) do
+	CLIENT_ONLY[id] = true
+end
+
 -- AC-2, I-1
-function TestImlerDialogue:test_every_string_is_a_tier4_sid_that_exists_in_the_swg_java()
+function TestImlerDialogue:test_every_string_is_a_tier4_sid_that_exists_in_the_swg_java_or_is_one_of_the_client_only_lines()
 	local t = template()
+	local foreign = {}
 
 	for _, screen in ipairs(t.screens) do
 		local sid = sidOf(screen.leftDialog)
 
 		lu.assertNotNil(sid, "screen '" .. screen.id .. "': leftDialog '" .. tostring(screen.leftDialog) .. "' is not @conversation/naboo_privateer_tier4:<sid>")
-		lu.assertNotNil(GRAPH.nodes[sid], "screen '" .. screen.id .. "': leftDialog sid " .. sid .. " is not an NPC line in the SWG java")
+		lu.assertTrue(GRAPH.nodes[sid] ~= nil or CLIENT_ONLY[sid] == true, "screen '" .. screen.id .. "': leftDialog sid " .. sid .. " is neither an NPC line in the SWG java nor a client-only line")
+
+		if GRAPH.nodes[sid] == nil then
+			foreign[sid] = true
+		end
 
 		for i, option in ipairs(screen.options or {}) do
 			local osid = sidOf(option[1])
 
 			lu.assertNotNil(osid, "screen '" .. screen.id .. "' option " .. i .. ": text '" .. tostring(option[1]) .. "' is not @conversation/naboo_privateer_tier4:<sid>")
-			lu.assertTrue(GRAPH.responses[osid] == true, "screen '" .. screen.id .. "' option " .. i .. ": sid " .. osid .. " is not a response in the SWG java")
+			lu.assertTrue(GRAPH.responses[osid] == true or CLIENT_ONLY[osid] == true, "screen '" .. screen.id .. "' option " .. i .. ": sid " .. osid .. " is neither a response in the SWG java nor a client-only line")
+
+			if GRAPH.responses[osid] ~= true then
+				foreign[osid] = true
+			end
 		end
 	end
+
+	-- the template's only line that is not in the java is the twin s_3f68df7d "Sounds easy enough." (D-13); the four training replies are the handler's
+	local got = {}
+
+	for sid in pairs(foreign) do got[#got + 1] = sid end
+
+	table.sort(got)
+	lu.assertEquals(got, { "s_3f68df7d" }, "ids of imler_convo_template that are not in the SWG java")
 end
 
--- AC-2
+-- AC-2; space-convo-client-strings-imler-a (Appendix D): every shown SWG NPC line has exactly one screen by id, a pre-NGE line is shown on as many screens as it has copies, and
+-- the 8 training NPC lines have none
 function TestImlerDialogue:test_every_swg_npc_line_has_exactly_one_screen()
 	local t = template()
+	local byId = screensById(t)
 	local count = {}
 
 	for _, screen in ipairs(t.screens) do
 		count[screen.leftDialog] = (count[screen.leftDialog] or 0) + 1
 	end
 
+	local shown = 0
+
 	for _, sid in ipairs(GRAPH.order) do
-		lu.assertEquals(count[D.PREFIX .. sid], 1, "number of screens whose leftDialog is NPC line " .. sid)
+		if TRAINING_NPC[sid] then
+			lu.assertNil(count[D.PREFIX .. sid], "number of screens whose leftDialog is the training NPC line " .. sid)
+		else
+			shown = shown + 1
+
+			local id = REVERSE[sid] or sid
+
+			lu.assertNotNil(byId[id], "SWG NPC line " .. sid .. ": a screen with id '" .. id .. "'")
+			lu.assertEquals(count[D.PREFIX .. twin(sid)], DS.LEFT_COUNTS[twin(sid)] or 1, "number of screens whose leftDialog is " .. twin(sid) .. " (SWG " .. sid .. ")")
+		end
 	end
 
-	lu.assertEquals(#t.screens, 182, "number of screens in imler_convo_template (one per NPC line)")
+	lu.assertEquals(shown, 174, "SWG NPC lines other than the training dialogue")
+	lu.assertEquals(#t.screens, 174, "number of screens in imler_convo_template (one per shown NPC line)")
 end
 
--- AC-2, pilot-training-free-choice E-PN4: ready_train's one reply s_438 (conditional successor = first missing skill) is replaced by the choice the
--- handler adds (spec: .claude/work/pilot-training-free-choice/01-spec.md); its static options are empty. Nothing else may differ.
+-- AC-2, E-IM1 (replaces pilot-training-free-choice E-PN4): ready_train's one reply s_438 (conditional successor = first missing skill) is replaced by the choice the
+-- handler adds (Imler's own "Teach me about ..." replies; spec: .claude/work/space-convo-client-strings-imler-a/01-spec.md); its static options are empty. Nothing else may differ.
 local E_PN4 = { ready_train = "s_438" }
 
--- AC-2
+-- AC-2; compared through the twin table (space-convo-client-strings-imler-a, I-3); the training block is E-IM1
 function TestImlerDialogue:test_options_are_the_swg_responses_in_order_and_link_to_the_swg_successor()
 	local t = template()
 	local byId = screensById(t)
-	local byDialog = screensByDialog(t)
 
 	for _, sid in ipairs(GRAPH.order) do
-		local node = GRAPH.nodes[sid]
-		local screen = byDialog[D.PREFIX .. sid]
+		if not TRAINING_NPC[sid] then
+			local node = GRAPH.nodes[sid]
+			local screen = screenFor(t, sid)
 
-		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
+			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
 
-		local got = {}
+			local got = {}
 
-		for i, option in ipairs(screen.options or {}) do
-			got[i] = sidOf(option[1])
-		end
+			for i, option in ipairs(screen.options or {}) do
+				got[i] = sidOf(option[1])
+			end
 
-		local exceptional = E_PN4[screen.id]
+			local exceptional = E_PN4[screen.id]
 
-		if exceptional ~= nil then
-			lu.assertEquals(node.options, { exceptional }, "answer key: " .. screen.id .. " has the one reply " .. exceptional)
-			lu.assertEquals(got, {}, "screen '" .. screen.id .. "' (" .. sid .. "): static options (E-PN4: the handler adds the choice)")
-		else
-			lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
-		end
+			if exceptional ~= nil then
+				lu.assertEquals(node.options, { exceptional }, "answer key: " .. screen.id .. " has the one reply " .. exceptional)
+				lu.assertEquals(got, {}, "screen '" .. screen.id .. "' (" .. sid .. "): static options (E-IM1: the handler adds the choice)")
+			else
+				local wanted = {}
 
-		for i, optionSid in ipairs(exceptional ~= nil and {} or node.options) do
-			local successors = GRAPH.successorsOf(sid, optionSid)
+				for i, optionSid in ipairs(node.options) do
+					wanted[i] = twin(optionSid)
+				end
 
-			lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
+				lu.assertEquals(got, wanted, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order (twins of the SWG replies)")
+			end
 
-			-- Conditional successors: the static link is the unconditional default, the last successor in the java.
-			local expected = successors[#successors]
-			local target = byId[screen.options[i][2]]
+			for i, optionSid in ipairs(exceptional ~= nil and {} or node.options) do
+				local successors = GRAPH.successorsOf(sid, optionSid)
 
-			lu.assertNotNil(target, "screen '" .. screen.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
-			lu.assertEquals(target.leftDialog, D.PREFIX .. expected, "screen '" .. screen.id .. "' option " .. optionSid .. " -> successor NPC line")
+				lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
+
+				-- Conditional successors: the static link is the unconditional default, the last successor in the java.
+				local expected = successors[#successors]
+				local target = byId[screen.options[i][2]]
+
+				lu.assertNotNil(target, "screen '" .. screen.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
+				lu.assertEquals(target.leftDialog, D.PREFIX .. twin(expected), "screen '" .. screen.id .. "' option " .. optionSid .. " -> successor NPC line (twin of " .. expected .. ")")
+			end
 		end
 	end
 end
@@ -269,38 +334,41 @@ function TestImlerDialogue:test_the_conditional_options_default_to_the_spec_link
 
 	lu.assertEquals(byId.not_my_track.options[1][2], "nontrack_no_duty", "not_my_track: default link of s_c1ff5062")
 	lu.assertEquals(byId.ready_mission.options[1][2], "mission1_brief", "ready_mission: default link of s_39e697de")
-	lu.assertEquals(byId.ready_train.options, {}, "ready_train: static options (E-PN4: no fixed-order default; the handler adds the choice)")
+	lu.assertEquals(byId.ready_train.options, {}, "ready_train: static options (E-IM1: no fixed-order default; the handler adds the choice)")
 
+	-- space-convo-client-strings-imler-a (E-IM1): the train_<x> prompts and trained_mission<k> intros are deleted, so there is no default link to pin for them
 	for _, skill in ipairs(D.SKILLS) do
-		local screen = byId["train_" .. skill]
-
-		lu.assertEquals(#screen.options, 1, "train_" .. skill .. ": option count")
-		lu.assertEquals(sidOf(screen.options[1][1]), D.BUY_OPTION[skill], "train_" .. skill .. ": option sid")
-		lu.assertEquals(screen.options[1][2], "trained_mission1", "train_" .. skill .. ": default link")
+		lu.assertNil(byId["train_" .. skill], "train_" .. skill .. " is deleted")
 	end
 end
 
--- AC-2
+-- AC-2; screens are found by id, not by their line, because copies share a line (space-convo-client-strings-imler-a); the training block is E-IM1
 function TestImlerDialogue:test_stop_conversation_is_true_exactly_on_swg_end_lines()
-	local byDialog = screensByDialog(template())
+	local t = template()
 
 	for _, sid in ipairs(GRAPH.order) do
-		local screen = byDialog[D.PREFIX .. sid]
+		if not TRAINING_NPC[sid] then
+			local screen = screenFor(t, sid)
 
-		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
-		lu.assertEquals(screen.stopConversation == "true", GRAPH.nodes[sid].isEnd, "screen '" .. screen.id .. "' (" .. sid .. "): stopConversation == \"true\" iff the line ends the conversation")
+			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
+			lu.assertEquals(screen.leftDialog, D.PREFIX .. twin(sid), "screen '" .. screen.id .. "' (" .. sid .. "): leftDialog (the twin of the SWG line)")
+			lu.assertEquals(screen.stopConversation == "true", GRAPH.nodes[sid].isEnd, "screen '" .. screen.id .. "' (" .. sid .. "): stopConversation == \"true\" iff the line ends the conversation")
+		end
 	end
 end
 
 -- AC-2
 function TestImlerDialogue:test_animation_matches_the_swg_doAnimationAction()
-	local byDialog = screensByDialog(template())
+	local t = template()
 
 	for _, sid in ipairs(GRAPH.order) do
-		local screen = byDialog[D.PREFIX .. sid]
+		if not TRAINING_NPC[sid] then
+			local screen = screenFor(t, sid)
 
-		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
-		lu.assertEquals(screen.animation or "", GRAPH.nodes[sid].animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation")
+			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
+			lu.assertEquals(screen.leftDialog, D.PREFIX .. twin(sid), "screen '" .. screen.id .. "' (" .. sid .. "): leftDialog (the twin of the SWG line)")
+			lu.assertEquals(screen.animation or "", GRAPH.nodes[sid].animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation")
+		end
 	end
 end
 

@@ -243,7 +243,7 @@ graph.successorsOf(sid, optionSid)  -- successor NPC sids (the last one is the u
 graph.pathTo(fromSid, toSid)        -- option sids to choose to get from one line to another
 ```
 
-`rsf_tier4_data.lua` is the same for RSF tier 4 (Imler): the spec's mission table, screen ids and a `D.rsf{...}` player builder. Fake creatures answer `surrenderSkill(skill)` (drops the skill), so `SpaceHelpers:surrenderPilot` can be driven.
+`rsf_tier4_data.lua` is the same for RSF tier 4 (Imler): the spec's mission table, screen ids and a `D.rsf{...}` player builder (`wrong_faction` keeps the java sid s_4; `rsf_tier4_imler_client_strings_data.lua` holds the twin table). Fake creatures answer `surrenderSkill(skill)` (drops the skill), so `SpaceHelpers:surrenderPilot` can be driven.
 
 `havoc_tier4_data.lua` and `survival_scenario.lua` (next to the tests, not test files) show how a
 feature keeps its spec-copied constants and a player-state or scenario builder in one place.
@@ -322,6 +322,8 @@ Choices that happen "while a screen is shown" (the skill arrives, the XP is gone
 the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`, `reply`, and `screen` for Kaydine and Imler; Dinge has `closing` = `trained_<x>` instead, no `screen`;
 Kaydine's `screen` is `trained_<x>_mission4` since space-convo-client-strings-kaydine: one click, the static default intro), the retired single replies
 (`C.RETIRED`) and helpers (`C.expected(list, heldSet[, "closing"])` = the `{ reply, link }` pairs a choice screen must show, `C.properSubsets`, `C.pairsOf`).
+Since space-convo-client-strings-imler-a Imler trains in one click: the choice on `ready_train` (Imler's own "Teach me about ..." lines, `C.IMLER` with the static link `mission1_brief`) buys the skill when chosen
+and lands on `mission<k>_brief` for the new skill count, which sets the ready flag (`train_<x>`, `trained_mission<k>` and `TRAIN_SCREENS` are gone; a guard hook goes before the reply sid).
 `test_pilot_training_free_choice_{kaydine,dinge,imler}.lua` drive the choice, the purchase / free grant and out-of-order careers through `H.converse`
 (choices by reply sid, so an out-of-order pick does not depend on the order of the list); `test_pilot_training_free_choice_conformance.lua` pins the
 `TRAIN_CHOICES` tables, the string ids and "nothing else moves" against commit 1092dfb3fd through `git show`.
@@ -355,7 +357,7 @@ starting with `/` or `./` is used as is (the helper test scans `fixtures/client_
 
 A per-trainer test is `lu.assertEquals(CS.unresolved({ <template>, <handler> }), {})`. `space_convo_client_strings_data.lua` holds the **ratchet**:
 `KNOWN_GAPS` (file -> the ids still unresolved; `test_space_convo_client_strings.lua` requires the scan to equal it exactly, so a new gap fails and a fixed
-gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (14 stored prefixes, all unused `stringFile` locals, pinned by path and line text so a new prefix fails; no line uses a stored prefix any more, `KNOWN_PREFIX_USES` is `{}`, so a new use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446), so is Kaydine's (446 -> 381) and so is Dulios' (381 -> 305) and so is Arkon's (305 -> 211, one file left: `naboo_privateer_tier4` 211); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
+gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (14 stored prefixes, all unused `stringFile` locals, pinned by path and line text so a new prefix fails; no line uses a stored prefix any more, `KNOWN_PREFIX_USES` is `{}`, so a new use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446), so is Kaydine's (446 -> 381) and so is Dulios' (381 -> 305) and so is Arkon's (305 -> 211, one file left: `naboo_privateer_tier4`) and Imler's first part (211 -> 196: gates, duty briefing and training; the 196 left are the four mission briefings, F6b); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
 screens, the trailing `-- <client text>` comments and the sign-up, mission 3 failure, mission 4 offer and duty-decline journeys. Dinge trains in one click:
 the choice is made on `first_training` (free) or `more_training` (paid) and the conversation ends on `trained_<x>`, which shows "Good choice." (`s_cd72f93`).
 `test_space_convo_client_strings_kaydine.lua` holds Kaydine's: the scan, the exact values of the 38 changed screens (`rsf_tier2_kaydine_client_strings_data.lua`), the trailing

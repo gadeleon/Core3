@@ -12,7 +12,12 @@
 --
 -- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1, D-3, Content contract 1-2, Appendix A) re-pins Kaydine:
 -- TRAIN_CHOICES entries are { skill, reply, trained_<x>_mission4 } (one click, no purchase screens, no TRAIN_SCREENS), the foreign ids are the four
--- replies plus the 35 pre-NGE-only lines, Kaydine has 89 screens, and the screens F3 rewrites or deletes are listed in CHANGED_SCREENS.kaydine. Imler is untouched.
+-- replies plus the 35 pre-NGE-only lines, Kaydine has 89 screens, and the screens F3 rewrites or deletes are listed in CHANGED_SCREENS.kaydine.
+--
+-- space-convo-client-strings-imler-a (.claude/work/space-convo-client-strings-imler-a/01-spec.md, Appendix C; D-3, D-6, D-14, Content contract 1-2) re-pins Imler: one click, so
+-- TRAIN_CHOICES entries are { skill, "@conversation/naboo_privateer_tier4:<Imler's own reply>", "mission1_brief" } (the static default link), there is no TRAIN_SCREENS, Imler has 174
+-- screens (the 8 train_<x> / trained_mission<k> screens are deleted, s_9, duty_info and wrong_faction are swapped onto their twins: CHANGED_SCREENS.imler), getNextConversationScreen
+-- joins the rewritten functions, and Imler's files carry no corellia_privateer_tier4 id but 5 client-only naboo_privateer_tier4 ids.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -118,17 +123,18 @@ for _, name in ipairs(ORDER) do
 		for i, entry in ipairs(h.TRAIN_CHOICES) do
 			lu.assertNotNil(ids[entry[3]], name .. " TRAIN_CHOICES[" .. i .. "]: screen '" .. tostring(entry[3]) .. "' is not in " .. TRAINERS[name].template)
 
-			if name == "dinge" then
+			if name == "imler" then
+				-- space-convo-client-strings-imler-a D-4: the link is only the static default; the handler tells the skill by the reply and picks the brief
+				lu.assertEquals(entry[3], "mission1_brief", name .. " TRAIN_CHOICES[" .. i .. "]: the static default link")
+			elseif name == "dinge" then
 				lu.assertEquals(entry[3], "trained_" .. entry[1]:match("^pilot_neutral_(%a+)_01$"), name .. " TRAIN_CHOICES[" .. i .. "]: the closing screen of the skill")
 			elseif name == "kaydine" then
 				-- space-convo-client-strings-kaydine D-3: the link is the static default intro, trained_<x>_mission4
 				lu.assertEquals(entry[3], "trained_" .. entry[1]:match("^pilot_neutral_(%a+)_02$") .. "_mission4", name .. " TRAIN_CHOICES[" .. i .. "]: the default intro of the skill")
-			else
-				lu.assertEquals(h.TRAIN_SCREENS[entry[3]], entry[1], name .. " TRAIN_CHOICES[" .. i .. "]: TRAIN_SCREENS['" .. tostring(entry[3]) .. "'] buys the skill of the entry")
 			end
 		end
 
-		if name == "dinge" or name == "kaydine" then
+		if name == "dinge" or name == "kaydine" or name == "imler" then
 			lu.assertNil(h.TRAIN_SCREENS, TRAINERS[name].global .. ".TRAIN_SCREENS must be removed (its purchase screens no longer exist)")
 		end
 	end
@@ -175,7 +181,7 @@ for _, name in ipairs(ORDER) do
 			lu.assertNotNil(body:find('"' .. row.reply .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.reply .. "\"")
 			lu.assertNotNil(body:find('"' .. (row.screen or row.closing) .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. (row.screen or row.closing) .. "\"")
 
-			if name == "dinge" or name == "kaydine" then
+			if name == "dinge" or name == "kaydine" or name == "imler" then
 				lu.assertNil(body:find('"train_' .. row.x .. '"', 1, true), name .. " TRAIN_CHOICES still names the deleted purchase screen train_" .. row.x)
 			end
 		end
@@ -259,33 +265,46 @@ for _, name in ipairs({ "kaydine", "dinge" }) do
 	end
 end
 
--- I-6, AC-9: Imler's own string file keeps every id in the java; the foreign ones are exactly Turoldine's four replies, carried by the handler only
-function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4_ids_of_the_java_plus_the_four_corellia_privateer_tier4_replies()
+-- I-6, AC-9 (space-convo-client-strings-imler-a, AC-2, AC-8): Imler's files carry only naboo_privateer_tier4 ids; the ones that are not in the java are exactly the 5
+-- client-only lines (the twin s_3f68df7d and the four "Teach me about ..." replies, the last four carried by the handler only); no corellia_privateer_tier4 id is left
+function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4_ids_of_the_java_plus_the_five_client_only_ids()
 	local java = Swgjava.read(H.FIXTURES .. "script/conversation/naboo_privateer_tier4.java")
 	local foreignOwn = {}
 
 	for _, kind in ipairs({ "convo", "handler" }) do
 		for sid in readFile(TRAINERS.imler[kind]):gmatch("naboo_privateer_tier4:(s_[%w_]+)") do
 			if java.nodes[sid] == nil and java.responses[sid] == nil then
-				foreignOwn[#foreignOwn + 1] = kind .. ":" .. sid
+				foreignOwn[sid] = true
 			end
+		end
+
+		lu.assertNil(readFile(TRAINERS.imler[kind]):find("corellia_privateer_tier4", 1, true), TRAINERS.imler[kind] .. " still names corellia_privateer_tier4")
+	end
+
+	local got = {}
+
+	for sid in pairs(foreignOwn) do got[#got + 1] = sid end
+
+	table.sort(got)
+	lu.assertEquals(got, { "s_1813de4d", "s_25506b23", "s_3f68df7d", "s_ada4db16", "s_fd7e4ac8" }, "naboo_privateer_tier4 ids that are not in the java")
+
+	-- the four choice replies are carried by the handler only
+	local fromConvo = {}
+
+	for sid in readFile(TRAINERS.imler.convo):gmatch("naboo_privateer_tier4:(s_[%w_]+)") do
+		for _, row in ipairs(C.IMLER) do
+			if sid == row.sid then fromConvo[#fromConvo + 1] = sid end
 		end
 	end
 
-	lu.assertEquals(foreignOwn, {}, "naboo_privateer_tier4 ids that are not in the java")
-
-	local other = {}
-
-	for sid in readFile(TRAINERS.imler.convo):gmatch("corellia_privateer_tier4:(s_[%w_]+)") do
-		other[#other + 1] = "convo:" .. sid
-	end
-
-	lu.assertEquals(other, {}, "imler_convo.lua carries no corellia_privateer_tier4 id (the handler adds them)")
+	lu.assertEquals(fromConvo, {}, "imler_convo.lua carries none of the four choice replies (the handler adds them)")
 
 	local seen = {}
 
-	for sid in readFile(TRAINERS.imler.handler):gmatch("corellia_privateer_tier4:(s_[%w_]+)") do
-		seen[#seen + 1] = sid
+	for sid in readFile(TRAINERS.imler.handler):gmatch("naboo_privateer_tier4:(s_[%w_]+)") do
+		for _, row in ipairs(C.IMLER) do
+			if sid == row.sid then seen[#seen + 1] = sid end
+		end
 	end
 
 	table.sort(seen)
@@ -295,11 +314,11 @@ function TestFreeChoiceStrings:test_imler_files_carry_only_naboo_privateer_tier4
 	for _, row in ipairs(C.IMLER) do want[#want + 1] = row.sid end
 
 	table.sort(want)
-	lu.assertEquals(seen, want, "corellia_privateer_tier4 ids in imlerConvoHandler.lua (Turoldine's four replies, D-10)")
+	lu.assertEquals(seen, want, "the four choice replies in imlerConvoHandler.lua (Imler's own lines, D-6)")
 end
 
--- AC-9: Imler uses 182 of 182 NPC lines and 157 of 158 replies; s_438 is the only newly unused string
-function TestFreeChoiceStrings:test_imler_uses_182_of_182_npc_lines_and_157_of_158_replies_s_438_is_the_only_unused_string()
+-- AC-9 (space-convo-client-strings-imler-a AC-8): Imler uses 172 of 182 NPC lines and 152 of 158 replies; the unused ones are s_4, s_9, s_416, s_438-s_449, s_451, s_489, s_623 and s_737
+function TestFreeChoiceStrings:test_imler_uses_172_of_182_npc_lines_and_152_of_158_replies_s_438_and_the_training_ids_are_unused()
 	local java = Swgjava.read(H.FIXTURES .. "script/conversation/naboo_privateer_tier4.java")
 	local used = {}
 	local function sid(text) return type(text) == "string" and text:match("^@conversation/naboo_privateer_tier4:(s_[%w_]+)$") or nil end
@@ -326,8 +345,11 @@ function TestFreeChoiceStrings:test_imler_uses_182_of_182_npc_lines_and_157_of_1
 		if java.nodes[x] then npc = npc + 1 else resp = resp + 1 end
 	end
 
-	lu.assertEquals({ npc, resp }, { 182, 157 }, "naboo_privateer_tier4 strings used (NPC lines, replies)")
-	lu.assertNil(used.s_438, "s_438 must be unused")
+	lu.assertEquals({ npc, resp }, { 172, 152 }, "naboo_privateer_tier4 strings used (NPC lines, replies)")
+
+	for _, x in ipairs({ "s_4", "s_9", "s_416", "s_438", "s_439", "s_440", "s_441", "s_442", "s_443", "s_445", "s_447", "s_449", "s_451", "s_489", "s_623", "s_737" }) do
+		lu.assertNil(used[x], x .. " must be unused")
+	end
 end
 
 -- AC-9: the unused constant is gone with the reply
@@ -353,12 +375,12 @@ for _, name in ipairs(ORDER) do
 end
 
 -- AC-9: the screen counts the specs name (Dinge: 64 since space-convo-client-strings-dinge Content contract 1)
-function TestFreeChoiceGraph:test_the_screen_counts_are_89_for_kaydine_64_for_dinge_and_182_for_imler()
+function TestFreeChoiceGraph:test_the_screen_counts_are_89_for_kaydine_64_for_dinge_and_174_for_imler()
 	local function count(name) return #H.conversationTemplateTable(TRAINERS[name].template).screens end
 
 	lu.assertEquals(count("kaydine"), 89, "kaydine_convo_template screens (100 - 11 deleted by space-convo-client-strings-kaydine)")
 	lu.assertEquals(count("dinge"), 64, "dinge_convo_template screens (72 - 8 deleted by space-convo-client-strings-dinge)")
-	lu.assertEquals(count("imler"), 182, "imler_convo_template screens")
+	lu.assertEquals(count("imler"), 174, "imler_convo_template screens (182 - the 8 training screens deleted by space-convo-client-strings-imler-a)")
 end
 
 -- F2 D-6, R-3: none of Dinge's 64 screens shows an NGE lesson or closing line, and the only NPC lines shown by more than one screen are the three
@@ -455,7 +477,13 @@ for _, id in ipairs({ "yes_ship", "signup_ready_ship", "signup_ship_later", "mis
 end
 
 local CHANGED_SCREENS = { kaydine = {}, dinge = { more_training = true, first_training_lesson = true, first_training_done = true }, imler = { ready_train = true } }
-local CHOICE_SCREENS = { kaydine = { ready_train_pilot = true }, dinge = { more_training = true, first_training_lesson = true, first_training_done = true, first_training = true }, imler = CHANGED_SCREENS.imler }
+local CHOICE_SCREENS = { kaydine = { ready_train_pilot = true }, dinge = { more_training = true, first_training_lesson = true, first_training_done = true, first_training = true }, imler = { ready_train = true } }
+
+-- space-convo-client-strings-imler-a (Content contract 1): the 8 deleted screens and the 3 swapped ones join ready_train (test_space_convo_client_strings_imler_a.lua pins them line by line)
+for _, id in ipairs({ "train_starships", "train_weapons", "train_procedures", "train_droid", "trained_mission4", "trained_mission3", "trained_mission2", "trained_mission1",
+	"s_9", "duty_info", "wrong_faction" }) do
+	CHANGED_SCREENS.imler[id] = true
+end
 
 for id in pairs(DINGE_F2) do
 	CHANGED_SCREENS.dinge[id] = true
@@ -499,6 +527,18 @@ for _, name in ipairs(ORDER) do
 		for _ in pairs(CHANGED_SCREENS[name]) do changed = changed + 1 end
 
 		lu.assertEquals(checked, oldCount - changed, "screens compared with " .. BASE)
+
+		-- space-convo-client-strings-imler-a: the 8 training screens are gone and the 3 swapped ones really changed since BASE
+		if name == "imler" then
+			for _, id in ipairs({ "train_starships", "train_weapons", "train_procedures", "train_droid", "trained_mission4", "trained_mission3", "trained_mission2", "trained_mission1" }) do
+				lu.assertNotNil(old[id], "imler: screen '" .. id .. "' exists at " .. BASE)
+				lu.assertNil(new[id], "imler: screen '" .. id .. "' must be deleted")
+			end
+
+			for _, id in ipairs({ "s_9", "duty_info", "wrong_faction" }) do
+				lu.assertNotEquals(new[id], old[id], "imler: screen '" .. id .. "' is still the very text of " .. BASE)
+			end
+		end
 
 		-- space-convo-client-strings-dinge: the F2 screens really changed (or were deleted) since BASE
 		if name == "dinge" then
@@ -557,7 +597,8 @@ local REWRITTEN = {
 	-- rsf-tier2-kaydine-signup: the sign-up route and fallthrough; space-convo-client-strings-kaydine D-1: the one-click purchase in getNextConversationScreen
 	kaydine = { ["kaydineConvoHandler:runScreenHandlers"] = true, ["kaydineConvoHandler:getInitialScreen"] = true, ["kaydineConvoHandler:getNextConversationScreen"] = true },
 	dinge = { ["dingeConvoHandler:runScreenHandlers"] = true, ["dingeConvoHandler:getNextConversationScreen"] = true },
-	imler = { ["imlerConvoHandler:runScreenHandlers"] = true },
+	-- space-convo-client-strings-imler-a D-3 / D-5: the purchase moves from train_<x> to leaving ready_train, in getNextConversationScreen; runScreenHandlers' mission<k>_brief branch sets the ready flag
+	imler = { ["imlerConvoHandler:runScreenHandlers"] = true, ["imlerConvoHandler:getNextConversationScreen"] = true },
 }
 
 -- I-7: handler code outside the branches named in the Content contract is unchanged
@@ -576,6 +617,13 @@ for _, name in ipairs(ORDER) do
 		end
 
 		lu.assertTrue(checked >= 4, TRAINERS[name].handler .. ": functions compared with " .. BASE .. ": " .. checked)
+
+		-- space-convo-client-strings-imler-a: the purchase really moved (getNextConversationScreen is no longer the text of the base)
+		if name == "imler" then
+			lu.assertNotNil(new["imlerConvoHandler:getNextConversationScreen"], "imlerConvoHandler:getNextConversationScreen is defined")
+			lu.assertNotEquals(new["imlerConvoHandler:getNextConversationScreen"], old["imlerConvoHandler:getNextConversationScreen"],
+				"imlerConvoHandler:getNextConversationScreen is still the very text of " .. BASE)
+		end
 
 		-- rsf-tier2-kaydine-signup (spec Content contract KH 2): Kaydine gains the predicate isSignedUp
 		local added = { kaydine = { ["kaydineConvoHandler:isSignedUp"] = true } }

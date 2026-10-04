@@ -8,11 +8,17 @@
 -- rsf_tier4_data.lua; the graph is only used to find option paths between NPC lines.
 --
 -- Q1 (user answer): completing space_battle 4c_lose counts as winning mission 4.
+--
+-- space-convo-client-strings-imler-a (.claude/work/space-convo-client-strings-imler-a/01-spec.md, Appendix C): the 64 tests listed there are updated to the pre-NGE shape.
+-- The duty chains walk the briefing's first reply by its twin s_3f68df7d (the java still says s_416; rsf_tier4_imler_client_strings_data.lua D.TWIN). Training is one click: the
+-- reply of the skill on ready_train (Imler's own "Teach me about ..." line) buys the skill when chosen and lands on mission<k>_brief (k = the skill count after the grant), which sets
+-- the ready flag; the train_<x> and trained_mission<k> screens are gone. A guard hook therefore goes BEFORE the reply sid in `choices` (it runs once ready_train is shown).
 
 local lu = require("luaunit")
 local H = require("harness")
 local D = require("rsf_tier4_data")
 local C = require("pilot_training_free_choice_data") -- pilot-training-free-choice: the Imler choice replies
+local DS = require("rsf_tier4_imler_client_strings_data") -- space-convo-client-strings-imler-a: the twins of the NGE ids
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -80,12 +86,18 @@ local function concat(...)
 end
 
 -- Option sids that lead from the NPC line `fromId` to the one `toId` (screen ids or raw sids),
--- BFS over the SWG java graph so every conditional successor counts as reachable.
+-- BFS over the SWG java graph so every conditional successor counts as reachable. The java's NGE reply s_416 is chosen as its twin s_3f68df7d
+-- (space-convo-client-strings-imler-a D-13).
 local function pathBetween(fromId, toId)
 	local path = GRAPH.pathTo(D.SCREENS[fromId] or fromId, D.SCREENS[toId] or toId)
 
 	lu.assertNotNil(path, "answer key: no option path from " .. fromId .. " to " .. toId)
-	return path
+
+	local out = {}
+
+	for i, sid in ipairs(path) do out[i] = DS.TWIN[sid] or sid end
+
+	return out
 end
 
 -- Journal/status history of missions 1..n done: attempted, terminal quest complete, reward paid.
@@ -412,8 +424,9 @@ local function trainer(held)
 	return pilot({ tier4 = held, hist = #held, xp = XP_FOR_TIER4, met = true })
 end
 
--- pilot-training-free-choice (AC-8): ready_train offers one reply per missing tier 4 skill, in the order starships, weapons, procedures, droid,
--- each linking to the skill's own prompt (the single fixed-order reply s_438 is retired)
+-- pilot-training-free-choice (AC-8): ready_train offers one reply per missing tier 4 skill, in the order starships, weapons, procedures, droid
+-- (the single fixed-order reply s_438 is retired); since space-convo-client-strings-imler-a the replies are Imler's own "Teach me about ..." lines and all link to the
+-- static default mission1_brief (the handler picks the real brief by the skill count)
 local LINKS = {
 	{ "no_skills_offers_all_four", {} },
 	{ "only_weapons_held_offers_starships_procedures_droid", { "weapons" } },
@@ -442,28 +455,28 @@ end
 
 -- skill, held before, screen after the purchase (K = count after the purchase)
 local TRAINED = {
-	{ "starships", {}, "trained_mission1" },
-	{ "weapons", { "starships" }, "trained_mission2" },
-	{ "procedures", { "starships", "weapons" }, "trained_mission3" },
-	{ "droid", { "starships", "weapons", "procedures" }, "trained_mission4" },
+	{ "starships", {}, "mission1_brief" },
+	{ "weapons", { "starships" }, "mission2_brief" },
+	{ "procedures", { "starships", "weapons" }, "mission3_brief" },
+	{ "droid", { "starships", "weapons", "procedures" }, "mission4_brief" },
 }
 
--- The choice reply of each tier 4 skill (pilot-training-free-choice: Turoldine's replies, D-10)
+-- The choice reply of each tier 4 skill (space-convo-client-strings-imler-a D-6: Imler's own "Teach me about ..." lines)
 local REPLY = {}
 
 for _, row in ipairs(C.IMLER) do
 	REPLY[row.x] = row.sid
 end
 
--- Choices that walk ready_train -> train_<x> -> (buy), with an optional hook just before the buy.
+-- Choices of the one-click training: an optional hook (runs once ready_train is shown, before the click), then the reply of the skill
 local function trainingChoices(skill, hook)
-	local choices = { REPLY[skill] }
+	local choices = {}
 
 	if hook then
 		choices[#choices + 1] = hook
 	end
 
-	choices[#choices + 1] = D.BUY_OPTION[skill]
+	choices[#choices + 1] = REPLY[skill]
 
 	return choices
 end
@@ -505,7 +518,7 @@ for _, row in ipairs(TRAINED) do
 
 		lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 0, "XP-deducting awardSkill calls")
 		lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, "free awardSkill calls")
-		lu.assertEquals(transcript[#transcript].id, count >= 2 and ("trained_mission" .. count) or "trained_mission1", "screen with the skill already held")
+		lu.assertEquals(transcript[#transcript].id, count >= 2 and ("mission" .. count .. "_brief") or "mission1_brief", "screen with the skill already held")
 	end
 
 	-- AC-5
@@ -518,15 +531,15 @@ for _, row in ipairs(TRAINED) do
 		lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 0, "XP-deducting awardSkill calls")
 		lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, "free awardSkill calls")
 		lu.assertFalse(player.skills[skillName] == true, "player must not have " .. skillName)
-		lu.assertEquals(transcript[#transcript].id, count >= 2 and ("trained_mission" .. count) or "trained_mission1", "screen with an unchanged skill count of " .. count)
+		lu.assertEquals(transcript[#transcript].id, count >= 2 and ("mission" .. count .. "_brief") or "mission1_brief", "screen with an unchanged skill count of " .. count)
 	end
 end
 
--- AC-5: the screen follows the count after the purchase, whichever skill was bought
-function TestImlerTraining:test_the_trained_screen_depends_on_the_skill_count_not_on_which_skill_was_bought()
+-- AC-5: the brief follows the count after the purchase, whichever skill was bought
+function TestImlerTraining:test_the_brief_depends_on_the_skill_count_not_on_which_skill_was_bought()
 	local transcript = converse(trainer({ "droid" }), trainingChoices("starships"))
 
-	lu.assertEquals(transcript[#transcript].id, "trained_mission2", "starships bought with droid already held")
+	lu.assertEquals(transcript[#transcript].id, "mission2_brief", "starships bought with droid already held")
 end
 
 -- AC-5
@@ -655,7 +668,7 @@ local ROUTES_TO_GRANT = {
 
 		return player, path, "ready_mission"
 	end,
-	-- briefing reached right after buying the n-th skill
+	-- briefing reached right after the one click that buys the n-th skill (the brief is the screen the click lands on)
 	training = function(n, target)
 		local held = {}
 
@@ -664,7 +677,7 @@ local ROUTES_TO_GRANT = {
 		end
 
 		local player = pilot({ tier4 = held, hist = n - 1, xp = XP_FOR_TIER4, met = true })
-		local path = concat({ REPLY[D.SKILLS[n]], D.BUY_OPTION[D.SKILLS[n]] }, pathBetween("trained_mission" .. n, target))
+		local path = concat({ REPLY[D.SKILLS[n]] }, pathBetween("mission" .. n .. "_brief", target))
 
 		return player, path, "ready_train"
 	end,

@@ -6,7 +6,7 @@
 --   D.ORDER     the SWG canonical order of the four tier skills
 --   D.KAYDINE   { x, skill, reply (full string id), sid, screen }            (tier 2, ready_train_pilot)
 --   D.DINGE     { x, skill, reply, sid, closing }                             (tier 1, first_training and more_training; closing = the link of the choice)
---   D.IMLER     { x, skill, reply, sid, screen }                              (tier 4, ready_train; Turoldine's replies, D-10)
+--   D.IMLER     { x, skill, reply, sid, screen }                              (tier 4, ready_train; Imler's own "Teach me about ..." replies, D-6; screen = the static link mission1_brief)
 --   D.RETIRED   the single fixed-order replies that must leave the template and the handler
 --   D.expected(list, held)  the options a choice screen must show for a pilot holding `held` (a set of skill names)
 
@@ -16,7 +16,7 @@ D.ORDER = { "starships", "weapons", "procedures", "droid" }
 
 D.KAYDINE_PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.DINGE_PREFIX = "@conversation/naboo_privateer_trainer_1:"
-D.IMLER_PREFIX = "@conversation/corellia_privateer_tier4:"
+D.IMLER_PREFIX = "@conversation/naboo_privateer_tier4:" -- Imler's own file since space-convo-client-strings-imler-a (Turoldine's before)
 
 local function rows(prefix, tier, sids, withClosing)
 	local out = {}
@@ -48,7 +48,12 @@ for _, row in ipairs(D.DINGE) do
 	row.screen = nil
 end
 
-D.IMLER = rows(D.IMLER_PREFIX, "04", { "s_2794eddd", "s_e16cb1fa", "s_291ab969", "s_bc944dc4" })
+D.IMLER = rows(D.IMLER_PREFIX, "04", { "s_ada4db16", "s_25506b23", "s_fd7e4ac8", "s_1813de4d" })
+-- space-convo-client-strings-imler-a (01-spec.md, D-3, D-6, D-14): Imler trains in one click on her own "Teach me about ..." replies. The choice on ready_train buys the
+-- skill and the handler lands on mission<k>_brief; the static link in TRAIN_CHOICES is the default "mission1_brief" (`screen`). The train_<x> purchase screens are gone.
+for _, row in ipairs(D.IMLER) do
+	row.screen = "mission1_brief"
+end
 
 D.TRAINERS = { kaydine = D.KAYDINE, dinge = D.DINGE, imler = D.IMLER }
 
@@ -69,10 +74,10 @@ D.TEXT = {
 	["s_939b6844"] = "I want to know about basic starship component use.",
 	["s_ac00d21e"] = "I want to know about basic training.",
 	["s_1726d8a5"] = "I want to know about droid interface basics.",
-	["s_2794eddd"] = "I want to learn exotic vessels.",
-	["s_e16cb1fa"] = "I want to learn heavy starship component use.",
-	["s_291ab969"] = "I want to learn expert techniques.",
-	["s_bc944dc4"] = "I want to learn droid intelligence theory.",
+	["s_ada4db16"] = "Teach me about exotic vessels.",
+	["s_25506b23"] = "Teach me about heavy starship component use.",
+	["s_fd7e4ac8"] = "Teach me about expert techniques.",
+	["s_1813de4d"] = "Teach me about droid intelligence theory.",
 }
 
 -- The choice rows of `list` the pilot lacks, in order. `held` is a set { [skill] = true }.

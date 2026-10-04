@@ -250,11 +250,12 @@ function TestF5ArkonStaticUnresolved:test_arkon_template_and_handler_show_only_c
 	lu.assertEquals(CS.unresolved(SOURCES), {}, "Arkon: ids the pre-NGE client cannot resolve")
 end
 
--- AC-1: his file left KNOWN_GAPS (305 -> 211); one file remains
-function TestF5ArkonStaticUnresolved:test_arkon_file_is_not_in_the_ratchet_and_only_imlers_file_is_with_211_ids()
+-- AC-1: his file left KNOWN_GAPS (305 -> 211); one file remains (space-convo-client-strings-imler-a then took 15 ids out of it, 211 -> 196, Appendix C)
+function TestF5ArkonStaticUnresolved:test_arkon_file_is_not_in_the_ratchet_and_only_imlers_file_is_with_196_ids()
 	lu.assertNil(KD.KNOWN_GAPS[FILE], "KNOWN_GAPS entry of Arkon's file")
 	lu.assertEquals(sortedKeys(KD.KNOWN_GAPS), { "conversation/naboo_privateer_tier4" }, "KNOWN_GAPS files")
-	lu.assertEquals(#KD.KNOWN_GAPS["conversation/naboo_privateer_tier4"], 211, "KNOWN_GAPS count of Imler's file")
+	lu.assertEquals(#KD.KNOWN_GAPS["conversation/naboo_privateer_tier4"], 196, "KNOWN_GAPS count of Imler's file")
+	lu.assertEquals(#(CS.unresolvedByFile(CS.spaceConversationSources())["conversation/naboo_privateer_tier4"] or {}), 196, "live scan: unresolved ids of Imler's file (space-convo-client-strings-imler-a)")
 	lu.assertNil(CS.unresolvedByFile(SOURCES)[FILE], "unresolved ids of Arkon's file")
 end
 

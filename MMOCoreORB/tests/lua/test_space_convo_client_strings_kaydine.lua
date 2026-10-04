@@ -168,7 +168,8 @@ end
 
 -- AC-1: Kaydine's file left KNOWN_GAPS (446 -> 381); space-convo-client-strings-dulios then took Dulios' file out too (381 -> 305, Appendix C) and
 -- space-convo-client-strings-arkon took Arkon's (305 -> 211, Appendix C): only Imler's file stays
-function TestF3KaydineStaticUnresolved:test_kaydines_file_is_not_in_the_ratchet_and_only_imlers_file_still_is_with_211_ids()
+-- (space-convo-client-strings-imler-a then took 15 ids out of it, 211 -> 196, Appendix C)
+function TestF3KaydineStaticUnresolved:test_kaydines_file_is_not_in_the_ratchet_and_only_imlers_file_still_is_with_196_ids()
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_2"], "KNOWN_GAPS entry of Kaydine's file")
 	lu.assertEquals(sortedKeys(D.KNOWN_GAPS), { "conversation/naboo_privateer_tier4" }, "KNOWN_GAPS files")
 
@@ -179,8 +180,9 @@ function TestF3KaydineStaticUnresolved:test_kaydines_file_is_not_in_the_ratchet_
 		total = total + #list
 	end
 
-	lu.assertEquals(counts, { ["conversation/naboo_privateer_tier4"] = 211 }, "KNOWN_GAPS counts")
-	lu.assertEquals(total, 211, "KNOWN_GAPS total")
+	lu.assertEquals(counts, { ["conversation/naboo_privateer_tier4"] = 196 }, "KNOWN_GAPS counts")
+	lu.assertEquals(#(CS.unresolvedByFile(CS.spaceConversationSources())["conversation/naboo_privateer_tier4"] or {}), 196, "live scan: unresolved ids of Imler's file (space-convo-client-strings-imler-a)")
+	lu.assertEquals(total, 196, "KNOWN_GAPS total")
 	lu.assertNil(CS.unresolvedByFile(SOURCES)["conversation/naboo_privateer_trainer_2"], "unresolved ids of Kaydine's file")
 end
 

@@ -1,8 +1,11 @@
 -- Admiral Imler (RSF tier 4): the pilot chooses which missing tier 4 skill to train (pre-NGE free choice).
 -- Spec: .claude/work/pilot-training-free-choice/01-spec.md (AC-8; Content contract 3; invariants I-2 .. I-5; D-2, D-5, D-10).
 --
--- The choice replies are Turoldine's tier 4 replies (D-10), copied from the spec into pilot_training_free_choice_data.lua. The mission table, the
--- buy options and the pilot builder come from rsf_tier4_data.lua. The fake charges XP only with H.Engine.config.skillXpCosts set (see costs()); the
+-- space-convo-client-strings-imler-a (.claude/work/space-convo-client-strings-imler-a/01-spec.md, Appendix C; D-3, D-4, D-6, D-14): the 23 tests listed there are updated.
+-- The choice replies are Imler's own "Teach me about ..." lines (they replace Turoldine's, D-10 of the earlier spec), and training is one click: the reply buys the skill when
+-- chosen (the handler tells the skill by the reply text on the live screen) and lands on mission<k>_brief (k = the tier 4 skill count after the grant), which sets the ready flag.
+-- The train_<x> prompts and their buy replies are gone, so a guard hook goes BEFORE the reply sid (it runs once ready_train is shown). The replies are copied from the spec into
+-- pilot_training_free_choice_data.lua. The mission table and the pilot builder come from rsf_tier4_data.lua. The fake charges XP only with H.Engine.config.skillXpCosts set (see costs()); the
 -- tier 4 threshold of SpaceHelpers:hasExperienceForTraining (1000000) is the cost, as no tier 4 skills.tab excerpt is in the fixtures.
 
 local lu = require("luaunit")
@@ -80,8 +83,6 @@ local function finishMission(player, n)
 	player.ghost.journalComplete[H.questCrc(D.QUEST[key][1], D.QUEST[key][2])] = true
 end
 
-local function sidOfBuy(x) return D.BUY_OPTION[x] end
-
 ---------------------------------------------------------------------------------------------
 -- AC-8: the choice
 ---------------------------------------------------------------------------------------------
@@ -138,8 +139,8 @@ function TestImlerFreeChoice:test_the_retired_single_reply_s_438_is_never_offere
 	end
 end
 
--- AC-8: every reply leads to the SWG prompt of its skill, which still offers its one buy reply
-function TestImlerFreeChoice:test_every_reply_leads_to_the_prompt_of_its_skill_with_its_buy_reply_and_grants_nothing()
+-- AC-8: every reply buys its skill once and lands on the brief of the new skill count (one click: there is no prompt or buy reply any more)
+function TestImlerFreeChoice:test_every_reply_buys_its_skill_once_and_lands_on_the_brief_of_the_new_count()
 	for _, c in ipairs(CHOICES) do
 		H.reset()
 		costs()
@@ -147,17 +148,16 @@ function TestImlerFreeChoice:test_every_reply_leads_to_the_prompt_of_its_skill_w
 		local player = trainee({})
 		local transcript = converse(player, { c.sid })
 
-		lu.assertEquals(ids(transcript), { "ready_train", c.screen }, c.x .. ": screens")
-		lu.assertEquals(#transcript[2].options, 1, c.x .. ": prompt options")
-		lu.assertEquals(D.optionSids(transcript[2].options), { sidOfBuy(c.x) }, c.x .. ": the buy reply")
-		lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 0, c.x .. ": skillManagerAwardSkill calls while the prompt is shown")
-		lu.assertEquals(exp(player), 2 * COST, c.x .. ": XP")
+		lu.assertEquals(ids(transcript), { "ready_train", "mission1_brief" }, c.x .. ": screens")
+		lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 1, c.x .. ": skillManagerAwardSkill calls")
+		lu.assertEquals(H.Engine.callsTo("skillManagerAwardSkill")[1][2], c.skill, c.x .. ": skill bought")
+		lu.assertEquals(exp(player), COST, c.x .. ": XP after one purchase")
 	end
 end
 
--- AC-8, I-3, I-4: for every missing skill and every proper subset the other skills could be, the pick buys that skill once
+-- AC-8, I-3, I-4: for every missing skill and every proper subset the other skills could be, the pick buys that skill once and shows the brief of the new skill count
 for _, c in ipairs(CHOICES) do
-	TestImlerFreeChoice["test_picking_" .. c.x .. "_04_buys_it_once_through_the_xp_deducting_grant_and_shows_the_screen_of_the_skill_count_whatever_else_is_held"] = function()
+	TestImlerFreeChoice["test_picking_" .. c.x .. "_04_buys_it_once_through_the_xp_deducting_grant_and_shows_the_brief_of_the_skill_count_whatever_else_is_held"] = function()
 		for mask = 0, 7 do
 			H.reset()
 			costs()
@@ -173,10 +173,10 @@ for _, c in ipairs(CHOICES) do
 			if #held <= 3 then
 				local player = trainee(held)
 				local count = #held + 1
-				local transcript = converse(player, { c.sid, sidOfBuy(c.x) })
+				local transcript = converse(player, { c.sid })
 				local label = c.x .. " holding " .. C.label(held)
 
-				lu.assertEquals(ids(transcript), { "ready_train", c.screen, "trained_mission" .. count }, label .. ": screens (K = skill count after the purchase)")
+				lu.assertEquals(ids(transcript), { "ready_train", "mission" .. count .. "_brief" }, label .. ": screens (K = skill count after the purchase)")
 
 				local paid = H.Engine.callsTo("skillManagerAwardSkill")
 
@@ -209,33 +209,33 @@ function TestImlerFreeChoice:test_the_fourth_skill_raises_the_pilot_tier_to_5_wh
 		local player = trainee(held)
 
 		lu.assertEquals(player.ghost:getPilotTier(), 4, last.x .. ": setup, pilot tier")
-		converse(player, { last.sid, sidOfBuy(last.x) })
+		converse(player, { last.sid })
 		lu.assertEquals(player.ghost:getPilotTier(), 5, last.x .. ": pilot tier after the fourth tier 4 skill")
 	end
 end
 
--- AC-8: the guards hold for a pick that is not the first missing skill
+-- AC-8: the guards hold for a pick that is not the first missing skill (the hook runs once ready_train is shown, before the click)
 function TestImlerFreeChoice:test_the_guards_hold_for_a_droid_first_pick()
 	local droid = CHOICES[4]
 
-	-- the skill arrives while the prompt is shown
+	-- the skill arrives while ready_train is shown
 	costs()
 
 	local player = trainee({})
-	local transcript = converse(player, { droid.sid, function(p) p.skills[droid.skill] = true end, sidOfBuy("droid") })
+	local transcript = converse(player, { function(p) p.skills[droid.skill] = true end, droid.sid })
 
 	lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 0, "skill already held: skillManagerAwardSkill calls")
-	lu.assertEquals(transcript[#transcript].id, "trained_mission1", "skill already held: the screen follows the count")
+	lu.assertEquals(transcript[#transcript].id, "mission1_brief", "skill already held: the screen follows the count")
 	lu.assertEquals(exp(player), 2 * COST, "skill already held: XP")
 
 	-- the XP is gone at the moment of buying
 	H.reset()
 	costs()
 	player = trainee({}, COST)
-	transcript = converse(player, { droid.sid, function(p) p.ghost.experience.space_combat_general = COST - 1 end, sidOfBuy("droid") })
+	transcript = converse(player, { function(p) p.ghost.experience.space_combat_general = COST - 1 end, droid.sid })
 	lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 0, "XP gone: skillManagerAwardSkill calls")
 	lu.assertFalse(CreatureObject(player):hasSkill(droid.skill), "XP gone: droid held")
-	lu.assertEquals(transcript[#transcript].id, "trained_mission1", "XP gone: the screen follows the unchanged count")
+	lu.assertEquals(transcript[#transcript].id, "mission1_brief", "XP gone: the screen follows the unchanged count")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ function TestImlerFreeChoiceCareer:setUp() H.reset() end
 function TestImlerFreeChoiceCareer:tearDown() LuaSkillManager = REAL_SKILL_MANAGER end
 
 -- AC-8
-function TestImlerFreeChoiceCareer:test_picking_the_last_reply_every_visit_walks_trained_mission_1_to_4_in_order_and_raises_the_tier_with_the_fourth_skill()
+function TestImlerFreeChoiceCareer:test_picking_the_last_reply_every_visit_walks_mission_1_to_4_briefs_in_order_and_raises_the_tier_with_the_fourth_skill()
 	costs()
 
 	local player = trainee({}, 4 * COST)
@@ -263,9 +263,9 @@ function TestImlerFreeChoiceCareer:test_picking_the_last_reply_every_visit_walks
 		lu.assertEquals(#greeting[1].options, 5 - k, "visit " .. k .. ": number of replies offered")
 
 		local before = #H.Engine.callsTo("skillManagerAwardSkill")
-		local transcript = converse(player, { pick.sid, sidOfBuy(pick.x) })
+		local transcript = converse(player, { pick.sid })
 
-		lu.assertEquals(ids(transcript), { "ready_train", pick.screen, "trained_mission" .. k }, "visit " .. k .. ": screens")
+		lu.assertEquals(ids(transcript), { "ready_train", "mission" .. k .. "_brief" }, "visit " .. k .. ": screens")
 		lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill") - before, 1, "visit " .. k .. ": skills bought")
 		lu.assertEquals(H.Engine.callsTo("skillManagerAwardSkill")[before + 1][2], pick.skill, "visit " .. k .. ": skill bought")
 		lu.assertEquals(exp(player), (4 - k) * COST, "visit " .. k .. ": space_combat_general")

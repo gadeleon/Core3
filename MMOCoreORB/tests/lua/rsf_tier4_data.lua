@@ -24,8 +24,8 @@ D.SCREENS = {
 	ready_mission = "s_67b2bdc1",
 	mission1_brief = "s_9312a850", mission2_brief = "s_bdc28bb4", mission3_brief = "s_ff6e1247", mission4_brief = "s_e4bbe441",
 	ready_train = "s_d91c04b2",
-	train_starships = "s_439", train_weapons = "s_440", train_procedures = "s_441", train_droid = "s_442",
-	trained_mission1 = "s_737", trained_mission2 = "s_623", trained_mission3 = "s_489", trained_mission4 = "s_451",
+	-- space-convo-client-strings-imler-a (D-14): train_<x> and trained_mission<k> (s_439-s_442, s_737, s_623, s_489, s_451) are deleted; training is one click on ready_train.
+	-- wrong_faction keeps the I4 sid s_4: the answer key stays the java graph and the tests map it through rsf_tier4_imler_client_strings_data.lua D.TWIN (D-9)
 	mission1_accept_a = "s_781", mission1_accept_b = "s_817", mission1_accept_c = "s_849",
 	mission2_accept_a = "s_663", mission2_accept_b = "s_707", mission2_accept_c = "s_735",
 	mission3_accept_a = "s_513", mission3_accept_b = "s_537", mission3_accept_c = "s_561", mission3_accept_d = "s_585", mission3_accept_e = "s_621",
@@ -120,9 +120,8 @@ function D.statusKeys()
 	return out
 end
 
--- Tier 4 training: option sid on train_<x> -> skill suffix.
+-- Tier 4 skills in SWG order (the buy replies s_443 .. s_449 of the old train_<x> screens are gone: space-convo-client-strings-imler-a)
 D.SKILLS = { "starships", "weapons", "procedures", "droid" }
-D.BUY_OPTION = { starships = "s_443", weapons = "s_445", procedures = "s_447", droid = "s_449" }
 
 local function neutralSkills(tierMax)
 	local list = {}

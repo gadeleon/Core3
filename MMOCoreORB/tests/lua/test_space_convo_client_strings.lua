@@ -351,10 +351,11 @@ TestClientStringRatchet = {}
 -- AC-8 (the ratchet data itself, Appendix B); AC-1 of space-convo-client-strings-dinge (01-spec.md): Dinge's file left the list (470 -> 446);
 -- AC-1 of space-convo-client-strings-kaydine (01-spec.md): Kaydine's file left it too (446 -> 381);
 -- AC-1 of space-convo-client-strings-dulios (01-spec.md, Appendix C): Dulios' file left it (381 -> 305), two files remain;
--- AC-1 of space-convo-client-strings-arkon (01-spec.md, Appendix C): Arkon's file left it too (305 -> 211), one file remains (Imler's, F6)
-function TestClientStringRatchet:test_known_gaps_hold_the_1_file_and_211_ids_left_after_arkon()
+-- AC-1 of space-convo-client-strings-arkon (01-spec.md, Appendix C): Arkon's file left it too (305 -> 211), one file remains (Imler's, F6);
+-- AC-1 of space-convo-client-strings-imler-a (01-spec.md, Appendix C): Imler's entry lost its 15 gate, duty-briefing and training ids (211 -> 196); the 196 left are F6b's
+function TestClientStringRatchet:test_known_gaps_hold_the_1_file_and_196_ids_left_after_imler_a()
 	local total = 0
-	local expected = { 211 }
+	local expected = { 196 }
 	local files = { "conversation/naboo_privateer_tier4" }
 
 	lu.assertEquals(sortedKeys(D.KNOWN_GAPS), files, "KNOWN_GAPS files")
@@ -364,7 +365,8 @@ function TestClientStringRatchet:test_known_gaps_hold_the_1_file_and_211_ids_lef
 		total = total + #D.KNOWN_GAPS[f]
 	end
 
-	lu.assertEquals(total, 211, "KNOWN_GAPS total")
+	lu.assertEquals(#(CS.unresolvedByFile(CS.spaceConversationSources())["conversation/naboo_privateer_tier4"] or {}), 196, "live scan: unresolved ids of Imler's file (space-convo-client-strings-imler-a)")
+	lu.assertEquals(total, 196, "KNOWN_GAPS total")
 	lu.assertNil(D.KNOWN_GAPS["conversation/corellia_rebel_tier4"], "Arkon's file is fixed and must not be listed")
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_1"], "Dinge's file is fixed and must not be listed")
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_2"], "Kaydine's file is fixed and must not be listed")

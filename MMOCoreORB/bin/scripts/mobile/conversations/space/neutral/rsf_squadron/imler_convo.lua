@@ -20,7 +20,7 @@ imler_convo_template:addScreen(ConvoScreen:new {
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "s_9",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_9",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_35a5b893", -- Won't find any here. See ya.
 	animation = "wave_on_dismissing",
 	stopConversation = "true",
 	options = {}
@@ -43,7 +43,7 @@ imler_convo_template:addScreen(ConvoScreen:new {
 	id = "duty_info",
 	leftDialog = "@conversation/naboo_privateer_tier4:s_5603b2a1",
 	options = {
-		{"@conversation/naboo_privateer_tier4:s_416", "s_1993702c"},
+		{"@conversation/naboo_privateer_tier4:s_3f68df7d", "s_1993702c"}, -- Sounds easy enough.
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
@@ -391,71 +391,6 @@ imler_convo_template:addScreen(ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_tier4:s_821",
 	options = {
 		{"@conversation/naboo_privateer_tier4:s_823", "s_825"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "train_starships",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_439",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_443", "trained_mission1"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "train_weapons",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_440",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_445", "trained_mission1"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "train_procedures",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_441",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_447", "trained_mission1"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "train_droid",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_442",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_449", "trained_mission1"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "trained_mission4",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_451",
-	animation = "rub_chin_thoughtful",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_453", "s_455"},
-		{"@conversation/naboo_privateer_tier4:s_473", "s_475"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "trained_mission3",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_489",
-	animation = "laugh_titter",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_491", "s_493"},
-		{"@conversation/naboo_privateer_tier4:s_539", "s_541"},
-		{"@conversation/naboo_privateer_tier4:s_587", "s_589"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "trained_mission2",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_623",
-	animation = "nod_head_once",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_625", "s_627"},
-		{"@conversation/naboo_privateer_tier4:s_709", "s_711"},
-	}
-})
-imler_convo_template:addScreen(ConvoScreen:new {
-	id = "trained_mission1",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_737",
-	animation = "rub_chin_thoughtful",
-	options = {
-		{"@conversation/naboo_privateer_tier4:s_739", "s_741"},
-		{"@conversation/naboo_privateer_tier4:s_819", "s_821"},
 	}
 })
 imler_convo_template:addScreen(ConvoScreen:new {
@@ -1247,7 +1182,7 @@ imler_convo_template:addScreen(ConvoScreen:new {
 })
 imler_convo_template:addScreen(ConvoScreen:new {
 	id = "wrong_faction",
-	leftDialog = "@conversation/naboo_privateer_tier4:s_4",
+	leftDialog = "@conversation/naboo_privateer_tier4:s_aa1834ec", -- I don't think I've seen you before. Maybe you took a wrong turn somewhere.
 	animation = "rub_chin_thoughtful",
 	options = {
 		{"@conversation/naboo_privateer_tier4:s_c09ba3fa", "s_35a5b893"},

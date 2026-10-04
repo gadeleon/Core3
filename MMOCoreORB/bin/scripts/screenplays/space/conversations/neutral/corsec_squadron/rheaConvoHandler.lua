@@ -297,9 +297,9 @@ function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, select
 		end
 
 		if (not SpaceHelpers:hasCertifiedShip(pPlayer, true)) then
-			clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_111", "no_ship")
+			clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_5091cb8e", "no_ship") -- Ah... no I don't.
 		else
-			clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_127", "yes_ship")
+			clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_90ec63e0", "yes_ship") -- Yes, I do.
 		end
 	elseif (screenID == "goodbye") then
 		CreatureObject(pPlayer):doAnimation("slump_head")

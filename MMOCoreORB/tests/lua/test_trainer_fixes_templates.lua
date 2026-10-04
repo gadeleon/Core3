@@ -1,8 +1,9 @@
 -- Template screens: Turoldine failed_fourth_mission and dont_we_all, Rhea maybe_great and the options into it.
 -- Spec: .claude/work/space-trainer-fixes/01-spec.md (AC-7, AC-11)
 --
--- The Rhea option texts (s_108, s_139, s_111, s_127) cannot be read offline (no client string table), so the
--- tests check the string ids and the links against the SWG-Source generated scripts, not the English text.
+-- The Rhea option ids are the pre-NGE client's own replies (s_e107077e "Yes I am", s_360d8728 "No thanks", s_5091cb8e, s_90ec63e0), which
+-- replaced the NGE ids s_108, s_139, s_111, s_127 (space-convo-client-strings AC-5, AC-6). The tests check string ids and links, not English text;
+-- the SWG answer-key test below still asserts the NGE java ids.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -211,7 +212,7 @@ end
 
 -- AC-11
 function TestRheaMaybeGreat:test_ridiculous_and_ridiculous_great_offer_the_swg_options_into_maybe_great_and_goodbye()
-	local expected = { { RHEA .. "s_108", "maybe_great" }, { RHEA .. "s_139", "goodbye" } }
+	local expected = { { RHEA .. "s_e107077e", "maybe_great" }, { RHEA .. "s_360d8728", "goodbye" } }
 
 	lu.assertEquals(optionsOf(requireScreen("rhea_convo_template", "ridiculous")), expected, "ridiculous: options")
 	lu.assertEquals(optionsOf(requireScreen("rhea_convo_template", "ridiculous_great")), expected, "ridiculous_great: options")
@@ -268,11 +269,11 @@ end
 local JOIN, RIDICULOUS = "s_370822d1", "s_64b308bc"
 
 -- AC-11
-function TestRheaMaybeGreat:test_great_standing_signs_up_through_s_108_with_a_no_ship_option()
-	local transcript, player, npc = signUp(250, false, { JOIN, RIDICULOUS, "s_108" })
+function TestRheaMaybeGreat:test_great_standing_signs_up_through_s_e107077e_with_a_no_ship_option()
+	local transcript, player, npc = signUp(250, false, { JOIN, RIDICULOUS, "s_e107077e" })
 
 	lu.assertEquals(ids(transcript), { "recruitment", "yes_join", "ridiculous_great", "maybe_great" }, "screens")
-	lu.assertEquals(sidsOf(transcript[4].options), { { "s_111", "no_ship" } }, "maybe_great options")
+	lu.assertEquals(sidsOf(transcript[4].options), { { "s_5091cb8e", "no_ship" } }, "maybe_great options")
 	lu.assertTrue(player.skills["pilot_neutral_novice"] == true, "pilot_neutral_novice")
 	lu.assertEquals(player.ghost:getSquadronType(), rawget(_G, "CORSEC_SQUADRON"), "squadron type")
 	lu.assertEquals(player.ghost:getPilotTier(), 1, "pilot tier")
@@ -281,11 +282,11 @@ function TestRheaMaybeGreat:test_great_standing_signs_up_through_s_108_with_a_no
 end
 
 -- AC-11
-function TestRheaMaybeGreat:test_clean_standing_signs_up_through_s_108_with_a_no_ship_option()
-	local transcript, player = signUp(50, false, { JOIN, RIDICULOUS, "s_108" })
+function TestRheaMaybeGreat:test_clean_standing_signs_up_through_s_e107077e_with_a_no_ship_option()
+	local transcript, player = signUp(50, false, { JOIN, RIDICULOUS, "s_e107077e" })
 
 	lu.assertEquals(ids(transcript), { "recruitment", "yes_join", "ridiculous", "maybe_great" }, "screens")
-	lu.assertEquals(sidsOf(transcript[4].options), { { "s_111", "no_ship" } }, "maybe_great options")
+	lu.assertEquals(sidsOf(transcript[4].options), { { "s_5091cb8e", "no_ship" } }, "maybe_great options")
 	lu.assertTrue(player.skills["pilot_neutral_novice"] == true, "pilot_neutral_novice")
 	lu.assertEquals(player.ghost:getSquadronType(), rawget(_G, "CORSEC_SQUADRON"), "squadron type")
 	lu.assertEquals(player.ghost:getPilotTier(), 1, "pilot tier")
@@ -293,34 +294,34 @@ end
 
 -- AC-11
 function TestRheaMaybeGreat:test_a_player_with_a_ship_gets_the_has_ship_option_instead()
-	local transcript = signUp(250, true, { JOIN, RIDICULOUS, "s_108" })
+	local transcript = signUp(250, true, { JOIN, RIDICULOUS, "s_e107077e" })
 
 	lu.assertEquals(ids(transcript), { "recruitment", "yes_join", "ridiculous_great", "maybe_great" }, "screens")
-	lu.assertEquals(sidsOf(transcript[4].options), { { "s_127", "yes_ship" } }, "maybe_great options")
+	lu.assertEquals(sidsOf(transcript[4].options), { { "s_90ec63e0", "yes_ship" } }, "maybe_great options")
 end
 
 -- AC-11
 function TestRheaMaybeGreat:test_the_no_ship_option_leads_to_no_ship_which_grants_the_starter_ship()
-	local transcript = signUp(250, false, { JOIN, RIDICULOUS, "s_108", "s_111" })
+	local transcript = signUp(250, false, { JOIN, RIDICULOUS, "s_e107077e", "s_5091cb8e" })
 
-	lu.assertEquals(ids(transcript)[5], "no_ship", "screen after s_111")
+	lu.assertEquals(ids(transcript)[5], "no_ship", "screen after s_5091cb8e")
 	lu.assertEquals(#H.Engine.callsTo("grantStarterShip"), 1, "grantStarterShip calls")
 end
 
 -- AC-11
 function TestRheaMaybeGreat:test_the_has_ship_option_leads_to_yes_ship_without_a_starter_ship()
-	local transcript = signUp(250, true, { JOIN, RIDICULOUS, "s_108", "s_127" })
+	local transcript = signUp(250, true, { JOIN, RIDICULOUS, "s_e107077e", "s_90ec63e0" })
 
-	lu.assertEquals(ids(transcript)[5], "yes_ship", "screen after s_127")
+	lu.assertEquals(ids(transcript)[5], "yes_ship", "screen after s_90ec63e0")
 	lu.assertEquals(#H.Engine.callsTo("grantStarterShip"), 0, "grantStarterShip calls")
 end
 
 -- AC-11
-function TestRheaMaybeGreat:test_s_139_says_goodbye_and_grants_nothing()
+function TestRheaMaybeGreat:test_s_360d8728_says_goodbye_and_grants_nothing()
 	for _, standing in ipairs({ 250, 50 }) do
 		H.reset()
 
-		local transcript, player = signUp(standing, false, { JOIN, RIDICULOUS, "s_139" })
+		local transcript, player = signUp(standing, false, { JOIN, RIDICULOUS, "s_360d8728" })
 
 		lu.assertEquals(ids(transcript)[#transcript], "goodbye", "last screen at standing " .. standing)
 		lu.assertFalse(player.skills["pilot_neutral_novice"] == true, "pilot_neutral_novice at standing " .. standing)

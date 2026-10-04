@@ -90,7 +90,7 @@ end
 | `H.conversationTemplate(name)` | Fake C++ template (`pConvTemplate`) for it |
 | `H.conversationProblems(name)` | Dead option links, duplicate/missing screen ids; `{}` = OK |
 | `H.converse{template, player, npc, choices, handler}` | Drive a conversation like `ConversationObserver`; returns `{ {id, text, options, params, stop}, ... }`. Each choice is a 0-based option index, an option sid (`"s_6222b64d"`, matched against the screen just shown; errors listing the options if absent) or a function `hook(player)` that runs between screens without consuming a step (use it to change state mid-conversation) |
-| `H.newPlayer{...}` / `H.newNpc{...}` | Fake creatures. Player opts: `name, skills, pilot ("neutral"/"rebel"/"imperial"), faction, certifiedShip, activeQuests, completedQuests, squadronType, experience, screenPlayStates, pilotTier (default 0), factionStanding ({rebel = n}), questStatus ({["<suffix>"] = v}, stored under the player's object id)` |
+| `H.newPlayer{...}` / `H.newNpc{...}` | Fake creatures. Player opts: `name, skills, pilot ("neutral"/"rebel"/"imperial"), faction, certifiedShip, activeQuests, completedQuests, squadronType, experience, screenPlayStates, pilotTier (default 0), gender (0 male default, 1 female), factionStanding ({rebel = n}), questStatus ({["<suffix>"] = v}, stored under the player's object id)` |
 | `H.getQuestStatus(player, suffix)` / `H.setQuestStatus(player, suffix, v)` | Read/write the engine `getQuestStatus` store for `<objectID><suffix>`, the key shape handlers use. Values are strings (`setQuestStatus(k, 1)` reads back `"1"`); absent reads `nil` |
 | `H.spyOn(obj, "method", snapshotFn?)` | Replace a method with a recorder; returns `calls` (`{self, args, snapshot}` per call). The original is not called. `snapshotFn(self, ...)` runs at call time to capture "before" state. `H.reset()` restores every spy |
 | `H.questGlobals()` | Sorted names of every global space quest table (has `questType`, `questName`, `startQuest`), e.g. to spy on all of them |
@@ -321,8 +321,45 @@ the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`,
 `rsf_tier2_kaydine_signup_data.lua` holds the spec's Appendix A (the nine new screens, `S.ROWS` / `S.IDS`), the two walks, the flag suffix, the music file, the eight
 tier 2 keys and `S.pilot{...}`, the unsigned RSF tier 2 pilot. The shared trainer-fixes Kaydine pilot is seeded as signed up (`StartedKaydine` = "1"), so every other
 Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conversation/naboo_privateer_trainer_2.sids` is the list of the 123 string ids of the client
-`.stf` (generated read-only from `/tre/patch_12_00.tre`, spec Appendix B; regenerate it, never edit it). The missing-ghost returns are reached by replacing
+`.stf` (generated read-only by `tools/gen_client_sids.py`, see "Client string ids"; regenerate it, never edit it). The missing-ghost returns are reached by replacing
 `SpaceHelpers.isRSFSquadron` (nil ghost) or the global `LuaPlayerObject` (nil wrapper) for the test and restoring them in `tearDown`.
+
+### Client string ids (space-convo-client-strings)
+
+The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files, the ones the space conversation sources reference), so `run.sh` needs neither
+`/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
+starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
+
+| Function | Returns |
+|---|---|
+| `CS.FIXTURE_DIR` | `H.FIXTURES .. "string/en/"` |
+| `CS.sids(file)` | set `{ [id] = true }`, cached; `nil, "<path>: missing fixture"` when absent (never errors) |
+| `CS.spaceConversationSources()` | sorted `.lua` files under `mobile/conversations/space/` and `screenplays/space/conversations/` |
+| `CS.literals(paths)` | `{ file, id, path, line }` per `"@<file>:<id>"` literal |
+| `CS.unresolved(paths)` / `CS.unresolvedByFile(paths)` | sorted `"<file>:<id>"` the client lacks / map file -> ids; `{}` = OK |
+| `CS.referencedFiles(paths)` | sorted unique string files referenced |
+| `CS.dynamicIds(paths)` / `CS.dynamicSites(paths)` | `"<path>:<line>"` / `"<path>: <line text>"` of every stored string-file prefix, with or without the colon (`"@file:" ..`, `local stringFile = "@conversation/x"`); `"@cancel"` and `"@ok"` are ignored |
+| `CS.prefixUses(paths)` / `CS.unusedPrefixes(paths)` | lines that use a `local NAME = "@file[:]"` prefix / such locals nothing uses |
+| `CS.transcriptUnresolved(transcript)` | the same set for the screen and option texts of an `H.converse` transcript |
+
+A per-trainer test is `lu.assertEquals(CS.unresolved({ <template>, <handler> }), {})`. `space_convo_client_strings_data.lua` holds the **ratchet**:
+`KNOWN_GAPS` (file -> the ids still unresolved; `test_space_convo_client_strings.lua` requires the scan to equal it exactly, so a new gap fails and a fixed
+gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (the 15 stored prefixes, the only line that joins one with an id, Dulios' `PT .. choice[2]`, and the 14 unused `stringFile` locals, pinned by path and line text so a new prefix or a second use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry.
+
+**Regenerating the fixtures** (maintenance only, needs `/tre` and Python 3; run from `MMOCoreORB/`):
+
+```bash
+python3 tests/lua/tools/gen_client_sids.py                 # rewrite every referenced/existing fixture
+python3 tests/lua/tools/gen_client_sids.py --check         # write nothing; list DIFFERS/MISSING fixtures, exit 1 if any
+python3 tests/lua/tools/gen_client_sids.py conversation/naboo_privateer_tier4   # one file
+python3 tests/lua/tools/gen_client_sids.py --check --fixture-dir /scratch/en   # compare a scratch copy (--tre-dir DIR, default /tre)
+```
+
+For each file it takes the first archive in the `TreFiles` order of `bin/conf/config.lua` that holds `string/en/<file>.stf` (what the server loads), exits
+non-zero for a zero-length (deleted) newest entry, naming the archive, or for a file in no archive. TRE archives are opened `"rb"` only; the tool writes
+nothing but the `.sids` fixtures. Never edit a fixture by hand. `test_space_convo_client_strings.lua` runs `--check` (and its negative cases on a temp copy)
+when `/tre/patch_12_00.tre` and `python3` exist, and skips with a message otherwise.
 
 ### SWG-Source fixtures
 
@@ -375,7 +412,9 @@ Found by these tests and pinned so the gate stays green; fix them in a feature, 
 ```
 tests/lua/
   run.sh, run_file.lua      runner (one process per test file)
-  harness/                  init.lua (API), engine.lua, fakes.lua, tab.lua, swgjava.lua
+  harness/                  init.lua (API), engine.lua, fakes.lua, tab.lua, swgjava.lua, client_strings.lua
+  tools/gen_client_sids.py  maintenance tool: regenerates fixtures/string/en/**/*.sids from /tre (not run by run.sh)
+  fixtures/string/en/...    client string-id fixtures (.sids)
   fixtures/spacequest/...   SWG-Source .tab copies
   fixtures/script/space/quest_logic/...  SWG-Source quest logic .java (survival.java), reference only
   fixtures/script/conversation/...  SWG-Source trainer .java copies (dialogue answer keys)

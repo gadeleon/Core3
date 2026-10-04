@@ -113,8 +113,8 @@ ridiculous_great = ConvoScreen:new {
 	leftDialog = "@conversation/corellia_privateer_trainer:s_cec02f8", -- Not at all.  We can't have thugs and ne'er-do-wells joining CorSec.  We're here to provide security for the citizens of Corellia!  Now, this will only take a moment... Oh... Wow!  You've got an excellent track record.  I guess you've tangled with your share of criminals and thugs in your day. Are you ready to begin?
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_privateer_trainer:s_108", "maybe_great"},
-		{"@conversation/corellia_privateer_trainer:s_139", "goodbye"},
+		{"@conversation/corellia_privateer_trainer:s_e107077e", "maybe_great"}, -- Yes I am
+		{"@conversation/corellia_privateer_trainer:s_360d8728", "goodbye"}, -- No thanks
 	}
 }
 rhea_convo_template:addScreen(ridiculous_great);
@@ -143,8 +143,8 @@ ridiculous = ConvoScreen:new {
 	leftDialog = "@conversation/corellia_privateer_trainer:s_7396ebcf", -- Not at all.  We can't have thugs and ne'er-do-wells joining CorSec.  We're here to provide security for the citizens of Corellia!  Now, this will only take a moment... Ah... You've got a pretty clean record here.  I can assure you that it'd improve once you're flying for CorSec! Are you ready to begin?
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_privateer_trainer:s_108", "maybe_great"},
-		{"@conversation/corellia_privateer_trainer:s_139", "goodbye"},
+		{"@conversation/corellia_privateer_trainer:s_e107077e", "maybe_great"}, -- Yes I am
+		{"@conversation/corellia_privateer_trainer:s_360d8728", "goodbye"}, -- No thanks
 	}
 }
 rhea_convo_template:addScreen(ridiculous);

@@ -224,6 +224,7 @@ function Fakes.newCreature(opts)
 		skills = set(opts.skills),
 		faction = opts.faction or 0,
 		pilot = opts.pilot,
+		gender = opts.gender, -- 0 = male (default), 1 = female; read by getGender
 		certifiedShip = opts.certifiedShip ~= false,
 		screenPlayStates = opts.screenPlayStates or {},
 		messages = {},

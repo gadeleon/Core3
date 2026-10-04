@@ -60,7 +60,7 @@ destroy_surpriseattack_corellia_privateer_1 = SpaceSurpriseAttackScreenplay:new 
 
 	surpriseAttackShips = {
 		zone = "space_corellia",
-		spawns = {{count = 1, shipName = "blacksun_fighter_s02_tier1"}, {count = 3, shipName = "blacksun_fighter_s01_tier1"}},
+		spawns = {{count = 3, shipName = "blacksun_fighter_s01_tier1"}},
 	},
 }
 
@@ -1274,7 +1274,7 @@ destroy_surpriseattack_corellia_privateer_tier4_1c = SpaceSurpriseAttackScreenpl
 
 	surpriseAttackShips = {
 		zone = "space_dantooine",
-		spawns = {{count = 2, shipName = "blacksun_ace_s04_tier4"}, {count = 2, shipName = "blacksun_bomber_ace_s04_tier4"}},
+		spawns = {{count = 4, shipName = "blacksun_ace_s04_tier4"}},
 	},
 }
 
@@ -1649,7 +1649,7 @@ destroy_surpriseattack_corellia_privateer_tier4_4c = SpaceSurpriseAttackScreenpl
 	surpriseAttackShips = {
 		zone = "space_dathomir",
 		spawns = {
-			{count = 3, shipName = "hidden_daggers_killer_tier4"}, {count = 2, shipName = "hidden_daggers_slayer_tier4"}
+			{count = 5, shipName = "hidden_daggers_killer_tier4"}
 		},
 	},
 }

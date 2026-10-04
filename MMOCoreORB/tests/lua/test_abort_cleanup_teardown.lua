@@ -98,13 +98,13 @@ function TestAbortEndsRunDetails:test_aborting_a_surprise_attack_deletes_the_cou
 	local run = AC.build("destroy_surpriseattack")
 	local key = run.player.objectID .. run.className .. ":Count"
 
-	lu.assertEquals(readData(key), 4, "precondition: four attackers")
+	lu.assertEquals(readData(key), 3, "precondition: three attackers")
 
 	AC.abort(run)
 	H.advance(SETTLE)
 
 	lu.assertEquals(readData(key), 0, "Count key " .. key)
-	lu.assertEquals(#H.spawnedShips(), 4, "ships spawned")
+	lu.assertEquals(#H.spawnedShips(), 3, "ships spawned")
 
 	for i, ship in ipairs(H.spawnedShips()) do
 		lu.assertFalse(ship.destroyed == true, "attacker #" .. i .. " stays in the world (D-7)")

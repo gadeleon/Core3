@@ -251,11 +251,10 @@ function TestSurpriseAttackDeferredSpawn:test_entering_the_zone_again_after_the_
 
 	H.zoneSwitch(player, "space_naboo")
 	H.advance(5000)
-	H.zoneSwitch(player, "space_lok")
-	H.advance(5000)
 	H.zoneSwitch(player, "space_naboo")
 	H.advance(5000)
 
+	-- the old space_lok leg now fails the run (space-surprise-attack-fixes SC-2, AC-2/AC-3 in test_space_surprise_attack_fixes_runtime.lua)
 	lu.assertEquals(#spawnCalls(), 5, "spawnShipAgent calls after re-entering the zone")
 	lu.assertEquals(readData(player.objectID .. q.className .. ":Count"), 5, "kill count is not reset")
 end
@@ -365,19 +364,8 @@ function TestSurpriseAttackDeferredSpawn:test_a_reset_while_pending_leaves_nothi
 	lu.assertEquals(spawnedKeys(player), {}, "no :spawned key")
 end
 
--- Out of scope (finding F-5): leaving the zone after the spawn does not fail the ambush, as before.
-function TestSurpriseAttackDeferredSpawn:test_leaving_the_zone_after_the_spawn_does_not_fail_the_quest()
-	local q, player = started(E3, "space_lok")
-
-	lu.assertEquals(#spawnCalls(), 0, "precondition: nothing spawned while the pilot is in Lok")
-	H.zoneSwitch(player, "space_naboo", { ship = true })
-	H.advance(1000)
-	lu.assertEquals(#spawnCalls(), 5, "precondition: the ambush spawned in Naboo")
-	H.zoneSwitch(player, "space_lok", { ship = true })
-	H.advance(10000)
-
-	lu.assertTrue(isActive(player, q), "3e is still active")
-end
+-- Retired by space-surprise-attack-fixes (SC-2): this test pinned finding F-5, "leaving the zone after the spawn does not fail the
+-- ambush". Leaving now fails it 2000 ms later; test_space_surprise_attack_fixes_runtime.lua (AC-2, AC-3) replaces it.
 
 ---------------------------------------------------------------------------------------------
 -- AC-6: started in the zone, in a ship: identical to today
@@ -454,7 +442,7 @@ end
 local PINNED = {
 	destroy_surpriseattack_corellia_privateer_1 = {
 		zone = "space_corellia", title = "@spacequest/destroy_surpriseattack/corellia_privateer_1:title",
-		ships = join({ "blacksun_fighter_s02_tier1" }, rep(3, "blacksun_fighter_s01_tier1")),
+		ships = rep(3, "blacksun_fighter_s01_tier1"), -- SWG's spawn loop result (space-surprise-attack-fixes AC-7)
 	},
 	destroy_surpriseattack_corellia_rebel_1 = {
 		zone = "space_corellia", title = "@spacequest/destroy_surpriseattack/corellia_rebel_1:title",

@@ -102,9 +102,15 @@ function FakeGhost:isJournalQuestActive(crc) return self.journalActive[crc] == t
 function FakeGhost:isJournalQuestComplete(crc) return self.journalComplete[crc] == true end
 -- Like PlayerObjectImplementation::activateJournalQuest: an entry that already has an owner
 -- (active or completed) is left alone, so a completed entry stays completed until cleared.
+-- A new entry also makes task 0 active with no completed tasks (PlayerObjectImplementation.cpp:3202-3209).
 function FakeGhost:activateJournalQuest(crc, notify)
 	if self.journalComplete[crc] then
 		return
+	end
+
+	if not self.journalActive[crc] then
+		self.taskActive[crc] = { [0] = true }
+		self.taskComplete[crc] = {}
 	end
 
 	self.journalActive[crc] = true
@@ -133,10 +139,18 @@ function FakeGhost:activateJournalQuestTask(crc, task, notify)
 	self.taskActive[crc][task] = true
 end
 
+-- Like PlayerObjectImplementation::completeJournalQuestTask (:3299-3301): only an entry with an owner and an active task
+-- is completed; anything else does nothing.
 function FakeGhost:completeJournalQuestTask(crc, task, notify)
-	if self.taskActive[crc] then
-		self.taskActive[crc][task] = nil
+	if not self.journalActive[crc] and not self.journalComplete[crc] then
+		return
 	end
+
+	if not (self.taskActive[crc] and self.taskActive[crc][task]) then
+		return
+	end
+
+	self.taskActive[crc][task] = nil
 
 	self.taskComplete[crc] = self.taskComplete[crc] or {}
 	self.taskComplete[crc][task] = true

@@ -77,10 +77,10 @@ function TestSurpriseAttackAfterAbort:setUp()
 		self.ships[i] = ship
 	end
 
-	lu.assertEquals(#self.ships, 4, "precondition: four attackers")
+	lu.assertEquals(#self.ships, 3, "precondition: three attackers")
 	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(p, self.patrol.questType, self.patrol.questName), "precondition: the parent patrol is active")
 	lu.assertNotNil(getQuestStatus(self.waypointKey), "precondition: the parent waypoint status")
-	lu.assertEquals(readData(self.countKey), 4, "precondition: the kill count")
+	lu.assertEquals(readData(self.countKey), 3, "precondition: the kill count")
 
 	H.abortMission(p, self.q.questType, self.q.questName)
 	self.afterAbort = { events = #H.Engine.callsTo("createEvent"), messages = #p.messageLog }
@@ -167,7 +167,7 @@ function TestSurpriseAttackAfterAbort:test_killed_attackers_are_removed_from_the
 		end
 	end
 
-	lu.assertEquals(self.p.missionObjects, {}, "space mission objects after all four kills")
+	lu.assertEquals(self.p.missionObjects, {}, "space mission objects after all three kills")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -191,14 +191,14 @@ function TestSurpriseAttackLive:test_the_same_kills_on_a_live_run_count_down_and
 	local key = p.objectID .. CHILD .. ":Count"
 
 	H.destroyShip(ships[1], p.rootParent)
-	lu.assertEquals(readData(key), 3, "Count after one kill")
+	lu.assertEquals(readData(key), 2, "Count after one kill")
 	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(p, q.questType, q.questName), "still active")
 
-	for i = 2, 4 do
+	for i = 2, 3 do
 		H.destroyShip(ships[i], p.rootParent)
 	end
 
-	lu.assertTrue(SpaceHelpers:isSpaceQuestComplete(p, q.questType, q.questName), "completed by the fourth kill")
+	lu.assertTrue(SpaceHelpers:isSpaceQuestComplete(p, q.questType, q.questName), "completed by the third kill")
 	lu.assertEquals(readData(key), 0, "Count key deleted")
 end
 

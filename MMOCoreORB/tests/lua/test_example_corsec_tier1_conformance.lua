@@ -13,23 +13,14 @@
 --   triggerDelay                   -> sideQuestDelay
 --   (surprise attack) triggerArg   -> parentQuestType / parentQuestName
 --   (surprise attack) shipType     -> set of ship names in surpriseAttackShips.spawns
--- Ship counts are not compared here: how SWG-Source's single shipCount maps onto Core3's
--- per-ship counts is a decision for the spec that ports a given quest.
+-- (surprise attack) shipType+shipCount -> spawns = SWG's spawn loop replayed over the .tab (surprise_replay.lua R.runs(R.replay(name)));
+--                                     space-surprise-attack-fixes AC-7 / I-1
 
 local lu = require("luaunit")
 local H = require("harness")
+local R = require("surprise_replay")
 
 H.loadSquadron("CorsecSquadronScreenplay")
-
-local function shipNameSet(spawns)
-	local set = {}
-
-	for _, s in ipairs(spawns) do
-		set[s.shipName] = true
-	end
-
-	return set
-end
 
 TestCorsecTier1Conformance = {}
 
@@ -81,13 +72,7 @@ function TestCorsecTier1Conformance:test_surprise_attack_corellia_privateer_1_ma
 	lu.assertEquals(quest.parentQuestType, parentType, q .. ": parentQuestType")
 	lu.assertEquals(quest.parentQuestName, parentName, q .. ": parentQuestName")
 
-	local expected = {}
-
-	for _, ship in ipairs(rec:list("shipType")) do
-		expected[ship] = true
-	end
-
-	lu.assertEquals(shipNameSet(quest.surpriseAttackShips.spawns), expected, q .. ": ship types")
+	lu.assertEquals(quest.surpriseAttackShips.spawns, R.runs(R.replay("corellia_privateer_1")), q .. ": spawns (SWG spawn loop)")
 end
 
 function TestCorsecTier1Conformance:test_quests_are_registered_to_start()

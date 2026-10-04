@@ -476,6 +476,7 @@ recovery_duty_viopa_rebel_7 = SpaceDutyRecoveryScreenplay:new {
 
 	creditReward = 2500,
 	creditKillBonus = 200,
+	numResponses = 5,
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -1933,12 +1934,13 @@ recovery_duty_corellia_rebel_tier4_1 = SpaceDutyRecoveryScreenplay:new {
 
 	creditReward = 5000,
 	creditKillBonus = 300,
+	numResponses = 5,
 
 	sideQuest = false,
 	sideQuestType = "",
 
-	targetShip = "lambdashuttle_troop_transport_ace",
-	targetArrivalDelay = 10,
+	recoverShip = "lambdashuttle_troop_transport_ace",
+	arrivalDelay = 10,
 	recoveryDelay = 30,
 
 	recoveryFaction = "nym",

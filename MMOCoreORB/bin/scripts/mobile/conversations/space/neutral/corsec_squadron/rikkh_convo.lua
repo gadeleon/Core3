@@ -1301,7 +1301,7 @@ rikkh_convo_template:addScreen(recovery_duty)
 
 accept_duty_recovery = ConvoScreen:new {
 	id = "accept_duty_recovery",
-	leftDialog = "@conversation/corellia_privateer_trainer_2:s_7f5b2aa", -- Fantastic.  Don't forget:  If the enemy is within range, so are you.
+	leftDialog = "@conversation/corellia_privateer_trainer_2:s_44bc6772", -- Fantastic.  Don't forget:  If the enemy is within range, so are you.
 	animation = "applause_polite",
 	stopConversation = "true",
 	options = {}

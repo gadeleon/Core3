@@ -11,7 +11,7 @@ D.load()
 local Q = D.Q
 local GATE = "s_b978843d"
 local DUTY9, DUTY10, DUTY11 = "destroy_duty_corellia_privateer_9", "escort_duty_corellia_privateer_10", "destroy_duty_corellia_privateer_11"
-local PLACEHOLDER = "Recovery Duty Missions are not implemented yet!"
+local DUTY12 = "recovery_duty_corellia_privateer_12"
 
 local function ask(player, more)
 	local choices = { GATE }
@@ -242,8 +242,9 @@ function TestRikkhOffTrackDuties:test_the_real_duty_starts_work_for_a_pilot_of_a
 	end
 end
 
--- AC-7, D-9: Recovery Duty is offered and behaves as for a CorSec pilot today (placeholder, no quest)
-function TestRikkhOffTrackDuties:test_recovery_duty_shows_the_placeholder_and_starts_no_quest()
+-- AC-7, D-9; superseded by space-recovery-duty-fixes AC-5 (S-1; was test_recovery_duty_shows_the_placeholder_and_starts_no_quest):
+-- Recovery Duty is offered and starts recovery_duty/corellia_privateer_12, with no plain-text message
+function TestRikkhOffTrackDuties:test_recovery_duty_starts_corellia_privateer_12()
 	local player = menuPlayer()
 	local spies = G.spies(player)
 	local before = G.statusSnapshot()
@@ -251,10 +252,9 @@ function TestRikkhOffTrackDuties:test_recovery_duty_shows_the_placeholder_and_st
 
 	lu.assertEquals(D.ids(transcript), { "pilot_not_corsec", "non_corsec_duty_options", "recovery_duty", "accept_duty_recovery" }, "screens")
 	lu.assertTrue(transcript[4].stop, "accept_duty_recovery ends the conversation")
-	lu.assertEquals(plainMessages(player), { PLACEHOLDER }, "system messages")
-	lu.assertEquals(spies.starts, {}, "quests started")
+	lu.assertEquals(plainMessages(player), {}, "system messages")
+	lu.assertEquals(spies.starts, { DUTY12 }, "quests started")
 	D.noOtherEffects(spies, before, "recovery duty")
-	lu.assertFalse(SpaceHelpers:isSpaceQuestActive(player, "recovery_duty", "corellia_privateer_12"), "recovery_duty/corellia_privateer_12 active")
 end
 
 -- AC-7: closing the window on a briefing grants nothing

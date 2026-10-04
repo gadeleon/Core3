@@ -57,7 +57,8 @@ D.EXPECTED = {
 		questType = "recovery_duty",
 		questZone = "space_naboo",
 		creditReward = 2500,
-		killReward = 200,
+		creditKillBonus = 200, -- space-recovery-duty-fixes S-5: was killReward = 200
+		numResponses = 5, -- space-recovery-duty-fixes S-5: added with the numbered capture taunts
 		sideQuest = false,
 		sideQuestType = "",
 		recoverShip = "ndc_duty_transport_tier2",

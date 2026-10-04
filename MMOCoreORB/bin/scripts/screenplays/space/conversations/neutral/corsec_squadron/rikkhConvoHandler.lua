@@ -1,4 +1,4 @@
--- Rikkh (CorSec tier 2) conversation handler; ported from SWG-Source corellia_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes. Off-track duty gate (canFlyNonTrackDuty) and offer: feature space-trainer-dead-ends.
+-- Rikkh (CorSec tier 2) conversation handler; ported from SWG-Source corellia_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes. Off-track duty gate (canFlyNonTrackDuty) and offer: feature space-trainer-dead-ends. Recovery duty start: space-recovery-duty-fixes.
 rikkhConvoHandler = conv_handler:new {}
 
 function rikkhConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -260,9 +260,7 @@ function rikkhConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	elseif (screenID == "accept_duty_destroy2") then
 		destroy_duty_corellia_privateer_11:startQuest(pPlayer, pNpc)
 	elseif (screenID == "accept_duty_recovery") then
-		CreatureObject(pPlayer):sendSystemMessage("Recovery Duty Missions are not implemented yet!")
-
-		-- recovery_duty_corellia_privateer_12:startQuest(pPlayer, pNpc)
+		recovery_duty_corellia_privateer_12:startQuest(pPlayer, pNpc)
 
 	-- Mission Rewards
 	elseif (screenID == "fourth_mission_success") then

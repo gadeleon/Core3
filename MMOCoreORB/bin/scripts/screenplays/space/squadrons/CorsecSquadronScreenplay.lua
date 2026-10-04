@@ -524,30 +524,54 @@ destroy_duty_corellia_privateer_11 = SpaceDutyDestroyScreenplay:new {
 
 registerScreenPlay("destroy_duty_corellia_privateer_11", true)
 
-recovery_duty_corellia_privateer_12 = SpaceDutyDestroyScreenplay:new {
+recovery_duty_corellia_privateer_12 = SpaceDutyRecoveryScreenplay:new {
 	className = "recovery_duty_corellia_privateer_12",
 
 	questName = "corellia_privateer_12",
 	questType = "recovery_duty",
 
-	questZone = "space_corellia",
+	questZone = "space_yavin4",
 
-	creditReward = 100,
+	creditReward = 2500,
+	creditKillBonus = 200,
+	numResponses = 2,
 
 	sideQuest = false,
 	sideQuestType = "",
 
 	-- Screenplay Specific Variables
 
-	totalLevels = 2, -- Amount of levels a player has to complete to finish mission
-	totalRounds = 2, -- Total Rounds for each of the levels
-	totalWaves = 2, -- Total waves at each location that is not the boss ship
+	arrivalDelay = 20,
+	recoveryDelay = 30,
 
-	minDistance = 12500, -- Minimum distance away for new location
-	maxDistance = 17500, -- Maximum distance away for new location
+	recoverShips = {"nym_freightermedium_tier3", "nym_smuggler_freightermedium_tier4"},
+	recoveryConversationMobile = "",
 
-	bossShip = "hidden_daggers_executioner_tier1",
-	shipTypes = {"hidden_daggers_enforcer_tier1", "hidden_daggers_eliminator_tier1"},
+	escortShips = {"nym_enforcer_tier2", "nym_enforcer_tier2"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier3_rebofficer_1", x = -3922, z = -1205, y = 474, escortNumber = 1, radius = 250},
+		{patrolPointName = "corelliar_privateer_recovery_1", x = 963, z = -3570, y = -2948, escortNumber = 2, radius = 250},
+		{patrolPointName = "corelliar_privateer_recovery_2", x = 2444, z = -7232, y = -2084, escortNumber = 3, radius = 250},
+		{patrolPointName = "corelliar_privateer_recovery_3", x = 3418, z = -7360, y = 645, escortNumber = 4, radius = 250},
+		{patrolPointName = "corelliar_privateer_recovery_4", x = 4436, z = -6464, y = 3460, escortNumber = 5, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "corelliar_privateer_recovery_1", x = 963, z = -3570, y = -2948, escortNumber = 1, radius = 250},
+		{patrolPointName = "corelliar_privateer_recovery_3", x = 3418, z = -7360, y = 645, escortNumber = 2, radius = 250},
+		{patrolPointName = "corelliar_privateer_recovery_4", x = 4436, z = -6464, y = 3460, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120, -- In Seconds
+
+	attackShips = {
+		{"nym_blastboat_tier2", "nym_blastboat_tier2"},
+		{"nym_fighter_tier2", "nym_fighter_tier2", "nym_fighter_tier2"},
+		{"nym_fighter_tier2", "nym_fighter_tier2", "nym_blastboat_tier2"},
+	},
+
+	tauntData = {panicCount = 2, thanksCount = 2},
 }
 
 registerScreenPlay("recovery_duty_corellia_privateer_12", true)
@@ -1792,7 +1816,8 @@ recovery_duty_corellia_privateer_tier4_1 = SpaceDutyRecoveryScreenplay:new {
 		{"blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_aggressor_tier4", "blacksun_aggressor_tier4"},
 	},
 
-	killReward = 300,
+	creditKillBonus = 300,
+	numResponses = 1,
 }
 
 registerScreenPlay("recovery_duty_corellia_privateer_tier4_1", true)

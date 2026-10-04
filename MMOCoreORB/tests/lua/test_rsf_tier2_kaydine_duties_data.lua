@@ -281,7 +281,7 @@ function TestRsfTier2DutyTables:test_recovery_duty_10_maps_ship_escorts_points_a
 	lu.assertEquals(q.attackDelay, rec:num("attackPeriod"), label .. ": attackDelay (attackPeriod)")
 	lu.assertEquals(q.attackShips, attackLists(rec), label .. ": attackShips")
 	lu.assertEquals(q.creditReward, rec:num("reward"), label .. ": creditReward (reward)")
-	lu.assertEquals(q.killReward, rec:num("killReward"), label .. ": killReward")
+	lu.assertEquals(q.creditKillBonus, rec:num("killReward"), label .. ": creditKillBonus (killReward; space-recovery-duty-fixes S-6)")
 
 	local m = rec:num("numResponses")
 

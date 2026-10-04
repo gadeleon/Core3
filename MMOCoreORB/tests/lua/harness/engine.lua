@@ -699,6 +699,12 @@ function spawnShipAgent(shipName, zone, x, z, y, pTarget)
 		return nil
 	end
 
+	-- Opt-in (space-recovery-duty-fixes): Engine.config.rejectEmptyShipName = true makes an empty template name fail like the
+	-- server, where ShipManager::createAiShip finds no template and DirectorManager returns nil. Off by default.
+	if shipName == "" and Engine.config.rejectEmptyShipName then
+		return nil
+	end
+
 	local agent = Fakes.newShipAgent({ shipName = shipName, zone = zone, x = x, z = z, y = y })
 	Engine.spawnedShips[#Engine.spawnedShips + 1] = agent
 	return agent

@@ -11,9 +11,9 @@ DR.loadSquadrons()
 
 local REP = "recovery_duty_corellia_rebel_tier4_1"
 
--- The four recovery duties built on SpaceDutyRecoveryScreenplay (the _12 ones are destroy duties)
+-- The recovery duties built on SpaceDutyRecoveryScreenplay (space-recovery-duty-fixes S-3: CorSec duty 12 was rebuilt on it and RSF duty 10 added)
 local RECOVERY_DUTIES = { "recovery_duty_viopa_rebel_7", "recovery_duty_corellia_rebel_tier4_1", "recovery_duty_corellia_privateer_tier4_1",
-	"recovery_duty_naboo_privateer_tier4_1" }
+	"recovery_duty_naboo_privateer_tier4_1", "recovery_duty_corellia_privateer_12", "recovery_duty_naboo_privateer_10" }
 
 local function entries(globals)
 	local out = {}
@@ -212,13 +212,14 @@ function TestRecoveryDutyCompleteQuest:test_complete_quest_for_a_missing_player_
 	lu.assertNil(self.q:completeQuest(nil, "true"), "result")
 end
 
--- AC-5 (D-5): the destroy-based recovery duty keeps the destroy duty ending
-function TestRecoveryDutyCompleteQuest:test_the_destroy_based_recovery_duty_is_not_changed_to_clear_its_entry()
+-- AC-5 (D-5); superseded by space-recovery-duty-fixes C-3 (S-2; was test_the_destroy_based_recovery_duty_is_not_changed_to_clear_its_entry):
+-- CorSec duty 12 is a recovery duty now and ends with the recovery duty's completeQuest
+function TestRecoveryDutyCompleteQuest:test_the_rebuilt_recovery_duty_12_ends_with_the_recovery_duty_complete_quest()
 	for _, g in ipairs({ "recovery_duty_corellia_privateer_12" }) do
 		local q = H.expectGlobal(g, "recovery duty quest table")
 
 		lu.assertEquals(rawget(q, "completeQuest"), nil, g .. ": no own completeQuest")
-		lu.assertNotEquals(q.completeQuest, SpaceDutyRecoveryScreenplay.completeQuest, g .. ": does not use the recovery duty's completeQuest")
+		lu.assertEquals(q.completeQuest, SpaceDutyRecoveryScreenplay.completeQuest, g .. ": uses the recovery duty's completeQuest")
 	end
 end
 
@@ -397,7 +398,7 @@ function TestDutyRetake:test_every_rescue_duty_starts_again_after_it_ended()
 	lu.assertEquals(problems, {}, "rescue duties that could not be re-taken after endDuty")
 end
 
--- AC-6: recovery duty after its own end (the four SpaceDutyRecoveryScreenplay duties)
+-- AC-6: recovery duty after its own end (the SpaceDutyRecoveryScreenplay duties)
 function TestDutyRetake:test_every_recovery_duty_starts_again_after_its_end()
 	local problems = DR.collect(entries(RECOVERY_DUTIES), function(entry)
 		local q = entry.quest
@@ -418,18 +419,5 @@ function TestDutyRetake:test_every_recovery_duty_starts_again_after_its_end()
 	lu.assertEquals(problems, {}, "recovery duties that could not be re-taken after their end")
 end
 
--- AC-6: the recovery duty on the destroy duty base (RSF's naboo_privateer_12 was deleted in rsf-tier2-kaydine-duties; CorSec's stays)
-function TestDutyRetake:test_the_destroy_based_recovery_duty_starts_again_after_the_final_boss()
-	local problems = DR.collect(entries({ "recovery_duty_corellia_privateer_12" }), function(entry)
-		local q = entry.quest
-		local p = DR.player(q)
-
-		q:startQuest(p, "")
-		H.advance(0)
-		q:completeQuest(p, "true")
-
-		return retakeProblem(p, q)
-	end)
-
-	lu.assertEquals(problems, {}, "destroy-based recovery duties that could not be re-taken")
-end
+-- AC-6: space-recovery-duty-fixes S-3 retired test_the_destroy_based_recovery_duty_starts_again_after_the_final_boss: CorSec duty 12 is a
+-- recovery duty now and runs in test_every_recovery_duty_starts_again_after_its_end above.

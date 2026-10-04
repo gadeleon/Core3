@@ -752,7 +752,7 @@ function TestRsfTier4Payload:test_recovery_duty_maps_ship_escorts_points_attack_
 	lu.assertEquals(q.attackDelay, rec:num("attackPeriod"), label .. ": attackDelay (attackPeriod)")
 	lu.assertEquals(q.attackShips, attackLists(rec), label .. ": attackShips")
 	lu.assertEquals(q.creditReward, rec:num("reward"), label .. ": creditReward (reward)")
-	lu.assertEquals(q.killReward, rec:num("killReward"), label .. ": killReward")
+	lu.assertEquals(q.creditKillBonus, rec:num("killReward"), label .. ": creditKillBonus (killReward; space-recovery-duty-fixes S-7)")
 	lu.assertEquals(q.tauntData, { panicCount = 2, thanksCount = 2 }, label .. ": tauntData")
 end
 

@@ -192,6 +192,23 @@ function viopaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	return convoTemplate:getScreen("introduction")
 end
 
+function viopaConvoHandler:isOnMission(pPlayer)
+	local h = HavocSquadronScreenplay
+
+	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "inspect_viopa_rebel_1")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "escort_viopa_rebel_2")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "recovery_viopa_rebel_3")
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "assassinate_viopa_rebel_4")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, h.TIER2_QUEST_STRING_DUTY_1.type, h.TIER2_QUEST_STRING_DUTY_1.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, h.TIER2_QUEST_STRING_DUTY_2.type, h.TIER2_QUEST_STRING_DUTY_2.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, h.TIER2_QUEST_STRING_DUTY_3.type, h.TIER2_QUEST_STRING_DUTY_3.name)
+end
+
+-- SWG canFlyNonTrackDuty (lok_rebel_trainer_2.java:361-368): all four tier 1 skills and no space quest
+function viopaConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "rebel_navy", 1) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
+end
+
 function viopaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
 	if (pPlayer == nil or pConvScreen == nil) then
 		return
@@ -218,6 +235,11 @@ function viopaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 	end
 
 	local playerID = CreatureObject(pPlayer):getObjectID()
+
+	if (screenID == "non_havoc_pilot") then
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/lok_rebel_trainer_2:s_1583743c", self:canFlyNonTrackDuty(pPlayer) and "non_havoc_duty_offer" or "non_havoc_no_missions") -- Do you have any missions I could fly?
+	end
 
 	-- Handle additional training (dynamic skill options)
 	if (screenID == "training_menu") then

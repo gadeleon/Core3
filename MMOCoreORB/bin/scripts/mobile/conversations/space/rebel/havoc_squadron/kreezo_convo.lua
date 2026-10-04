@@ -74,10 +74,50 @@ kreezo_convo_non_havoc_pilot = ConvoScreen:new {
 	leftDialog = "@conversation/corellia_rebel_trainer_1:s_535b6177", -- Have we met? No? But you are a Rebel pilot, aren't you? What can I do for you?
 	stopConversation = "false",
 	options = {
-		{"@conversation/corellia_rebel_trainer_1:s_1583743c", "duty_missions"}, -- Do you have any missions I could fly?
+		{"@conversation/corellia_rebel_trainer_1:s_1583743c", "non_havoc_no_missions"}, -- Do you have any missions I could fly?
 	}
 }
 kreezo_convo:addScreen(kreezo_convo_non_havoc_pilot)
+
+kreezo_convo_non_havoc_no_missions = ConvoScreen:new {
+	id = "non_havoc_no_missions",
+	leftDialog = "@conversation/corellia_rebel_trainer_1:s_150b3020", -- Since you're not in my unit I cannot assign you missions. You ought to go talk to your commanding officer for such things.
+	stopConversation = "true",
+	options = {
+	}
+}
+kreezo_convo:addScreen(kreezo_convo_non_havoc_no_missions)
+
+kreezo_convo_non_havoc_duty_options = ConvoScreen:new {
+	id = "non_havoc_duty_options",
+	leftDialog = "@conversation/corellia_rebel_trainer_1:s_64977077", -- I don't have any missions to assign, but I do have an elective duty mission roster. You could either patrol the system for searching for Imperials, or you could help escort Alliance transports. Would you be interested in an elective duty task?
+	stopConversation = "false",
+	options = {
+		{"@conversation/corellia_rebel_trainer_1:s_d3ba53db", "non_havoc_destroy_duty"}, -- Add me to the patrol duty roster, sir!
+		{"@conversation/corellia_rebel_trainer_1:s_b17f599d", "non_havoc_escort_duty"}, -- I will protect the Alliance transports!
+	}
+}
+kreezo_convo:addScreen(kreezo_convo_non_havoc_duty_options)
+
+kreezo_convo_non_havoc_destroy_duty = ConvoScreen:new {
+	id = "non_havoc_destroy_duty",
+	leftDialog = "@conversation/corellia_rebel_trainer_1:s_dc243da2", -- Done. Fly into Corellia space and follow the nav points. Destroy any hostiles you encounter. Good luck!
+	animation = "goodbye",
+	stopConversation = "true",
+	options = {
+	}
+}
+kreezo_convo:addScreen(kreezo_convo_non_havoc_destroy_duty)
+
+kreezo_convo_non_havoc_escort_duty = ConvoScreen:new {
+	id = "non_havoc_escort_duty",
+	leftDialog = "@conversation/corellia_rebel_trainer_1:s_b282cc98", -- That will make them very happy, pilot. Follow the navigation route and protect every Alliance transport that HQ puts under your care. I'll see ya when you're done.
+	animation = "goodbye",
+	stopConversation = "true",
+	options = {
+	}
+}
+kreezo_convo:addScreen(kreezo_convo_non_havoc_escort_duty)
 
 -- No Ship - Grants ship
 kreezo_convo_no_ship = ConvoScreen:new {

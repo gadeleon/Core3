@@ -34,7 +34,7 @@ dulios_convo_template:addScreen(pilot_not_rsf);
 
 not_tier3 = ConvoScreen:new {
 	id = "not_tier3",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_6",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_406e1216", -- Looks like you took a wrong turn somewhere. Scram.
 	stopConversation = "true",
 	animation = "check_wrist_device",
 	options = {}
@@ -56,7 +56,7 @@ first_mission = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "beckon",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_42", "m1_4ad40b9b"},
+		{"@conversation/naboo_privateer_tier3:s_c551ea96", "m1_4ad40b9b"}, -- Looks that way.
 		{"@conversation/naboo_privateer_tier3:s_89ae25d4", "m1_e85927c2"}
 	}
 }
@@ -205,7 +205,7 @@ dulios_convo_template:addScreen(m1_3271f1e9);
 
 m1_70 = ConvoScreen:new {
 	id = "m1_70",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_70",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	animation = "explain",
 	options = {}
@@ -229,14 +229,14 @@ m1_fcd5590a = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_76", "m1_78"}
+		{"@conversation/naboo_privateer_tier3:s_b8c1a96f", "m1_78"} -- Hm. That makes it a little more complicated.
 	}
 }
 dulios_convo_template:addScreen(m1_fcd5590a);
 
 m1_78 = ConvoScreen:new {
 	id = "m1_78",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_78",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	options = {}
 }
@@ -267,23 +267,23 @@ dulios_convo_template:addScreen(m1_4bdc789d);
 
 m1_85 = ConvoScreen:new {
 	id = "m1_85",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_85",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_96924c42", -- A couple of ambassadors, for starters. But that's not why we're interested in him. Word is, his next target is the Queen.
 	stopConversation = "false",
 	animation = "shrug_shoulders",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_87", "m1_89"},
-		{"@conversation/naboo_privateer_tier3:s_102", "m1_d5861157"}
+		{"@conversation/naboo_privateer_tier3:s_6aba4373", "m1_89"}, -- [low whistle]
+		{"@conversation/naboo_privateer_tier3:s_841d27db", "m1_d5861157"} -- Why?
 	}
 }
 dulios_convo_template:addScreen(m1_85);
 
 m1_89 = ConvoScreen:new {
 	id = "m1_89",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_89",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_21bb034b", -- You got it. And we want to keep that a little-known fact, if you get my drift.
 	stopConversation = "false",
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_91", "m1_be0b0711"}
+		{"@conversation/naboo_privateer_tier3:s_7478d95d", "m1_be0b0711"} -- Loud and clear. Where to?
 	}
 }
 dulios_convo_template:addScreen(m1_89);
@@ -294,24 +294,24 @@ m1_be0b0711 = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "wave_finger_warning",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_94", "m1_96"}
+		{"@conversation/naboo_privateer_tier3:s_acc52186", "m1_96"} -- There's more?
 	}
 }
 dulios_convo_template:addScreen(m1_be0b0711);
 
 m1_96 = ConvoScreen:new {
 	id = "m1_96",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_96",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_9851897f", -- We want him alive.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_98", "m1_100"}
+		{"@conversation/naboo_privateer_tier3:s_ebe811bd", "m1_100"} -- That makes it a little more complicated.
 	}
 }
 dulios_convo_template:addScreen(m1_96);
 
 m1_100 = ConvoScreen:new {
 	id = "m1_100",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_100",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	animation = "explain",
 	options = {}
@@ -353,28 +353,28 @@ dulios_convo_template:addScreen(m1_36507434);
 
 m1_110 = ConvoScreen:new {
 	id = "m1_110",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_110",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_d84b1644", -- I'm not done.
 	stopConversation = "false",
 	animation = "wave_finger_warning",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_112", "m1_114"}
+		{"@conversation/naboo_privateer_tier3:s_acc52186", "m1_114"} -- There's more?
 	}
 }
 dulios_convo_template:addScreen(m1_110);
 
 m1_114 = ConvoScreen:new {
 	id = "m1_114",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_114",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_9851897f", -- We want him alive.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_116", "m1_118"}
+		{"@conversation/naboo_privateer_tier3:s_ebe811bd", "m1_118"} -- That makes it a little more complicated.
 	}
 }
 dulios_convo_template:addScreen(m1_114);
 
 m1_118 = ConvoScreen:new {
 	id = "m1_118",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_118",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	animation = "explain",
 	options = {}
@@ -394,50 +394,50 @@ dulios_convo_template:addScreen(m1_55a8fc90);
 
 m1_123 = ConvoScreen:new {
 	id = "m1_123",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_123",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_96924c42", -- A couple of ambassadors, for starters. But that's not why we're interested in him. Word is, his next target is the Queen.
 	stopConversation = "false",
 	animation = "shrug_shoulders",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_125", "m1_127"}
+		{"@conversation/naboo_privateer_tier3:s_6aba4373", "m1_127"} -- [low whistle]
 	}
 }
 dulios_convo_template:addScreen(m1_123);
 
 m1_127 = ConvoScreen:new {
 	id = "m1_127",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_127",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_21bb034b", -- You got it. And we want to keep that a little-known fact, if you get my drift.
 	stopConversation = "false",
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_129", "m1_131"}
+		{"@conversation/naboo_privateer_tier3:s_7478d95d", "m1_131"} -- Loud and clear. Where to?
 	}
 }
 dulios_convo_template:addScreen(m1_127);
 
 m1_131 = ConvoScreen:new {
 	id = "m1_131",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_131",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_d84b1644", -- I'm not done.
 	stopConversation = "false",
 	animation = "wave_finger_warning",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_133", "m1_135"}
+		{"@conversation/naboo_privateer_tier3:s_acc52186", "m1_135"} -- There's more?
 	}
 }
 dulios_convo_template:addScreen(m1_131);
 
 m1_135 = ConvoScreen:new {
 	id = "m1_135",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_135",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_9851897f", -- We want him alive.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_137", "m1_139"}
+		{"@conversation/naboo_privateer_tier3:s_ebe811bd", "m1_139"} -- That makes it a little more complicated.
 	}
 }
 dulios_convo_template:addScreen(m1_135);
 
 m1_139 = ConvoScreen:new {
 	id = "m1_139",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_139",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	animation = "explain",
 	options = {}
@@ -495,45 +495,45 @@ m1_919b5558 = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "explain",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_151", "m1_153"}
+		{"@conversation/naboo_privateer_tier3:s_6aba4373", "m1_153"} -- [low whistle]
 	}
 }
 dulios_convo_template:addScreen(m1_919b5558);
 
 m1_153 = ConvoScreen:new {
 	id = "m1_153",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_153",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_21bb034b", -- You got it. And we want to keep that a little-known fact, if you get my drift.
 	stopConversation = "false",
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_155", "m1_157"}
+		{"@conversation/naboo_privateer_tier3:s_7478d95d", "m1_157"} -- Loud and clear. Where to?
 	}
 }
 dulios_convo_template:addScreen(m1_153);
 
 m1_157 = ConvoScreen:new {
 	id = "m1_157",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_157",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_d84b1644", -- I'm not done.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_159", "m1_161"}
+		{"@conversation/naboo_privateer_tier3:s_acc52186", "m1_161"} -- There's more?
 	}
 }
 dulios_convo_template:addScreen(m1_157);
 
 m1_161 = ConvoScreen:new {
 	id = "m1_161",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_161",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_9851897f", -- We want him alive.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_163", "m1_165"}
+		{"@conversation/naboo_privateer_tier3:s_ebe811bd", "m1_165"} -- That makes it a little more complicated.
 	}
 }
 dulios_convo_template:addScreen(m1_161);
 
 m1_165 = ConvoScreen:new {
 	id = "m1_165",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_165",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	animation = "explain",
 	options = {}
@@ -575,28 +575,28 @@ dulios_convo_template:addScreen(m1_88a726df);
 
 m1_174 = ConvoScreen:new {
 	id = "m1_174",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_174",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_d84b1644", -- I'm not done.
 	stopConversation = "false",
 	animation = "wave_finger_warning",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_176", "m1_178"}
+		{"@conversation/naboo_privateer_tier3:s_acc52186", "m1_178"} -- There's more?
 	}
 }
 dulios_convo_template:addScreen(m1_174);
 
 m1_178 = ConvoScreen:new {
 	id = "m1_178",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_178",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_9851897f", -- We want him alive.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_180", "m1_182"}
+		{"@conversation/naboo_privateer_tier3:s_ebe811bd", "m1_182"} -- That makes it a little more complicated.
 	}
 }
 dulios_convo_template:addScreen(m1_178);
 
 m1_182 = ConvoScreen:new {
 	id = "m1_182",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_182",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_e1e07205", -- All you need to do is stop his ship. The boys in the lab are putting together a little surprise for him, but it's up to you to deliver the package.  Get over to the Dantooine System; we'll update you from there.
 	stopConversation = "true",
 	animation = "explain",
 	options = {}
@@ -747,10 +747,10 @@ dulios_convo_template:addScreen(m2_ea9bff27);
 
 m2_210 = ConvoScreen:new {
 	id = "m2_210",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_210",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_6bd02793", -- Nothing.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_212", "m2_3c468733"}
+		{"@conversation/naboo_privateer_tier3:s_2bc43dfd", "m2_3c468733"} -- Come again?
 	}
 }
 dulios_convo_template:addScreen(m2_210);
@@ -760,57 +760,57 @@ m2_3c468733 = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_tier3:s_3c468733",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_215", "m2_217"}
+		{"@conversation/naboo_privateer_tier3:s_800cd173", "m2_217"} -- You gotta give me a better explanation than that.
 	}
 }
 dulios_convo_template:addScreen(m2_3c468733);
 
 m2_217 = ConvoScreen:new {
 	id = "m2_217",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_217",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_7278c01", -- I don't have to give you BUPKIS. But I'll tell ya 'cause I'm feeling generous. This is a decoy ship. The real goods are on another transport.
 	stopConversation = "false",
 	animation = "point_accusingly",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_219", "m2_221"}
+		{"@conversation/naboo_privateer_tier3:s_6540bc41", "m2_221"} -- Who's gunning for it?
 	}
 }
 dulios_convo_template:addScreen(m2_217);
 
 m2_221 = ConvoScreen:new {
 	id = "m2_221",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_221",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_72c4169a", -- Ay'Nat Pirate Faction. They want what that ship's got. Or what they THINK it's got, anyway.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_223", "m2_225"}
+		{"@conversation/naboo_privateer_tier3:s_7a9f14df", "m2_225"} -- So I'm guarding nothing.
 	}
 }
 dulios_convo_template:addScreen(m2_221);
 
 m2_225 = ConvoScreen:new {
 	id = "m2_225",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_225",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_3b32ba04", -- You're providing a valuable service to the Royal Security Forces of Naboo.
 	stopConversation = "false",
 	animation = "explain",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_227", "m2_229"}
+		{"@conversation/naboo_privateer_tier3:s_2b6e8499", "m2_229"} -- As long as I get to shoot down a couple of pirate ships, I'm happy.
 	}
 }
 dulios_convo_template:addScreen(m2_225);
 
 m2_229 = ConvoScreen:new {
 	id = "m2_229",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_229",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_17dec7f9", -- Then get in your ship and get happy.
 	stopConversation = "false",
 	animation = "laugh",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_231", "m2_233"}
+		{"@conversation/naboo_privateer_tier3:s_6bdcb65c", "m2_233"} -- Just tell me where to go.
 	}
 }
 dulios_convo_template:addScreen(m2_229);
 
 m2_233 = ConvoScreen:new {
 	id = "m2_233",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_233",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_61968e69", -- The freighter's in orbit around Naboo. See ya.
 	stopConversation = "true",
 	animation = "dismiss",
 	options = {}
@@ -952,29 +952,29 @@ m2_2c397539 = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_261", "m2_263"}
+		{"@conversation/naboo_privateer_tier3:s_992fcb9e", "m2_263"} -- Hm! Must be carrying something good.
 	}
 }
 dulios_convo_template:addScreen(m2_2c397539);
 
 m2_263 = ConvoScreen:new {
 	id = "m2_263",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_263",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_80a39a22", -- Not exactly. This is a decoy ship. The REAL goods are somewhere else.
 	stopConversation = "false",
 	animation = "rub_belly",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_265", "m2_267"}
+		{"@conversation/naboo_privateer_tier3:s_2dbfc867", "m2_267"} -- Somebody's going to a lot of trouble! Must be quite a juicy haul they're protecting.
 	}
 }
 dulios_convo_template:addScreen(m2_263);
 
 m2_267 = ConvoScreen:new {
 	id = "m2_267",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_267",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_dfc8b68e", -- The juiciest.
 	stopConversation = "false",
 	animation = "snap_finger1",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_269", "m2_42d73452"}
+		{"@conversation/naboo_privateer_tier3:s_dc54e9e4", "m2_42d73452"} -- Can you tell me what it is?
 	}
 }
 dulios_convo_template:addScreen(m2_267);
@@ -985,14 +985,14 @@ m2_42d73452 = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "shake_head_no",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_272", "m2_274"}
+		{"@conversation/naboo_privateer_tier3:s_d5d8a006", "m2_274"} -- But what they'll get is me.
 	}
 }
 dulios_convo_template:addScreen(m2_42d73452);
 
 m2_274 = ConvoScreen:new {
 	id = "m2_274",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_274",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_b8955212", -- Double helping. The freighter is up around Naboo; you're clear to go.
 	stopConversation = "true",
 	animation = "stretch",
 	options = {}
@@ -1221,46 +1221,46 @@ m3_4ebef758 = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "rub_chin_thoughtful",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_317", "m3_319"}
+		{"@conversation/naboo_privateer_tier3:s_4b6422f4", "m3_319"} -- Why do you work with the RSF if you hate politicians so much?
 	}
 }
 dulios_convo_template:addScreen(m3_4ebef758);
 
 m3_319 = ConvoScreen:new {
 	id = "m3_319",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_319",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_fc59c904", -- The benefits are good. Now listen up. Naboo's hosting a conference. Diplomats are coming in from all over. And odds are, some of them are carrying contraband.
 	stopConversation = "false",
 	animation = "shrug_shoulders",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_321", "m3_323"}
+		{"@conversation/naboo_privateer_tier3:s_41d3138c", "m3_323"} -- Why would they take that chance?
 	}
 }
 dulios_convo_template:addScreen(m3_319);
 
 m3_323 = ConvoScreen:new {
 	id = "m3_323",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_323",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_68d4ba6b", -- To be honest, it's probably not them. It's probably smugglers taking advantage of the opportunity, and hiding gear on their ship. Doesn't matter. Same difference.
 	stopConversation = "false",
 	animation = "stretch",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_325", "m3_327"}
+		{"@conversation/naboo_privateer_tier3:s_9d9af42e", "m3_327"} -- Where are these diplomats?
 	}
 }
 dulios_convo_template:addScreen(m3_323);
 
 m3_327 = ConvoScreen:new {
 	id = "m3_327",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_327",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_76734574", -- En route. Fly out to the waypoint and get ready to inspect each and every one of them.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_329", "m3_331"}
+		{"@conversation/naboo_privateer_tier3:s_6c251948", "m3_331"} -- You got it.
 	}
 }
 dulios_convo_template:addScreen(m3_327);
 
 m3_331 = ConvoScreen:new {
 	id = "m3_331",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_331",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_3fa8b6f1", -- Coordinates are in your ship. You're clear to leave.
 	stopConversation = "true",
 	animation = "dismiss",
 	options = {}
@@ -1273,46 +1273,46 @@ m3_942ba0c6 = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "rub_chin_thoughtful",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_335", "m3_337"}
+		{"@conversation/naboo_privateer_tier3:s_4b6422f4", "m3_337"} -- Why do you work with the RSF if you hate politicians so much?
 	}
 }
 dulios_convo_template:addScreen(m3_942ba0c6);
 
 m3_337 = ConvoScreen:new {
 	id = "m3_337",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_337",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_fc59c904", -- The benefits are good. Now listen up. Naboo's hosting a conference. Diplomats are coming in from all over. And odds are, some of them are carrying contraband.
 	stopConversation = "false",
 	animation = "shrug_shoulders",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_339", "m3_341"}
+		{"@conversation/naboo_privateer_tier3:s_41d3138c", "m3_341"} -- Why would they take that chance?
 	}
 }
 dulios_convo_template:addScreen(m3_337);
 
 m3_341 = ConvoScreen:new {
 	id = "m3_341",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_341",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_68d4ba6b", -- To be honest, it's probably not them. It's probably smugglers taking advantage of the opportunity, and hiding gear on their ship. Doesn't matter. Same difference.
 	stopConversation = "false",
 	animation = "explain",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_343", "m3_345"}
+		{"@conversation/naboo_privateer_tier3:s_9d9af42e", "m3_345"} -- Where are these diplomats?
 	}
 }
 dulios_convo_template:addScreen(m3_341);
 
 m3_345 = ConvoScreen:new {
 	id = "m3_345",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_345",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_76734574", -- En route. Fly out to the waypoint and get ready to inspect each and every one of them.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_tier3:s_347", "m3_349"}
+		{"@conversation/naboo_privateer_tier3:s_6c251948", "m3_349"} -- You got it.
 	}
 }
 dulios_convo_template:addScreen(m3_345);
 
 m3_349 = ConvoScreen:new {
 	id = "m3_349",
-	leftDialog = "@conversation/naboo_privateer_tier3:s_349",
+	leftDialog = "@conversation/naboo_privateer_tier3:s_3fa8b6f1", -- Coordinates are in your ship. You're clear to leave.
 	stopConversation = "true",
 	animation = "dismiss",
 	options = {}

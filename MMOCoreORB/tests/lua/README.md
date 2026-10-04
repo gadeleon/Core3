@@ -355,14 +355,19 @@ starting with `/` or `./` is used as is (the helper test scans `fixtures/client_
 
 A per-trainer test is `lu.assertEquals(CS.unresolved({ <template>, <handler> }), {})`. `space_convo_client_strings_data.lua` holds the **ratchet**:
 `KNOWN_GAPS` (file -> the ids still unresolved; `test_space_convo_client_strings.lua` requires the scan to equal it exactly, so a new gap fails and a fixed
-gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (the 15 stored prefixes, the only line that joins one with an id, Dulios' `PT .. choice[2]`, and the 14 unused `stringFile` locals, pinned by path and line text so a new prefix or a second use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446) and so is Kaydine's (446 -> 381, three files left: `naboo_privateer_tier3` 76,
-`corellia_rebel_tier4` 94, `naboo_privateer_tier4` 211); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
+gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (14 stored prefixes, all unused `stringFile` locals, pinned by path and line text so a new prefix fails; no line uses a stored prefix any more, `KNOWN_PREFIX_USES` is `{}`, so a new use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446), so is Kaydine's (446 -> 381) and so is Dulios' (381 -> 305, two files left: `corellia_rebel_tier4` 94,
+`naboo_privateer_tier4` 211); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
 screens, the trailing `-- <client text>` comments and the sign-up, mission 3 failure, mission 4 offer and duty-decline journeys. Dinge trains in one click:
 the choice is made on `first_training` (free) or `more_training` (paid) and the conversation ends on `trained_<x>`, which shows "Good choice." (`s_cd72f93`).
 `test_space_convo_client_strings_kaydine.lua` holds Kaydine's: the scan, the exact values of the 38 changed screens (`rsf_tier2_kaydine_client_strings_data.lua`), the trailing
 comments, the identity checks against commit 6991fd0f9a and the offer, failure, reward, training and career journeys. Kaydine trains in one click too, but her acknowledgment
 is the mission intro: the choice on `ready_train_pilot` buys the skill (60,000 XP, once) and shows `trained_<x>_mission<N>` (the 16 intros, 10 distinct pre-NGE lines),
 which leads to mission N's accept screen, where the mission starts.
+`test_space_convo_client_strings_dulios.lua` holds Dulios': the scan, the 76 NGE-numbered lines rewritten onto the pre-NGE line each one copies (its twin; the client's ids are CRCs of the
+text, so a copy shares the id), one test per line (`rsf_tier3_dulios_client_strings_data.lua`: `D.SITES`, `D.TWIN`, `D.TEXT`, `D.LEFT_COUNTS`, copied from the spec), the trailing comments, the
+identity checks against commit 239af59058 (`dulios_convo.lua` differs only on those 76 lines, the handler only by complete `TRAIN_CHOICES` literals), and the gate, offer, failure, reward
+and training transcripts. The T3 answer key `rsf_tier3_dulios_convo_data.lua` stays the java graph; conformance tests map its sids through `D.TWIN`. Repeated lines are by design
+(`D.LEFT_COUNTS`: one pre-NGE line can stand on up to 8 screens).
 
 **Regenerating the fixtures** (maintenance only, needs `/tre` and Python 3; run from `MMOCoreORB/`):
 

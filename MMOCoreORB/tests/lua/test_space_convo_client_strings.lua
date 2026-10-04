@@ -347,25 +347,24 @@ end
 TestClientStringRatchet = {}
 
 -- AC-8 (the ratchet data itself, Appendix B); AC-1 of space-convo-client-strings-dinge (01-spec.md): Dinge's file left the list (470 -> 446);
--- AC-1 of space-convo-client-strings-kaydine (01-spec.md): Kaydine's file left it too (446 -> 381)
-function TestClientStringRatchet:test_known_gaps_hold_the_3_files_and_381_ids_left_after_kaydine()
+-- AC-1 of space-convo-client-strings-kaydine (01-spec.md): Kaydine's file left it too (446 -> 381);
+-- AC-1 of space-convo-client-strings-dulios (01-spec.md, Appendix C): Dulios' file left it (381 -> 305), two files remain
+function TestClientStringRatchet:test_known_gaps_hold_the_2_files_and_305_ids_left_after_dulios()
 	local total = 0
-	local expected = { 76, 94, 211 }
-	local files = {
-		"conversation/naboo_privateer_tier3",
-		"conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4",
-	}
+	local expected = { 94, 211 }
+	local files = { "conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4" }
 
-	lu.assertEquals(sortedKeys(D.KNOWN_GAPS), (function() local c = {} for i, f in ipairs(files) do c[i] = f end table.sort(c) return c end)(), "KNOWN_GAPS files")
+	lu.assertEquals(sortedKeys(D.KNOWN_GAPS), files, "KNOWN_GAPS files")
 
 	for i, f in ipairs(files) do
 		lu.assertEquals(#D.KNOWN_GAPS[f], expected[i], f .. ": KNOWN_GAPS count")
 		total = total + #D.KNOWN_GAPS[f]
 	end
 
-	lu.assertEquals(total, 381, "KNOWN_GAPS total")
+	lu.assertEquals(total, 305, "KNOWN_GAPS total")
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_1"], "Dinge's file is fixed and must not be listed")
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_2"], "Kaydine's file is fixed and must not be listed")
+	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_tier3"], "Dulios' file is fixed and must not be listed")
 end
 
 -- AC-8 (I-3): new gaps fail, and fixed gaps must be removed from the list
@@ -393,8 +392,8 @@ function TestClientStringRatchet:test_the_unresolved_ids_equal_known_gaps_exactl
 	lu.assertEquals(actual, D.KNOWN_GAPS, "unresolvedByFile versus KNOWN_GAPS")
 end
 
--- AC-9 (I-2). The spec expected {}, but 15 handlers keep a "@conversation/<file>" prefix in a local (14 unused `stringFile`s, and
--- Dulios' PT, which is joined with the ids of TRAIN_CHOICES). The scan catches prefixes with or without the colon; every one is pinned
+-- AC-9 (I-2). The spec expected {}, but 14 handlers keep a "@conversation/<file>" prefix in a local that nothing uses (the `stringFile`s;
+-- Dulios' PT, once joined with the ids of TRAIN_CHOICES, is gone since space-convo-client-strings-dulios). The scan catches prefixes with or without the colon; every one is pinned
 -- by "<path>: <line text>" (stable when lines above move), so a new prefix fails until it is listed.
 function TestClientStringRatchet:test_the_only_stored_prefix_sites_in_the_space_conversation_sources_are_the_listed_ones()
 	local src = CS.spaceConversationSources()
@@ -422,18 +421,21 @@ function TestClientStringsHelper:test_dynamic_scan_catches_prefixes_with_and_wit
 	lu.assertEquals(CS.unusedPrefixes(sample), { sample[1] .. ': local lonely = "@conversation/other"' }, "unused declarations")
 end
 
--- AC-9: the ids joined at the allowed dynamic site resolve in the client
-function TestClientStringRatchet:test_the_dulios_train_choice_ids_joined_at_the_dynamic_site_resolve()
+-- AC-9 / AC-2 of space-convo-client-strings-dulios (Appendix C): no id is joined at run time any more; the four TRAIN_CHOICES options are
+-- complete literals and each resolves in the client file
+function TestClientStringRatchet:test_the_dulios_train_choice_ids_are_complete_literals_that_resolve()
 	local T = require("trainer_fixes_data")
 
 	T.load()
 
 	local choices = H.expectGlobal("duliosConvoHandler", "Dulios handler").TRAIN_CHOICES
 	local sids = assert(CS.sids("conversation/naboo_privateer_tier3"))
+	local prefix = "@conversation/naboo_privateer_tier3:"
 
 	lu.assertEquals(#choices, 4, "Dulios TRAIN_CHOICES entries")
 
 	for _, c in ipairs(choices) do
-		lu.assertTrue(sids[c[2]] == true, "duliosConvoHandler.TRAIN_CHOICES option " .. tostring(c[2]) .. " (" .. c[1] .. ") is not in the client file naboo_privateer_tier3")
+		lu.assertEquals(c[2]:sub(1, #prefix), prefix, "duliosConvoHandler.TRAIN_CHOICES option " .. tostring(c[2]) .. " (" .. c[1] .. ") is a complete string id")
+		lu.assertTrue(sids[c[2]:sub(#prefix + 1)] == true, "duliosConvoHandler.TRAIN_CHOICES option " .. tostring(c[2]) .. " (" .. c[1] .. ") is not in the client file naboo_privateer_tier3")
 	end
 end

@@ -9,6 +9,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local G = require("rsf_gate_screens_data")
 local D = require("rsf_tier3_dulios_convo_data")
+local DS = require("rsf_tier3_dulios_client_strings_data")
 
 T.load()
 
@@ -39,6 +40,9 @@ end
 local function converse(player)
 	return T.converse(tr, player)
 end
+
+-- The line a gate shows: its Appendix A sid, through the twin table of space-convo-client-strings-dulios (not_tier3: s_6 -> s_406e1216, D-8)
+local function lineOf(row) return DS.TWIN[row.sid] or row.sid end
 
 local function sidOfStep(step) return (step.text or ""):match(":(s_[%w_]+)$") end
 
@@ -95,7 +99,7 @@ for _, gate in ipairs(GATES) do
 		lu.assertEquals(#transcript, 1, gate[1] .. ": number of screens shown")
 		lu.assertEquals(transcript[1].id, gate[3], gate[1] .. ": screen")
 		lu.assertTrue(transcript[1].stop, gate[1] .. ": the screen ends the conversation")
-		lu.assertEquals(sidOfStep(transcript[1]), row.sid, gate[1] .. ": NPC line of '" .. gate[3] .. "'")
+		lu.assertEquals(sidOfStep(transcript[1]), lineOf(row), gate[1] .. ": NPC line of '" .. gate[3] .. "' (superseded by space-convo-client-strings-dulios Appendix C: twin of the Appendix A sid)")
 
 		local screen = templateScreen(gate[3])
 
@@ -187,18 +191,26 @@ function TestDuliosGates:test_the_ready_gate_comes_before_the_on_mission_gate()
 	lu.assertEquals(converse(player)[1].id, "not_tier3", "RSF tier 2 pilot with a Dulios mission active")
 end
 
--- AC-3: the five lines are SWG's, one each, and none repeats another (the old arrangement reused one line for four gates)
-function TestDuliosGates:test_the_five_gate_screens_show_five_distinct_swg_lines()
+-- AC-3, superseded by space-convo-client-strings-dulios (Appendix C, D-8): the five gate screens show four distinct lines; not_tier3 shows the
+-- pre-NGE line s_406e1216 ("Looks like you took a wrong turn somewhere. Scram."), which it shares with not_pilot, and no other gate pair shares a line
+function TestDuliosGates:test_the_five_gate_screens_show_four_distinct_lines_and_not_tier3_shares_the_not_pilot_line()
 	local expected = {
-		not_pilot = "s_406e1216", wrong_faction = "s_2734ffac", pilot_not_rsf = "s_843db48d", not_tier3 = "s_6", on_mission = "s_e15039ea",
+		not_pilot = "s_406e1216", wrong_faction = "s_2734ffac", pilot_not_rsf = "s_843db48d", not_tier3 = "s_406e1216", on_mission = "s_e15039ea",
 	}
 	local seen = {}
 
 	for _, gate in ipairs({ GATES[1], GATES[5], GATES[9], GATES[13], GATES[#GATES] }) do
 		local step = converse(gate[2]())[1]
+		local sid = sidOfStep(step)
 
-		lu.assertEquals(sidOfStep(step), expected[gate[3]], gate[1] .. ": line of " .. gate[3])
-		lu.assertNil(seen[sidOfStep(step)], gate[3] .. ": its line is shared with " .. tostring(seen[sidOfStep(step)]))
-		seen[sidOfStep(step)] = gate[3]
+		lu.assertEquals(sid, expected[gate[3]], gate[1] .. ": line of " .. gate[3])
+
+		if sid ~= "s_406e1216" then
+			lu.assertNil(seen[sid], gate[3] .. ": its line is shared with " .. tostring(seen[sid]))
+		end
+
+		seen[sid] = gate[3]
 	end
+
+	lu.assertEquals(expected.not_tier3, expected.not_pilot, "not_tier3 shows the not_pilot line (D-8)")
 end

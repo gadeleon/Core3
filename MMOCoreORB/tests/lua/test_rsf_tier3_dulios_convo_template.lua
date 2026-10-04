@@ -9,6 +9,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local T = require("trainer_fixes_data")
 local D = require("rsf_tier3_dulios_convo_data")
+local DS = require("rsf_tier3_dulios_client_strings_data") -- space-convo-client-strings-dulios: D.TWIN, Appendix D (the tests it supersedes say so below)
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -87,6 +88,9 @@ local function contains(list, value)
 	return false
 end
 
+-- The pre-NGE id a T3 sid is shown as (space-convo-client-strings-dulios I-4): the twin of an NGE-numbered sid, every other sid itself
+local function twin(sid) return DS.TWIN[sid] or sid end
+
 -- The fields a screen definition is compared on
 local function shape(screen)
 	local options = {}
@@ -102,11 +106,11 @@ local function expectedShape(row)
 	local options = {}
 
 	for i, o in ipairs(row.options) do
-		options[i] = { D.PREFIX .. o[1], o[2] }
+		options[i] = { D.PREFIX .. twin(o[1]), o[2] }
 	end
 
 	return {
-		leftDialog = D.PREFIX .. row.sid,
+		leftDialog = D.PREFIX .. twin(row.sid),
 		stopConversation = row.stop and "true" or "false",
 		animation = row.animation ~= "" and row.animation or nil,
 		options = options,
@@ -351,8 +355,9 @@ function TestDuliosConvoTemplate:test_the_template_has_no_dead_links_or_duplicat
 	lu.assertEquals(H.conversationProblems(D.TEMPLATE), {})
 end
 
--- AC-1, I-1: leftDialogs are distinct except s_4fc6a099, on exactly completed_dulios and the four _final training screens
-function TestDuliosConvoTemplate:test_left_dialogs_are_distinct_except_s_4fc6a099_on_completed_dulios_and_the_four_final_screens()
+-- AC-1, I-1, superseded by space-convo-client-strings-dulios (Appendix C, AC-3, Appendix D): a pre-NGE line may stand on several screens (the CRC id of a text
+-- is shared by every copy, FD-2); the multiplicities are exactly Appendix D's, every other leftDialog is on one screen
+function TestDuliosConvoTemplate:test_left_dialogs_repeat_exactly_as_appendix_d_says_and_nowhere_else()
 	local owners = {}
 
 	for _, s in ipairs(template().screens) do
@@ -363,11 +368,19 @@ function TestDuliosConvoTemplate:test_left_dialogs_are_distinct_except_s_4fc6a09
 	for dialog, ids in pairs(owners) do
 		table.sort(ids)
 
-		if dialog == D.PREFIX .. "s_4fc6a099" then
+		local sid = sidOf(dialog)
+
+		lu.assertEquals(#ids, DS.LEFT_COUNTS[sid] or 1, "number of screens showing " .. dialog .. ": " .. table.concat(ids, ","))
+
+		if sid == "s_4fc6a099" then
 			lu.assertEquals(ids, { "completed_dulios", "train_components_final", "train_programming_final", "train_techniques_final", "train_warships_final" }, "screens showing s_4fc6a099")
-		else
-			lu.assertEquals(ids, { ids[1] }, "screens showing " .. dialog)
+		elseif sid == "s_e1e07205" then
+			lu.assertEquals(ids, { "m1_100", "m1_118", "m1_139", "m1_165", "m1_182", "m1_70", "m1_78", "m1_e1e07205" }, "screens showing s_e1e07205")
 		end
+	end
+
+	for sid in pairs(DS.LEFT_COUNTS) do
+		lu.assertNotNil(owners[D.PREFIX .. sid], "Appendix D id " .. sid .. " is shown on no screen")
 	end
 end
 
@@ -406,25 +419,36 @@ TestDuliosConvoConformance = {}
 
 function TestDuliosConvoConformance:setUp() H.reset() end
 
--- AC-2: each of the 150 Appendix A NPC sids has exactly one screen (s_4fc6a099 also sits on the four Core3 _final screens)
-function TestDuliosConvoConformance:test_each_of_the_150_appendix_npc_sids_has_exactly_one_screen()
-	local count = {}
+-- AC-2, superseded by space-convo-client-strings-dulios (Appendix C, I-4): each of the 150 Appendix A rows has exactly one screen by id, and the line it
+-- shows (the twin of its sid) is on 1 + (number of NGE-numbered rows mapped onto it) screens other than the 8 training screens (Appendix D)
+function TestDuliosConvoConformance:test_each_of_the_150_appendix_rows_has_exactly_one_screen_and_each_line_is_shown_on_one_screen_per_row_mapped_onto_it()
+	local shown, byId = {}, {}
 
 	for _, s in ipairs(template().screens) do
+		byId[s.id] = (byId[s.id] or 0) + 1
+
 		local sid = sidOf(s.leftDialog)
 
 		if sid and D.TRAIN_KEPT[s.id] == nil then
-			count[sid] = (count[sid] or 0) + 1
+			shown[sid] = (shown[sid] or 0) + 1
 		end
 	end
 
+	local want = {}
+
 	for _, row in ipairs(D.ROWS) do
-		lu.assertEquals(count[row.sid] or 0, 1, "number of screens (other than the 8 training screens) showing " .. row.sid .. " (appendix row '" .. row.id .. "')")
+		want[twin(row.sid)] = (want[twin(row.sid)] or 0) + 1
+	end
+
+	for _, row in ipairs(D.ROWS) do
+		lu.assertEquals(byId[row.id], 1, "number of screens with id '" .. row.id .. "'")
+		lu.assertEquals(shown[twin(row.sid)] or 0, want[twin(row.sid)], "number of screens (other than the 8 training screens) showing " .. twin(row.sid) .. " (appendix row '" .. row.id .. "', key " .. row.sid .. ")")
 	end
 end
 
--- AC-2, I-2: option sids in order, successor line, end flag and animation of every Appendix A screen, against the java graph
-function TestDuliosConvoConformance:test_every_appendix_screen_matches_the_java_graph_except_e1()
+-- AC-2, I-2, superseded by space-convo-client-strings-dulios (Appendix C, I-4, AC-6): option sids in order, successor line, end flag and animation of every
+-- Appendix A screen, against the java graph with every sid mapped through the twin table
+function TestDuliosConvoConformance:test_every_appendix_screen_matches_the_java_graph_modulo_the_twin_table_except_e1()
 	local byId = screensById()
 	local checked = 0
 
@@ -436,7 +460,7 @@ function TestDuliosConvoConformance:test_every_appendix_screen_matches_the_java_
 		lu.assertNotNil(node, "answer key: " .. row.sid)
 		checked = checked + 1
 
-		lu.assertEquals(sidOf(screen.leftDialog), row.sid, "screen '" .. row.id .. "': NPC line")
+		lu.assertEquals(sidOf(screen.leftDialog), twin(row.sid), "screen '" .. row.id .. "': NPC line (twin of " .. row.sid .. ")")
 		lu.assertEquals(screen.animation or "", node.animation, "screen '" .. row.id .. "' (" .. row.sid .. "): animation (java)")
 
 		if D.EXCEPTIONS[row.id] == nil then
@@ -448,7 +472,13 @@ function TestDuliosConvoConformance:test_every_appendix_screen_matches_the_java_
 				got[i] = sidOf(option[1])
 			end
 
-			lu.assertEquals(got, node.options, "screen '" .. row.id .. "' (" .. row.sid .. "): option sids in order")
+			local wantOptions = {}
+
+			for i, osid in ipairs(node.options) do
+				wantOptions[i] = twin(osid)
+			end
+
+			lu.assertEquals(got, wantOptions, "screen '" .. row.id .. "' (" .. row.sid .. "): option sids in order (twins)")
 
 			for i, optionSid in ipairs(node.options) do
 				local target = byId[screen.options[i][2]]
@@ -458,7 +488,7 @@ function TestDuliosConvoConformance:test_every_appendix_screen_matches_the_java_
 				local successors = GRAPH.successorsOf(row.sid, optionSid)
 
 				lu.assertNotNil(successors, "answer key: no successor for " .. row.sid .. " -> " .. optionSid)
-				lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. row.id .. "' option " .. optionSid .. " -> successor NPC line (java default)")
+				lu.assertEquals(sidOf(target.leftDialog), twin(successors[#successors]), "screen '" .. row.id .. "' option " .. optionSid .. " -> successor NPC line (java default, twin)")
 			end
 		else
 			-- E-1: the java's one reply s_368 is not ported; the template options are empty and the line does not end the conversation
@@ -536,8 +566,9 @@ function TestDuliosConvoConformance:test_every_string_the_handler_names_is_a_jav
 	lu.assertEquals(sortedKeys(seenForeign), D.FOREIGN_OPTION_SIDS, "Core3 training choice sids kept in the handler")
 end
 
--- AC-2, I-3: 150 of 154 NPC lines and 132 of 133 responses are used; the unused are s_369-s_372 and s_368
-function TestDuliosConvoConformance:test_the_files_use_150_of_154_java_npc_lines_and_132_of_133_responses()
+-- AC-2, I-3, superseded by space-convo-client-strings-dulios (Appendix C, AC-6): 111 of 154 NPC lines and 95 of 133 responses are used; the unused are the
+-- 39 NPC and 37 reply keys of the twin table, plus s_369-s_372 and s_368
+function TestDuliosConvoConformance:test_the_files_use_111_of_154_java_npc_lines_and_95_of_133_responses()
 	local usedNpc, usedResp = {}, {}
 
 	for _, s in ipairs(template().screens) do
@@ -578,10 +609,30 @@ function TestDuliosConvoConformance:test_the_files_use_150_of_154_java_npc_lines
 
 	table.sort(unusedNpc)
 	table.sort(unusedResp)
-	lu.assertEquals(unusedNpc, D.UNUSED_NPC, "java NPC lines used by neither file: unused ones")
-	lu.assertEquals(unusedResp, D.UNUSED_RESP, "java responses used by neither file: unused ones")
-	lu.assertEquals(count(usedNpc), 150, "java NPC lines used")
-	lu.assertEquals(count(usedResp), 132, "java responses used")
+
+	local wantNpc, wantResp = {}, {}
+
+	for _, sid in ipairs(D.UNUSED_NPC) do wantNpc[#wantNpc + 1] = sid end
+	for _, sid in ipairs(D.UNUSED_RESP) do wantResp[#wantResp + 1] = sid end
+
+	for nge in pairs(DS.TWIN) do
+		if GRAPH.nodes[nge] then
+			wantNpc[#wantNpc + 1] = nge
+		elseif GRAPH.responses[nge] then
+			wantResp[#wantResp + 1] = nge
+		else
+			lu.fail("twin key " .. nge .. " is neither an NPC line nor a response of the java")
+		end
+	end
+
+	table.sort(wantNpc)
+	table.sort(wantResp)
+	lu.assertEquals(#wantNpc, 43, "answer key: unused NPC lines (39 twin keys + s_369-s_372)")
+	lu.assertEquals(#wantResp, 38, "answer key: unused responses (37 twin keys + s_368)")
+	lu.assertEquals(unusedNpc, wantNpc, "java NPC lines used by neither file: unused ones")
+	lu.assertEquals(unusedResp, wantResp, "java responses used by neither file: unused ones")
+	lu.assertEquals(count(usedNpc), 111, "java NPC lines used")
+	lu.assertEquals(count(usedResp), 95, "java responses used")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -592,13 +643,18 @@ TestDuliosConvoHandlerAgreement = {}
 
 function TestDuliosConvoHandlerAgreement:setUp() H.reset() end
 
--- Content contract 2 / AC-9: the binding handler fields
+-- Content contract 2 / AC-9, superseded by space-convo-client-strings-dulios (Appendix C, AC-2): the binding handler fields; TRAIN_CHOICES holds complete literals
 function TestDuliosConvoHandlerAgreement:test_the_handler_defines_reward_screens_start_screens_and_train_choices_as_specified()
 	local dh = handler()
+	local choices = {}
+
+	for i, c in ipairs(D.TRAIN_CHOICES) do
+		choices[i] = { c[1], D.PREFIX .. c[2], c[3] }
+	end
 
 	lu.assertEquals(dh.REWARD_SCREENS, D.REWARD_SCREENS, "duliosConvoHandler.REWARD_SCREENS")
 	lu.assertEquals(dh.START_SCREENS, D.START_SCREENS, "duliosConvoHandler.START_SCREENS")
-	lu.assertEquals(dh.TRAIN_CHOICES, D.TRAIN_CHOICES, "duliosConvoHandler.TRAIN_CHOICES")
+	lu.assertEquals(dh.TRAIN_CHOICES, choices, "duliosConvoHandler.TRAIN_CHOICES (complete string ids)")
 end
 
 -- AC-9, I-7: every id the handler returns, links, lists or compares is a template screen

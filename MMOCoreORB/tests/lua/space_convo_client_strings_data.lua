@@ -19,18 +19,6 @@ D.KNOWN_GAPS = {
 		"s_424", "s_425", "s_426", "s_427", "s_428", "s_429", "s_430", "s_431",
 		"s_432", "s_433", "s_434", "s_435", "s_436", "s_437",
 	},
-	["conversation/naboo_privateer_tier3"] = {
-		"s_100", "s_102", "s_110", "s_112", "s_114", "s_116", "s_118", "s_123",
-		"s_125", "s_127", "s_129", "s_131", "s_133", "s_135", "s_137", "s_139",
-		"s_151", "s_153", "s_155", "s_157", "s_159", "s_161", "s_163", "s_165",
-		"s_174", "s_176", "s_178", "s_180", "s_182", "s_210", "s_212", "s_215",
-		"s_217", "s_219", "s_221", "s_223", "s_225", "s_227", "s_229", "s_231",
-		"s_233", "s_261", "s_263", "s_265", "s_267", "s_269", "s_272", "s_274",
-		"s_317", "s_319", "s_321", "s_323", "s_325", "s_327", "s_329", "s_331",
-		"s_335", "s_337", "s_339", "s_341", "s_343", "s_345", "s_347", "s_349",
-		"s_42", "s_6", "s_70", "s_76", "s_78", "s_85", "s_87", "s_89",
-		"s_91", "s_94", "s_96", "s_98",
-	},
 	["conversation/naboo_privateer_tier4"] = {
 		"s_4", "s_416", "s_439", "s_440", "s_441", "s_442", "s_443", "s_445",
 		"s_447", "s_449", "s_451", "s_453", "s_455", "s_457", "s_459", "s_461",
@@ -111,7 +99,7 @@ D.FIXTURE_COUNTS = {
 
 -- The stored "@file:" / "@file" prefixes the static scan cannot read (CS.dynamicSites, "<path>: <trimmed line>").
 -- 14 handlers declare `local stringFile = "@conversation/<file>"` and never use it (three of those files have no fixture);
--- Dulios' PT prefix is joined with the ids of duliosConvoHandler.TRAIN_CHOICES. Any new prefix is a failure until listed here.
+-- Dulios' handler no longer joins a prefix with an id (space-convo-client-strings-dulios: TRAIN_CHOICES holds complete literals). Any new prefix is a failure until listed here.
 D.KNOWN_DYNAMIC = {
 	[=[screenplays/space/conversations/greeters/fernYarrowConvoHandler.lua: local stringFile = "@conversation/greeter_dantooine_brother_imperial"]=],
 	[=[screenplays/space/conversations/greeters/guilloParootchieConvoHandler.lua: local stringFile = "@conversation/greeter_mos_eisley_smuggler_nervous"]=],
@@ -126,15 +114,12 @@ D.KNOWN_DYNAMIC = {
 	[=[screenplays/space/conversations/greeters/vincieKalhoonConvoHandler.lua: local stringFile = "@conversation/greeter_mos_eisley_smuggler_fat"]=],
 	[=[screenplays/space/conversations/imperial/imperialBrokerConvoHandler.lua: local stringFile = "@conversation/imperial_broker"]=],
 	[=[screenplays/space/conversations/neutral/gilBurtinConvoHandler.lua: local stringFile = "@conversation/gil_burtin"]=],
-	[=[screenplays/space/conversations/neutral/rsf_squadron/duliosConvoHandler.lua: local PT = "@conversation/naboo_privateer_tier3:"]=],
 	[=[screenplays/space/conversations/rebel/jPaiBrekConvoHandler.lua: local stringFile = "@conversation/rebel_broker"]=],
 }
 
--- Lines that use a stored prefix (CS.prefixUses). Only Dulios joins one with an id at run time; a second use site (for
--- example `PT .. "s_999999"` or `stringFile .. ":s_7"`) fails until it is listed here with its own resolution check.
-D.KNOWN_PREFIX_USES = {
-	[=[screenplays/space/conversations/neutral/rsf_squadron/duliosConvoHandler.lua: clonedConversation:addOption(PT .. choice[2], choice[3] .. screenAppend)]=],
-}
+-- Lines that use a stored prefix (CS.prefixUses). None is left since Dulios' training options became complete literals
+-- (space-convo-client-strings-dulios); a use such as `PT .. "s_999999"` or `stringFile .. ":s_7"` fails until it is listed here with its own resolution check.
+D.KNOWN_PREFIX_USES = {}
 
 -- Prefix locals nothing uses (CS.unusedPrefixes), reported so they are not silently accepted.
 D.KNOWN_UNUSED_PREFIXES = {

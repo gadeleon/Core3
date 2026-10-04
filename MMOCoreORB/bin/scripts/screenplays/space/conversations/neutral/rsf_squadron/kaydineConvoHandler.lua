@@ -1,23 +1,16 @@
 -- Kaydine (RSF tier 2) conversation handler; ported from SWG-Source naboo_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes.
-kaydineConvoHandler = conv_handler:new {
-	-- Purchase prompt screen => the skill bought when its option is chosen (naboo_privateer_trainer_2.java:2335, 3033, 3302, 3571)
-	TRAIN_SCREENS = {
-		train_starships = "pilot_neutral_starships_02",
-		train_weapons = "pilot_neutral_weapons_02",
-		train_procedures = "pilot_neutral_procedures_02",
-		train_droid = "pilot_neutral_droid_02"
-	}
-}
+kaydineConvoHandler = conv_handler:new {}
 
 -- Met-Kaydine flag, SWG space flag rsfTier2 (naboo_privateer_trainer_2.java:195-199)
 kaydineConvoHandler.SIGNUP_SUFFIX = "RsfSquadronScreenplay:StartedKaydine"
 
--- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order
+-- Pre-NGE free choice of the next skill: { skill, reply, default intro screen }, in SWG order. Choosing a reply buys the skill (one click, the client file has no
+-- per-skill prompt or buy reply); the link names the skill and is the static default intro, getNextConversationScreen picks the real one.
 kaydineConvoHandler.TRAIN_CHOICES = {
-	{ "pilot_neutral_starships_02", "@conversation/naboo_privateer_trainer_2:s_45b71b4d", "train_starships" },
-	{ "pilot_neutral_weapons_02", "@conversation/naboo_privateer_trainer_2:s_197f4f94", "train_weapons" },
-	{ "pilot_neutral_procedures_02", "@conversation/naboo_privateer_trainer_2:s_8f5942fa", "train_procedures" },
-	{ "pilot_neutral_droid_02", "@conversation/naboo_privateer_trainer_2:s_eff66f4d", "train_droid" }
+	{ "pilot_neutral_starships_02", "@conversation/naboo_privateer_trainer_2:s_45b71b4d", "trained_starships_mission4" },
+	{ "pilot_neutral_weapons_02", "@conversation/naboo_privateer_trainer_2:s_197f4f94", "trained_weapons_mission4" },
+	{ "pilot_neutral_procedures_02", "@conversation/naboo_privateer_trainer_2:s_8f5942fa", "trained_procedures_mission4" },
+	{ "pilot_neutral_droid_02", "@conversation/naboo_privateer_trainer_2:s_eff66f4d", "trained_droid_mission4" }
 }
 
 -- Has the pilot met Kaydine? SWG: space flag rsfTier2 (java:78-81); also true for pilots with tier 2 progress. Writes nothing.
@@ -256,7 +249,7 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 		recovery_naboo_privateer_14:rewardPlayer(pPlayer)
 
 		clonedConversation:removeAllOptions()
-		clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_78", "mission3_reward_end")
+		clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_5e2a2bb1", "mission3_reward_end")
 
 		if (self:canTrain(pPlayer)) then
 			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_45d20070", "ready_train_pilot")
@@ -274,14 +267,7 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	elseif (screenID == "mission1_brief") then
 		if (CreatureObject(pPlayer):getGender() == 0) then
 			clonedConversation:removeAllOptions()
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_242", "mission1_accept_male")
-		end
-
-	-- Mission 1 introduction: male pilots get a different last line
-	elseif (screenID == "mission1_intro_b4") then
-		if (CreatureObject(pPlayer):getGender() == 0) then
-			clonedConversation:removeAllOptions()
-			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_264", "mission1_intro_accept_male")
+			clonedConversation:addOption("@conversation/naboo_privateer_trainer_2:s_e42b260e", "mission1_accept_male")
 		end
 
 	-- Give Missions
@@ -294,7 +280,7 @@ function kaydineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sel
 	elseif (screenID == "mission2_accept" or screenID == "mission2_failed") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_2.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "destroy_naboo_privateer_13")
-	elseif (screenID == "mission1_accept" or screenID == "mission1_accept_male" or screenID == "mission1_failed" or screenID == "mission1_intro_accept" or screenID == "mission1_intro_accept_male") then
+	elseif (screenID == "mission1_accept" or screenID == "mission1_accept_male" or screenID == "mission1_failed") then
 		setQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_1.name .. ":attempted", 1)
 		SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_naboo_privateer_tier2_1a")
 	end
@@ -362,14 +348,40 @@ function kaydineConvoHandler:getLastScreenID(pPlayer)
 	return LuaConversationScreen(pLastScreen):getScreenID()
 end
 
--- Choosing the option on a train_<x> screen buys the skill (once), then the pilot is introduced to
--- the mission the skill count unlocks (naboo_privateer_trainer_2.java:2335-2479)
+-- Choosing a skill's reply on ready_train_pilot buys the skill (once), then the pilot is introduced to
+-- the mission the skill count unlocks (pre-NGE one click: the choice reply, then the mission intro)
 function kaydineConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, selectedOption, pNpc)
 	local lastScreen = self:getLastScreenID(pPlayer) or ""
-	local skill = self.TRAIN_SCREENS[lastScreen]
+
+	if (lastScreen ~= "ready_train_pilot") then
+		return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+	end
+
+	-- The skill is the one whose choice link the pilot picked
+	local chosenLink = nil
+	local convSession = CreatureObject(pPlayer):getConversationSession()
+
+	if (convSession ~= nil) then
+		local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+
+		if (pLastScreen ~= nil) then
+			chosenLink = LuaConversationScreen(pLastScreen):getOptionLink(selectedOption)
+		end
+	end
+
+	local skill = nil
+	local name = nil
+
+	for _, choice in ipairs(self.TRAIN_CHOICES) do
+		if (choice[3] == chosenLink) then
+			skill = choice[1]
+			name = (string.gsub(choice[3], "^trained_(%a+)_mission4$", "%1"))
+			break
+		end
+	end
 
 	if (skill == nil) then
-		return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	end
 
 	if (not CreatureObject(pPlayer):hasSkill(skill) and SpaceHelpers:hasExperienceForTraining(pPlayer, 2) and LuaSkillManager():fulfillsSkillPrerequisitesAndXp(pPlayer, skill)) then
@@ -390,8 +402,6 @@ function kaydineConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, s
 	local skillCount = SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 2)
 
 	if (nextMission <= 4 and skillCount >= nextMission) then
-		local name = string.gsub(lastScreen, "^train_", "")
-
 		return LuaConversationTemplate(pConvTemplate):getScreen("trained_" .. name .. "_mission" .. nextMission)
 	end
 

@@ -198,6 +198,7 @@ assassinate_corellia_privateer_tier1_4a = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 6, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "hidden_daggers_eliminator_tier2",
@@ -403,6 +404,7 @@ assassinate_corellia_privateer_tier2_4a = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 7, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "hutt_transport_tier3",
@@ -1006,6 +1008,7 @@ assassinate_corellia_privateer_tier3_3d = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 7, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "blacksun_gunship_tier2",
@@ -1045,6 +1048,7 @@ assassinate_corellia_privateer_tier3_4 = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 12, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "evil_raider_tyrant_tier3",
@@ -1238,6 +1242,7 @@ assassinate_corellia_privateer_tier4_1b = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 3, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "blacksun_yt1300_tier4",
@@ -1303,6 +1308,7 @@ assassinate_corellia_privateer_tier4_2a = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 6, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "hidden_daggers_executioner_tier5",
@@ -1434,6 +1440,7 @@ assassinate_corellia_privateer_tier4_3b = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 15, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "blacksun_vehement_tier4",
@@ -1569,6 +1576,7 @@ assassinate_corellia_privateer_tier4_4a = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 12, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "hidden_daggers_nebula_stalker_tier5",
@@ -1610,6 +1618,7 @@ assassinate_corellia_privateer_tier4_4b = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 12, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "hidden_daggers_nebula_stalker_tier5",
@@ -1677,6 +1686,7 @@ assassinate_corellia_privateer_tier4_4d = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 15, -- Seconds
 	failTimer = 20, -- Minutes
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "hidden_daggers_eliminator_tier5",

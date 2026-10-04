@@ -179,6 +179,7 @@ assassinate_corellia_rebel_4 = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 6,
 	failTimer = 20,
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "imp_tie_fighter_veteran_tier2",
@@ -417,6 +418,7 @@ assassinate_viopa_rebel_4 = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 10,
 	failTimer = 20,
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "viopa_mission_4_freighter",
@@ -692,6 +694,7 @@ assassinate_corellia_rebel_tier3_1_c = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 2,
 	failTimer = 20,
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "imp_tie_interceptor_tier2",
@@ -964,6 +967,7 @@ assassinate_corellia_rebel_tier3_3_a = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 20,
 	failTimer = 20,
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "lambdashuttle_advanced_recon",
@@ -1084,6 +1088,7 @@ assassinate_corellia_rebel_tier3_4 = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 15,
 	failTimer = 20,
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "tieadvanced_quest_officer_rebel_t3",
@@ -1403,6 +1408,7 @@ assassinate_corellia_rebel_tier4_2 = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 5,
 	failTimer = 20,
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "tieadvanced_inquisitor_tier4",
@@ -1707,6 +1713,7 @@ assassinate_corellia_rebel_tier4_4_a = SpaceAssassinateScreenplay:new {
 
 	arrivalDelay = 10,
 	failTimer = 20,
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "imp_freighterheavy_tier4",

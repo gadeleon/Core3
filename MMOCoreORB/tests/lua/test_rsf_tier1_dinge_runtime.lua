@@ -64,7 +64,7 @@ local function startedMission4()
 	local q = quest(D.A4)
 	local player = AC.started(q)
 
-	pump(2000, D.A4 .. " deployTargets (2 s after startQuest)")
+	pump(2000, D.A4 .. " deployTargets (arrivalDelay 0: runs at startQuest; the 2 s pump covers the first update)")
 
 	return q, player
 end
@@ -156,7 +156,7 @@ end
 function TestRsfTier1DingeMission4:test_the_fail_timer_is_twenty_minutes_after_the_deploy()
 	local q, player = startedMission4()
 
-	H.advance(20 * 60 * 1000 - 1000)
+	H.advance(20 * 60 * 1000 - 3000)
 	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName), D.A4 .. ": still active just before 20 minutes")
 
 	pump(3000, D.A4 .. " failAssassination")

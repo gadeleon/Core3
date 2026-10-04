@@ -200,6 +200,7 @@ assassinate_naboo_privateer_tier1_4a = SpaceAssassinateScreenplay:new {
 	-- Screenplay Specific Variables
 	arrivalDelay = 0,
 	failTimer = 20,
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "blacksun_ace_s04_tier1",
@@ -305,6 +306,7 @@ assassinate_naboo_privateer_tier2_1a = SpaceAssassinateScreenplay:new {
 	sideQuestDelay = 5,
 	arrivalDelay = 5,
 	failTimer = 20,
+	mustDestroyEscort = false,
 	assassinateSpawns = {
 		target = "aynat_enforcer_tier3",
 		escorts = {"aynat_ghost_tier2", "aynat_ghost_tier2"},
@@ -336,6 +338,7 @@ assassinate_naboo_privateer_tier2_1b = SpaceAssassinateScreenplay:new {
 	sideQuestDelay = 5,
 	arrivalDelay = 6,
 	failTimer = 20,
+	mustDestroyEscort = false,
 	assassinateSpawns = {
 		target = "aynat_enforcer_tier3",
 		escorts = {"aynat_ghost_tier2", "aynat_ghost_tier2", "aynat_ghost_tier2"},
@@ -364,6 +367,7 @@ assassinate_naboo_privateer_tier2_1c = SpaceAssassinateScreenplay:new {
 	sideQuestType = "",
 	arrivalDelay = 2,
 	failTimer = 20,
+	mustDestroyEscort = true,
 	assassinateSpawns = {
 		target = "aynat_enforcer_tier3",
 		escorts = {"aynat_outlaw_tier2", "aynat_outlaw_tier2"},
@@ -723,6 +727,7 @@ assassinate_naboo_privateer_tier3_1d = SpaceAssassinateScreenplay:new {
 	-- Screenplay Specific Variables (assassinate/naboo_privateer_tier3_1d.tab)
 	arrivalDelay = 12,
 	failTimer = 20,
+	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "saysmond_varg_tier3",
@@ -1078,6 +1083,7 @@ assassinate_naboo_privateer_tier3_4a = SpaceAssassinateScreenplay:new {
 	-- Screenplay Specific Variables (assassinate/naboo_privateer_tier3_4a.tab)
 	arrivalDelay = 45,
 	failTimer = 20,
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "blacksun_beldini_tier3",
@@ -1262,6 +1268,7 @@ assassinate_naboo_privateer_tier3_4f = SpaceAssassinateScreenplay:new {
 	-- Screenplay Specific Variables (assassinate/naboo_privateer_tier3_4f.tab)
 	arrivalDelay = 25,
 	failTimer = 20,
+	mustDestroyEscort = true,
 
 	assassinateSpawns = {
 		target = "blacksun_krayt_bane_tier3",

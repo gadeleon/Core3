@@ -133,7 +133,7 @@ function D.expected()
 			creditReward = 1000,
 			itemReward = { { species = { -1 }, item = D.BLASTER } },
 			sideQuest = false, sideQuestType = "",
-			arrivalDelay = 0, failTimer = 20,
+			arrivalDelay = 0, failTimer = 20, mustDestroyEscort = true,
 			assassinateSpawns = {
 				target = "blacksun_ace_s04_tier1",
 				escorts = { "blacksun_fighter_s01_tier1", "blacksun_fighter_s02_tier1", "blacksun_bomber_s03_tier1" },

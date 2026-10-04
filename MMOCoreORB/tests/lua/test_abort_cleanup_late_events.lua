@@ -580,7 +580,7 @@ function TestSetupWindowsAfterAbort:test_deploy_targets_of_assassinate_spawns_th
 	local q = H.expectGlobal(ASSASSINATE, "assassinate quest table")
 
 	AC.started(q)
-	H.advance(2500)
+	H.advance(6500) -- space-assassinate-escort-fix SC-5: the in-zone deploy waits arrivalDelay (6 s for corellia_privateer_tier1_4a)
 
 	lu.assertTrue(#H.spawnedShips() >= 1, "target ships spawned")
 end

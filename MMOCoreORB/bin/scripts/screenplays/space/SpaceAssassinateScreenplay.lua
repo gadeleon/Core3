@@ -6,6 +6,9 @@ SpaceAssassinateScreenplay = SpaceQuestLogic:new {
 	arrivalDelay = 5, -- Seconds
 	failTimer = 20, -- Minutes
 
+	-- SWG mustDestroyEscort: when true the escorts must die as well as the target
+	mustDestroyEscort = true,
+
 	assassinateTarget = "",
 	assassinateEscorts = {},
 }
@@ -31,7 +34,7 @@ function SpaceAssassinateScreenplay:startQuest(pPlayer, pNpc)
 
 	-- Check if the player is in the proper zone already
 	if (playerZoneHash == spaceQuestHash and not SpaceHelpers:isInYacht(pPlayer)) then
-		createEvent(2000, self.className, "deployTargets", pPlayer, "")
+		self:beginRun(pPlayer)
 	end
 
 	-- Create inital observer for player entering Zone and to handle failing quest
@@ -70,15 +73,59 @@ function SpaceAssassinateScreenplay:completeQuest(pPlayer, notifyClient)
 
 	local playerID = SceneObject(pPlayer):getObjectID()
 
-	-- Remove the vector, it is no longer needed
-	deleteStringVectorSharedMemory(playerID .. self.className .. ":targetShips:")
+	-- Release any escorts that survived, they stay in the world until their own warp out
+	self:releaseTargetShips(pPlayer)
+
+	deleteData(playerID .. ":" .. self.className .. ":TotalKills:")
+	deleteData(playerID .. ":" .. self.className .. ":EscortKills:")
+	deleteData(playerID .. ":" .. self.className .. ":TargetDestroyed:")
 
 	if (self.sideQuest and (self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.COMPLETION or self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL)) then
 		self:triggerCompletionSplitQuest(pPlayer)
 	end
 end
 
-function SpaceAssassinateScreenplay:failQuest(pPlayer, notifyClient)
+function SpaceAssassinateScreenplay:releaseTargetShips(pPlayer)
+	local playerID = SceneObject(pPlayer):getObjectID()
+	local shipIDs = readStringVectorSharedMemory(playerID .. self.className .. ":targetShips:")
+
+	for i = 1, #shipIDs, 1 do
+		local shipID = tonumber(shipIDs[i])
+		local pShipAgent = getSceneObject(shipID)
+
+		if (pShipAgent ~= nil) then
+			dropObserver(SHIPDESTROYED, self.className, "notifyShipDestroyed", pShipAgent)
+		end
+
+		deleteData(shipID .. ":" .. self.className .. ":QuestOwner")
+		deleteData(shipID .. ":" .. self.className .. ":PrimaryTarget:")
+
+		CreatureObject(pPlayer):removeSpaceMissionObject(shipID, (i == #shipIDs))
+	end
+
+	-- Remove the vector, it is no longer needed
+	deleteStringVectorSharedMemory(playerID .. self.className .. ":targetShips:")
+end
+
+function SpaceAssassinateScreenplay:beginRun(pPlayer)
+	-- Complete the quest task 0
+	SpaceHelpers:completeSpaceQuestTask(pPlayer, self.questType, self.questName, 0, false)
+
+	-- Activate quest task 1, and task 2 (escorts) only when they must die
+	SpaceHelpers:activateSpaceQuestTask(pPlayer, self.questType, self.questName, 1, false)
+
+	if (self.mustDestroyEscort) then
+		SpaceHelpers:activateSpaceQuestTask(pPlayer, self.questType, self.questName, 2, false)
+	end
+
+	-- Send Uploading start message
+	CreatureObject(pPlayer):sendSystemMessage("@spacequest/assassinate/" .. self.questName .. ":arrival_phase_1")
+
+	-- Schedule the deployment
+	createEvent(self.arrivalDelay * 1000, self.className, "deployTargets", pPlayer, "")
+end
+
+function SpaceAssassinateScreenplay:failQuest(pPlayer, notifyClient, skipFailureSplit)
 	if (pPlayer == nil) then
 		Logger:log("Quest: " .. self.questName .. " Type: " .. self.questType .. " -- Failed to failQuest due to pPlayer being nil.", LT_ERROR)
 		return
@@ -115,6 +162,7 @@ function SpaceAssassinateScreenplay:failQuest(pPlayer, notifyClient)
 	-- Data to Delete
 	deleteData(playerID .. ":" .. self.className .. ":TotalKills:")
 	deleteData(playerID .. ":" .. self.className .. ":EscortKills:")
+	deleteData(playerID .. ":" .. self.className .. ":TargetDestroyed:")
 
 	-- Cancel the Fail event
 	cancelEvent(self.className, "failAssassination", pPlayer)
@@ -129,7 +177,7 @@ function SpaceAssassinateScreenplay:failQuest(pPlayer, notifyClient)
 		createEvent(200, self.sideQuestType .. "_" .. self.sideQuestName, "failQuest", pPlayer, "false")
 	end
 
-	if (self.sideQuest and (self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.FAILURE or self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL)) then
+	if (not skipFailureSplit and self.sideQuest and (self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.FAILURE or self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL)) then
 		self:triggerFailureSplitQuest(pPlayer)
 	end
 end
@@ -161,9 +209,15 @@ function SpaceAssassinateScreenplay:resetQuest(pPlayer)
 	-- Data to Delete
 	deleteData(playerID .. ":" .. self.className .. ":TotalKills:")
 	deleteData(playerID .. ":" .. self.className .. ":EscortKills:")
+	deleteData(playerID .. ":" .. self.className .. ":TargetDestroyed:")
 
 	-- Cancel the Fail event
 	cancelEvent(self.className, "failAssassination", pPlayer)
+end
+
+-- Leaving the zone fails the run without starting the failure split (SWG setQuestFailed(player, self, false))
+function SpaceAssassinateScreenplay:failLeftZone(pPlayer)
+	self:failQuest(pPlayer, "true", true)
 end
 
 function SpaceAssassinateScreenplay:failAssassination(pPlayer)
@@ -195,6 +249,11 @@ function SpaceAssassinateScreenplay:deployTargets(pPlayer)
 	local escortShips = self.assassinateSpawns.escorts
 	local spawnZone = self.questZone
 	local playerID = SceneObject(pPlayer):getObjectID()
+
+	-- One set of ships per run
+	if (#readStringVectorSharedMemory(playerID .. self.className .. ":targetShips:") > 0) then
+		return
+	end
 
 	if (self.DEBUG_SPACE_ASSASSINATE) then
 		print(self.className .. ":deployTargets -- spawnZone: " .. spawnZone .. " Primary Target: " .. primaryTarget .. " Total Escorting Ships: " .. #escortShips)
@@ -286,6 +345,15 @@ function SpaceAssassinateScreenplay:deployTargets(pPlayer)
 		CreatureObject(pPlayer):addSpaceMissionObject(shipIDs[i], (i == #shipIDs))
 	end
 
+	-- Every ship leaves on its own timer, like SWG's 1200 s warpOut
+	for i = 1, #shipIDs, 1 do
+		local pShip = getSceneObject(shipIDs[i])
+
+		if (pShip ~= nil) then
+			createEvent(self.failTimer * 60 * 1000, self.className, "warpOutLeftover", pShip, "")
+		end
+	end
+
 	-- Store the Spawned Attack Ships
 	writeStringVectorSharedMemory(playerID .. self.className .. ":targetShips:", shipIDs)
 
@@ -300,6 +368,34 @@ function SpaceAssassinateScreenplay:deployTargets(pPlayer)
 
 	-- Schedule Mission Fail
 	createEvent(self.failTimer * 60 * 1000, self.className, "failAssassination", pPlayer, "")
+end
+
+function SpaceAssassinateScreenplay:warpOutLeftover(pShipAgent)
+	if (pShipAgent == nil) then
+		return
+	end
+
+	local shipID = SceneObject(pShipAgent):getObjectID()
+
+	-- Gone from the world already
+	if (getSceneObject(shipID) == nil) then
+		return
+	end
+
+	-- Still part of a live run, failAssassination handles that
+	if (readData(shipID .. ":" .. self.className .. ":QuestOwner") ~= 0) then
+		return
+	end
+
+	dropObserver(SHIPDESTROYED, self.className, "notifyShipDestroyed", pShipAgent)
+
+	ShipObject(pShipAgent):setHyperspacing(true)
+
+	local hyperspaceLocation = ShipObject(pShipAgent):getSpawnPointInFrontOfShip(2500, 8000)
+
+	SceneObject(pShipAgent):setPosition(hyperspaceLocation[1], hyperspaceLocation[2], hyperspaceLocation[3])
+
+	createEvent(2000, "SpaceHelpers", "delayedDestroyShipAgent", pShipAgent, "")
 end
 
 function SpaceAssassinateScreenplay:updateTargetLocation(pPlayer)
@@ -398,6 +494,7 @@ function SpaceAssassinateScreenplay:despawnTargetShips(pPlayer)
 
 		if (pShipAgent ~= nil) then
 			dropObserver(SHIPDESTROYED, self.className, "notifyShipDestroyed", pShipAgent)
+			cancelEvent(self.className, "warpOutLeftover", pShipAgent)
 
 			-- Make ship fly away first
 			ShipObject(pShipAgent):setHyperspacing(true);
@@ -454,19 +551,9 @@ function SpaceAssassinateScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 
 	-- Player is in the correct zone
 	if (zoneNameHash == spaceQuestHash and not hasEnteredZone) then
-		-- Complete the quest task 0
-		SpaceHelpers:completeSpaceQuestTask(pPlayer, self.questType, self.questName, 0, false)
-
-		-- Activate quest task 1
-		SpaceHelpers:activateSpaceQuestTask(pPlayer, self.questType, self.questName, 1, false)
-
-		-- Send Uploading start message
-		CreatureObject(pPlayer):sendSystemMessage("@spacequest/assassinate/" .. self.questName .. ":arrival_phase_1")
-
-		-- Schedule the deployment
-		createEvent(self.arrivalDelay * 1000, self.className, "deployTargets", pPlayer, "")
+		self:beginRun(pPlayer)
 	elseif (zoneNameHash ~= spaceQuestHash and hasEnteredZone) then
-		createEvent(2000, self.className, "failQuest", pPlayer, "true")
+		createEvent(2000, self.className, "failLeftZone", pPlayer, "")
 	end
 
 	return 0
@@ -499,64 +586,67 @@ function SpaceAssassinateScreenplay:notifyShipDestroyed(pShipAgent, pKillerShip)
 	-- Remove as Space Mission Object
 	CreatureObject(pPlayer):removeSpaceMissionObject(agentID, false)
 
-	local isPrimaryTarget = readData(agentID .. ":" .. self.className .. ":PrimaryTarget:")
-	local totalKills = readData(missionOwnerID .. ":" .. self.className .. ":TotalKills:")
-	local escortKills = readData(missionOwnerID .. ":" .. self.className .. ":EscortKills:")
+	-- A kill after the quest left the journal counts for nothing
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return 1
+	end
+
+	local questPrefix = "@spacequest/" .. self.questType .. "/" .. self.questName .. ":"
+	local killsKey = missionOwnerID .. ":" .. self.className .. ":EscortKills:"
+	local targetKey = missionOwnerID .. ":" .. self.className .. ":TargetDestroyed:"
 	local totalEscorts = #self.assassinateSpawns.escorts
 
-	deleteData(missionOwnerID .. ":" .. self.className .. ":TotalKills:")
+	deleteData(agentID .. ":" .. self.className .. ":QuestOwner")
 
-	totalKills = totalKills + 1
-
-	if (self.DEBUG_SPACE_ASSASSINATE) then
-		print(self.className .. ":notifyShipDestroyed - Total Kills: " .. totalKills .. " Escort Kills: " .. escortKills)
-	end
-
-	-- The assination primary target has been killed
-	if (isPrimaryTarget == 1) then
+	-- The assassination primary target has been killed
+	if (readData(agentID .. ":" .. self.className .. ":PrimaryTarget:") == 1) then
 		deleteData(agentID .. ":" .. self.className .. ":PrimaryTarget:")
 
-		CreatureObject(pPlayer):sendSystemMessage("@spacequest/" .. self.questType .. "/" ..  self.questName .. ":assassinate_success")
+		SpaceHelpers:completeSpaceQuestTask(pPlayer, self.questType, self.questName, 1, false)
 
-		-- There are still escort ships remaining
-		if (totalEscorts > (totalKills - 1)) then
-			CreatureObject(pPlayer):sendSystemMessage("@spacequest/" .. self.questType .. "/" ..  self.questName .. ":destroy_escort")
-		end
-	-- An escorting ship has been killed
-	else
-		-- Increase the escort kill count
-		escortKills = escortKills + 1
+		if (self.mustDestroyEscort and readData(killsKey) < totalEscorts) then
+			-- Escorts must die too
+			CreatureObject(pPlayer):sendSystemMessage(questPrefix .. "destroy_escort")
 
-		deleteData(missionOwnerID .. ":" .. self.className .. ":EscortKills:")
-
-		-- All escort ships have been destroyed
-		if (escortKills >= totalEscorts) then
-			CreatureObject(pPlayer):sendSystemMessage("@spacequest/" .. self.questType .. "/" ..  self.questName .. ":escort_wiped_out")
-		-- There are still escort ships remaining
+			writeData(targetKey, 1)
 		else
-			local alertMsg = LuaStringIdChatParameter("@spacequest/" .. self.questType .. "/" ..  self.questName .. ":escort_remaining") -- "\\#pcontrast3 Tactical Computer: < \\#pcontrast1 An escorting craft has been destroyed, %DI remain. \\#pcontrast3 >"
-			alertMsg:setDI(totalEscorts - escortKills)
+			CreatureObject(pPlayer):sendSystemMessage(questPrefix .. "assassinate_success")
 
-			CreatureObject(pPlayer):sendSystemMessage(alertMsg:_getObject())
-
-			-- Store the kill count
-			writeData(missionOwnerID .. ":" .. self.className .. ":EscortKills:", escortKills)
+			createEvent(1000, self.className, "completeQuest", pPlayer, "true")
 		end
-	end
-
-	-- Player has killed primary target and all of the escorts
-	if (totalKills >= (totalEscorts + 1)) then
-		-- All enemies have been destroyed
-		CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_destroyed_all.cef", "")
-
-		-- Complete the quest
-		createEvent(1000, self.className, "completeQuest", pPlayer, "true")
 
 		return 1
 	end
 
-	-- Update the kill count
-	writeData(missionOwnerID .. ":" .. self.className .. ":TotalKills:", totalKills)
+	-- An escorting ship has been killed
+	local escortKills = readData(killsKey) + 1
+	local remaining = totalEscorts - escortKills
 
-	return 0
+	writeData(killsKey, escortKills)
+
+	if (remaining > 0) then
+		local alertMsg = LuaStringIdChatParameter(questPrefix .. "escort_remaining")
+		alertMsg:setDI(remaining)
+
+		CreatureObject(pPlayer):sendSystemMessage(alertMsg:_getObject())
+
+		return 1
+	end
+
+	-- All escort ships have been destroyed
+	CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_destroyed_all.cef", "")
+
+	if (self.mustDestroyEscort) then
+		SpaceHelpers:completeSpaceQuestTask(pPlayer, self.questType, self.questName, 2, false)
+	end
+
+	if (self.mustDestroyEscort and readData(targetKey) == 1) then
+		CreatureObject(pPlayer):sendSystemMessage(questPrefix .. "assassinate_success")
+
+		createEvent(1000, self.className, "completeQuest", pPlayer, "true")
+	else
+		CreatureObject(pPlayer):sendSystemMessage(questPrefix .. "escort_wiped_out")
+	end
+
+	return 1
 end

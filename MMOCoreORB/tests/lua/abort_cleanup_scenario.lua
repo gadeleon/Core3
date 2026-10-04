@@ -291,7 +291,7 @@ function builders.assassinate()
 	local q = H.expectGlobal("assassinate_corellia_privateer_tier1_4a", "assassinate quest table")
 	local player = started(q)
 
-	H.advance(3500) -- deployTargets (2 s), updateTargetLocation (3 s later)
+	H.advance(9500) -- deployTargets (arrivalDelay 6 s, space-assassinate-escort-fix SC-5), updateTargetLocation (3 s later)
 
 	return newRun(q, player)
 end

@@ -313,7 +313,7 @@ local function assassinationSpawnsAtFirstPoint(def)
 
 	q:startQuest(player, "")
 	H.advance(0)
-	H.advance(3500) -- deployTargets (2 s)
+	H.advance(q.arrivalDelay * 1000 + 1500) -- deployTargets (arrivalDelay, space-assassinate-escort-fix SC-5)
 
 	local first = q.targetPatrols[1]
 	local target

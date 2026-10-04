@@ -409,6 +409,16 @@ builders: `D.pilot{skills, squadron, active, complete, datapad = "duty"|"story"}
 off-track gate of Rhea (any one tier 1 skill) and Rikkh (all four), the refusals, the duties, `i_need_to`, the dead-link sweep and the answer keys
 (`fixtures/script/conversation/corellia_privateer_trainer_2.java` is a byte copy of SWG-Source).
 
+### Assassinate escort fix (space-assassinate-escort-fix)
+
+`space_assassinate_escort_fix_scenario.lua` (not a test file) builds the 24 assassinate runs: `S.globals()` (discovered by `questType`), `S.mde(q)`
+(SWG `mustDestroyEscort` from the fixture), `S.started(global[, zone])`, `S.deployed(global)` (run with `ships`, `target`, `escorts`),
+`S.kill(run, ship)`, `S.take(run)` (messages since the last take), `S.runKeys(run)` (run keys that must be gone when it ends) and the split spies.
+`test_space_assassinate_escort_fix_{data,kills,run}.lua` pin the data and fixtures (AC-1, AC-9), the kill/win rules for both flag values
+(AC-2, AC-3, AC-8 inactive kills) and the run behavior: journal tasks, in-zone start, leave-zone fail without split, timeout fail with split,
+escorts left at a win, key hygiene (AC-4 to AC-8). `S.isolate` also gives the first patrol point of `assassinate_corellia_privateer_tier4_2a`
+the `y` its line lacks (`z = 765, -5177`); the strict `spawnShipAgent` fake refuses a nil coordinate, the server reads it as 0.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

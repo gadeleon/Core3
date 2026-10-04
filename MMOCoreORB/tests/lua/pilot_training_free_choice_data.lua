@@ -36,6 +36,11 @@ local function rows(prefix, tier, sids, withClosing)
 end
 
 D.KAYDINE = rows(D.KAYDINE_PREFIX, "02", { "s_45b71b4d", "s_197f4f94", "s_8f5942fa", "s_eff66f4d" })
+-- space-convo-client-strings-kaydine (01-spec.md, D-1, D-3): Kaydine's training is one click. The choice on ready_train_pilot buys the skill and links
+-- to the static default intro trained_<x>_mission4 (`screen`); the train_<x> purchase screens are gone.
+for _, row in ipairs(D.KAYDINE) do
+	row.screen = "trained_" .. row.x .. "_mission4"
+end
 D.DINGE = rows(D.DINGE_PREFIX, "01", { "s_e94f494b", "s_939b6844", "s_ac00d21e", "s_1726d8a5" }, true)
 -- space-convo-client-strings-dinge (01-spec.md, D-4, D-5): Dinge's training is one click. The choice on first_training / more_training links straight to
 -- trained_<x> (`closing`); the train_<x> purchase screens are gone, so the rows carry no `screen`.

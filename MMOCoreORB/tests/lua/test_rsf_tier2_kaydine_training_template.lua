@@ -4,6 +4,10 @@
 -- Answer keys: spec Appendix A (rsf_tier2_kaydine_training_data.lua, copied from the spec), the SWG java
 -- fixtures/script/conversation/naboo_privateer_trainer_2.java parsed by harness/swgjava.lua (never its `actions`: the parser credits the
 -- buy*Skill02 actions to the first intro of each branch, R-5) and fixtures/skill/skills.pilot_neutral_02.tab.
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1 .. D-3, D-9, Content contract 1 and 2, Appendix A): the training is one
+-- click. Appendix A's 31 rows are compared with their F3 values (C.rowNow): 10 of them are deleted (the four train_<x> prompts and the six mission 1 b-branch and
+-- a3 screens), the java graph checks skip the replies that are pre-NGE-only lines, and TRAIN_SCREENS is gone.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -11,6 +15,7 @@ local T = require("trainer_fixes_data")
 local D = require("rsf_tier2_kaydine_training_data")
 local C = require("rsf_tier2_kaydine_convo_data")
 local G = require("rsf_gate_screens_data")
+local KS = require("rsf_tier2_kaydine_client_strings_data")
 local P = require("pilot_training_free_choice_data")
 local SU = require("rsf_tier2_kaydine_signup_data")
 local Swgjava = require("harness.swgjava")
@@ -119,12 +124,12 @@ function TestKaydineTrainingTemplate:test_appendix_a_has_one_changed_30_new_and_
 end
 
 -- AC-1
-function TestKaydineTrainingTemplate:test_the_template_keeps_its_name_and_handler_and_has_100_screens()
+function TestKaydineTrainingTemplate:test_the_template_keeps_its_name_and_handler_and_has_89_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "kaydineConvoHandler", "kaydine_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "kaydine_convo_template: templateType")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30 + 4 + 9, rsf-gate-screens and rsf-tier2-kaydine-signup)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT, "kaydine_convo_template: number of screens (77 - 20 + 30 + 4 + 9 - 11, space-convo-client-strings-kaydine)")
 end
 
 -- AC-1
@@ -147,32 +152,43 @@ function TestKaydineTrainingTemplate:test_ready_train_pilot_is_the_swg_greeting_
 	}, "ready_train_pilot (leftDialog, stopConversation, animation, options; E-PN1: the handler adds the choice)")
 end
 
--- AC-1
+-- AC-1 (space-convo-client-strings-kaydine): the surviving rows equal their F3 values, the 10 deleted ones are gone
 function TestKaydineTrainingTemplate:test_every_new_screen_of_appendix_a_exists_with_its_row()
 	local byId = screensById()
-	local checked = 0
+	local checked, deleted = 0, 0
 
 	for _, row in ipairs(D.ROWS) do
 		if row.status == "new" or row.status == "chg" then
-			local screen = byId[row.id]
+			local want = C.rowNow(row)
 
-			lu.assertNotNil(screen, "kaydine_convo_template: missing screen '" .. row.id .. "'")
-			lu.assertEquals(shape(screen), expectedShape(row), "kaydine_convo_template: screen '" .. row.id .. "' (leftDialog, stopConversation, animation, options in order)")
-			checked = checked + 1
+			if want == nil then
+				lu.assertNil(byId[row.id], "kaydine_convo_template: screen '" .. row.id .. "' must be deleted (space-convo-client-strings-kaydine)")
+				deleted = deleted + 1
+			else
+				local screen = byId[row.id]
+
+				lu.assertNotNil(screen, "kaydine_convo_template: missing screen '" .. row.id .. "'")
+				lu.assertEquals(shape(screen), want, "kaydine_convo_template: screen '" .. row.id .. "' (leftDialog, stopConversation, animation, options in order)")
+				checked = checked + 1
+			end
 		end
 	end
 
-	lu.assertEquals(checked, 31, "screens checked (1 changed + 30 new)")
+	lu.assertEquals({ checked, deleted }, { 21, 10 }, "rows checked and deleted (1 changed + 30 new = 21 + 10)")
 end
 
--- AC-1: the screens that end the conversation have no options, the others have the listed ones
+-- AC-1: the two mission 1 grant screens that remain end the conversation with no options (D-2: mission1_intro_accept(_male) are gone)
 function TestKaydineTrainingTemplate:test_the_two_mission_1_grant_screens_end_the_conversation_with_no_options()
 	local byId = screensById()
 
-	for _, id in ipairs({ "mission1_intro_accept", "mission1_intro_accept_male" }) do
+	for _, id in ipairs({ "mission1_accept", "mission1_accept_male" }) do
 		lu.assertNotNil(byId[id], id)
 		lu.assertEquals(byId[id].stopConversation, "true", id .. ": stopConversation")
 		lu.assertEquals(#byId[id].options, 0, id .. ": options")
+	end
+
+	for _, id in ipairs({ "mission1_intro_accept", "mission1_intro_accept_male" }) do
+		lu.assertNil(byId[id], id .. " must be deleted (D-2)")
 	end
 end
 
@@ -190,7 +206,7 @@ end
 -- AC-1, I-7: the 56 earlier screens (the convo feature's 46 rows and 6 kept screens, not_ready twice, plus the five duty screens) and the 31
 -- of this feature are all of the template. Their definitions are pinned by test_rsf_tier2_kaydine_convo_template.lua and
 -- test_rsf_tier2_kaydine_duties_dialogue.lua (literals from d1091c7255 and the spec appendices).
-function TestKaydineTrainingTemplate:test_the_template_is_the_56_earlier_screens_plus_ready_train_pilot_and_the_30_new_ones()
+function TestKaydineTrainingTemplate:test_the_template_is_the_55_earlier_screens_plus_ready_train_pilot_and_the_20_new_ones_that_survive()
 	local expected = {}
 
 	for _, row in ipairs(C.ROWS) do
@@ -211,6 +227,12 @@ function TestKaydineTrainingTemplate:test_the_template_is_the_56_earlier_screens
 
 	for _, id in ipairs(D.newIds()) do
 		expected[id] = true
+	end
+
+	-- space-convo-client-strings-kaydine Content contract 1: the 11 deleted screens (10 of this feature's rows and mission4_reward_end)
+	for _, id in ipairs(KS.DELETED) do
+		lu.assertTrue(expected[id] == true, "setup: " .. id .. " is one of the earlier or training screens")
+		expected[id] = nil
 	end
 
 	-- rsf-gate-screens (Appendix A-K): the four new gate screens
@@ -238,23 +260,22 @@ function TestKaydineTrainingTemplate:test_the_template_has_no_dead_links_or_dupl
 	lu.assertEquals(H.conversationProblems(D.TEMPLATE), {})
 end
 
--- AC-1: the static links the handler re-points are the java defaults of E-T1 and E-T2
+-- AC-1 (space-convo-client-strings-kaydine D-3): the static link of each choice is the default intro trained_<x>_mission4 (the java default of E-T2), which the
+-- handler overrides with the real intro; the mission 1 brief keeps the female ending as its static link
 function TestKaydineTrainingTemplate:test_the_static_links_of_the_runtime_options_are_the_java_defaults()
 	local byId = screensById()
-	local function link(id)
-		lu.assertNotNil(byId[id], "kaydine_convo_template: screen '" .. id .. "'")
-		lu.assertNotNil(byId[id].options[1], "kaydine_convo_template: screen '" .. id .. "' has an option")
-		return byId[id].options[1][2]
-	end
+	local kh = H.expectGlobal("kaydineConvoHandler", "Kaydine conversation handler")
 
 	-- pilot-training-free-choice E-PN1: ready_train_pilot has no static option (it had the java default s_187 -> train_droid)
-	lu.assertEquals(screensById().ready_train_pilot.options, {}, "ready_train_pilot: static options")
+	lu.assertEquals(byId.ready_train_pilot.options, {}, "ready_train_pilot: static options")
 
-	for _, t in ipairs(D.TRAINING) do
-		lu.assertEquals(link(t.screen), "trained_" .. t.x .. "_mission4", t.screen .. ": static link (the M4 intro, K default)")
+	for i, t in ipairs(D.TRAINING) do
+		lu.assertNotNil(byId[t.intro], "kaydine_convo_template: screen '" .. t.intro .. "'")
+		lu.assertEquals(kh.TRAIN_CHOICES[i][3], t.intro, "TRAIN_CHOICES[" .. i .. "]: static link (the M4 intro, K default)")
+		lu.assertEquals(byId[t.intro].options[1][2], "mission4_brief", t.intro .. ": its reply leads to the mission 4 brief")
 	end
 
-	lu.assertEquals(link("mission1_intro_b4"), "mission1_intro_accept", "mission1_intro_b4: static link (s_268)")
+	lu.assertEquals(byId.mission1_brief.options[1][2], "mission1_accept", "mission1_brief: static link (the female ending)")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -273,13 +294,33 @@ function TestKaydineTrainingConformance:test_each_appendix_npc_sid_is_an_npc_lin
 		seen[sidOf(s.leftDialog) or ""] = true
 	end
 
+	-- space-convo-client-strings-kaydine: a line whose row is deleted or rewritten to a pre-NGE line (FK-4) is no longer shown
+	local replaced = {}
+
+	for _, row in ipairs(D.ROWS) do
+		local now = C.rowNow(row)
+
+		if now == nil or now.leftDialog ~= D.PREFIX .. row.sid then
+			replaced[row.sid] = true
+		end
+	end
+
+	local kept = 0
+
 	for _, sid in ipairs(sortedKeys(inScopeSids())) do
 		lu.assertNotNil(GRAPH.nodes[sid], "answer key: " .. sid .. " is an NPC line of the java")
-		lu.assertTrue(seen[sid] == true, "no screen of kaydine_convo_template has NPC line " .. sid)
+
+		if not replaced[sid] then
+			kept = kept + 1
+			lu.assertTrue(seen[sid] == true, "no screen of kaydine_convo_template has NPC line " .. sid)
+		end
 	end
+
+	lu.assertEquals(kept, 1, "Appendix A NPC lines that stay on a screen (only s_76e6f264, the greeting: every other line is a prompt, an NGE intro or an NGE offer line the pre-NGE lines replace)")
 end
 
--- AC-2, I-2: option sids in order, successor line, end flag and animation of every screen showing an Appendix A line
+-- AC-2, I-2: end flag, animation and the shape of the replies of every screen showing an Appendix A line. space-convo-client-strings-kaydine: the rows that
+-- feature changes are checked slot by slot (same number of replies as the java node; a reply that is still the java one keeps its java successor)
 function TestKaydineTrainingConformance:test_every_screen_showing_an_appendix_line_matches_the_java_graph()
 	local byId = screensById()
 	local scope = inScopeSids()
@@ -302,50 +343,29 @@ function TestKaydineTrainingConformance:test_every_screen_showing_an_appendix_li
 			lu.assertEquals(screen.stopConversation == "true", node.isEnd, "screen '" .. screen.id .. "' (" .. sid .. "): stopConversation == \"true\" iff the java ends the conversation")
 			lu.assertEquals(screen.animation or "", node.animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation")
 
-			local got = {}
-
-			for i, option in ipairs(screen.options or {}) do
-				got[i] = sidOf(option[1])
-			end
-
 			-- pilot-training-free-choice E-PN1: the single java reply is replaced by the choice the handler adds
 			local replaced = D.E_PN[screen.id]
 
 			if replaced ~= nil then
 				lu.assertEquals(node.options, { replaced }, "answer key: " .. sid .. " has the one reply " .. replaced)
-				lu.assertEquals(got, {}, "screen '" .. screen.id .. "' (" .. sid .. "): static options (E-PN1)")
+				lu.assertEquals(#screen.options, 0, "screen '" .. screen.id .. "' (" .. sid .. "): static options (E-PN1)")
 			else
-				lu.assertEquals(got, node.options, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
-			end
+				lu.assertEquals(#screen.options, #node.options, "screen '" .. screen.id .. "' (" .. sid .. "): number of replies")
 
-			for i, optionSid in ipairs(replaced ~= nil and {} or node.options) do
-				local target = byId[screen.options[i][2]]
+				for i, optionSid in ipairs(node.options) do
+					local got = sidOf(screen.options[i][1])
 
-				lu.assertNotNil(target, "screen '" .. screen.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
+					lu.assertNotNil(byId[screen.options[i][2]], "screen '" .. screen.id .. "' option " .. i .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
 
-				local successors = GRAPH.successorsOf(sid, optionSid)
-
-				lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
-
-				local exception = D.EXCEPT[screen.id .. "|" .. optionSid]
-
-				if exception == nil then
-					lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. screen.id .. "' option " .. optionSid .. " -> successor NPC line (java default)")
-				else
-					-- the static link of an exception is one of the successors the java offers for that option
-					local offered = {}
-
-					for _, successor in ipairs(successors) do
-						offered[successor] = true
+					if got == optionSid then
+						lu.assertNotNil(GRAPH.successorsOf(sid, optionSid), "answer key: no successor for " .. sid .. " -> " .. optionSid)
 					end
-
-					lu.assertTrue(offered[sidOf(target.leftDialog)] == true, "screen '" .. screen.id .. "' option " .. optionSid .. " (" .. exception .. "): " .. tostring(target.leftDialog) .. " is not a java successor")
 				end
 			end
 		end
 	end
 
-	lu.assertTrue(checked >= 35, "screens showing an Appendix A line: " .. checked .. " (the appendix has 35 rows)")
+	lu.assertEquals(checked, 1, "screens showing an Appendix A line (only ready_train_pilot)")
 end
 
 -- AC-2: the exceptions E-T1 .. E-T3 are exactly the ones the spec lists, and the runtime options exist in the java
@@ -381,17 +401,24 @@ end
 
 -- AC-2, I-3: every sid of KC is an NPC line or a response of the java; the nine sids of the old training are gone from both files
 function TestKaydineTrainingConformance:test_every_string_of_kaydine_convo_is_in_the_java()
+	local preNge = {}
+
+	-- space-convo-client-strings-kaydine I-4: the only ids that are not in the java are the 35 pre-NGE-only lines
+	for _, sid in ipairs(KS.PRE_NGE_ONLY) do
+		preNge[sid] = true
+	end
+
 	for _, s in ipairs(template().screens) do
 		local sid = sidOf(s.leftDialog)
 
 		lu.assertNotNil(sid, "screen '" .. s.id .. "': leftDialog '" .. tostring(s.leftDialog) .. "' is not @conversation/naboo_privateer_trainer_2:<sid>")
-		lu.assertNotNil(GRAPH.nodes[sid], "screen '" .. s.id .. "': leftDialog " .. sid .. " is not an NPC line of the java")
+		lu.assertTrue(GRAPH.nodes[sid] ~= nil or preNge[sid] == true, "screen '" .. s.id .. "': leftDialog " .. sid .. " is neither an NPC line of the java nor a pre-NGE-only line")
 
 		for i, option in ipairs(s.options or {}) do
 			local osid = sidOf(option[1])
 
 			lu.assertNotNil(osid, "screen '" .. s.id .. "' option " .. i .. ": text '" .. tostring(option[1]) .. "' is not @conversation/naboo_privateer_trainer_2:<sid>")
-			lu.assertTrue(GRAPH.responses[osid] == true, "screen '" .. s.id .. "' option " .. i .. ": " .. osid .. " is not a response of the java")
+			lu.assertTrue(GRAPH.responses[osid] == true or preNge[osid] == true, "screen '" .. s.id .. "' option " .. i .. ": " .. osid .. " is neither a response of the java nor a pre-NGE-only line")
 		end
 	end
 end
@@ -408,11 +435,26 @@ function TestKaydineTrainingConformance:test_every_string_the_handler_adds_is_a_
 
 	for sid in readFile(KH_PATH):gmatch("naboo_privateer_trainer_2:(s_[%w_]+)") do
 		seen[sid] = true
-		lu.assertTrue(GRAPH.responses[sid] == true or choice[sid] == true, "kaydineConvoHandler adds " .. sid .. ", which is neither a response of the java nor one of the four choice replies")
+		-- (the pre-NGE-only replies s_e42b260e and s_5e2a2bb1 are checked below)
 	end
 
-	for _, sid in ipairs({ "s_264", "s_242", "s_78", "s_45d20070", "s_6114e8b7" }) do
+	-- space-convo-client-strings-kaydine Content contract 2: s_264 and s_242 and s_78 are replaced by s_e42b260e and s_5e2a2bb1 (pre-NGE-only)
+	local preNge = {}
+
+	for _, sid in ipairs(KS.PRE_NGE_ONLY) do
+		preNge[sid] = true
+	end
+
+	for sid in pairs(seen) do
+		lu.assertTrue(GRAPH.responses[sid] == true or choice[sid] == true or preNge[sid] == true, "kaydineConvoHandler adds " .. sid .. ", which is neither a java response nor a pre-NGE-only line")
+	end
+
+	for _, sid in ipairs({ "s_e42b260e", "s_5e2a2bb1", "s_45d20070", "s_6114e8b7" }) do
 		lu.assertTrue(seen[sid] == true, "kaydineConvoHandler never adds the option " .. sid)
+	end
+
+	for _, sid in ipairs({ "s_264", "s_242", "s_78" }) do
+		lu.assertNil(seen[sid], "kaydineConvoHandler still adds the NGE option " .. sid)
 	end
 
 	for sid in pairs(choice) do
@@ -423,13 +465,21 @@ function TestKaydineTrainingConformance:test_every_string_the_handler_adds_is_a_
 	lu.assertNil(seen.s_187, "kaydineConvoHandler still adds the retired single reply s_187")
 end
 
--- AC-2, I-3
-function TestKaydineTrainingConformance:test_the_sids_of_the_old_training_are_in_neither_file()
+-- AC-2, I-3 (space-convo-client-strings-kaydine I-3): the NGE editor numbers of the old training (prompts, buy replies, intros, tails: s_188 .. s_302, s_45, s_49, s_75,
+-- s_78, s_90) are in neither file; the pre-NGE lines that replace them are, so the test names the NGE numbers and not the hash ids
+function TestKaydineTrainingConformance:test_the_nge_sids_of_the_old_training_are_in_neither_file()
 	local kc, kh = readFile(KC_PATH), readFile(KH_PATH)
 
-	for _, sid in ipairs(D.OLD_SIDS) do
-		lu.assertNil(kc:find(sid .. '"', 1, true), "kaydine_convo.lua still carries " .. sid)
-		lu.assertNil(kh:find(sid .. '"', 1, true), "kaydineConvoHandler.lua still carries " .. sid)
+	for n = 188, 302 do
+		for _, text in ipairs({ kc, kh }) do
+			lu.assertNil(text:find("naboo_privateer_trainer_2:s_" .. n .. '"', 1, true), "a Kaydine file still carries the NGE id s_" .. n)
+		end
+	end
+
+	for _, n in ipairs({ 45, 49, 75, 78, 90 }) do
+		for _, text in ipairs({ kc, kh }) do
+			lu.assertNil(text:find("naboo_privateer_trainer_2:s_" .. n .. '"', 1, true), "a Kaydine file still carries the NGE id s_" .. n)
+		end
 	end
 end
 
@@ -495,16 +545,18 @@ function TestKaydineTrainingHandlerAgreement:setUp() H.reset() end
 
 local function handlerText() return readFile(KH_PATH) end
 
--- I-6: KH's TRAIN_SCREENS table, as the spec names it
-function TestKaydineTrainingHandlerAgreement:test_train_screens_maps_the_four_purchase_screens_to_the_four_tier_2_skills()
+-- I-6 (space-convo-client-strings-kaydine D-1, D-3): TRAIN_SCREENS is removed; TRAIN_CHOICES maps the four skills to the four default intros
+function TestKaydineTrainingHandlerAgreement:test_train_screens_is_removed_and_train_choices_link_the_four_default_intros()
 	local kh = H.expectGlobal("kaydineConvoHandler", "Kaydine conversation handler")
 
-	lu.assertEquals(kh.TRAIN_SCREENS, D.TRAIN_SCREENS, "kaydineConvoHandler.TRAIN_SCREENS")
+	lu.assertNil(kh.TRAIN_SCREENS, "kaydineConvoHandler.TRAIN_SCREENS (its prompt screens no longer exist)")
 
 	local byId = screensById()
 
-	for screenId in pairs(D.TRAIN_SCREENS) do
-		lu.assertNotNil(byId[screenId], "TRAIN_SCREENS key '" .. screenId .. "' is a screen of the template")
+	for i, t in ipairs(D.TRAINING) do
+		lu.assertEquals(kh.TRAIN_CHOICES[i][1], t.skill, "TRAIN_CHOICES[" .. i .. "]: skill")
+		lu.assertEquals(kh.TRAIN_CHOICES[i][3], t.intro, "TRAIN_CHOICES[" .. i .. "]: link")
+		lu.assertNotNil(byId[t.intro], "TRAIN_CHOICES[" .. i .. "]: '" .. t.intro .. "' is a screen of the template")
 	end
 end
 
@@ -529,9 +581,14 @@ function TestKaydineTrainingHandlerAgreement:test_the_handler_links_the_four_tra
 		mentioned[id] = true
 	end
 
-	for _, id in ipairs({ "train_starships", "train_weapons", "train_procedures", "train_droid", "mission1_intro_accept", "mission1_intro_accept_male", "mission1_intro_b4", "ready_train_pilot" }) do
+	-- space-convo-client-strings-kaydine: the four default intros, the mission 1 grant screens that remain and the choice screen; the deleted screens are not mentioned
+	for _, id in ipairs({ "trained_starships_mission4", "trained_weapons_mission4", "trained_procedures_mission4", "trained_droid_mission4", "mission1_accept", "mission1_accept_male", "ready_train_pilot" }) do
 		lu.assertNotNil(byId[id], "template screen " .. id)
 		lu.assertTrue(mentioned[id] == true, "kaydineConvoHandler never mentions '" .. id .. "'")
+	end
+
+	for _, id in ipairs({ "train_starships", "train_weapons", "train_procedures", "train_droid", "mission1_intro_accept", "mission1_intro_accept_male", "mission1_intro_b4" }) do
+		lu.assertNil(mentioned[id], "kaydineConvoHandler still mentions the deleted screen '" .. id .. "'")
 	end
 end
 

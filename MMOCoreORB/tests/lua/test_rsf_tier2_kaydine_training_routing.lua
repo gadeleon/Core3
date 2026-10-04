@@ -5,6 +5,9 @@
 -- Pilots come from the trainer-fixes builder (trainer_fixes_data.lua): T.player(tr, n, opts) is a pilot whose missions 1..n-1 are won and paid;
 -- opts.baseSkills sets the tier 2 skills, opts.experience the space XP, opts.attempted = false leaves mission n unattempted.
 -- Migration is done in every pilot here (the builder seeds the marker "3").
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1, D-3, AC-5): the choice on the greeting links to the default intro
+-- trained_<x>_mission4 (no train_<x> prompt), buys on the click, and the mission 3 reward offers s_5e2a2bb1 "Sounds good." as its first option.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -243,15 +246,15 @@ function TestKaydineTrainingGreeting:setUp() H.reset() end
 
 -- The pilot who lacks `x` and is about to buy it: SWG order, so the skills before it are held. Out of order sets are listed too.
 local FIRST_MISSING = {
-	{ "none held", {}, "train_starships" },
-	{ "starships held", { 1 }, "train_weapons" },
-	{ "starships and weapons held", { 1, 2 }, "train_procedures" },
-	{ "starships, weapons and procedures held", { 1, 2, 3 }, "train_droid" },
-	{ "only weapons held", { 2 }, "train_starships" },
-	{ "starships and procedures held", { 1, 3 }, "train_weapons" },
-	{ "starships, weapons and droid held", { 1, 2, 4 }, "train_procedures" },
-	{ "only droid held", { 4 }, "train_starships" },
-	{ "weapons, procedures and droid held", { 2, 3, 4 }, "train_starships" },
+	{ "none held", {}, "trained_starships_mission4" },
+	{ "starships held", { 1 }, "trained_weapons_mission4" },
+	{ "starships and weapons held", { 1, 2 }, "trained_procedures_mission4" },
+	{ "starships, weapons and procedures held", { 1, 2, 3 }, "trained_droid_mission4" },
+	{ "only weapons held", { 2 }, "trained_starships_mission4" },
+	{ "starships and procedures held", { 1, 3 }, "trained_weapons_mission4" },
+	{ "starships, weapons and droid held", { 1, 2, 4 }, "trained_procedures_mission4" },
+	{ "only droid held", { 4 }, "trained_starships_mission4" },
+	{ "weapons, procedures and droid held", { 2, 3, 4 }, "trained_starships_mission4" },
 }
 
 local function holding(indexes)
@@ -299,28 +302,19 @@ for i, case in ipairs(FIRST_MISSING) do
 	end
 end
 
--- AC-4: choosing the first reply shows the prompt of the first missing skill, with its line and its one option, and nothing is granted
-function TestKaydineTrainingGreeting:test_each_purchase_prompt_shows_its_line_and_one_option_and_grants_nothing()
-	local byScreen = {}
-
-	for _, t in ipairs(D.TRAINING) do
-		byScreen[t.screen] = t
-	end
-
+-- AC-4 (space-convo-client-strings-kaydine AC-5): showing the greeting grants, pays and starts nothing, whatever skills are missing; the first reply is the first missing skill's
+function TestKaydineTrainingGreeting:test_the_greeting_shows_the_first_missing_skills_reply_and_grants_nothing_on_display()
 	for _, case in ipairs(FIRST_MISSING) do
 		H.reset()
 
 		local player = trainee(case[2])
 		local rec = T.spyAllQuests()
 		local before = player.ghost.experience.space_combat_general
-		local transcript = T.converse(tr, player, { 0 })
-		local t = byScreen[case[3]]
+		local transcript = T.converse(tr, player)
 
-		lu.assertEquals(ids(transcript), { "ready_train_pilot", case[3] }, case[1] .. ": screens")
-		lu.assertEquals(transcript[2].text, D.PREFIX .. t.promptSid, case[1] .. ": " .. case[3] .. " line")
-		lu.assertEquals(#transcript[2].options, 1, case[1] .. ": " .. case[3] .. " number of options")
-		lu.assertEquals(transcript[2].options[1].text, D.PREFIX .. t.optionSid, case[1] .. ": " .. case[3] .. " option text")
-		lu.assertEquals(#rec.skills, 0, case[1] .. ": grantSpaceSkill calls while the prompt is shown")
+		lu.assertEquals(ids(transcript), { "ready_train_pilot" }, case[1] .. ": screens")
+		lu.assertEquals(transcript[1].options[1].link, case[3], case[1] .. ": link of the first reply")
+		lu.assertEquals(#rec.skills, 0, case[1] .. ": grantSpaceSkill calls while the greeting is shown")
 		lu.assertEquals(#H.Engine.callsTo("skillManagerAwardSkill"), 0, case[1] .. ": skillManagerAwardSkill calls")
 		lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, case[1] .. ": awardSkill calls")
 		lu.assertEquals(player.ghost.experience.space_combat_general, before, case[1] .. ": XP")
@@ -371,7 +365,7 @@ function TestKaydineTrainingMission3Reward:test_a_pilot_who_can_train_is_offered
 	local transcript = T.converse(tr, m3pilot(3, XP), { 0, "s_45d20070" })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward", "ready_train_pilot" }, "screens")
-	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
+	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
 	lu.assertEquals(transcript[3].text, D.PREFIX .. "s_76e6f264", "greeting")
 	lu.assertEquals(C.pairsOf(transcript[3]), C.expected(C.KAYDINE, { [D.SKILLS[1]] = true, [D.SKILLS[2]] = true, [D.SKILLS[3]] = true }), "greeting: options (starships, weapons, procedures held: the droid reply only)")
 end
@@ -380,19 +374,19 @@ end
 function TestKaydineTrainingMission3Reward:test_a_pilot_two_skills_short_is_offered_the_training_after_mission_3()
 	local transcript = T.converse(tr, m3pilot(1, XP), { 0 })
 
-	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
+	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
 end
 
 -- AC-9: not enough XP
 function TestKaydineTrainingMission3Reward:test_a_pilot_without_the_xp_is_offered_the_duty_line_instead()
 	local transcript = T.converse(tr, m3pilot(3, XP - 1), { 0 })
 
-	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
+	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
 end
 
 -- AC-9: nothing left to train
 function TestKaydineTrainingMission3Reward:test_a_pilot_with_all_four_skills_is_offered_the_duty_line_instead()
 	local transcript = T.converse(tr, m3pilot(4, 10 * XP), { 0 })
 
-	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
+	lu.assertEquals(optionPairs(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
 end

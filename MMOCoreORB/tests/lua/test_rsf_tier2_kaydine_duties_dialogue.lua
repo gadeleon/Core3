@@ -5,6 +5,9 @@
 -- Answer keys: the spec's Appendix A (rsf_tier2_kaydine_duties_data.lua) and the SWG java fixtures/script/conversation/naboo_privateer_trainer_2.java
 -- parsed by harness/swgjava.lua. Grants are behavior, see test_rsf_tier2_kaydine_duties_conversation.lua; here only the text of the java is read.
 -- Every other screen is compared with the answer keys of the earlier features (rsf_tier2_kaydine_convo_data.lua).
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, Content contract 1, D-10): 89 screens, the 11 deleted ones leave the expected
+-- set, the rows that feature changes are compared with their F3 values (C.rowNow), and s_2e7b17f3 is allowed on the story screen mission4_accept (never on a duty screen).
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -14,6 +17,7 @@ local C = require("rsf_tier2_kaydine_convo_data")
 local TR = require("rsf_tier2_kaydine_training_data")
 local G = require("rsf_gate_screens_data")
 local SU = require("rsf_tier2_kaydine_signup_data")
+local KS = require("rsf_tier2_kaydine_client_strings_data") -- space-convo-client-strings-kaydine
 local Swgjava = require("harness.swgjava")
 
 T.load()
@@ -117,9 +121,9 @@ function TestKaydineDutyScreens:test_accept_duty_destroy1_is_deleted_and_nothing
 	end
 end
 
--- AC-4: the template has 100 screens (91 before rsf-tier2-kaydine-signup; 87 before rsf-gate-screens, 77 before rsf-tier2-kaydine-training: 77 - 20 + 30 + 4) and no dead link or duplicate id
-function TestKaydineDutyScreens:test_the_template_has_100_screens_and_no_dead_links_or_duplicate_ids()
-	lu.assertEquals(#template().screens, 100, "kaydine_convo_template: number of screens (91 + the 9 sign-up screens of rsf-tier2-kaydine-signup)")
+-- AC-4: the template has 89 screens (100 before space-convo-client-strings-kaydine; 91 before rsf-tier2-kaydine-signup; 87 before rsf-gate-screens) and no dead link or duplicate id
+function TestKaydineDutyScreens:test_the_template_has_89_screens_and_no_dead_links_or_duplicate_ids()
+	lu.assertEquals(#template().screens, 89, "kaydine_convo_template: number of screens (100 - the 11 screens space-convo-client-strings-kaydine deletes)")
 	lu.assertEquals(H.conversationProblems(C.TEMPLATE), {})
 end
 
@@ -159,6 +163,12 @@ function TestKaydineDutyScreens:test_every_screen_is_one_of_the_earlier_answer_k
 		expected[id] = true
 	end
 
+	-- space-convo-client-strings-kaydine Content contract 1: the 11 deleted screens
+	for _, id in ipairs(KS.DELETED) do
+		lu.assertTrue(expected[id] == true, "setup: " .. id .. " is one of the earlier screens")
+		expected[id] = nil
+	end
+
 	local got = {}
 
 	for _, s in ipairs(template().screens) do
@@ -175,19 +185,15 @@ function TestKaydineDutyScreens:test_the_non_duty_screens_still_equal_the_earlie
 
 	for _, row in ipairs(C.ROWS) do
 		if row.status ~= "kept" then
-			local want = {
-				leftDialog = C.PREFIX .. row.sid,
-				stopConversation = row.stop and "true" or "false",
-				animation = row.animation ~= "" and row.animation or nil,
-				options = {},
-			}
+			-- space-convo-client-strings-kaydine: the F3 value of a changed row, nil for a deleted one
+			local want = C.rowNow(row)
 
-			for i, o in ipairs(row.options) do
-				want.options[i] = { C.PREFIX .. o[1], o[2] }
+			if want == nil then
+				lu.assertNil(byId[row.id], "kaydine_convo_template: screen '" .. row.id .. "' must be deleted")
+			else
+				lu.assertEquals(shape(byId[row.id] or {}), want, "kaydine_convo_template: screen '" .. row.id .. "' changed")
+				checked = checked + 1
 			end
-
-			lu.assertEquals(shape(byId[row.id] or {}), want, "kaydine_convo_template: screen '" .. row.id .. "' changed")
-			checked = checked + 1
 		end
 	end
 
@@ -197,7 +203,7 @@ function TestKaydineDutyScreens:test_the_non_duty_screens_still_equal_the_earlie
 		checked = checked + 1
 	end
 
-	lu.assertTrue(checked >= 50, "screens checked: " .. checked .. " (46 rows and 6 kept screens, not_ready twice, since rsf-tier2-kaydine-training)")
+	lu.assertEquals(checked, 50, "screens checked (46 rows and 6 kept screens, not_ready twice, minus the 2 deleted rows)")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -356,11 +362,18 @@ TestKaydineDutyStrings = {}
 
 function TestKaydineDutyStrings:setUp() H.reset() end
 
--- AC-4: no duty screen shows s_2e7b17f3 or s_bb291959 any more; s_2e7b17f3 is nowhere in KC
+-- AC-4: no duty screen shows s_2e7b17f3 or s_bb291959 any more; space-convo-client-strings-kaydine D-10: s_2e7b17f3 is the mission 4 accept line, on mission4_accept only
 function TestKaydineDutyStrings:test_the_foreign_and_borrowed_duty_lines_are_gone_from_every_duty_screen()
-	local kc = readFile(KC_PATH)
+	local showing = {}
 
-	lu.assertNil(kc:find("s_2e7b17f3", 1, true), "kaydine_convo.lua still carries s_2e7b17f3")
+	for _, screen in ipairs(template().screens) do
+		if sidOf(screen.leftDialog) == "s_2e7b17f3" then
+			showing[#showing + 1] = screen.id
+		end
+	end
+
+	lu.assertEquals(showing, { "mission4_accept" }, "screens showing s_2e7b17f3 (a story screen, never a duty screen)")
+	lu.assertNil(readFile(KH_PATH):find("s_2e7b17f3", 1, true), "kaydineConvoHandler.lua carries s_2e7b17f3")
 
 	for _, id in ipairs({ "here_for_work", "duty_options", "accept_duty_escort", "accept_duty_recovery", "accept_duty_destroy", "mission3_reward_duty" }) do
 		local screen = screensById()[id]

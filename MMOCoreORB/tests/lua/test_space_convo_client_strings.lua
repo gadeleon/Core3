@@ -346,12 +346,13 @@ end
 
 TestClientStringRatchet = {}
 
--- AC-8 (the ratchet data itself, Appendix B); AC-1 of space-convo-client-strings-dinge (01-spec.md): Dinge's file left the list (470 -> 446)
-function TestClientStringRatchet:test_known_gaps_hold_the_4_files_and_446_ids_left_after_dinge()
+-- AC-8 (the ratchet data itself, Appendix B); AC-1 of space-convo-client-strings-dinge (01-spec.md): Dinge's file left the list (470 -> 446);
+-- AC-1 of space-convo-client-strings-kaydine (01-spec.md): Kaydine's file left it too (446 -> 381)
+function TestClientStringRatchet:test_known_gaps_hold_the_3_files_and_381_ids_left_after_kaydine()
 	local total = 0
-	local expected = { 65, 76, 94, 211 }
+	local expected = { 76, 94, 211 }
 	local files = {
-		"conversation/naboo_privateer_trainer_2", "conversation/naboo_privateer_tier3",
+		"conversation/naboo_privateer_tier3",
 		"conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4",
 	}
 
@@ -362,8 +363,9 @@ function TestClientStringRatchet:test_known_gaps_hold_the_4_files_and_446_ids_le
 		total = total + #D.KNOWN_GAPS[f]
 	end
 
-	lu.assertEquals(total, 446, "KNOWN_GAPS total")
+	lu.assertEquals(total, 381, "KNOWN_GAPS total")
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_1"], "Dinge's file is fixed and must not be listed")
+	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_2"], "Kaydine's file is fixed and must not be listed")
 end
 
 -- AC-8 (I-3): new gaps fail, and fixed gaps must be removed from the list

@@ -16,7 +16,7 @@ local S = {}
 
 S.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 S.TEMPLATE = "kaydine_convo_template"
-S.SCREEN_COUNT = 100 -- 91 + the nine screens below
+S.SCREEN_COUNT = 89 -- 91 + the nine screens below - the 11 screens space-convo-client-strings-kaydine deletes
 S.FLAG = "RsfSquadronScreenplay:StartedKaydine"
 S.MUSIC = "sound/music_themequest_acc_general.snd"
 S.STF_SIDS = "string/en/conversation/naboo_privateer_trainer_2.sids"

@@ -135,7 +135,8 @@ T.TRAINERS.kaydine = {
 		{ "escort_naboo_privateer_15" },
 	},
 	starts = {
-		starts("+mission1_accept", "+mission1_accept_male", "+mission1_failed", "+mission1_intro_accept", "+mission1_intro_accept_male"),
+		-- space-convo-client-strings-kaydine (01-spec.md, D-2): the starships branch b rejoins branch a; mission1_intro_accept(_male) are gone
+		starts("+mission1_accept", "+mission1_accept_male", "+mission1_failed"),
 		starts("+mission2_accept", "+mission2_failed"),
 		starts("+mission3_accept", "+mission3_failed"),
 		starts("+mission4_accept", "+mission4_failed"),

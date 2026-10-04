@@ -4,6 +4,10 @@
 -- Spec: .claude/work/rsf-tier2-kaydine-convo/01-spec.md (AC-3 .. AC-8, AC-10, invariants I-4, I-5, Conversation flow C1-C10).
 -- Appendix A (rsf_tier2_kaydine_convo_data.lua) is the answer key for screens, options and actions; routing is F4's (unchanged).
 -- Migration is done in every pilot here (the player builder seeds the marker "2").
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, FK-6, FK-7, FK-8, D-2, D-4, D-10): the mission 1 brief offers s_e42b260e, the
+-- M1 and M2 failures s_c8f39347, the mission 3 reward s_5e2a2bb1, "What now?" ends on completed_kaydine_end and mission4_reward_end is gone. The start screens are
+-- mission1_accept(_male) alone.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -174,12 +178,12 @@ local function mission1Walk(gender)
 end
 
 -- AC-4
-function TestKaydineGender:test_a_male_pilot_is_offered_s_242_to_mission1_accept_male_and_starts_mission_1()
+function TestKaydineGender:test_a_male_pilot_is_offered_s_e42b260e_to_mission1_accept_male_and_starts_mission_1()
 	local player, transcript = mission1Walk(0)
 
 	lu.assertEquals(ids(transcript), { "mission1_ready", "mission1_offer", "mission1_brief", "mission1_accept_male" }, "screens")
 	lu.assertEquals(#transcript[3].options, 1, "mission1_brief: option count")
-	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_242", "mission1_brief: option text")
+	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_e42b260e", "mission1_brief: option text")
 	lu.assertEquals(transcript[3].options[1].link, "mission1_accept_male", "mission1_brief: link for a male pilot")
 	lu.assertTrue(transcript[4].stop, "mission1_accept_male ends the conversation")
 	lu.assertEquals(T.state(player, A1), "active", A1)
@@ -187,18 +191,18 @@ function TestKaydineGender:test_a_male_pilot_is_offered_s_242_to_mission1_accept
 end
 
 -- AC-4
-function TestKaydineGender:test_a_female_pilot_is_offered_s_242_to_mission1_accept_and_starts_mission_1()
+function TestKaydineGender:test_a_female_pilot_is_offered_s_e42b260e_to_mission1_accept_and_starts_mission_1()
 	local player, transcript = mission1Walk(1)
 
 	lu.assertEquals(ids(transcript), { "mission1_ready", "mission1_offer", "mission1_brief", "mission1_accept" }, "screens")
-	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_242", "mission1_brief: option text")
+	lu.assertEquals(transcript[3].options[1].text, D.PREFIX .. "s_e42b260e", "mission1_brief: option text")
 	lu.assertEquals(transcript[3].options[1].link, "mission1_accept", "mission1_brief: link for a female pilot")
 	lu.assertTrue(transcript[4].stop, "mission1_accept ends the conversation")
 	lu.assertEquals(T.state(player, A1), "active", A1)
 	lu.assertEquals(attempted(player, 1), "1", "tier2_1a:attempted")
 end
 
--- AC-4: the two endings are two different lines (s_244 / s_246)
+-- AC-4: the two endings are two different lines (s_225b33f "Good luck, son!" / s_ff45f1fd "Good luck to you, Captain %TU!")
 function TestKaydineGender:test_the_male_and_female_endings_show_different_lines()
 	local _, male = mission1Walk(0)
 
@@ -217,7 +221,7 @@ function TestKaydineGender:test_a_male_conversation_does_not_change_the_template
 
 	for _, s in ipairs(tmpl.screens) do
 		if s.id == "mission1_brief" then
-			lu.assertEquals(s.options, { { D.PREFIX .. "s_242", "mission1_accept" } }, "mission1_brief template options after a male conversation")
+			lu.assertEquals(s.options, { { D.PREFIX .. "s_e42b260e", "mission1_accept" } }, "mission1_brief template options after a male conversation")
 		end
 	end
 
@@ -365,7 +369,7 @@ local PATHS = {
 	{ 2, { 1 }, { "mission2_reward", "mission2_reward_proud" } },
 	{ 3, { 0, 0 }, { "mission3_complete", "mission3_reward", "mission3_reward_end" } },
 	{ 4, { 0, 0 }, { "mission4_complete", "mission4_reward", "mission4_reward_dulios" } },
-	{ 4, { 0, 1 }, { "mission4_complete", "mission4_reward", "mission4_reward_end" } },
+	{ 4, { 0, 1 }, { "mission4_complete", "mission4_reward", "completed_kaydine_end" } }, -- FK-8, D-4: "What now?" rejoins the line that answers "Where should I go?"
 }
 
 for _, p in ipairs(PATHS) do
@@ -545,7 +549,7 @@ local function canTrain(player)
 end
 
 -- AC-7
-function TestKaydineMission3Reward:test_a_pilot_who_can_train_is_offered_s_78_and_s_45d20070_to_the_training_screen()
+function TestKaydineMission3Reward:test_a_pilot_who_can_train_is_offered_s_5e2a2bb1_and_s_45d20070_to_the_training_screen()
 	local player = T.player(tr, 3, { complete = { R14 } })
 
 	canTrain(player)
@@ -553,7 +557,7 @@ function TestKaydineMission3Reward:test_a_pilot_who_can_train_is_offered_s_78_an
 	local transcript = T.converse(tr, player, { 0 })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward" }, "screens")
-	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
+	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_45d20070", "ready_train_pilot" } }, "mission3_reward options")
 end
 
 -- AC-9 (rsf-tier2-kaydine-training): the training option leads to the SWG greeting s_76e6f264; pilot-training-free-choice: with the choice of the missing skills
@@ -578,12 +582,12 @@ function TestKaydineMission3Reward:test_choosing_s_45d20070_shows_the_swg_traini
 end
 
 -- AC-7
-function TestKaydineMission3Reward:test_a_pilot_who_cannot_train_is_offered_s_78_and_s_6114e8b7_to_the_duty_line()
+function TestKaydineMission3Reward:test_a_pilot_who_cannot_train_is_offered_s_5e2a2bb1_and_s_6114e8b7_to_the_duty_line()
 	local player = T.player(tr, 3, { complete = { R14 } })
 	local transcript = T.converse(tr, player, { 0 })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward" }, "screens")
-	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
+	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
 end
 
 -- AC-7: a pilot who already holds all four skills (tier 2 complete) cannot train, however much experience it has
@@ -595,12 +599,12 @@ function TestKaydineMission3Reward:test_a_pilot_with_all_four_tier2_skills_gets_
 	local transcript = T.converse(tr, player, { 0 })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward" }, "screens")
-	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_78", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
+	lu.assertEquals(optionsOf(transcript[2]), { { D.PREFIX .. "s_5e2a2bb1", "mission3_reward_end" }, { D.PREFIX .. "s_6114e8b7", "mission3_reward_duty" } }, "mission3_reward options")
 end
 
--- AC-7: s_78 ends the reward chain with SWG's line
-function TestKaydineMission3Reward:test_s_78_leads_to_mission3_reward_end_which_ends_the_conversation()
-	local transcript = T.converse(tr, T.player(tr, 3, { complete = { R14 } }), { 0, "s_78" })
+-- AC-7 (D-10): s_5e2a2bb1 "Sounds good." ends the reward chain with SWG's line
+function TestKaydineMission3Reward:test_s_5e2a2bb1_leads_to_mission3_reward_end_which_ends_the_conversation()
+	local transcript = T.converse(tr, T.player(tr, 3, { complete = { R14 } }), { 0, "s_5e2a2bb1" })
 
 	lu.assertEquals(ids(transcript), { "mission3_complete", "mission3_reward", "mission3_reward_end" }, "screens")
 	lu.assertTrue(transcript[3].stop, "mission3_reward_end ends the conversation")

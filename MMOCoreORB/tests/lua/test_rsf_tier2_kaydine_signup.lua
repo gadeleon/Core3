@@ -158,12 +158,12 @@ TestSignupTemplate = {}
 function TestSignupTemplate:setUp() H.reset() end
 
 -- AC-1
-function TestSignupTemplate:test_the_template_keeps_its_name_and_handler_and_has_100_screens()
+function TestSignupTemplate:test_the_template_keeps_its_name_and_handler_and_has_89_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "kaydineConvoHandler", "kaydine_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "kaydine_convo_template: templateType")
-	lu.assertEquals(#t.screens, S.SCREEN_COUNT, "kaydine_convo_template: number of screens (91 + the nine sign-up screens)")
+	lu.assertEquals(#t.screens, S.SCREEN_COUNT, "kaydine_convo_template: number of screens (91 + the nine sign-up screens - the 11 deleted by space-convo-client-strings-kaydine)")
 end
 
 -- AC-1

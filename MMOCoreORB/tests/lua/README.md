@@ -281,7 +281,10 @@ completes once); "captured" means `<shipID>:<className>:recoveryShipProgress:` h
 
 Step 4 (rsf-tier2-kaydine-training): `rsf_tier2_kaydine_training_data.lua` holds the spec's Appendix A (31 training screens plus the four
 existing ones they link), the 16 intro walks and `D.drive(tr, player, screenId, choices)`, which starts a conversation as if the pilot had just
-chosen an option on `screenId` (reaches prompts no first screen leads to). `T.player` takes `baseSkills` (replaces the trainer's own skills) and
+chosen an option on `screenId` (reaches screens no first screen leads to). Since space-convo-client-strings-kaydine the training is one click: `D.TRAINING[i]`
+is `{ x, skill, intro, choiceSid }` (no prompt screens, `TRAIN_SCREENS` is gone), `D.INTRO[i].walk` starts on the `trained_<x>_mission<N>` intro, and a purchase
+walk is `ready_train_pilot` followed by that walk. `D.ROWS` / `D.EXCEPT` stay as the history of this step (their counting tests still pass); the live values of
+the screens that feature changes are `rsf_tier2_kaydine_client_strings_data.lua` (`KS.ROWS`, `KS.DELETED`, `KS.PRE_NGE_ONLY`, `KS.TEXT`; `rowNow(row)` in `rsf_tier2_kaydine_convo_data.lua` maps an old row onto its current value). `T.player` takes `baseSkills` (replaces the trainer's own skills) and
 `experience` (replaces `{ space_combat_general = 0 }`); the Kaydine pilot for mission n holds the first n tier 2 skills (D-11).
 `H.Engine.config.skillXpCosts = { [skill] = cost }` is an opt-in model of `SkillManager::awardSkill`: the XP-deducting grant charges
 `space_combat_general` and refuses (grants nothing) when the pilot has less; without it nothing is charged. `H.reset()` clears it.
@@ -316,7 +319,8 @@ Choices that happen "while a screen is shown" (the skill arrives, the XP is gone
 ### Pilot training free choice (pilot-training-free-choice)
 
 `pilot_training_free_choice_data.lua` (not a test file) is the answer key of the pre-NGE free choice of the next pilot skill at Dinge, Kaydine and Imler:
-the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`, `reply`, and `screen` for Kaydine and Imler; Dinge has `closing` = `trained_<x>` instead, no `screen`), the retired single replies
+the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`, `reply`, and `screen` for Kaydine and Imler; Dinge has `closing` = `trained_<x>` instead, no `screen`;
+Kaydine's `screen` is `trained_<x>_mission4` since space-convo-client-strings-kaydine: one click, the static default intro), the retired single replies
 (`C.RETIRED`) and helpers (`C.expected(list, heldSet[, "closing"])` = the `{ reply, link }` pairs a choice screen must show, `C.properSubsets`, `C.pairsOf`).
 `test_pilot_training_free_choice_{kaydine,dinge,imler}.lua` drive the choice, the purchase / free grant and out-of-order careers through `H.converse`
 (choices by reply sid, so an out-of-order pick does not depend on the order of the list); `test_pilot_training_free_choice_conformance.lua` pins the
@@ -351,10 +355,14 @@ starting with `/` or `./` is used as is (the helper test scans `fixtures/client_
 
 A per-trainer test is `lu.assertEquals(CS.unresolved({ <template>, <handler> }), {})`. `space_convo_client_strings_data.lua` holds the **ratchet**:
 `KNOWN_GAPS` (file -> the ids still unresolved; `test_space_convo_client_strings.lua` requires the scan to equal it exactly, so a new gap fails and a fixed
-gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (the 15 stored prefixes, the only line that joins one with an id, Dulios' `PT .. choice[2]`, and the 14 unused `stringFile` locals, pinned by path and line text so a new prefix or a second use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446, four files left: `naboo_privateer_trainer_2`, `naboo_privateer_tier3`,
-`corellia_rebel_tier4`, `naboo_privateer_tier4`); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
+gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (the 15 stored prefixes, the only line that joins one with an id, Dulios' `PT .. choice[2]`, and the 14 unused `stringFile` locals, pinned by path and line text so a new prefix or a second use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446) and so is Kaydine's (446 -> 381, three files left: `naboo_privateer_tier3` 76,
+`corellia_rebel_tier4` 94, `naboo_privateer_tier4` 211); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
 screens, the trailing `-- <client text>` comments and the sign-up, mission 3 failure, mission 4 offer and duty-decline journeys. Dinge trains in one click:
 the choice is made on `first_training` (free) or `more_training` (paid) and the conversation ends on `trained_<x>`, which shows "Good choice." (`s_cd72f93`).
+`test_space_convo_client_strings_kaydine.lua` holds Kaydine's: the scan, the exact values of the 38 changed screens (`rsf_tier2_kaydine_client_strings_data.lua`), the trailing
+comments, the identity checks against commit 6991fd0f9a and the offer, failure, reward, training and career journeys. Kaydine trains in one click too, but her acknowledgment
+is the mission intro: the choice on `ready_train_pilot` buys the skill (60,000 XP, once) and shows `trained_<x>_mission<N>` (the 16 intros, 10 distinct pre-NGE lines),
+which leads to mission N's accept screen, where the mission starts.
 
 **Regenerating the fixtures** (maintenance only, needs `/tre` and Python 3; run from `MMOCoreORB/`):
 

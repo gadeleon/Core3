@@ -1,6 +1,11 @@
 -- Shared test data for the RSF tier 2 Kaydine training (not a test file).
 -- Spec: .claude/work/rsf-tier2-kaydine-training/01-spec.md (Source inventory, Content contract, Data mapping, Appendix A).
 --
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1 .. D-3, D-9, Appendix A): the training is one click now. D.ROWS,
+-- D.EXCEPT and D.OLD_TRAIN_SCREENS stay as the history of rsf-tier2-kaydine-training (the sanity tests that count them still pass); the live truth about the
+-- template is rsf_tier2_kaydine_client_strings_data.lua. D.TRAINING has no prompt screens, D.TRAIN_SCREENS and D.OLD_SIDS are gone, D.SCREEN_COUNT is 89,
+-- the training walks, D.ROUTE_B and D.STARTS follow the new graph.
+--
 -- Everything below is copied from the spec, not read from kaydine_convo.lua / kaydineConvoHandler.lua, so a wrong production value
 -- makes a test fail instead of agreeing with itself:
 --   D.ROWS      Appendix A, 35 rows: 1 changed (ready_train_pilot), 30 new, 4 convo screens that exist already (status "conv")
@@ -17,7 +22,7 @@ local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 100 -- 87 + the 4 gate screens of rsf-gate-screens + the 9 sign-up screens of rsf-tier2-kaydine-signup
+D.SCREEN_COUNT = 89 -- 100 - the 11 screens space-convo-client-strings-kaydine deletes
 
 -- Appendix A. options are { option sid, static link }.
 D.ROWS = {
@@ -70,22 +75,15 @@ D.EXCEPT = {
 	["mission1_intro_b4|s_264"] = "E-T3",
 }
 
--- The four tier 2 skills in SWG's purchase order (K:2204-2330)
+-- The four tier 2 skills in SWG's purchase order (K:2204-2330). `intro` is the static default intro the choice links to (space-convo-client-strings-kaydine D-3).
 D.TRAINING = {
-	{ x = "starships", skill = "pilot_neutral_starships_02", screen = "train_starships", optionSid = "s_192", promptSid = "s_188" },
-	{ x = "weapons", skill = "pilot_neutral_weapons_02", screen = "train_weapons", optionSid = "s_194", promptSid = "s_189" },
-	{ x = "procedures", skill = "pilot_neutral_procedures_02", screen = "train_procedures", optionSid = "s_196", promptSid = "s_190" },
-	{ x = "droid", skill = "pilot_neutral_droid_02", screen = "train_droid", optionSid = "s_198", promptSid = "s_191" },
+	{ x = "starships", skill = "pilot_neutral_starships_02", intro = "trained_starships_mission4", choiceSid = "s_45b71b4d" },
+	{ x = "weapons", skill = "pilot_neutral_weapons_02", intro = "trained_weapons_mission4", choiceSid = "s_197f4f94" },
+	{ x = "procedures", skill = "pilot_neutral_procedures_02", intro = "trained_procedures_mission4", choiceSid = "s_8f5942fa" },
+	{ x = "droid", skill = "pilot_neutral_droid_02", intro = "trained_droid_mission4", choiceSid = "s_eff66f4d" },
 }
 
 D.SKILLS = { "pilot_neutral_starships_02", "pilot_neutral_weapons_02", "pilot_neutral_procedures_02", "pilot_neutral_droid_02" }
-
-D.TRAIN_SCREENS = {
-	train_starships = "pilot_neutral_starships_02",
-	train_weapons = "pilot_neutral_weapons_02",
-	train_procedures = "pilot_neutral_procedures_02",
-	train_droid = "pilot_neutral_droid_02",
-}
 
 -- The 30 screens that are new (Appendix A status "new") and the one that changed
 function D.newIds()
@@ -119,7 +117,7 @@ local function walk(x, n)
 
 	if n == 1 then
 		if x == "starships" then
-			return { first, "mission1_intro_a1", "mission1_intro_a2", "mission1_intro_a3", "mission1_brief", "mission1_accept_male" }
+			return { first, "mission1_intro_a1", "mission1_intro_a2", "mission1_offer", "mission1_brief", "mission1_accept_male" }
 		end
 
 		return { first, "mission1_brief", "mission1_accept_male" }
@@ -147,12 +145,12 @@ for _, t in ipairs(D.TRAINING) do
 	end
 end
 
--- The second route of trained_starships_mission1 (option 2): male and female end screens
-D.ROUTE_B = { "trained_starships_mission1", "mission1_intro_b1", "mission1_intro_b2", "mission1_intro_b3", "mission1_intro_b4" }
+-- The second route of trained_starships_mission1 (option 2): it rejoins the first route at mission1_intro_a2 (D-2)
+D.ROUTE_B = { "trained_starships_mission1", "mission1_intro_b1", "mission1_intro_a2", "mission1_offer", "mission1_brief" }
 
--- The screens that start a story chain (I-5): the convo feature's start screens plus the two new ones
+-- The screens that start a story chain (I-5): the convo feature's start screens (space-convo-client-strings-kaydine D-2: mission1_intro_accept(_male) are gone)
 D.STARTS = {
-	mission1_accept = 1, mission1_accept_male = 1, mission1_failed = 1, mission1_intro_accept = 1, mission1_intro_accept_male = 1,
+	mission1_accept = 1, mission1_accept_male = 1, mission1_failed = 1,
 	mission2_accept = 2, mission2_failed = 2,
 	mission3_accept = 3, mission3_failed = 3,
 	mission4_accept = 4, mission4_failed = 4,
@@ -166,11 +164,6 @@ for _, p in ipairs({ "initial", "mission2", "mission3", "mission4", "final" }) d
 		D.OLD_TRAIN_SCREENS[#D.OLD_TRAIN_SCREENS + 1] = p .. "_train_" .. w
 	end
 end
-
--- The 4 NPC-line sids of the old training that are not in the java (convo spec I-3). The old greeting s_8a84109d left this list with rsf-gate-screens:
--- it is the java's off-track duty line now (Kaydine non_rsf_duty_options). The 4 old reply sids (s_45b71b4d, s_197f4f94, s_8f5942fa, s_eff66f4d) left this
--- list with pilot-training-free-choice: they are the choice replies again (D-4), see pilot_training_free_choice_data.lua.
-D.OLD_SIDS = { "s_4aa3066e", "s_8ad6a62e", "s_f32117e", "s_fd75abb" }
 
 -- pilot-training-free-choice E-PN1: screen id -> the single java reply the choice replaces
 D.E_PN = { ready_train_pilot = "s_187" }

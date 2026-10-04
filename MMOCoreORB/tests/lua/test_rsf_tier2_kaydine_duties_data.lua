@@ -420,6 +420,11 @@ end
 -- AC-2, I-4: no script under bin/scripts names a deleted duty, string or point (comments excluded). The screen ids accept_duty_destroy1 and
 -- accept_duty_destroy2 are Kaydine's: CorSec's Rikkh legitimately has screens of the same names, so those two are only searched for in
 -- Kaydine's files (the spec's I-4 says "bin/scripts"; that is wider than the intent, reported in the test plan).
+-- space-convo-client-strings-kaydine D-10: s_2e7b17f3 ("It's very likely you'll fall under attack...") is a pre-NGE line now on the story screen mission4_accept, so
+-- the ban is narrowed: it holds for every script but kaydine_convo.lua, and in kaydine_convo.lua for the duty screens (the loop at the end of this test).
+local KC_REL = "mobile/conversations/space/neutral/rsf_squadron/kaydine_convo.lua"
+local DUTY_SCREENS = { here_for_work = true, duty_options = true, accept_duty_escort = true, accept_duty_recovery = true, accept_duty_destroy = true, mission3_reward_duty = true, non_rsf_duty_options = true }
+
 function TestRsfTier2DutyConstants:test_no_script_names_a_deleted_duty_screen_string_or_invented_point()
 	local needles = { "s_2e7b17f3" }
 
@@ -447,7 +452,7 @@ function TestRsfTier2DutyConstants:test_no_script_names_a_deleted_duty_screen_st
 			local code = stripComment(text)
 
 			for _, needle in ipairs(needles) do
-				if code:find(needle, 1, true) then
+				if code:find(needle, 1, true) and not (needle == "s_2e7b17f3" and file:sub(#H.SCRIPTS + 1) == KC_REL) then
 					bad[#bad + 1] = file:sub(#H.SCRIPTS + 1) .. ":" .. n .. ": " .. needle
 					break
 				end
@@ -466,6 +471,17 @@ function TestRsfTier2DutyConstants:test_no_script_names_a_deleted_duty_screen_st
 					bad[#bad + 1] = path .. ":" .. n .. ": " .. id
 				end
 			end
+		end
+	end
+
+	-- D-10: in kaydine_convo.lua the line may only be on a story screen, never on a duty screen
+	local current
+
+	for n, line in ipairs(readLines(H.SCRIPTS .. KC_REL)) do
+		current = line:match("^([%w_]+) = ConvoScreen:new") or current
+
+		if stripComment(line):find("s_2e7b17f3", 1, true) and (current == nil or DUTY_SCREENS[current]) then
+			bad[#bad + 1] = KC_REL .. ":" .. n .. ": s_2e7b17f3 on the duty screen " .. tostring(current)
 		end
 	end
 

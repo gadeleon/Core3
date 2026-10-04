@@ -179,305 +179,207 @@ ready_train_pilot = ConvoScreen:new {
 }
 kaydine_convo_template:addScreen(ready_train_pilot);
 
-train_starships = ConvoScreen:new {
-	id = "train_starships",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_188",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_192", "trained_starships_mission4"},
-	}
-}
-kaydine_convo_template:addScreen(train_starships);
-
-train_weapons = ConvoScreen:new {
-	id = "train_weapons",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_189",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_194", "trained_weapons_mission4"},
-	}
-}
-kaydine_convo_template:addScreen(train_weapons);
-
-train_procedures = ConvoScreen:new {
-	id = "train_procedures",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_190",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_196", "trained_procedures_mission4"},
-	}
-}
-kaydine_convo_template:addScreen(train_procedures);
-
-train_droid = ConvoScreen:new {
-	id = "train_droid",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_191",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_198", "trained_droid_mission4"},
-	}
-}
-kaydine_convo_template:addScreen(train_droid);
-
 trained_starships_mission1 = ConvoScreen:new {
 	id = "trained_starships_mission1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_224",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_bb45477c", -- Excellent choice! What starfighter do you have your eye on? Are you interested in the Kimogila? Or are you obsessed with that hideous Kihraxz Light Fighter like all the other kids?
 	stopConversation = "false",
 	animation = "applause_polite",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_226", "mission1_intro_a1"},
-		{"@conversation/naboo_privateer_trainer_2:s_248", "mission1_intro_b1"},
+		{"@conversation/naboo_privateer_trainer_2:s_34ac61a2", "mission1_intro_a1"}, -- The 'Kimogila'
+		{"@conversation/naboo_privateer_trainer_2:s_92dbc95c", "mission1_intro_b1"}, -- Kihraxz Light Fighter
 	}
 }
 kaydine_convo_template:addScreen(trained_starships_mission1);
 
 trained_starships_mission2 = ConvoScreen:new {
 	id = "trained_starships_mission2",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_270",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2dee44ae", -- You bet! A new starship would probably do a lot better against some Ay'Nat Ghost Fighters!
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_86358e09", "mission2_brief"}, -- Ghost Fighters?
 	}
 }
 kaydine_convo_template:addScreen(trained_starships_mission2);
 
 trained_starships_mission3 = ConvoScreen:new {
 	id = "trained_starships_mission3",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_284",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4aa3066e", -- Ah yes! Good choice! Learning to fly many different types of ships makes an effective pilot!
 	stopConversation = "false",
-	animation = "shake_head_disgust",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_286", "mission3_intro"},
+		{"@conversation/naboo_privateer_trainer_2:s_5e2a2bb1", "mission3_intro"}, -- Sounds good.
 	}
 }
 kaydine_convo_template:addScreen(trained_starships_mission3);
 
 trained_starships_mission4 = ConvoScreen:new {
 	id = "trained_starships_mission4",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_294",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4495137d", -- Sorry, I'm a bit distracted... did you hear how the RSF Guard foiled an attempt by Ay'Nat Legion pirates to detonate proton packs in the Palace reactor?
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_58362a8d", "mission4_brief"}, -- Tell me about it.
 	}
 }
 kaydine_convo_template:addScreen(trained_starships_mission4);
 
 trained_weapons_mission1 = ConvoScreen:new {
 	id = "trained_weapons_mission1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_216",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_24b7f2f", -- Excellent choice. This will especially come in handy since the Ay'Nat pirate legion is mounting an aggressive campaign for control here in Naboo. They're building fast... so we need to strike at their leadership, and send them scrambling.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_2d67b7a8", "mission1_brief"}, -- Where do I come in?
 	}
 }
 kaydine_convo_template:addScreen(trained_weapons_mission1);
 
 trained_weapons_mission2 = ConvoScreen:new {
 	id = "trained_weapons_mission2",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_218",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_8ad6a62e", -- You bet! New components should make your ship more than a match against a dozen Ay'Nat Ghost Fighters!
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_86358e09", "mission2_brief"}, -- Ghost Fighters?
 	}
 }
 kaydine_convo_template:addScreen(trained_weapons_mission2);
 
 trained_weapons_mission3 = ConvoScreen:new {
 	id = "trained_weapons_mission3",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_220",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2017d4b5", -- Ah yes! Good choice. Now there's no time to lose. We'll need you to catch up to the Ay'Nat Captain's personal starship... a rather fast vessel! Disable him, and protect an RSF Boarding Team while they arrest him.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_dc649bb3", "mission3_accept"}, -- I'm on my way!
 	}
 }
 kaydine_convo_template:addScreen(trained_weapons_mission3);
 
 trained_weapons_mission4 = ConvoScreen:new {
 	id = "trained_weapons_mission4",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_222",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4495137d", -- Sorry, I'm a bit distracted... did you hear how the RSF Guard foiled an attempt by Ay'Nat Legion pirates to detonate proton packs in the Palace reactor?
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_58362a8d", "mission4_brief"}, -- Tell me about it.
 	}
 }
 kaydine_convo_template:addScreen(trained_weapons_mission4);
 
 trained_procedures_mission1 = ConvoScreen:new {
 	id = "trained_procedures_mission1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_208",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_24b7f2f", -- Excellent choice. This will especially come in handy since the Ay'Nat pirate legion is mounting an aggressive campaign for control here in Naboo. They're building fast... so we need to strike at their leadership, and send them scrambling.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_2d67b7a8", "mission1_brief"}, -- Where do I come in?
 	}
 }
 kaydine_convo_template:addScreen(trained_procedures_mission1);
 
 trained_procedures_mission2 = ConvoScreen:new {
 	id = "trained_procedures_mission2",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_210",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_f32117e", -- You bet! New defense procedures should make you more than a match against a dozen Ay'Nat Ghost Fighters!
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_86358e09", "mission2_brief"}, -- Ghost Fighters?
 	}
 }
 kaydine_convo_template:addScreen(trained_procedures_mission2);
 
 trained_procedures_mission3 = ConvoScreen:new {
 	id = "trained_procedures_mission3",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_212",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2017d4b5", -- Ah yes! Good choice. Now there's no time to lose. We'll need you to catch up to the Ay'Nat Captain's personal starship... a rather fast vessel! Disable him, and protect an RSF Boarding Team while they arrest him.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_dc649bb3", "mission3_accept"}, -- I'm on my way!
 	}
 }
 kaydine_convo_template:addScreen(trained_procedures_mission3);
 
 trained_procedures_mission4 = ConvoScreen:new {
 	id = "trained_procedures_mission4",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_214",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4495137d", -- Sorry, I'm a bit distracted... did you hear how the RSF Guard foiled an attempt by Ay'Nat Legion pirates to detonate proton packs in the Palace reactor?
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_58362a8d", "mission4_brief"}, -- Tell me about it.
 	}
 }
 kaydine_convo_template:addScreen(trained_procedures_mission4);
 
 trained_droid_mission1 = ConvoScreen:new {
 	id = "trained_droid_mission1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_200",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_24b7f2f", -- Excellent choice. This will especially come in handy since the Ay'Nat pirate legion is mounting an aggressive campaign for control here in Naboo. They're building fast... so we need to strike at their leadership, and send them scrambling.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_2d67b7a8", "mission1_brief"}, -- Where do I come in?
 	}
 }
 kaydine_convo_template:addScreen(trained_droid_mission1);
 
 trained_droid_mission2 = ConvoScreen:new {
 	id = "trained_droid_mission2",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_202",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_fd75abb", -- You bet! New droid algorithms in there should make you more than a match against a dozen Ay'Nat Ghost Fighters!
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_86358e09", "mission2_brief"}, -- Ghost Fighters?
 	}
 }
 kaydine_convo_template:addScreen(trained_droid_mission2);
 
 trained_droid_mission3 = ConvoScreen:new {
 	id = "trained_droid_mission3",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_204",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2017d4b5", -- Ah yes! Good choice. Now there's no time to lose. We'll need you to catch up to the Ay'Nat Captain's personal starship... a rather fast vessel! Disable him, and protect an RSF Boarding Team while they arrest him.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_dc649bb3", "mission3_accept"}, -- I'm on my way!
 	}
 }
 kaydine_convo_template:addScreen(trained_droid_mission3);
 
 trained_droid_mission4 = ConvoScreen:new {
 	id = "trained_droid_mission4",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_206",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4495137d", -- Sorry, I'm a bit distracted... did you hear how the RSF Guard foiled an attempt by Ay'Nat Legion pirates to detonate proton packs in the Palace reactor?
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_58362a8d", "mission4_brief"}, -- Tell me about it.
 	}
 }
 kaydine_convo_template:addScreen(trained_droid_mission4);
 
 mission1_intro_a1 = ConvoScreen:new {
 	id = "mission1_intro_a1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_228",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9ce4dd83", -- Ah, yes! You'll certainly need the strength of the M12-L if you're going up against the Ay'Nat Legion's elite starfighter assassins. Definitely!
 	stopConversation = "false",
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_230", "mission1_intro_a2"},
+		{"@conversation/naboo_privateer_trainer_2:s_e9c57758", "mission1_intro_a2"}, -- Elite starfighter assassins?
 	}
 }
 kaydine_convo_template:addScreen(mission1_intro_a1);
 
 mission1_intro_a2 = ConvoScreen:new {
 	id = "mission1_intro_a2",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_232",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_86a73ee1", -- Sorry... I forgot to mention... We have a mission. Or rather, I have a mission and you've got to do it.
 	stopConversation = "false",
 	animation = "shrug_shoulders",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_234", "mission1_intro_a3"},
+		{"@conversation/naboo_privateer_trainer_2:s_58362a8d", "mission1_offer"}, -- Tell me about it.
 	}
 }
 kaydine_convo_template:addScreen(mission1_intro_a2);
 
-mission1_intro_a3 = ConvoScreen:new {
-	id = "mission1_intro_a3",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_236",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
-	}
-}
-kaydine_convo_template:addScreen(mission1_intro_a3);
-
 mission1_intro_b1 = ConvoScreen:new {
 	id = "mission1_intro_b1",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_250",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2fd7906f", -- Why do all you kids want to fly around looking like pirates? Ugh! But... I'll admit... you will need the handling capabilities of the Kihraxz Light Fighter if you're going to survive a pre-emptive strike against the Ay'Nat Legion's elite starfighter assassins! That's for sure.
 	stopConversation = "false",
 	animation = "shake_head_disgust",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_252", "mission1_intro_b2"},
+		{"@conversation/naboo_privateer_trainer_2:s_e9c57758", "mission1_intro_a2"}, -- Elite starfighter assassins?
 	}
 }
 kaydine_convo_template:addScreen(mission1_intro_b1);
 
-mission1_intro_b2 = ConvoScreen:new {
-	id = "mission1_intro_b2",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_254",
-	stopConversation = "false",
-	animation = "shrug_shoulders",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_256", "mission1_intro_b3"},
-	}
-}
-kaydine_convo_template:addScreen(mission1_intro_b2);
-
-mission1_intro_b3 = ConvoScreen:new {
-	id = "mission1_intro_b3",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_258",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_260", "mission1_intro_b4"},
-	}
-}
-kaydine_convo_template:addScreen(mission1_intro_b3);
-
-mission1_intro_b4 = ConvoScreen:new {
-	id = "mission1_intro_b4",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_262",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_264", "mission1_intro_accept"},
-	}
-}
-kaydine_convo_template:addScreen(mission1_intro_b4);
-
-mission1_intro_accept_male = ConvoScreen:new {
-	id = "mission1_intro_accept_male",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_266",
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(mission1_intro_accept_male);
-
-mission1_intro_accept = ConvoScreen:new {
-	id = "mission1_intro_accept",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_268",
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(mission1_intro_accept);
-
 mission3_intro = ConvoScreen:new {
 	id = "mission3_intro",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_288",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_1c7ee38e", -- You'll find it handy in your next mission! We'll need you to catch up to the Ay'Nat Captain's personal starship... a rather fast vessel! Disable him, and protect an RSF Boarding Team while they arrest him.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_dc649bb3", "mission3_accept"}, -- I'm on my way!
 	}
 }
 kaydine_convo_template:addScreen(mission3_intro);
@@ -532,24 +434,24 @@ mission1_offer = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_4a743aa7",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_238", "mission1_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_2d67b7a8", "mission1_brief"}, -- Where do I come in?
 	}
 }
 kaydine_convo_template:addScreen(mission1_offer);
 
 mission1_brief = ConvoScreen:new {
 	id = "mission1_brief",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_240",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_c4ef0e93", -- We need you to slip in to Ay'Nat-controlled space, and hunt down a trio of Ace outlaws.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_242", "mission1_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_e42b260e", "mission1_accept"}, -- I'm on my way.
 	}
 }
 kaydine_convo_template:addScreen(mission1_brief);
 
 mission1_accept_male = ConvoScreen:new {
 	id = "mission1_accept_male",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_244",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_225b33f", -- Good luck, son!
 	stopConversation = "true",
 	options = {}
 }
@@ -557,7 +459,7 @@ kaydine_convo_template:addScreen(mission1_accept_male);
 
 mission1_accept = ConvoScreen:new {
 	id = "mission1_accept",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_246",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ff45f1fd", -- Good luck to you, Captain %TU!
 	stopConversation = "true",
 	options = {}
 }
@@ -568,34 +470,34 @@ mission2_offer = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_9af8d581",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_272", "mission2_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_86358e09", "mission2_brief"}, -- Ghost Fighters?
 	}
 }
 kaydine_convo_template:addScreen(mission2_offer);
 
 mission2_brief = ConvoScreen:new {
 	id = "mission2_brief",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_274",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_168f5655", -- I guess I forgot to mention this earlier... but yes, we have a mission to destroy a squadron of Ay'Nat Ghost Fighters that have been sighted outside of RSF controlled space.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_276", "mission2_details"},
+		{"@conversation/naboo_privateer_trainer_2:s_a6c7fa2b", "mission2_details"}, -- What are the details?
 	}
 }
 kaydine_convo_template:addScreen(mission2_brief);
 
 mission2_details = ConvoScreen:new {
 	id = "mission2_details",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_278",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_3cef63a0", -- Fly out to your choice of strike points... look for Ay'Nat Legion fighters. Likely, if these are hired for support - they will come out if you start tearing up the rank-and-file.
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_280", "mission2_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_dc649bb3", "mission2_accept"}, -- I'm on my way!
 	}
 }
 kaydine_convo_template:addScreen(mission2_details);
 
 mission2_accept = ConvoScreen:new {
 	id = "mission2_accept",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_282",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a80d9308", -- Good luck!
 	stopConversation = "true",
 	options = {}
 }
@@ -606,14 +508,14 @@ mission3_offer = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_130b925b",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_290", "mission3_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_dc649bb3", "mission3_accept"}, -- I'm on my way!
 	}
 }
 kaydine_convo_template:addScreen(mission3_offer);
 
 mission3_accept = ConvoScreen:new {
 	id = "mission3_accept",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_292",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a80d9308", -- Good luck!
 	stopConversation = "true",
 	options = {}
 }
@@ -624,24 +526,24 @@ mission4_offer = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_387397fb",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_296", "mission4_brief"},
+		{"@conversation/naboo_privateer_trainer_2:s_58362a8d", "mission4_brief"}, -- Tell me about it.
 	}
 }
 kaydine_convo_template:addScreen(mission4_offer);
 
 mission4_brief = ConvoScreen:new {
 	id = "mission4_brief",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_298",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_ec671b3f", -- Well, the Empire has demanded that the prisoners be turned over for questioning. I'm not sure how I feel about that. Regardless... are you up to escorting the prisoner transport?
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_300", "mission4_accept"},
+		{"@conversation/naboo_privateer_trainer_2:s_36a4e374", "mission4_accept"}, -- Yes, I am.
 	}
 }
 kaydine_convo_template:addScreen(mission4_brief);
 
 mission4_accept = ConvoScreen:new {
 	id = "mission4_accept",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_302",
+	leftDialog = "@conversation/naboo_privateer_trainer_2:s_2e7b17f3", -- It's very likely you'll fall under attack from Ay'Nat Legion pirates. Be careful...
 	stopConversation = "true",
 	options = {}
 }
@@ -653,7 +555,7 @@ mission1_failed = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "shrug_hands",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_45", "mission1_failed_end"},
+		{"@conversation/naboo_privateer_trainer_2:s_c8f39347", "mission1_failed_end"}, -- I am.
 	}
 }
 kaydine_convo_template:addScreen(mission1_failed);
@@ -672,7 +574,7 @@ mission2_failed = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_6da2c92b",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_49", "mission2_failed_end"},
+		{"@conversation/naboo_privateer_trainer_2:s_c8f39347", "mission2_failed_end"}, -- I am.
 	}
 }
 kaydine_convo_template:addScreen(mission2_failed);
@@ -821,7 +723,7 @@ mission3_complete = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_2:s_a0c23472",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_75", "mission3_reward"},
+		{"@conversation/naboo_privateer_trainer_2:s_370822d1", "mission3_reward"}, -- Yes
 	}
 }
 kaydine_convo_template:addScreen(mission3_complete);
@@ -832,7 +734,7 @@ mission3_reward = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "applause_polite",
 	options = {
-		{"@conversation/naboo_privateer_trainer_2:s_78", "mission3_reward_end"},
+		{"@conversation/naboo_privateer_trainer_2:s_5e2a2bb1", "mission3_reward_end"}, -- Sounds good.
 		{"@conversation/naboo_privateer_trainer_2:s_45d20070", "ready_train_pilot"},
 		{"@conversation/naboo_privateer_trainer_2:s_6114e8b7", "mission3_reward_duty"},
 	}
@@ -878,7 +780,7 @@ mission4_reward = ConvoScreen:new {
 	animation = "nod_head_once",
 	options = {
 		{"@conversation/naboo_privateer_trainer_2:s_c261cfae", "mission4_reward_dulios"},
-		{"@conversation/naboo_privateer_trainer_2:s_725573da", "mission4_reward_end"},
+		{"@conversation/naboo_privateer_trainer_2:s_725573da", "completed_kaydine_end"}, -- What now?
 	}
 }
 kaydine_convo_template:addScreen(mission4_reward);
@@ -890,14 +792,6 @@ mission4_reward_dulios = ConvoScreen:new {
 	options = {}
 }
 kaydine_convo_template:addScreen(mission4_reward_dulios);
-
-mission4_reward_end = ConvoScreen:new {
-	id = "mission4_reward_end",
-	leftDialog = "@conversation/naboo_privateer_trainer_2:s_90",
-	stopConversation = "true",
-	options = {}
-}
-kaydine_convo_template:addScreen(mission4_reward_end);
 
 completed_kaydine_end = ConvoScreen:new {
 	id = "completed_kaydine_end",

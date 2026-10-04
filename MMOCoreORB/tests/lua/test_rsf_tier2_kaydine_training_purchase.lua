@@ -5,6 +5,10 @@
 -- The harness fake charges nothing by itself. Tests that look at XP switch on H.Engine.config.skillXpCosts (every tier 2 skill costs 60000
 -- space_combat_general, the XP_COST of fixtures/skill/skills.pilot_neutral_02.tab), which makes the fake refuse and charge like SkillManager:awardSkill.
 -- H.Engine.callsTo("skillManagerAwardSkill") is the XP-deducting grant, callsTo("awardSkill") the free one.
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1 .. D-3, D-7, AC-5 .. AC-8): the training is one click. The choice on
+-- ready_train_pilot (D.TRAINING[i].choiceSid) buys the skill and shows the intro at once, so every walk is "ready_train_pilot", then the intro chain, and hooks that
+-- change the pilot after the greeting come before the choice. Conversations that start in the middle (D.drive) start on ready_train_pilot.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -102,13 +106,13 @@ function TestKaydineTrainingPurchase:tearDown() LuaSkillManager = REAL_SKILL_MAN
 
 for k, t in ipairs(D.TRAINING) do
 	-- AC-5, AC-6: SWG order, one XP-deducting grant, exactly 60000 XP, the intro of the mission the new skill count unlocks
-	TestKaydineTrainingPurchase["test_choosing_" .. t.optionSid .. "_on_" .. t.screen .. "_buys_" .. t.skill .. "_once_for_60000_xp_and_shows_the_mission_" .. k .. "_intro"] = function()
+	TestKaydineTrainingPurchase["test_choosing_" .. t.choiceSid .. "_on_ready_train_pilot_buys_" .. t.skill .. "_once_for_60000_xp_and_shows_the_mission_" .. k .. "_intro"] = function()
 		costs()
 
 		local player = pilot(k, skills(k - 1), 3 * XP)
-		local transcript = T.converse(tr, player, { 0, 0 })
+		local transcript = T.converse(tr, player, { t.choiceSid })
 
-		lu.assertEquals(ids(transcript), { "ready_train_pilot", t.screen, "trained_" .. t.x .. "_mission" .. k }, "screens")
+		lu.assertEquals(ids(transcript), { "ready_train_pilot", "trained_" .. t.x .. "_mission" .. k }, "screens")
 
 		local calls = grants()
 
@@ -125,18 +129,17 @@ for k, t in ipairs(D.TRAINING) do
 	end
 end
 
--- AC-5: the pilot already owns the skill when the choice is made
+-- AC-5 (space-convo-client-strings-kaydine AC-5): the pilot already owns the skill when the choice is made
 function TestKaydineTrainingPurchase:test_choosing_the_option_for_a_skill_the_pilot_already_has_grants_nothing_and_charges_nothing()
 	costs()
 
 	local player = pilot(1, {}, 3 * XP)
 	local transcript = T.converse(tr, player, {
-		0,
-		function(p) p.skills[D.SKILLS[1]] = true end, -- the skill arrives while the prompt is shown
-		0,
+		function(p) p.skills[D.SKILLS[1]] = true end, -- the skill arrives while the greeting is shown
+		D.TRAINING[1].choiceSid,
 	})
 
-	lu.assertEquals(transcript[2].id, "train_starships", "second screen")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "trained_starships_mission1" }, "screens (D-7: the routing is unchanged, the skill count now reaches mission 1)")
 	lu.assertEquals(#grants(), 0, "skillManagerAwardSkill calls")
 	lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, "awardSkill calls")
 	lu.assertEquals(exp(player), 3 * XP, "space_combat_general")
@@ -149,19 +152,18 @@ function TestKaydineTrainingPurchase:test_choosing_the_option_after_the_xp_is_go
 	local player = pilot(1, {}, XP)
 	local starts = spyStarts()
 	local transcript = T.converse(tr, player, {
-		0,
 		function(p) p.ghost.experience.space_combat_general = XP - 1 end,
-		0,
+		D.TRAINING[1].choiceSid,
 	})
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_starships", "here_for_work" }, "screens (D-3: the start logic runs again)")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "here_for_work" }, "screens (D-3: the start logic runs again)")
 	lu.assertEquals(#grants(), 0, "skillManagerAwardSkill calls")
 	lu.assertFalse(CreatureObject(player):hasSkill(D.SKILLS[1]), "starships_02 held")
 	lu.assertEquals(exp(player), XP - 1, "space_combat_general")
 	lu.assertEquals(starts, {}, "startQuest calls")
 end
 
--- AC-5, D-4: the engine would refuse (prerequisites missing): no grant call, no "skill learned" message
+-- AC-5, D-4: the engine would refuse (prerequisites missing): no grant call, no "skill learned" message, the first screen of a fresh conversation follows
 function TestKaydineTrainingPurchase:test_choosing_the_option_when_the_prerequisites_are_missing_grants_nothing_and_sends_no_skill_learned_message()
 	costs()
 
@@ -174,29 +176,34 @@ function TestKaydineTrainingPurchase:test_choosing_the_option_when_the_prerequis
 	end
 
 	local messages = #H.messageLog(player)
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { D.TRAINING[1].choiceSid })
 
-	lu.assertEquals(transcript[2].id, "train_starships", "second screen")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "ready_train_pilot" }, "screens (the fresh first screen follows the refusal)")
 	lu.assertEquals(#grants(), 0, "skillManagerAwardSkill calls")
 	lu.assertEquals(#H.messageLog(player), messages, "system messages (no 'skill learned')")
 	lu.assertEquals(exp(player), 3 * XP, "space_combat_general")
 end
 
--- AC-5, I-4: choosing the same prompt again buys nothing more
+-- AC-5, I-4: choosing the same skill in two conversations buys one skill (the held skill's reply is not offered again)
 function TestKaydineTrainingPurchase:test_choosing_the_option_on_the_prompt_twice_buys_one_skill()
 	costs()
 
 	local player = pilot(1, {}, 10 * XP)
 
-	T.converse(tr, player, { 0, 0 })
+	T.converse(tr, player, { D.TRAINING[1].choiceSid })
 	lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls after the first conversation")
 
-	D.drive(tr, player, "train_starships", { 0 })
-	lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls after choosing on train_starships again")
+	local again = D.drive(tr, player, "ready_train_pilot", {})
+
+	for _, o in ipairs(again[1].options) do
+		lu.assertNotEquals(o.text, D.PREFIX .. D.TRAINING[1].choiceSid, "the reply of the held skill is offered again")
+	end
+
+	lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls after the greeting is shown again")
 	lu.assertEquals(exp(player), 9 * XP, "space_combat_general (charged once)")
 end
 
--- AC-5, I-4: the prompt of one skill buys that skill only, whatever else the pilot lacks
+-- AC-5, I-4: the choice of one skill buys that skill only, whatever else the pilot lacks
 function TestKaydineTrainingPurchase:test_each_prompt_buys_only_its_own_skill()
 	costs()
 
@@ -206,14 +213,14 @@ function TestKaydineTrainingPurchase:test_each_prompt_buys_only_its_own_skill()
 
 		local player = pilot(1, {}, 10 * XP)
 
-		D.drive(tr, player, t.screen, { 0 })
+		D.drive(tr, player, "ready_train_pilot", { t.choiceSid })
 
-		lu.assertEquals(#grants(), 1, t.screen .. ": skillManagerAwardSkill calls")
-		lu.assertEquals(grants()[1][2], t.skill, t.screen .. ": skill")
-		lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, t.screen .. ": awardSkill calls")
+		lu.assertEquals(#grants(), 1, t.x .. ": skillManagerAwardSkill calls")
+		lu.assertEquals(grants()[1][2], t.skill, t.x .. ": skill")
+		lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, t.x .. ": awardSkill calls")
 
 		for _, skill in ipairs(D.SKILLS) do
-			lu.assertEquals(CreatureObject(player):hasSkill(skill), skill == t.skill, t.screen .. ": " .. skill .. " held")
+			lu.assertEquals(CreatureObject(player):hasSkill(skill), skill == t.skill, t.x .. ": " .. skill .. " held")
 		end
 	end
 end
@@ -230,9 +237,9 @@ function TestKaydineTrainingPurchase:test_the_fourth_purchase_raises_the_pilot_t
 
 	H.Engine.calls = {}
 
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { 0 })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_droid", "trained_droid_mission4" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "trained_droid_mission4" }, "screens")
 	lu.assertEquals(grants()[1][2], "pilot_neutral_droid_02", "skill bought")
 	lu.assertEquals(player.ghost:getPilotTier(), 3, "pilot tier after the fourth skill")
 	lu.assertNotEquals(T.converse(dulios, player)[1].id, "not_tier3", "Dulios's first screen")
@@ -245,7 +252,7 @@ function TestKaydineTrainingPurchase:test_the_first_three_purchases_leave_the_pi
 	local player = pilot(1, {}, 10 * XP)
 
 	for i = 1, 3 do
-		D.drive(tr, player, D.TRAINING[i].screen, { 0 })
+		D.drive(tr, player, "ready_train_pilot", { D.TRAINING[i].choiceSid })
 		lu.assertEquals(player.ghost:getPilotTier(), 2, "pilot tier after skill " .. i)
 	end
 end
@@ -289,7 +296,7 @@ local function skillsBefore(x, n)
 	return out
 end
 
--- Drives the purchase on train_<x> and then option `route` of the intro and option 1 afterwards; snapshots the state after every screen
+-- Drives the purchase (the choice of x on ready_train_pilot) and then option `route` of the intro and option 1 afterwards; snapshots the state after every screen
 local function walkIntro(row, gender, secondChoice)
 	costs()
 
@@ -300,7 +307,15 @@ local function walkIntro(row, gender, secondChoice)
 	local chains = H.spyOn(SpaceHelpers, "startSpaceQuestChain")
 	local rewards = T.spyRewards()
 	local snaps = {}
-	local choices = { 0 }
+	local choiceSid
+
+	for _, t in ipairs(D.TRAINING) do
+		if t.x == row.x then
+			choiceSid = t.choiceSid
+		end
+	end
+
+	local choices = { choiceSid }
 	-- one hook before every move from an intro screen to the next one: it sees the state right after that screen was shown
 	local steps = secondChoice and #D.ROUTE_B or (#row.walk - 1)
 
@@ -309,7 +324,7 @@ local function walkIntro(row, gender, secondChoice)
 		choices[#choices + 1] = (i == 1 and secondChoice) and 1 or 0
 	end
 
-	local transcript = D.drive(tr, player, "train_" .. row.x, choices)
+	local transcript = D.drive(tr, player, "ready_train_pilot", choices)
 
 	return player, transcript, chains, snaps, rewards
 end
@@ -318,7 +333,7 @@ for _, row in ipairs(D.INTRO) do
 	-- AC-6
 	TestKaydineTrainingIntro["test_buying_" .. row.x .. "_with_" .. (row.n - 1) .. "_skills_shows_" .. row.id .. "_and_option_1_walks_to_the_grant_on_" .. row.grant] = function()
 		local player, transcript, chains, snaps = walkIntro(row)
-		local expected = { "train_" .. row.x }
+		local expected = { "ready_train_pilot" }
 
 		for _, id in ipairs(row.walk) do
 			expected[#expected + 1] = id
@@ -342,15 +357,15 @@ for _, row in ipairs(D.INTRO) do
 	end
 end
 
--- AC-6: starships, mission 1, second route, male and female
+-- AC-6: starships, mission 1, second route (s_92dbc95c "Kihraxz Light Fighter"), male and female; it rejoins mission1_intro_a2 (D-2) and ends on mission1_accept(_male)
 for _, gender in ipairs({ 0, 1 }) do
 	local label = gender == 0 and "male" or "female"
-	local grant = gender == 0 and "mission1_intro_accept_male" or "mission1_intro_accept"
+	local grant = gender == 0 and "mission1_accept_male" or "mission1_accept"
 
-	TestKaydineTrainingIntro["test_the_s_248_route_of_the_starships_intro_ends_on_" .. grant .. "_for_a_" .. label .. "_pilot_and_grants_mission_1_once"] = function()
+	TestKaydineTrainingIntro["test_the_s_92dbc95c_route_of_the_starships_intro_ends_on_" .. grant .. "_for_a_" .. label .. "_pilot_and_grants_mission_1_once"] = function()
 		local row = D.INTRO[1]
 		local player, transcript, chains, snaps = walkIntro(row, gender, true)
-		local expected = { "train_starships" }
+		local expected = { "ready_train_pilot" }
 
 		for _, id in ipairs(D.ROUTE_B) do
 			expected[#expected + 1] = id
@@ -369,8 +384,8 @@ for _, gender in ipairs({ 0, 1 }) do
 	end
 end
 
--- AC-6: the s_226 route, female pilot, ends on mission1_accept (the convo feature's brief)
-function TestKaydineTrainingIntro:test_the_s_226_route_of_the_starships_intro_ends_on_mission1_accept_for_a_female_pilot()
+-- AC-6: the s_34ac61a2 "The 'Kimogila'" route, female pilot, ends on mission1_accept (the convo feature's brief)
+function TestKaydineTrainingIntro:test_the_s_34ac61a2_route_of_the_starships_intro_ends_on_mission1_accept_for_a_female_pilot()
 	local row = D.INTRO[1]
 	local player, transcript, chains = walkIntro(row, 1)
 
@@ -379,26 +394,26 @@ function TestKaydineTrainingIntro:test_the_s_226_route_of_the_starships_intro_en
 	lu.assertEquals(H.getQuestStatus(player, D.KEYS[1] .. ":attempted"), "1", ":attempted")
 end
 
--- AC-6, E-T3: the option of mission1_intro_b4 is re-pointed at the male screen only for male pilots
-function TestKaydineTrainingIntro:test_mission1_intro_b4_links_the_male_ending_to_male_pilots_and_the_other_ending_to_female_pilots()
-	for gender, link in pairs({ [0] = "mission1_intro_accept_male", [1] = "mission1_intro_accept" }) do
+-- AC-6, space-convo-client-strings-kaydine D-2: the option of mission1_brief is re-pointed at the male screen only for male pilots (mission1_intro_b4 is gone)
+function TestKaydineTrainingIntro:test_mission1_brief_links_the_male_ending_to_male_pilots_and_the_other_ending_to_female_pilots()
+	for gender, link in pairs({ [0] = "mission1_accept_male", [1] = "mission1_accept" }) do
 		H.reset()
 
 		local player = pilot(1, {}, 3 * XP)
 
 		player.gender = gender
 
-		local transcript = D.drive(tr, player, "mission1_intro_b4", {})
+		local transcript = D.drive(tr, player, "mission1_brief", {})
 
 		lu.assertEquals(#transcript[1].options, 1, "gender " .. gender .. ": number of options")
-		lu.assertEquals(transcript[1].options[1].text, D.PREFIX .. "s_264", "gender " .. gender .. ": option text")
+		lu.assertEquals(transcript[1].options[1].text, D.PREFIX .. "s_e42b260e", "gender " .. gender .. ": option text")
 		lu.assertEquals(transcript[1].options[1].link, link, "gender " .. gender .. ": link")
 	end
 end
 
 -- AC-6, I-5: the mission 1 end screens start the real chain, once, with the head active
 function TestKaydineTrainingIntro:test_the_two_mission_1_end_screens_make_the_head_of_mission_1_active()
-	for _, id in ipairs({ "mission1_intro_accept", "mission1_intro_accept_male" }) do
+	for _, id in ipairs({ "mission1_accept", "mission1_accept_male" }) do
 		H.reset()
 
 		local player = T.player(tr, 1, { attempted = false })
@@ -415,9 +430,9 @@ function TestKaydineTrainingIntro:test_a_pilot_who_holds_the_other_skills_out_of
 	costs()
 
 	local player = pilot(3, { D.SKILLS[4], D.SKILLS[2] }, 3 * XP) -- droid and weapons held, starships and procedures missing
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { D.TRAINING[1].choiceSid })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_starships", "trained_starships_mission3" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "trained_starships_mission3" }, "screens")
 	lu.assertEquals(grants()[1][2], "pilot_neutral_starships_02", "skill bought")
 end
 
@@ -442,9 +457,9 @@ function TestKaydineTrainingIntro:test_a_pilot_ahead_of_his_missions_sees_the_in
 		end
 
 		local player = pilot(c[1], held, 3 * XP)
-		local transcript = D.drive(tr, player, D.TRAINING[c[3]].screen, { 0 })
+		local transcript = D.drive(tr, player, "ready_train_pilot", { D.TRAINING[c[3]].choiceSid })
 
-		lu.assertEquals(ids(transcript), { D.TRAINING[c[3]].screen, c[4] }, "mission " .. c[1] .. " next, " .. #held .. " skills held, buying " .. D.SKILLS[c[3]])
+		lu.assertEquals(ids(transcript), { "ready_train_pilot", c[4] }, "mission " .. c[1] .. " next, " .. #held .. " skills held, buying " .. D.SKILLS[c[3]])
 		lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls")
 	end
 end
@@ -477,7 +492,7 @@ function TestKaydineTrainingScenario:test_four_trainings_buy_one_skill_each_in_s
 		local walk = D.INTRO[(k - 1) * 4 + k].walk -- the canonical intro of skill k for mission k
 		local choices = {}
 
-		for _ = 1, #walk + 1 do
+		for _ = 1, #walk do
 			choices[#choices + 1] = 0
 		end
 
@@ -488,8 +503,8 @@ function TestKaydineTrainingScenario:test_four_trainings_buy_one_skill_each_in_s
 		end
 
 		lu.assertEquals(transcript[1].id, "ready_train_pilot", "training " .. k .. ": first screen")
-		lu.assertNotNil(transcript[3], "training " .. k .. ": the conversation reached the intro (screens: " .. table.concat(ids(transcript), ", ") .. ")")
-		lu.assertEquals(transcript[3].id, "trained_" .. t.x .. "_mission" .. k, "training " .. k .. ": intro")
+		lu.assertNotNil(transcript[2], "training " .. k .. ": the conversation reached the intro (screens: " .. table.concat(ids(transcript), ", ") .. ")")
+		lu.assertEquals(transcript[2].id, "trained_" .. t.x .. "_mission" .. k, "training " .. k .. ": intro")
 		lu.assertEquals(transcript[#transcript].id, walk[#walk], "training " .. k .. ": last screen (the grant)")
 		lu.assertEquals(#grants() - before, 1, "training " .. k .. ": skills bought in the conversation")
 		lu.assertEquals(grants()[#grants()][2], t.skill, "training " .. k .. ": skill bought")
@@ -530,7 +545,7 @@ function TestKaydineTrainingScenario:test_leaving_after_a_purchase_shows_the_mis
 		costs()
 
 		local player = pilot(k, skills(k - 1), 10 * XP)
-		local transcript = T.converse(tr, player, { 0, 0 })
+		local transcript = T.converse(tr, player, { t.choiceSid })
 
 		lu.assertEquals(transcript[#transcript].id, "trained_" .. t.x .. "_mission" .. k, "training " .. k .. ": the pilot leaves on the intro")
 
@@ -562,9 +577,9 @@ function TestKaydineTrainingFallback:test_a_pilot_still_behind_after_the_purchas
 	local player = pilot(3, { D.SKILLS[1] }, 2 * XP)
 	local chains = H.spyOn(SpaceHelpers, "startSpaceQuestChain")
 	local before = attemptedKeys(player)
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { 0 })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_weapons", "ready_train_pilot" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "ready_train_pilot" }, "screens")
 	lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls")
 	lu.assertEquals(grants()[1][2], "pilot_neutral_weapons_02", "skill bought")
 	lu.assertEquals(#chains, 0, "startSpaceQuestChain calls (a won mission is never granted again)")
@@ -577,9 +592,9 @@ function TestKaydineTrainingFallback:test_each_choice_on_a_prompt_buys_at_most_o
 	costs()
 
 	local player = pilot(3, { D.SKILLS[1] }, 2 * XP)
-	local transcript = T.converse(tr, player, { 0, 0, 0, 0 })
+	local transcript = T.converse(tr, player, { 0, 0 })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_weapons", "ready_train_pilot", "train_procedures", "trained_procedures_mission3" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "ready_train_pilot", "trained_procedures_mission3" }, "screens")
 	lu.assertEquals(#grants(), 2, "skillManagerAwardSkill calls over the conversation (one per choice)")
 	lu.assertEquals({ grants()[1][2], grants()[2][2] }, { "pilot_neutral_weapons_02", "pilot_neutral_procedures_02" }, "skills bought, in order")
 end
@@ -590,9 +605,9 @@ function TestKaydineTrainingFallback:test_the_last_skill_after_a_paid_mission_4_
 
 	local player = T.player(tr, 4, { complete = { E15 }, baseSkills = skills(3), experience = { space_combat_general = XP }, questStatus = { ["naboo_privateer_15:reward"] = "1" } })
 	local chains = H.spyOn(SpaceHelpers, "startSpaceQuestChain")
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { 0 })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_droid", "completed_kaydine" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "completed_kaydine" }, "screens")
 	lu.assertEquals(player.ghost:getPilotTier(), 3, "pilot tier")
 	lu.assertEquals(#chains, 0, "startSpaceQuestChain calls")
 	lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls")
@@ -604,9 +619,9 @@ function TestKaydineTrainingFallback:test_a_paid_pilot_with_two_skills_who_buys_
 
 	local player = T.player(tr, 4, { complete = { E15 }, baseSkills = skills(2), experience = { space_combat_general = XP }, questStatus = { ["naboo_privateer_15:reward"] = "1" } })
 	local chains = H.spyOn(SpaceHelpers, "startSpaceQuestChain")
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { 0 })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_procedures", "here_for_work" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "here_for_work" }, "screens")
 	lu.assertEquals(#chains, 0, "startSpaceQuestChain calls")
 	lu.assertEquals(#grants(), 1, "skillManagerAwardSkill calls")
 	lu.assertEquals(exp(player), 0, "space_combat_general")
@@ -617,7 +632,7 @@ function TestKaydineTrainingFallback:test_the_fallback_screen_equals_the_first_s
 	costs()
 
 	local player = pilot(3, { D.SKILLS[1] }, 2 * XP)
-	local transcript = T.converse(tr, player, { 0, 0 })
+	local transcript = T.converse(tr, player, { 0 })
 
 	lu.assertEquals(transcript[#transcript].id, T.converse(tr, player)[1].id, "fallback screen vs first screen of the next conversation")
 end

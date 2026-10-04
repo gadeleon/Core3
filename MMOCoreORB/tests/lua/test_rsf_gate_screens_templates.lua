@@ -4,6 +4,8 @@
 -- Dinge parts re-pinned by .claude/work/space-convo-client-strings-dinge/01-spec.md (AC-2, AC-10; D-9, D-10): 64 screens, the F2 screens count as changed or
 -- deleted against 0a76b16b5b, the duty decline links to not_ready (G.F2_EXCEPTIONS), "Good choice." is the one foreign line besides the four choice replies,
 -- and the java usage is 58 of 73 NPC lines and 35 of 47 replies.
+-- Kaydine parts re-pinned by .claude/work/space-convo-client-strings-kaydine/01-spec.md (AC-2; I-4; Content contract 1): 89 screens, the 38 changed rows and 11 deleted
+-- screens count as touched against 0a76b16b5b, the foreign ids are the 35 pre-NGE-only lines, and the java usage is 56 of 99 NPC lines and 30 of 59 replies.
 --
 -- Answer key: rsf_gate_screens_data.lua (copied from the spec) and the SWG java fixtures parsed by harness/swgjava.lua. The kept-screen
 -- comparison reads the template files of commit 0a76b16b5b through `git show` and compares screen definition blocks as text.
@@ -13,6 +15,7 @@ local H = require("harness")
 local T = require("trainer_fixes_data")
 local G = require("rsf_gate_screens_data")
 local SU = require("rsf_tier2_kaydine_signup_data") -- rsf-tier2-kaydine-signup: the nine new Kaydine screens
+local KS = require("rsf_tier2_kaydine_client_strings_data") -- space-convo-client-strings-kaydine: the 35 pre-NGE-only ids
 local P = require("pilot_training_free_choice_data") -- pilot-training-free-choice (spec: .claude/work/pilot-training-free-choice/01-spec.md)
 local Swgjava = require("harness.swgjava")
 
@@ -130,8 +133,9 @@ local CHOICE = { kaydine = P.KAYDINE, dinge = P.DINGE } -- the choice replies ea
 local OLD_COUNT = { kaydine = 87, dinge = 72 }
 
 -- space-convo-client-strings-dinge: the screens F2 changes or deletes are "touched" against the base commit like the gate-screens ones
-local F2_TOUCHED = { dinge = G.concat(G.DINGE_F2_CHANGED, G.DINGE_F2_DELETED) }
-local F2_DELETED = { dinge = G.DINGE_F2_DELETED }
+-- space-convo-client-strings-kaydine: the same for Kaydine's 38 changed rows and 11 deleted screens (G.KAYDINE_F3_*)
+local F2_TOUCHED = { dinge = G.concat(G.DINGE_F2_CHANGED, G.DINGE_F2_DELETED), kaydine = G.concat(G.KAYDINE_F3_CHANGED, G.KAYDINE_F3_DELETED) }
+local F2_DELETED = { dinge = G.DINGE_F2_DELETED, kaydine = G.KAYDINE_F3_DELETED }
 local FOREIGN_EXTRA = { dinge = { s_cd72f93 = "dinge_convo.lua" } } -- D-9: "Good choice." is in the client's string file but not in the java
 
 ---------------------------------------------------------------------------------------------
@@ -403,10 +407,15 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 	-- AC-2, AC-5, I-3; pilot-training-free-choice I-6: every PJ/PK sid in the four files is a node or a response of the java, except the four choice
 	-- replies of the trainer's handler (D-4), which must all be there; Dinge's template also carries "Good choice." (s_cd72f93, D-9)
-	TestGateConformance["test_every_" .. trainer .. "_string_id_is_in_the_java_except_the_four_choice_replies"] = function()
+	TestGateConformance["test_every_" .. trainer .. (trainer == "kaydine" and "_string_id_is_in_the_java_except_the_35_pre_nge_only_lines" or "_string_id_is_in_the_java_except_the_four_choice_replies")] = function()
 		local java = files.java
 		local foreign = {}
 		local choice, seenChoice, seenExtra = {}, {}, {}
+		local preNge, seenPreNge = {}, {} -- space-convo-client-strings-kaydine I-4: Kaydine may carry the 35 pre-NGE-only lines in either file
+
+		for _, sid in ipairs(trainer == "kaydine" and KS.PRE_NGE_ONLY or {}) do
+			preNge[sid] = true
+		end
 
 		for _, row in ipairs(CHOICE[trainer]) do
 			choice[row.sid] = true
@@ -416,6 +425,8 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 			for sid in readFile(path):gmatch(files.prefix:gsub("%p", "%%%0") .. "(s_[%w_]+)") do
 				if choice[sid] then
 					seenChoice[sid] = path:match("[^/]+$")
+				elseif preNge[sid] then
+					seenPreNge[sid] = true
 				elseif (FOREIGN_EXTRA[trainer] or {})[sid] == path:match("[^/]+$") then
 					-- D-9: allowed in exactly that file
 					seenExtra[sid] = true
@@ -430,6 +441,10 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 		for sid in pairs(choice) do
 			lu.assertEquals(seenChoice[sid], files.handler:match("[^/]+$"), "choice reply " .. sid .. " must be carried by the handler (and only by the handler)")
+		end
+
+		for sid in pairs(preNge) do
+			lu.assertTrue(seenPreNge[sid] == true or choice[sid] == true, "the pre-NGE-only line " .. sid .. " must be carried by a Kaydine file (space-convo-client-strings-kaydine D-9, D-10)")
 		end
 
 		for sid, file in pairs(FOREIGN_EXTRA[trainer] or {}) do
@@ -487,12 +502,12 @@ function TestGateConformance:test_dinge_uses_58_of_73_npc_lines_and_35_of_47_rep
 	lu.assertTrue(set["s_1e029d90"] == true, "s_1e029d90 (the off-track duty line) is used")
 end
 
--- AC-2, I-3; pilot-training-free-choice, rsf-tier2-kaydine-signup (I-6): Kaydine uses 96 of 99 NPC lines and 55 of 59 replies; the unused ones are the NGE-only
--- branch B lines (s_29 .. s_39, D-8) and the retired single reply s_187
-function TestGateConformance:test_kaydine_uses_96_of_99_npc_lines_and_55_of_59_replies_and_the_unused_ones_are_the_nge_only_signup_lines_and_s_187()
+-- AC-2 (space-convo-client-strings-kaydine, I-4): Kaydine uses 56 of 99 NPC lines and 30 of 59 replies of the java; the unused ones are the NGE-only prompt, offer,
+-- sign-up branch B and failure lines, s_187 and the 29 replies listed in G.KAYDINE_UNUSED_RESP
+function TestGateConformance:test_kaydine_uses_56_of_99_npc_lines_and_30_of_59_replies_and_the_unused_ones_are_the_nge_only_lines_and_s_187()
 	local set, npc, resp = used("kaydine")
 
-	lu.assertEquals({ npc, resp }, { 96, 55 }, "java strings used by kaydine_convo.lua and kaydineConvoHandler.lua (NPC lines, replies)")
+	lu.assertEquals({ npc, resp }, { 56, 30 }, "java strings used by kaydine_convo.lua and kaydineConvoHandler.lua (NPC lines, replies)")
 
 	local unusedNpc, unusedResp = {}, {}
 

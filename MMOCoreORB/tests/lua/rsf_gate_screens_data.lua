@@ -19,7 +19,7 @@ G.PK = "@conversation/naboo_privateer_trainer_2:"
 G.PJ = "@conversation/naboo_privateer_trainer_1:"
 G.KAYDINE_TEMPLATE = "kaydine_convo_template"
 G.DINGE_TEMPLATE = "dinge_convo_template"
-G.KAYDINE_SCREEN_COUNT = 100 -- 87 + rebel_pilot, imperial_pilot, not_ready_tier2_end, non_rsf_duty_options + the nine sign-up screens (rsf-tier2-kaydine-signup)
+G.KAYDINE_SCREEN_COUNT = 89 -- 87 + rebel_pilot, imperial_pilot, not_ready_tier2_end, non_rsf_duty_options + the nine sign-up screens (rsf-tier2-kaydine-signup) - the 11 screens space-convo-client-strings-kaydine deletes
 G.DINGE_SCREEN_COUNT = 64 -- 72 - 8 screens deleted by space-convo-client-strings-dinge (was 72: 72 + non_rsf_duty_offer, - first_training_done)
 
 -- Appendix A-K. options are { option sid, static link }.
@@ -68,6 +68,13 @@ G.F2_EXCEPTIONS = {
 }
 G.KAYDINE_DELETED = {}
 
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, Content contract 1): the screens that feature changes or deletes
+-- count as touched against 0a76b16b5b like the gate-screens ones (all 49 exist at that commit)
+local KS = require("rsf_tier2_kaydine_client_strings_data")
+
+G.KAYDINE_F3_DELETED = KS.DELETED
+G.KAYDINE_F3_CHANGED = KS.ROW_ORDER
+
 -- The options whose static link differs from the java default (the java default is the last, unconditional successor)
 G.EXCEPTIONS = {
 	["kaydine|pilot_not_rsf|s_c1ff5062"] = "E-G1",
@@ -83,8 +90,10 @@ G.DINGE_REACH_NOW = { "destroy_duty", "duty_no_training", "duty_options", "escor
 
 -- String usage: rsf-gate-screens left the signup dialog and the fallthrough unused (87/99 NPC lines); pilot-training-free-choice retired s_187;
 -- rsf-tier2-kaydine-signup (I-6) uses them: 96/99 NPC lines and 55/59 replies, only the NGE-only branch B lines (D-8) and s_187 stay unused
-G.KAYDINE_UNUSED_NPC = { "s_31", "s_35", "s_39" }
-G.KAYDINE_UNUSED_RESP = { "s_29", "s_33", "s_37", "s_187" }
+-- space-convo-client-strings-kaydine AC-2: Kaydine uses 56 of the 99 NPC lines and 30 of the 59 replies of the java (the training prompts, the NGE offer chains and
+-- the NGE sign-up lines are unused); the rest is measured on the reference sketch of the spec and pinned here
+G.KAYDINE_UNUSED_NPC = { "s_188", "s_189", "s_190", "s_191", "s_200", "s_202", "s_204", "s_206", "s_208", "s_210", "s_212", "s_214", "s_216", "s_218", "s_220", "s_222", "s_224", "s_228", "s_232", "s_236", "s_240", "s_244", "s_246", "s_250", "s_254", "s_258", "s_262", "s_266", "s_268", "s_270", "s_274", "s_278", "s_282", "s_284", "s_288", "s_292", "s_294", "s_298", "s_302", "s_31", "s_35", "s_39", "s_90" }
+G.KAYDINE_UNUSED_RESP = { "s_187", "s_192", "s_194", "s_196", "s_198", "s_226", "s_230", "s_234", "s_238", "s_242", "s_248", "s_252", "s_256", "s_260", "s_264", "s_272", "s_276", "s_280", "s_286", "s_29", "s_290", "s_296", "s_300", "s_33", "s_37", "s_45", "s_49", "s_75", "s_78" }
 
 G.TIER1_SKILLS = { "pilot_neutral_droid_01", "pilot_neutral_procedures_01", "pilot_neutral_starships_01", "pilot_neutral_weapons_01" }
 

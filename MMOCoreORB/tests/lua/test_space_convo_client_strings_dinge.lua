@@ -126,11 +126,11 @@ function TestF2DingeStaticUnresolved:test_dinge_template_and_handler_show_only_c
 	lu.assertEquals(CS.unresolved(SOURCES), {}, "Dinge: ids the pre-NGE client cannot resolve")
 end
 
--- AC-1: Dinge's file left KNOWN_GAPS (470 -> 446) and nothing else was dropped from it
-function TestF2DingeStaticUnresolved:test_dinges_file_is_not_in_the_ratchet_and_the_other_four_still_are()
+-- AC-1: Dinge's file left KNOWN_GAPS (470 -> 446) and nothing else was dropped from it; space-convo-client-strings-kaydine then took Kaydine's file out too (446 -> 381)
+function TestF2DingeStaticUnresolved:test_dinges_file_is_not_in_the_ratchet_and_the_other_three_still_are()
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_1"], "KNOWN_GAPS entry of Dinge's file")
 
-	for _, file in ipairs({ "conversation/naboo_privateer_trainer_2", "conversation/naboo_privateer_tier3", "conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4" }) do
+	for _, file in ipairs({ "conversation/naboo_privateer_tier3", "conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4" }) do
 		lu.assertNotNil(D.KNOWN_GAPS[file], "KNOWN_GAPS entry of " .. file)
 	end
 

@@ -9,11 +9,17 @@
 --   D.PAYS / D.STARTS  the handler contract (Content contract 2)
 --   D.OFFER_CHAIN      the screens the "ready" option walks through, per mission
 
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, Appendix A): D.ROWS stays the history of rsf-tier2-kaydine-convo (its
+-- sanity test counts 46 rows and 42 NPC sids); the live values of the rows that feature changes or deletes are in rsf_tier2_kaydine_client_strings_data.lua
+-- (D.rowNow below maps one onto the other). D.SCREEN_COUNT is 89, D.STARTS and D.FAILED follow the new graph, D.KC_FOREIGN / D.KH_FOREIGN are the pre-NGE-only ids.
+
+local KS = require("rsf_tier2_kaydine_client_strings_data")
+
 local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_2:"
 D.TEMPLATE = "kaydine_convo_template"
-D.SCREEN_COUNT = 100 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones, then rsf-gate-screens: + 4 gate screens, then rsf-tier2-kaydine-signup: + 9
+D.SCREEN_COUNT = 89 -- rsf-tier2-kaydine-training: 77 - 20 deleted training screens + 30 new ones, rsf-gate-screens: + 4, rsf-tier2-kaydine-signup: + 9, space-convo-client-strings-kaydine: - 11
 
 -- Appendix A. `exceptions` marks the options whose static link differs from the java default (E-1, E-2, E-3, E-5).
 D.ROWS = {
@@ -84,11 +90,16 @@ D.DELETED = {
 	"first_mission", "failed_first_mission", "start_first_mission", "try_first_mission", "cant_wait_first", "complete_first_mission", "according_to_plan", "first_mission_success", "second_mission", "accept_escort_details", "failed_second_mission", "accept_escort", "back_to_escort", "now_is_good", "be_smarter", "complete_second_mission", "duty_calls", "here_is_pay", "third_mission", "failed_third_mission", "accept_inspect", "on_your_way", "take_it_serious", "bad_liar", "complete_third_mission", "turnover_intelligence", "fourth_mission", "failed_fourth_mission", "accept_assassinate", "nonsense", "let_me_know", "report_back_success", "key_to_success", "just_malfunctioned", "complete_fourth_mission", "fourth_mission_success"
 }
 
--- Sids the KC/KH may carry that are not in the java (I-3)
--- rsf-tier2-kaydine-training (spec section 3): the eight old training sids are gone from both files, so nothing is foreign any more
+-- Sids the KC/KH may carry that are not in the java (I-3). space-convo-client-strings-kaydine I-4: exactly the 35 pre-NGE-only lines of the spec's Appendix B (the four
+-- choice replies of pilot-training-free-choice are among them). KC_FOREIGN is every pre-NGE-only id; KH_FOREIGN the ones the handler adds (the four choice replies,
+-- "I'm on my way." on the mission 1 brief and "Sounds good." on the mission 3 reward).
 D.KC_FOREIGN = {}
--- pilot-training-free-choice (D-4): the four choice replies Core3 had before the SWG training port come back; they are not in the java
-D.KH_FOREIGN = { s_45b71b4d = true, s_197f4f94 = true, s_8f5942fa = true, s_eff66f4d = true }
+D.KH_FOREIGN = { s_45b71b4d = true, s_197f4f94 = true, s_8f5942fa = true, s_eff66f4d = true, s_e42b260e = true, s_5e2a2bb1 = true }
+
+for _, sid in ipairs(KS.PRE_NGE_ONLY) do
+	D.KC_FOREIGN[sid] = true
+end
+
 D.F4_STORY_STRINGS = { "s_3cef63a0", "s_c4ef0e93", "s_ec671b3f", "s_a80d9308", "s_ff45f1fd", "s_225b33f", "s_2d67b7a8", "s_a6c7fa2b" }
 
 -- Mission head, :attempted / :reward key base, per mission
@@ -103,7 +114,7 @@ D.PAYS = {
 }
 D.STARTS = {
 	mission1_accept = 1, mission1_accept_male = 1, mission1_failed = 1,
-	mission1_intro_accept = 1, mission1_intro_accept_male = 1, -- rsf-tier2-kaydine-training I-5: the two new M1 start screens
+	-- (rsf-tier2-kaydine-training's mission1_intro_accept(_male) are gone: space-convo-client-strings-kaydine D-2)
 	mission2_accept = 2, mission2_failed = 2,
 	mission3_accept = 3, mission3_failed = 3,
 	mission4_accept = 4, mission4_failed = 4,
@@ -119,8 +130,8 @@ D.OFFER_CHAIN = {
 }
 -- C8: first screen of a failed mission, then its end screen, and the option sid between them
 D.FAILED = {
-	{ "mission1_failed", "s_45", "mission1_failed_end" },
-	{ "mission2_failed", "s_49", "mission2_failed_end" },
+	{ "mission1_failed", "s_c8f39347", "mission1_failed_end" }, -- space-convo-client-strings-kaydine FK-6: "I am."
+	{ "mission2_failed", "s_c8f39347", "mission2_failed_end" },
 	{ "mission3_failed", "s_c8f39347", "mission3_failed_end" },
 	{ "mission4_failed", "s_9817b9bb", "mission4_failed_end" },
 }
@@ -129,11 +140,38 @@ D.REWARD = {
 	{ first = "mission1_complete", pay = "mission1_reward", tails = { "mission1_reward_modest", "mission1_reward_more" } },
 	{ first = "mission2_reward", pay = "mission2_reward", tails = { "mission2_reward_modest", "mission2_reward_proud" } },
 	{ first = "mission3_complete", pay = "mission3_reward", tails = { "mission3_reward_end" } },
-	{ first = "mission4_complete", pay = "mission4_reward", tails = { "mission4_reward_dulios", "mission4_reward_end" } },
+	{ first = "mission4_complete", pay = "mission4_reward", tails = { "mission4_reward_dulios", "completed_kaydine_end" } }, -- space-convo-client-strings-kaydine D-4
 }
 
 -- C9: the first screen once the mission before is paid (the next state's first screen)
 D.AFTER_PAID = { "mission2_ready", "mission3_ready", "mission4_ready", "here_for_work" }
+
+-- The row as the template has it now: the F3 row for a changed screen, nil for a deleted one, the Appendix A row otherwise.
+-- { leftDialog, stopConversation, animation, options = { { text, link } } } with full string ids
+function D.rowNow(row)
+	for _, id in ipairs(KS.DELETED) do
+		if id == row.id then
+			return nil
+		end
+	end
+
+	local kr = KS.ROWS[row.id]
+	local options = {}
+
+	if kr then
+		for i, o in ipairs(kr.options) do
+			options[i] = { D.PREFIX .. o[1], o[2] }
+		end
+
+		return { leftDialog = D.PREFIX .. kr.left, stopConversation = kr.stop, animation = kr.animation, options = options }
+	end
+
+	for i, o in ipairs(row.options) do
+		options[i] = { D.PREFIX .. o[1], o[2] }
+	end
+
+	return { leftDialog = D.PREFIX .. row.sid, stopConversation = row.stop and "true" or "false", animation = row.animation ~= "" and row.animation or nil, options = options }
+end
 
 function D.rowsById()
 	local byId = {}

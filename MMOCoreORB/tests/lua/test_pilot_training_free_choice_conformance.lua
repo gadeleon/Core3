@@ -8,7 +8,11 @@
 --
 -- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, D-4, D-5, D-9, I-6, Content contract 1-2) re-pins Dinge only:
 -- TRAIN_CHOICES entries are { skill, reply, trained_<x> } (one click, no purchase screens, no TRAIN_SCREENS), the foreign ids are the four replies plus
--- s_cd72f93, Dinge has 64 screens, and the screens F2 rewrites or deletes are listed in CHANGED_SCREENS.dinge. Kaydine and Imler are untouched.
+-- s_cd72f93, Dinge has 64 screens, and the screens F2 rewrites or deletes are listed in CHANGED_SCREENS.dinge.
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1, D-3, Content contract 1-2, Appendix A) re-pins Kaydine:
+-- TRAIN_CHOICES entries are { skill, reply, trained_<x>_mission4 } (one click, no purchase screens, no TRAIN_SCREENS), the foreign ids are the four
+-- replies plus the 35 pre-NGE-only lines, Kaydine has 89 screens, and the screens F3 rewrites or deletes are listed in CHANGED_SCREENS.kaydine. Imler is untouched.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -16,6 +20,7 @@ local T = require("trainer_fixes_data")
 local C = require("pilot_training_free_choice_data")
 local Swgjava = require("harness.swgjava")
 local SU = require("rsf_tier2_kaydine_signup_data") -- rsf-tier2-kaydine-signup: the nine new Kaydine screens
+local KS = require("rsf_tier2_kaydine_client_strings_data") -- space-convo-client-strings-kaydine: the 35 pre-NGE-only ids
 
 T.load()
 H.loadMobile("conversations/space/neutral/rsf_squadron/imler_convo.lua") -- T.load() does not load Imler
@@ -115,13 +120,16 @@ for _, name in ipairs(ORDER) do
 
 			if name == "dinge" then
 				lu.assertEquals(entry[3], "trained_" .. entry[1]:match("^pilot_neutral_(%a+)_01$"), name .. " TRAIN_CHOICES[" .. i .. "]: the closing screen of the skill")
+			elseif name == "kaydine" then
+				-- space-convo-client-strings-kaydine D-3: the link is the static default intro, trained_<x>_mission4
+				lu.assertEquals(entry[3], "trained_" .. entry[1]:match("^pilot_neutral_(%a+)_02$") .. "_mission4", name .. " TRAIN_CHOICES[" .. i .. "]: the default intro of the skill")
 			else
 				lu.assertEquals(h.TRAIN_SCREENS[entry[3]], entry[1], name .. " TRAIN_CHOICES[" .. i .. "]: TRAIN_SCREENS['" .. tostring(entry[3]) .. "'] buys the skill of the entry")
 			end
 		end
 
-		if name == "dinge" then
-			lu.assertNil(h.TRAIN_SCREENS, "dingeConvoHandler.TRAIN_SCREENS must be removed (its purchase screens no longer exist)")
+		if name == "dinge" or name == "kaydine" then
+			lu.assertNil(h.TRAIN_SCREENS, TRAINERS[name].global .. ".TRAIN_SCREENS must be removed (its purchase screens no longer exist)")
 		end
 	end
 
@@ -167,8 +175,8 @@ for _, name in ipairs(ORDER) do
 			lu.assertNotNil(body:find('"' .. row.reply .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.reply .. "\"")
 			lu.assertNotNil(body:find('"' .. (row.screen or row.closing) .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. (row.screen or row.closing) .. "\"")
 
-			if name == "dinge" then
-				lu.assertNil(body:find('"train_' .. row.x .. '"', 1, true), "dinge TRAIN_CHOICES still names the deleted purchase screen train_" .. row.x)
+			if name == "dinge" or name == "kaydine" then
+				lu.assertNil(body:find('"train_' .. row.x .. '"', 1, true), name .. " TRAIN_CHOICES still names the deleted purchase screen train_" .. row.x)
 			end
 		end
 	end
@@ -236,6 +244,13 @@ for _, name in ipairs({ "kaydine", "dinge" }) do
 
 		if name == "dinge" then
 			want[#want + 1] = "s_cd72f93"
+		end
+
+		-- space-convo-client-strings-kaydine I-4: Kaydine's foreign ids are exactly the 35 pre-NGE-only lines (the four choice replies are among them)
+		if name == "kaydine" then
+			want = {}
+
+			for _, sid in ipairs(KS.PRE_NGE_ONLY) do want[#want + 1] = sid end
 		end
 
 		table.sort(got)
@@ -338,10 +353,10 @@ for _, name in ipairs(ORDER) do
 end
 
 -- AC-9: the screen counts the specs name (Dinge: 64 since space-convo-client-strings-dinge Content contract 1)
-function TestFreeChoiceGraph:test_the_screen_counts_are_100_for_kaydine_64_for_dinge_and_182_for_imler()
+function TestFreeChoiceGraph:test_the_screen_counts_are_89_for_kaydine_64_for_dinge_and_182_for_imler()
 	local function count(name) return #H.conversationTemplateTable(TRAINERS[name].template).screens end
 
-	lu.assertEquals(count("kaydine"), 100, "kaydine_convo_template screens (87 + the 4 gate screens + the 9 sign-up screens of rsf-tier2-kaydine-signup)")
+	lu.assertEquals(count("kaydine"), 89, "kaydine_convo_template screens (100 - 11 deleted by space-convo-client-strings-kaydine)")
 	lu.assertEquals(count("dinge"), 64, "dinge_convo_template screens (72 - 8 deleted by space-convo-client-strings-dinge)")
 	lu.assertEquals(count("imler"), 182, "imler_convo_template screens")
 end
@@ -439,11 +454,16 @@ for _, id in ipairs({ "yes_ship", "signup_ready_ship", "signup_ship_later", "mis
 	DINGE_F2[id] = true
 end
 
-local CHANGED_SCREENS = { kaydine = { ready_train_pilot = true }, dinge = { more_training = true, first_training_lesson = true, first_training_done = true }, imler = { ready_train = true } }
-local CHOICE_SCREENS = { kaydine = CHANGED_SCREENS.kaydine, dinge = { more_training = true, first_training_lesson = true, first_training_done = true, first_training = true }, imler = CHANGED_SCREENS.imler }
+local CHANGED_SCREENS = { kaydine = {}, dinge = { more_training = true, first_training_lesson = true, first_training_done = true }, imler = { ready_train = true } }
+local CHOICE_SCREENS = { kaydine = { ready_train_pilot = true }, dinge = { more_training = true, first_training_lesson = true, first_training_done = true, first_training = true }, imler = CHANGED_SCREENS.imler }
 
 for id in pairs(DINGE_F2) do
 	CHANGED_SCREENS.dinge[id] = true
+end
+
+-- space-convo-client-strings-kaydine (Content contract 1): the 11 deleted screens and the changed rows join ready_train_pilot
+for id in pairs(KS.CHANGED_SINCE_FREE_CHOICE) do
+	CHANGED_SCREENS.kaydine[id] = true
 end
 
 -- I-7: every screen not named in the spec is the very text of commit 1092dfb3fd; the named ones differ only in their options
@@ -534,7 +554,8 @@ end
 
 -- the functions each feature rewrites (the rest must be the very text of the base commit)
 local REWRITTEN = {
-	kaydine = { ["kaydineConvoHandler:runScreenHandlers"] = true, ["kaydineConvoHandler:getInitialScreen"] = true }, -- rsf-tier2-kaydine-signup: the sign-up route and fallthrough
+	-- rsf-tier2-kaydine-signup: the sign-up route and fallthrough; space-convo-client-strings-kaydine D-1: the one-click purchase in getNextConversationScreen
+	kaydine = { ["kaydineConvoHandler:runScreenHandlers"] = true, ["kaydineConvoHandler:getInitialScreen"] = true, ["kaydineConvoHandler:getNextConversationScreen"] = true },
 	dinge = { ["dingeConvoHandler:runScreenHandlers"] = true, ["dingeConvoHandler:getNextConversationScreen"] = true },
 	imler = { ["imlerConvoHandler:runScreenHandlers"] = true },
 }
@@ -609,7 +630,10 @@ local function branchTexts(fnText)
 end
 
 local CHOICE_BRANCHES = {
-	kaydine = { ready_train_pilot = true },
+	-- space-convo-client-strings-kaydine (Content contract 2): the male ending of mission1_brief, the mission 3 reward option, the deleted mission1_intro_b4 and
+	-- the mission 1 start branch (it no longer names mission1_intro_accept(_male)) change; the new test file pins them and every other branch byte for byte
+	kaydine = { ready_train_pilot = true, mission1_brief = true, mission3_reward = true, mission1_intro_b4 = true, mission1_accept = true, mission1_accept_male = true,
+		mission1_failed = true, mission1_intro_accept = true, mission1_intro_accept_male = true },
 	dinge = { more_training = true, first_training = true, first_training_lesson = true },
 	imler = { ready_train = true },
 }

@@ -4,6 +4,10 @@
 -- The choice replies are the answer key of pilot_training_free_choice_data.lua (copied from the spec). The purchase prompts, the 16 intro
 -- walks and the career scenario come from rsf_tier2_kaydine_training_data.lua. Choices are made by reply sid, so an out-of-order pick does not
 -- depend on the order of the list.
+--
+-- space-convo-client-strings-kaydine (.claude/work/space-convo-client-strings-kaydine/01-spec.md, D-1, Appendix A): the training is one click. The choice on
+-- ready_train_pilot buys the skill and shows the intro trained_<x>_mission<N> straight away (no train_<x> prompt, no buy reply); hooks that change the pilot
+-- between the greeting and the purchase now come before the choice.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -151,28 +155,20 @@ function TestKaydineFreeChoiceGreeting:test_the_retired_single_reply_s_187_is_ne
 	end
 end
 
--- AC-1: the choice reaches the SWG purchase prompt of the picked skill, with its line and its one option, and grants nothing
-function TestKaydineFreeChoiceGreeting:test_every_reply_leads_to_the_prompt_of_its_skill_with_its_swg_line_and_grants_nothing()
-	local byScreen = {}
-
-	for _, t in ipairs(K.TRAINING) do
-		byScreen[t.screen] = t
-	end
-
+-- AC-1, space-convo-client-strings-kaydine D-1: the reply buys its skill once and leads straight to the mission 1 intro of that skill (there is no prompt screen)
+function TestKaydineFreeChoiceGreeting:test_every_reply_buys_its_skill_once_and_leads_to_the_mission_1_intro_of_the_skill()
 	for _, row in ipairs(CHOICES) do
 		H.reset()
 		costs()
 
 		local player = trainee({})
 		local transcript = T.converse(tr, player, { row.sid })
-		local t = byScreen[row.screen]
 
-		lu.assertEquals(ids(transcript), { "ready_train_pilot", row.screen }, row.x .. ": screens")
-		lu.assertEquals(transcript[2].text, K.PREFIX .. t.promptSid, row.x .. ": prompt line")
-		lu.assertEquals(#transcript[2].options, 1, row.x .. ": prompt options")
-		lu.assertEquals(transcript[2].options[1].text, K.PREFIX .. t.optionSid, row.x .. ": prompt option text")
-		lu.assertEquals(#grants(), 0, row.x .. ": skillManagerAwardSkill calls while the prompt is shown")
-		lu.assertEquals(exp(player), 10 * XP, row.x .. ": XP")
+		lu.assertEquals(ids(transcript), { "ready_train_pilot", "trained_" .. row.x .. "_mission1" }, row.x .. ": screens")
+		lu.assertEquals(#grants(), 1, row.x .. ": skillManagerAwardSkill calls")
+		lu.assertEquals(grants()[1][2], row.skill, row.x .. ": skill bought")
+		lu.assertEquals(#H.Engine.callsTo("awardSkill"), 0, row.x .. ": awardSkill calls")
+		lu.assertEquals(exp(player), 9 * XP, row.x .. ": XP after the purchase")
 	end
 end
 
@@ -229,14 +225,14 @@ for _, row in ipairs(K.INTRO) do
 		local held = heldFor(x, n)
 		local player = pilot(n, held, 3 * XP)
 		local chains = H.spyOn(SpaceHelpers, "startSpaceQuestChain")
-		local choices = { choice.sid, 0 }
+		local choices = { choice.sid }
 
 		for _ = 1, #row.walk - 1 do
 			choices[#choices + 1] = 0
 		end
 
 		local transcript = T.converse(tr, player, choices)
-		local expected = { "ready_train_pilot", "train_" .. x }
+		local expected = { "ready_train_pilot" }
 
 		for _, id in ipairs(row.walk) do
 			expected[#expected + 1] = id
@@ -259,14 +255,14 @@ for _, row in ipairs(K.INTRO) do
 	end
 end
 
--- AC-2: the droid-first example of the spec
-function TestKaydineFreeChoicePurchase:test_a_pilot_with_no_skill_who_picks_droid_gets_the_droid_prompt_and_the_droid_mission_1_intro()
+-- AC-2: the droid-first example of the spec (one click: no prompt screen)
+function TestKaydineFreeChoicePurchase:test_a_pilot_with_no_skill_who_picks_droid_gets_the_droid_mission_1_intro()
 	costs()
 
 	local player = pilot(1, {}, XP)
-	local transcript = T.converse(tr, player, { C.KAYDINE[4].sid, 0 })
+	local transcript = T.converse(tr, player, { C.KAYDINE[4].sid })
 
-	lu.assertEquals(ids(transcript), { "ready_train_pilot", "train_droid", "trained_droid_mission1" }, "screens")
+	lu.assertEquals(ids(transcript), { "ready_train_pilot", "trained_droid_mission1" }, "screens")
 	lu.assertEquals(grants()[1][2], "pilot_neutral_droid_02", "skill bought")
 	lu.assertEquals(exp(player), 0, "space_combat_general")
 end
@@ -291,7 +287,7 @@ function TestKaydineFreeChoicePurchase:test_the_intro_depends_on_the_picked_skil
 					H.reset()
 					costs()
 
-					local transcript = T.converse(tr, pilot(n, held, 3 * XP), { row.sid, 0 })
+					local transcript = T.converse(tr, pilot(n, held, 3 * XP), { row.sid })
 
 					seen[#seen + 1] = transcript[#transcript].id
 					lu.assertEquals(transcript[#transcript].id, "trained_" .. row.x .. "_mission" .. n, row.x .. " as skill " .. n .. " holding " .. C.label(held))
@@ -310,10 +306,10 @@ function TestKaydineFreeChoicePurchase:test_the_guards_hold_for_a_droid_first_pi
 
 	local droid = C.KAYDINE[4]
 
-	-- the skill arrives while the prompt is shown
+	-- the skill arrives while the greeting is shown
 	local player = pilot(1, {}, 3 * XP)
 
-	T.converse(tr, player, { droid.sid, function(p) p.skills[droid.skill] = true end, 0 })
+	T.converse(tr, player, { function(p) p.skills[droid.skill] = true end, droid.sid })
 	lu.assertEquals(#grants(), 0, "skill already held: skillManagerAwardSkill calls")
 	lu.assertEquals(exp(player), 3 * XP, "skill already held: XP")
 
@@ -322,7 +318,7 @@ function TestKaydineFreeChoicePurchase:test_the_guards_hold_for_a_droid_first_pi
 	costs()
 	player = pilot(1, {}, XP)
 
-	local transcript = T.converse(tr, player, { droid.sid, function(p) p.ghost.experience.space_combat_general = XP - 1 end, 0 })
+	local transcript = T.converse(tr, player, { function(p) p.ghost.experience.space_combat_general = XP - 1 end, droid.sid })
 
 	lu.assertEquals(#grants(), 0, "XP gone: skillManagerAwardSkill calls")
 	lu.assertFalse(CreatureObject(player):hasSkill(droid.skill), "XP gone: droid held")
@@ -335,7 +331,7 @@ function TestKaydineFreeChoicePurchase:test_the_guards_hold_for_a_droid_first_pi
 	LuaSkillManager = function()
 		return setmetatable({ fulfillsSkillPrerequisitesAndXp = function() return false end }, { __index = REAL_SKILL_MANAGER() })
 	end
-	transcript = T.converse(tr, player, { droid.sid, 0 })
+	transcript = T.converse(tr, player, { droid.sid })
 	lu.assertEquals(#grants(), 0, "engine refuses: skillManagerAwardSkill calls")
 	lu.assertFalse(CreatureObject(player):hasSkill(droid.skill), "engine refuses: droid held")
 	lu.assertNotEquals(transcript[#transcript].id, "trained_droid_mission1", "engine refuses: no intro for a skill that was not bought")
@@ -405,7 +401,7 @@ function TestKaydineFreeChoiceCareer:test_picking_the_last_reply_every_visit_tra
 		lu.assertEquals(greeting[1].options[#greeting[1].options].text, pick.reply, "visit " .. k .. ": the last reply offered")
 		lu.assertEquals(#greeting[1].options, 5 - k, "visit " .. k .. ": number of replies offered")
 
-		local choices = { pick.sid, 0 }
+		local choices = { pick.sid }
 
 		for _ = 1, #row.walk - 1 do
 			choices[#choices + 1] = 0
@@ -413,7 +409,7 @@ function TestKaydineFreeChoiceCareer:test_picking_the_last_reply_every_visit_tra
 
 		local transcript = T.converse(tr, player, choices)
 
-		lu.assertEquals(transcript[3].id, "trained_" .. pick.x .. "_mission" .. k, "visit " .. k .. ": intro")
+		lu.assertEquals(transcript[2].id, "trained_" .. pick.x .. "_mission" .. k, "visit " .. k .. ": intro")
 		lu.assertEquals(transcript[#transcript].id, row.grant, "visit " .. k .. ": last screen (the grant)")
 		lu.assertEquals(#grants() - before, 1, "visit " .. k .. ": skills bought")
 		lu.assertEquals(grants()[#grants()][2], pick.skill, "visit " .. k .. ": skill bought")

@@ -298,19 +298,25 @@ assert the delay first so such a table fails instead of hanging the event clock.
 
 ### RSF tier 1 Dinge training (rsf-tier1-dinge-training)
 
+> Since space-convo-client-strings-dinge Dinge's training is the pre-NGE **one-click** shape (see "Client string ids" below): the lesson step, the
+> `train_<x>` prompt-and-confirm screens and `TRAIN_SCREENS` are gone, and the paragraphs below describe the rows as `D.ROWS` keys of the earlier feature.
+> `rsf_tier1_dinge_training_data.lua` / `rsf_tier1_dinge_convo_data.lua` keep those original rows (their sanity tests still count them) and add the F2
+> overlay: `D.F2_KEPT`, `D.F2_GONE`, `D.F2_UNUSED_SIDS`, `D.F2_CLOSING_SID`, `D.SCREEN_COUNT_F2` (64) and `D.current()` (the 57 story rows after the overlay).
+> In `pilot_training_free_choice_data.lua` the Dinge rows have no `screen` any more: the choice links straight to `closing` (`trained_<x>`).
+
 `rsf_tier1_dinge_training_data.lua` holds the spec's Appendix A (12 training screens: first training, `more_training`, four prompts, four closing lines),
 the SWG purchase order (`D.TRAINING`, `D.SKILLS`), the retired foreign sids and the 18 newly used sids, plus `D.subsets()` / `D.expectedLink(list)` for the
 1 to 3 skill combinations. `fixtures/skill/skills.pilot_neutral_01.tab` is an excerpt of SWG `skills.tab` (lines 1, 2, 641, 643, 647, 651, 655: header rows,
 the novice box and the four `_01` skills); the tests read the 7500 XP cost from it and feed it to `H.Engine.config.skillXpCosts`.
-The first skill (the pilot's pick since pilot-training-free-choice D-9; starships before) is the free grant (`callsTo("awardSkill")`); the other three go through `callsTo("skillManagerAwardSkill")`. The fake
+The first skill (the pilot's pick on `first_training` since pilot-training-free-choice D-9; starships before) is the free grant (`callsTo("awardSkill")`); the other three, chosen on `more_training`, go through `callsTo("skillManagerAwardSkill")`. The fake
 `fulfillsSkillPrerequisitesAndXp` always answers yes, so the engine-refusal case replaces the global `LuaSkillManager` for the test and restores it in `tearDown`.
 Choices that happen "while a screen is shown" (the skill arrives, the XP is gone) are hooks (`function(player) ... end`) between two choices of `H.converse`.
-`rsf_tier2_kaydine_training_data.lua`'s `D.drive` starts a conversation on any screen (here `train_<x>` and `first_training_lesson`), as if the pilot had just chosen there.
+`rsf_tier2_kaydine_training_data.lua`'s `D.drive` starts a conversation on any screen (here `first_training` and `more_training`), as if the pilot had just chosen there.
 
 ### Pilot training free choice (pilot-training-free-choice)
 
 `pilot_training_free_choice_data.lua` (not a test file) is the answer key of the pre-NGE free choice of the next pilot skill at Dinge, Kaydine and Imler:
-the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`, `reply`, `screen`, and `closing` for Dinge), the retired single replies
+the three choice tables (`C.KAYDINE`, `C.DINGE`, `C.IMLER`: `x`, `skill`, `sid`, `reply`, and `screen` for Kaydine and Imler; Dinge has `closing` = `trained_<x>` instead, no `screen`), the retired single replies
 (`C.RETIRED`) and helpers (`C.expected(list, heldSet[, "closing"])` = the `{ reply, link }` pairs a choice screen must show, `C.properSubsets`, `C.pairsOf`).
 `test_pilot_training_free_choice_{kaydine,dinge,imler}.lua` drive the choice, the purchase / free grant and out-of-order careers through `H.converse`
 (choices by reply sid, so an out-of-order pick does not depend on the order of the list); `test_pilot_training_free_choice_conformance.lua` pins the
@@ -345,7 +351,10 @@ starting with `/` or `./` is used as is (the helper test scans `fixtures/client_
 
 A per-trainer test is `lu.assertEquals(CS.unresolved({ <template>, <handler> }), {})`. `space_convo_client_strings_data.lua` holds the **ratchet**:
 `KNOWN_GAPS` (file -> the ids still unresolved; `test_space_convo_client_strings.lua` requires the scan to equal it exactly, so a new gap fails and a fixed
-gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (the 15 stored prefixes, the only line that joins one with an id, Dulios' `PT .. choice[2]`, and the 14 unused `stringFile` locals, pinned by path and line text so a new prefix or a second use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry.
+gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (the 15 stored prefixes, the only line that joins one with an id, Dulios' `PT .. choice[2]`, and the 14 unused `stringFile` locals, pinned by path and line text so a new prefix or a second use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446, four files left: `naboo_privateer_trainer_2`, `naboo_privateer_tier3`,
+`corellia_rebel_tier4`, `naboo_privateer_tier4`); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
+screens, the trailing `-- <client text>` comments and the sign-up, mission 3 failure, mission 4 offer and duty-decline journeys. Dinge trains in one click:
+the choice is made on `first_training` (free) or `more_training` (paid) and the conversation ends on `trained_<x>`, which shows "Good choice." (`s_cd72f93`).
 
 **Regenerating the fixtures** (maintenance only, needs `/tre` and Python 3; run from `MMOCoreORB/`):
 

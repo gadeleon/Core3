@@ -1,19 +1,12 @@
 -- Dinge (RSF tier 1) conversation handler; ported from SWG-Source naboo_privateer_trainer_1.java. Chain retry/won-check routing: feature space-trainer-fixes.
 dingeConvoHandler = conv_handler:new {}
 
-dingeConvoHandler.TRAIN_SCREENS = {
-	train_starships = "pilot_neutral_starships_01",
-	train_weapons = "pilot_neutral_weapons_01",
-	train_procedures = "pilot_neutral_procedures_01",
-	train_droid = "pilot_neutral_droid_01"
-}
-
--- Pre-NGE free choice of the next skill: { skill, reply, purchase screen, closing screen }, in SWG order
+-- Pre-NGE free choice of the next skill: { skill, reply, closing screen }, in SWG order
 dingeConvoHandler.TRAIN_CHOICES = {
-	{ "pilot_neutral_starships_01", "@conversation/naboo_privateer_trainer_1:s_e94f494b", "train_starships", "trained_starships" },
-	{ "pilot_neutral_weapons_01", "@conversation/naboo_privateer_trainer_1:s_939b6844", "train_weapons", "trained_weapons" },
-	{ "pilot_neutral_procedures_01", "@conversation/naboo_privateer_trainer_1:s_ac00d21e", "train_procedures", "trained_procedures" },
-	{ "pilot_neutral_droid_01", "@conversation/naboo_privateer_trainer_1:s_1726d8a5", "train_droid", "trained_droid" }
+	{ "pilot_neutral_starships_01", "@conversation/naboo_privateer_trainer_1:s_e94f494b", "trained_starships" },
+	{ "pilot_neutral_weapons_01", "@conversation/naboo_privateer_trainer_1:s_939b6844", "trained_weapons" },
+	{ "pilot_neutral_procedures_01", "@conversation/naboo_privateer_trainer_1:s_ac00d21e", "trained_procedures" },
+	{ "pilot_neutral_droid_01", "@conversation/naboo_privateer_trainer_1:s_1726d8a5", "trained_droid" }
 }
 
 -- Any of Dinge's story chains or duties is running (the journal checks of getInitialScreen)
@@ -54,67 +47,69 @@ function dingeConvoHandler:getLastScreenID(pPlayer)
 	return LuaConversationScreen(pLastScreen):getScreenID()
 end
 
--- Choosing an option on first_training_lesson grants the chosen skill free (pre-NGE free choice instead of
--- the starships grant of naboo_privateer_trainer_1.java:3164); on a train_<x> screen it buys that skill (once).
--- Both happen before the closing line (naboo_privateer_trainer_1.java:3310-3355)
+-- Pre-NGE one-click training: the choice made on first_training grants that skill free, the choice made on
+-- more_training buys it (once). The skill is read from the link of the chosen option.
 function dingeConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, selectedOption, pNpc)
 	local lastScreen = self:getLastScreenID(pPlayer) or ""
-	local skill = self.TRAIN_SCREENS[lastScreen]
 
-	if (lastScreen == "first_training_lesson") then
-		local link = nil
-		local convSession = CreatureObject(pPlayer):getConversationSession()
+	if (lastScreen ~= "first_training" and lastScreen ~= "more_training") then
+		return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+	end
 
-		if (convSession ~= nil) then
-			local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+	local link = nil
+	local convSession = CreatureObject(pPlayer):getConversationSession()
 
-			if (pLastScreen ~= nil) then
-				link = LuaConversationScreen(pLastScreen):getOptionLink(selectedOption)
-			end
+	if (convSession ~= nil) then
+		local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+
+		if (pLastScreen ~= nil) then
+			link = LuaConversationScreen(pLastScreen):getOptionLink(selectedOption)
 		end
+	end
 
-		local chosen = nil
+	local skill = nil
 
-		for _, choice in ipairs(self.TRAIN_CHOICES) do
-			if (choice[4] == link) then
-				chosen = choice[1]
-			end
+	for _, choice in ipairs(self.TRAIN_CHOICES) do
+		if (choice[3] == link) then
+			skill = choice[1]
 		end
+	end
 
-		if (chosen ~= nil and self:isReadyForFirstTraining(pPlayer)) then
-			SpaceHelpers:grantSpaceSkill(pPlayer, chosen, false)
+	if (skill == nil) then
+		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
+	end
+
+	if (lastScreen == "first_training") then
+		if (self:isReadyForFirstTraining(pPlayer)) then
+			SpaceHelpers:grantSpaceSkill(pPlayer, skill, false)
 
 			return LuaConversationTemplate(pConvTemplate):getScreen(link)
 		end
 
 		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
-	elseif (skill ~= nil) then
-		local had = CreatureObject(pPlayer):hasSkill(skill)
-
-		if (not had and SpaceHelpers:hasExperienceForTraining(pPlayer, 1) and LuaSkillManager():fulfillsSkillPrerequisitesAndXp(pPlayer, skill)) then
-			SpaceHelpers:grantSpaceSkill(pPlayer, skill, true)
-		end
-
-		local pGhost = CreatureObject(pPlayer):getPlayerObject()
-
-		if (pGhost ~= nil) then
-			local ghost = LuaPlayerObject(pGhost)
-
-			if (ghost ~= nil and ghost:getPilotTier() == 1 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1)) then
-				ghost:incrementPilotTier()
-			end
-		end
-
-		if (not had and CreatureObject(pPlayer):hasSkill(skill)) then
-			local name = string.gsub(lastScreen, "^train_", "")
-
-			return LuaConversationTemplate(pConvTemplate):getScreen("trained_" .. name)
-		end
-
-		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	end
 
-	return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+	local had = CreatureObject(pPlayer):hasSkill(skill)
+
+	if (not had and SpaceHelpers:hasExperienceForTraining(pPlayer, 1) and LuaSkillManager():fulfillsSkillPrerequisitesAndXp(pPlayer, skill)) then
+		SpaceHelpers:grantSpaceSkill(pPlayer, skill, true)
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost ~= nil) then
+		local ghost = LuaPlayerObject(pGhost)
+
+		if (ghost ~= nil and ghost:getPilotTier() == 1 and SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1)) then
+			ghost:incrementPilotTier()
+		end
+	end
+
+	if (not had and CreatureObject(pPlayer):hasSkill(skill)) then
+		return LuaConversationTemplate(pConvTemplate):getScreen(link)
+	end
+
+	return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 end
 
 function dingeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -276,22 +271,13 @@ function dingeConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 		return pClonedScreen
 	end
 
-	if (screenID == "more_training") then
-		-- Every skill the pilot lacks (pre-NGE free choice instead of naboo_privateer_trainer_1.java:3177-3300)
+	if (screenID == "first_training" or screenID == "more_training") then
+		-- Every skill the pilot lacks (pre-NGE free choice instead of naboo_privateer_trainer_1.java:3142-3300)
 		clonedConversation:removeAllOptions()
 
 		for _, choice in ipairs(self.TRAIN_CHOICES) do
 			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
 				clonedConversation:addOption(choice[2], choice[3])
-			end
-		end
-	elseif (screenID == "first_training_lesson") then
-		-- Free first skill: the pilot picks which one (pre-NGE free choice instead of naboo_privateer_trainer_1.java:3142-3171)
-		clonedConversation:removeAllOptions()
-
-		for _, choice in ipairs(self.TRAIN_CHOICES) do
-			if (not CreatureObject(pPlayer):hasSkill(choice[1])) then
-				clonedConversation:addOption(choice[2], choice[4])
 			end
 		end
 	elseif (screenID == "non_rsf_pilot") then

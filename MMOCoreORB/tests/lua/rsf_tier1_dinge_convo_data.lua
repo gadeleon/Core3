@@ -10,11 +10,19 @@
 --   D.DELETED   the 20 screens F6 had for the old story mission flow
 --   D.PAYS / D.STARTS  the handler contract (Content contract 2)
 --   D.DH_*      the DH lines Content contract 2 says do not change, as they are at 4eefa91216
+--
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, Content contract 1, D-9, D-10): D.ROWS stays the key of
+-- rsf-tier1-dinge-convo (its sanity tests still count 60 rows). The F2 overlay below is what the template looks like now:
+--   D.F2_DELETED_ROWS  the three Appendix A rows whose screens F2 deletes (signup_ready_ship, signup_ship_later, duty_not_now)
+--   D.F2_ROWS          the rows F2 changes, replaced field by field (sid / options); the java node of such a row is NOT the key any more
+--   D.current()        the 57 rows that describe the template now (a fresh copy; changed rows carry f2 = true)
+--   D.SCREEN_COUNT_F2  64 = 57 story rows + first_training, more_training, the four trained_<x> + non_rsf_duty_offer
 
 local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_1:"
 D.TEMPLATE = "dinge_convo_template"
+D.SCREEN_COUNT_F2 = 64 -- space-convo-client-strings-dinge: 72 - 8 deleted screens
 D.SCREEN_COUNT_CHOICE = 72 -- pilot-training-free-choice: first_training_done (s_142) is deleted (D-6); SCREEN_COUNT below is the count before that feature
 D.SCREEN_COUNT = 73 -- 47 - 20 deleted + 40 new, then rsf-tier1-dinge-training: - 6 deleted + 11 new, then rsf-gate-screens: + non_rsf_duty_offer
 
@@ -82,6 +90,46 @@ D.ROWS = {
 	{ id = "not_ready", status = "kept", sid = "s_792ad840", animation = "", stop = true, options = {  } },
 }
 
+D.F2_DELETED_ROWS = { "signup_ready_ship", "signup_ship_later", "duty_not_now" }
+
+local DUTY_MENU_F2 = { {"s_6106187c", "what_is_duty"}, {"s_e814cf37", "duty_options"}, {"s_db74ddc6", "duty_no_training"}, {"s_2883b989", "not_ready"} } -- D-10
+
+D.F2_ROWS = {
+	yes_ship = { options = { {"s_36a4e374", "signup_offer"}, {"s_68660d24", "signup_not_ready"} } },
+	mission3_failed = { options = { {"s_ea059f38", "mission3_failed_retry1"}, {"s_aec5c3dd", "mission3_failed_retry2"} } },
+	mission3_failed_retry1 = { sid = "s_b9c77549" },
+	mission3_failed_retry2 = { sid = "s_7af03aab" },
+	mission4_offer = { options = { {"s_7478cd28", "mission4_accept"} } },
+	duty_missions = { options = DUTY_MENU_F2 },
+	what_is_duty = { options = DUTY_MENU_F2 },
+	duty_no_training = { options = DUTY_MENU_F2 },
+}
+
+function D.current()
+	local deleted, out = {}, {}
+
+	for _, id in ipairs(D.F2_DELETED_ROWS) do
+		deleted[id] = true
+	end
+
+	for _, row in ipairs(D.ROWS) do
+		if not deleted[row.id] then
+			local copy = {}
+
+			for k, v in pairs(row) do copy[k] = v end
+
+			for k, v in pairs(D.F2_ROWS[row.id] or {}) do
+				copy[k] = v
+				copy.f2 = true
+			end
+
+			out[#out + 1] = copy
+		end
+	end
+
+	return out
+end
+
 -- E-6 is retired by rsf-gate-screens (spec section 4, AC-5): the two gate screens carry the java animation now, so no row differs from the java
 D.JAVA_ONLY_ANIMATION = {}
 
@@ -126,7 +174,8 @@ D.FAILED = {
 }
 
 -- Sids the files may carry that are not in the java (I-3)
-D.DC_FOREIGN = {}
+-- space-convo-client-strings-dinge D-9: "Good choice." (s_cd72f93) is in the client's string file, not in the java; the four trained_<x> screens show it
+D.DC_FOREIGN = { s_cd72f93 = true }
 -- pilot-training-free-choice (D-4): the four choice replies Core3 had before the SWG training port come back; they are not in the java
 D.DH_FOREIGN = { s_e94f494b = true, s_939b6844 = true, s_ac00d21e = true, s_1726d8a5 = true }
 D.GONE_SID = "s_e9c7c6bb"

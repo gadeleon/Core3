@@ -1,6 +1,8 @@
 -- The off-track pilot cannot get past the duty screens: an exhaustive walk of every option path of depth 6 from each trainer's first screen.
 -- Spec: .claude/work/rsf-gate-screens/01-spec.md (AC-7, invariants I-4 and I-5, "What the off-track pilot can reach").
 --
+-- space-convo-client-strings-dinge (AC-6, D-10): Dinge's exact-union walk test expects G.DINGE_REACH_NOW (duty_not_now is deleted, not_ready takes its place).
+--
 -- Every path is a fresh pilot (a CorSec neutral pilot with 0, 1 or all 4 tier 1 skills and no quest) and a fresh conversation. Quest
 -- starts and rewards are recorded, not run. The ghost mutators are replaced on the fake ghost class so one set of spies serves every path.
 
@@ -79,7 +81,7 @@ end
 
 local TRAINERS = {
 	kaydine = { reach = G.KAYDINE_REACH, duties = { G.KAYDINE_DUTIES.escort, G.KAYDINE_DUTIES.recovery, G.KAYDINE_DUTIES.destroy } },
-	dinge = { reach = G.DINGE_REACH, duties = { G.DINGE_DUTIES.destroy, G.DINGE_DUTIES.escort } },
+	dinge = { reach = G.DINGE_REACH, exact = G.DINGE_REACH_NOW, duties = { G.DINGE_DUTIES.destroy, G.DINGE_DUTIES.escort } },
 }
 
 local SKILL_COUNTS = { 0, 1, 4 }
@@ -153,7 +155,7 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 			for global in pairs(walk.starts) do starts[global] = true end
 		end
 
-		lu.assertEquals(G.sortedKeys(union), spec.reach, trainer .. ": screens reached by the walks")
+		lu.assertEquals(G.sortedKeys(union), spec.exact or spec.reach, trainer .. ": screens reached by the walks")
 		lu.assertEquals(G.sortedKeys(starts), G.sortedKeys(setOf(spec.duties)), trainer .. ": duties started by the walks")
 	end
 end

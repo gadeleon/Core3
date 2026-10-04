@@ -6,6 +6,9 @@
 -- NOT used (it credits a repeated line with the actions of its first occurrence); payments and grants are behavior, see
 -- test_rsf_tier1_dinge_convo_flow.lua. The gate screens (item 24) are only checked as unchanged. The training screens (F8) are covered by
 -- test_rsf_tier1_dinge_training_*.lua; superseded here by .claude/work/rsf-tier1-dinge-training/01-spec.md (Test strategy hints, Superseded).
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, AC-2, Appendix A) re-pins eight tests of this file to the
+-- pre-NGE template through D.current() (the 57 story rows after the F2 overlay): 64 screens, "Good choice." as the one foreign NPC line (D-9), the duty
+-- menus' decline linking to not_ready (D-10), and 93 java strings in use (58 of 73 NPC lines + 35 of 47 replies).
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -203,14 +206,14 @@ TestDingeConvoTemplate = {}
 
 function TestDingeConvoTemplate:setUp() H.reset() end
 
--- AC-1; pilot-training-free-choice: first_training_done is deleted, 72 screens
-function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_72_screens()
+-- AC-1; pilot-training-free-choice: first_training_done is deleted; space-convo-client-strings-dinge AC-2: 64 screens
+function TestDingeConvoTemplate:test_the_template_keeps_its_name_handler_and_initial_screen_and_has_64_screens()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "dingeConvoHandler", "dinge_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "dinge_convo_template: templateType")
 	lu.assertEquals(t.initialScreen, "", "dinge_convo_template: initialScreen")
-	lu.assertEquals(#t.screens, D.SCREEN_COUNT_CHOICE, "dinge_convo_template: number of screens (67 - 6 + 11 + 1 - 1)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT_F2, "dinge_convo_template: number of screens (72 - 8 deleted by space-convo-client-strings-dinge)")
 end
 
 -- AC-1
@@ -227,7 +230,7 @@ function TestDingeConvoTemplate:test_every_new_screen_of_appendix_a_exists_with_
 	local byId = screensById()
 	local seen = 0
 
-	for _, row in ipairs(D.ROWS) do
+	for _, row in ipairs(D.current()) do
 		if row.status == "new" then
 			local screen = byId[row.id]
 
@@ -237,7 +240,7 @@ function TestDingeConvoTemplate:test_every_new_screen_of_appendix_a_exists_with_
 		end
 	end
 
-	lu.assertEquals(seen, 40, "new screens checked")
+	lu.assertEquals(seen, 37, "new screens checked (40 - 3 deleted by space-convo-client-strings-dinge)")
 end
 
 -- AC-1
@@ -245,7 +248,7 @@ function TestDingeConvoTemplate:test_every_changed_screen_of_appendix_a_equals_i
 	local byId = screensById()
 	local seen = 0
 
-	for _, row in ipairs(D.ROWS) do
+	for _, row in ipairs(D.current()) do
 		if row.status == "chg" then
 			seen = seen + 1
 			lu.assertNotNil(byId[row.id], "dinge_convo_template: missing changed screen '" .. row.id .. "'")
@@ -265,7 +268,7 @@ function TestDingeConvoTemplate:test_the_e1_link_and_the_shared_option_lists_are
 	lu.assertNotNil(byId.mission3_reward_bandolier, "dinge_convo_template: missing screen 'mission3_reward_bandolier'")
 	lu.assertEquals(byId.mission3_reward_bandolier.options, { { D.PREFIX .. "s_3f49e786", "mission4_offer" } }, "mission3_reward_bandolier: options (E-1)")
 
-	for _, id in ipairs({ "signup_offer", "signup_ready_ship", "mission1_offer", "mission1_after_assignments" }) do
+	for _, id in ipairs({ "signup_offer", "mission1_offer", "mission1_after_assignments" }) do
 		lu.assertNotNil(byId[id], "dinge_convo_template: missing screen '" .. id .. "'")
 		lu.assertEquals(byId[id].options, m1Options, id .. ": the three mission 1 options (E-3)")
 	end
@@ -278,7 +281,7 @@ function TestDingeConvoTemplate:test_the_e1_link_and_the_shared_option_lists_are
 		lu.assertEquals(byId[id].stopConversation, "false", id .. ": stopConversation")
 	end
 
-	local duty = { { D.PREFIX .. "s_6106187c", "what_is_duty" }, { D.PREFIX .. "s_e814cf37", "duty_options" }, { D.PREFIX .. "s_db74ddc6", "duty_no_training" }, { D.PREFIX .. "s_2883b989", "duty_not_now" } }
+	local duty = { { D.PREFIX .. "s_6106187c", "what_is_duty" }, { D.PREFIX .. "s_e814cf37", "duty_options" }, { D.PREFIX .. "s_db74ddc6", "duty_no_training" }, { D.PREFIX .. "s_2883b989", "not_ready" } } -- D-10: the decline rejoins not_ready
 
 	for _, id in ipairs({ "duty_missions", "what_is_duty", "duty_no_training" }) do
 		lu.assertNotNil(byId[id], "dinge_convo_template: missing screen '" .. id .. "'")
@@ -357,9 +360,11 @@ TestDingeConvoConformance = {}
 
 function TestDingeConvoConformance:setUp() H.reset() end
 
--- AC-2: each of the 60 Appendix A NPC sids has exactly one story screen (the training screens are checked in the training test files)
-function TestDingeConvoConformance:test_each_of_the_60_appendix_npc_sids_has_exactly_one_screen()
-	local count = {}
+-- AC-2: each NPC sid of the 57 current rows is shown by exactly as many story screens as there are rows with that sid (the training screens are checked in the
+-- training test files). space-convo-client-strings-dinge R-3: the two mission 3 retry lines are shared with the mission 1 failure replies, so two sids have two rows.
+function TestDingeConvoConformance:test_each_current_appendix_npc_sid_is_shown_by_exactly_the_screens_of_its_rows()
+	local count, want = {}, {}
+	local rows = D.current()
 
 	for _, s in ipairs(template().screens) do
 		local sid = sidOf(s.leftDialog)
@@ -369,17 +374,34 @@ function TestDingeConvoConformance:test_each_of_the_60_appendix_npc_sids_has_exa
 		end
 	end
 
-	for _, row in ipairs(D.ROWS) do
-		lu.assertEquals(count[row.sid] or 0, 1, "number of screens (other than training) showing " .. row.sid .. " (appendix row '" .. row.id .. "')")
+	for _, row in ipairs(rows) do
+		want[row.sid] = (want[row.sid] or 0) + 1
 	end
+
+	lu.assertEquals(#rows, 57, "current story rows")
+
+	for _, row in ipairs(rows) do
+		lu.assertEquals(count[row.sid] or 0, want[row.sid], "number of screens (other than training) showing " .. row.sid .. " (appendix row '" .. row.id .. "')")
+	end
+
+	lu.assertEquals(want.s_b9c77549, 2, "s_b9c77549: mission1_failed_will_do and mission3_failed_retry1")
+	lu.assertEquals(want.s_7af03aab, 2, "s_7af03aab: mission1_failed_attacked and mission3_failed_retry2")
 end
 
--- AC-2, I-2: option sids in order, successor line, end flag and animation of every Appendix A screen, against the java graph
+-- AC-2, I-2: option sids in order, successor line, end flag and animation of every current row, against the java graph. The rows the F2 overlay changes
+-- (f2 = true) keep the java node's end flag and animation, but their option sids are the pre-NGE client lines of the row and their links lead to the screen
+-- of the row they name (the java's options there are NGE-numbered or have a different successor, spec FD-4 / D-10).
 function TestDingeConvoConformance:test_every_appendix_screen_matches_the_java_graph()
 	local byId = screensById()
+	local rows = D.current()
+	local rowById = {}
 	local checked = 0
 
-	for _, row in ipairs(D.ROWS) do
+	for _, row in ipairs(rows) do
+		rowById[row.id] = row
+	end
+
+	for _, row in ipairs(rows) do
 		local screen = byId[row.id]
 		local node = GRAPH.nodes[row.sid]
 
@@ -400,31 +422,46 @@ function TestDingeConvoConformance:test_every_appendix_screen_matches_the_java_g
 				got[i] = sidOf(option[1])
 			end
 
-			lu.assertEquals(got, node.options, "screen '" .. row.id .. "' (" .. row.sid .. "): option sids in order")
+			if row.f2 then
+				local want = {}
 
-			for i, optionSid in ipairs(node.options) do
-				local target = byId[screen.options[i][2]]
+				for i, o in ipairs(row.options) do want[i] = o[1] end
 
-				lu.assertNotNil(target, "screen '" .. row.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
+				lu.assertEquals(got, want, "screen '" .. row.id .. "' (" .. row.sid .. "): option sids in order (F2 row)")
 
-				local successors = GRAPH.successorsOf(row.sid, optionSid)
+				for i, o in ipairs(row.options) do
+					lu.assertEquals(screen.options[i][2], o[2], "screen '" .. row.id .. "' option " .. o[1] .. ": link (F2 row)")
+					lu.assertEquals(sidOf(byId[o[2]].leftDialog), rowById[o[2]].sid, "screen '" .. row.id .. "' option " .. o[1] .. ": the NPC line of the screen it links to")
+				end
+			else
+				lu.assertEquals(got, node.options, "screen '" .. row.id .. "' (" .. row.sid .. "): option sids in order")
 
-				lu.assertNotNil(successors, "answer key: no successor for " .. row.sid .. " -> " .. optionSid)
+				for i, optionSid in ipairs(node.options) do
+					local target = byId[screen.options[i][2]]
 
-				if row.id == "mission3_reward_bandolier" and optionSid == "s_3f49e786" then -- E-1
-					lu.assertEquals(sidOf(target.leftDialog), "s_966bc2b6", "mission3_reward_bandolier option s_3f49e786 -> mission 4 offer line (E-1)")
-				else
-					lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. row.id .. "' option " .. optionSid .. " -> successor NPC line (java default)")
+					lu.assertNotNil(target, "screen '" .. row.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
+
+					local successors = GRAPH.successorsOf(row.sid, optionSid)
+
+					lu.assertNotNil(successors, "answer key: no successor for " .. row.sid .. " -> " .. optionSid)
+
+					if row.id == "mission3_reward_bandolier" and optionSid == "s_3f49e786" then -- E-1
+						lu.assertEquals(sidOf(target.leftDialog), "s_966bc2b6", "mission3_reward_bandolier option s_3f49e786 -> mission 4 offer line (E-1)")
+					else
+						lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. row.id .. "' option " .. optionSid .. " -> successor NPC line (java default)")
+					end
 				end
 			end
 		end
 	end
 
-	lu.assertEquals(checked, 60, "screens checked against the java")
+	lu.assertEquals(checked, 57, "screens checked against the java")
 end
 
--- AC-2, I-3: every string of dinge_convo.lua is a java line or response (no foreign sid is left)
+-- AC-2, I-3: every string of dinge_convo.lua is a java line or response, except "Good choice." (s_cd72f93, D-9), which only the four trained_<x> screens show
 function TestDingeConvoConformance:test_every_string_of_dinge_convo_is_in_the_java_except_the_known_foreign_one()
+	local foreign = 0
+
 	for _, s in ipairs(template().screens) do
 		local sid = sidOf(s.leftDialog)
 
@@ -432,6 +469,9 @@ function TestDingeConvoConformance:test_every_string_of_dinge_convo_is_in_the_ja
 
 		if not D.DC_FOREIGN[sid] then
 			lu.assertNotNil(GRAPH.nodes[sid], "screen '" .. s.id .. "': leftDialog " .. sid .. " is not an NPC line of the java")
+		else
+			lu.assertTrue(s.id:find("^trained_") ~= nil, "screen '" .. s.id .. "' shows the foreign line " .. sid .. " but is not a trained_<x> screen")
+			foreign = foreign + 1
 		end
 
 		for i, option in ipairs(s.options or {}) do
@@ -444,6 +484,8 @@ function TestDingeConvoConformance:test_every_string_of_dinge_convo_is_in_the_ja
 			end
 		end
 	end
+
+	lu.assertEquals(foreign, 4, "screens showing the foreign line s_cd72f93 (the four trained_<x> screens, D-9)")
 end
 
 -- AC-2, I-3; pilot-training-free-choice I-6: every string id DH adds is a response of the java, except the four choice replies (D-4)
@@ -480,8 +522,8 @@ function TestDingeConvoConformance:test_the_foreign_string_s_e9c7c6bb_is_in_neit
 	lu.assertNil(readFile(DH_PATH):find(D.GONE_SID, 1, true), "dingeConvoHandler.lua still carries " .. D.GONE_SID)
 end
 
--- AC-2, I-3; pilot-training-free-choice: 117 of the 120 strings (s_142, s_141 and s_143 are unused; the off-track line s_1e029d90 of rsf-gate-screens is used)
-function TestDingeConvoConformance:test_the_template_uses_117_java_strings()
+-- AC-2, I-3; space-convo-client-strings-dinge AC-2: 93 of the 120 java strings (58 of 73 NPC lines + 35 of 47 replies; the NGE-only lines are gone)
+function TestDingeConvoConformance:test_the_template_uses_93_java_strings()
 	local used = {}
 
 	for _, s in ipairs(template().screens) do
@@ -512,7 +554,7 @@ function TestDingeConvoConformance:test_the_template_uses_117_java_strings()
 		n = n + 1
 	end
 
-	lu.assertEquals(n, 117, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (72 of 73 NPC lines + 45 of 47 responses)")
+	lu.assertEquals(n, 93, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (58 of 73 NPC lines + 35 of 47 responses)")
 end
 
 ---------------------------------------------------------------------------------------------

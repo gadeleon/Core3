@@ -4,6 +4,9 @@
 -- the rows and tests below that touched it were superseded by .claude/work/rsf-tier1-dinge-training/01-spec.md (D-12 routing, groups S and T).
 -- Spec: .claude/work/rsf-tier1-dinge-convo/01-spec.md (AC-3 .. AC-10, invariants I-4, I-5, Conversation flow C1-C17).
 -- Appendix A (rsf_tier1_dinge_convo_data.lua) is the answer key for screens, options and actions.
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, AC-3 .. AC-6, AC-10; Appendix A) re-pins 17 tests of this file
+-- to the pre-NGE flow through D.current(): the has-ship sign-up goes yes_ship -> signup_offer (no signup_ready_ship / signup_ship_later), the mission 3 and 4
+-- replies are client lines, the duty decline ends on not_ready, first_training lists the four choice replies, and the template has 64 screens.
 -- Fake limits: the harness does not model NPC animations (they are template fields, checked in the template test) and
 -- `grantStarterShip` is a recorded no-op (it does not change `certifiedShip`).
 
@@ -29,7 +32,7 @@ local SKILLS_01 = { "pilot_neutral_droid_01", "pilot_neutral_procedures_01", "pi
 local function rowsById()
 	local byId = {}
 
-	for _, row in ipairs(D.ROWS) do
+	for _, row in ipairs(D.current()) do
 		byId[row.id] = row
 	end
 
@@ -388,9 +391,9 @@ for name, setup in pairs({
 	},
 	has_ship = {
 		player = function() return H.newPlayer({ name = "Ace", certifiedShip = true }) end,
-		prefix = { "s_d70dba34", "s_5c522568", "s_30" },
-		prefixIds = { "recruitment", "yes_enlist", "yes_ship", "signup_ready_ship" },
-		offer = "signup_ready_ship",
+		prefix = { "s_d70dba34", "s_5c522568", "s_36a4e374" }, -- "Yes, I am." leads to signup_offer (F2 D-1)
+		prefixIds = { "recruitment", "yes_enlist", "yes_ship", "signup_offer" },
+		offer = "signup_offer",
 	},
 }) do
 	for _, p in ipairs(paths(setup.offer)) do
@@ -736,8 +739,9 @@ function TestDingeRewards:test_the_bandolier_line_and_the_mission_4_offer_start_
 	lu.assertNil(attempted(player, 4), "naboo_privateer_tier1_4a:attempted before the accept screen")
 end
 
--- AC-5 (superseded by rsf-tier1-dinge-training D-12): M4's reward line is followed by SWG's first training
-function TestDingeRewards:test_mission_4_reward_is_followed_by_first_training_in_the_next_conversation_with_its_single_option()
+-- AC-5 (superseded by rsf-tier1-dinge-training D-12, then by space-convo-client-strings-dinge AC-7): M4's reward line is followed by first training, which
+-- lists the four pre-NGE choice replies
+function TestDingeRewards:test_mission_4_reward_is_followed_by_first_training_in_the_next_conversation_with_the_four_choice_replies()
 	local player = wonUnpaid(4)
 
 	T.converse(tr, player)
@@ -745,7 +749,7 @@ function TestDingeRewards:test_mission_4_reward_is_followed_by_first_training_in
 	local transcript = T.converse(tr, player)
 
 	lu.assertEquals(transcript[1].id, "first_training", "first screen")
-	lu.assertEquals(texts(transcript[1].options), sids({ "s_139" }), "first_training: options")
+	lu.assertEquals(texts(transcript[1].options), sids({ "s_e94f494b", "s_939b6844", "s_ac00d21e", "s_1726d8a5" }), "first_training: options")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -949,34 +953,37 @@ end
 function TestDingeSignup:test_with_a_ship_the_path_grants_no_ship_and_starts_mission_1_on_the_offer()
 	local player = newcomer(true)
 	local calls = tapChains()
-	local transcript = T.converse(tr, player, { "s_d70dba34", "s_5c522568", "s_30", "s_1db37a0f" })
+	local transcript = T.converse(tr, player, { "s_d70dba34", "s_5c522568", "s_36a4e374", "s_1db37a0f" })
 
-	lu.assertEquals(ids(transcript), { "recruitment", "yes_enlist", "yes_ship", "signup_ready_ship", "mission1_accept" }, "screens")
+	lu.assertEquals(ids(transcript), { "recruitment", "yes_enlist", "yes_ship", "signup_offer", "mission1_accept" }, "screens")
 	lu.assertEquals(#H.Engine.callsTo("grantStarterShip"), 0, "grantStarterShip calls")
 	lu.assertEquals(T.state(player, M1), "active", M1)
 	lu.assertEquals(headIds(calls), { M1 }, "startSpaceQuestChain calls")
 	lu.assertEquals(attempted(player, 1), "1", "naboo_privateer_1:attempted")
 end
 
--- AC-7
-function TestDingeSignup:test_s_34_ends_on_signup_ship_later_and_starts_nothing()
+-- AC-7; space-convo-client-strings-dinge AC-3: "I need to take care of some things first." (was the NGE s_34 / signup_ship_later)
+function TestDingeSignup:test_with_a_ship_s_68660d24_ends_on_signup_not_ready_and_starts_nothing()
 	local player = newcomer(true)
 	local calls = tapChains()
-	local transcript = T.converse(tr, player, { "s_d70dba34", "s_5c522568", "s_34" })
+	local transcript = T.converse(tr, player, { "s_d70dba34", "s_5c522568", "s_68660d24" })
 
-	lu.assertEquals(ids(transcript), { "recruitment", "yes_enlist", "yes_ship", "signup_ship_later" }, "screens")
-	lu.assertTrue(transcript[4].stop, "signup_ship_later ends the conversation")
+	lu.assertEquals(ids(transcript), { "recruitment", "yes_enlist", "yes_ship", "signup_not_ready" }, "screens")
+	lu.assertEquals(transcript[4].text, P .. "s_f5f16210", "signup_not_ready: NPC line")
+	lu.assertTrue(transcript[4].stop, "signup_not_ready ends the conversation")
 	lu.assertEquals(#calls, 0, "startSpaceQuestChain calls")
 	lu.assertEquals(#H.Engine.callsTo("grantStarterShip"), 0, "grantStarterShip calls")
 	lu.assertEquals(T.state(player, M1), "none", M1)
 end
 
--- AC-7
-function TestDingeSignup:test_yes_ship_shows_s_5ed33504_with_s_30_and_s_34()
+-- AC-7; space-convo-client-strings-dinge AC-3
+function TestDingeSignup:test_yes_ship_shows_s_5ed33504_with_s_36a4e374_and_s_68660d24()
 	local transcript = T.converse(tr, newcomer(true), { "s_d70dba34", "s_5c522568" })
 
 	lu.assertEquals(transcript[3].id, "yes_ship", "third screen")
-	lu.assertEquals(texts(transcript[3].options), sids({ "s_30", "s_34" }), "yes_ship: options")
+	lu.assertEquals(transcript[3].text, P .. "s_5ed33504", "yes_ship: NPC line")
+	lu.assertEquals(texts(transcript[3].options), sids({ "s_36a4e374", "s_68660d24" }), "yes_ship: options")
+	lu.assertEquals({ transcript[3].options[1].link, transcript[3].options[2].link }, { "signup_offer", "signup_not_ready" }, "yes_ship: links")
 end
 
 -- AC-7
@@ -1008,7 +1015,7 @@ function TestDingeDutyMenu:test_duty_missions_shows_the_four_swg_options_in_orde
 	lu.assertEquals(transcript[1].id, "duty_missions", "first screen")
 	lu.assertEquals(texts(transcript[1].options), sids(DUTY_OPTIONS), "options of duty_missions")
 	lu.assertEquals({ transcript[1].options[1].link, transcript[1].options[2].link, transcript[1].options[3].link, transcript[1].options[4].link },
-		{ "what_is_duty", "duty_options", "duty_no_training", "duty_not_now" }, "duty_missions: links")
+		{ "what_is_duty", "duty_options", "duty_no_training", "not_ready" }, "duty_missions: links")
 end
 
 -- AC-8
@@ -1026,14 +1033,15 @@ for i, target in ipairs({ "what_is_duty", "duty_no_training" }) do
 	end
 end
 
--- AC-8
-function TestDingeDutyMenu:test_s_2883b989_ends_on_duty_not_now_and_starts_nothing()
+-- AC-8; space-convo-client-strings-dinge AC-6 / D-10: the decline rejoins not_ready, "OK, OK. Come back when you're ready."
+function TestDingeDutyMenu:test_s_2883b989_ends_on_not_ready_and_starts_nothing()
 	local rec = T.spyAllQuests()
 	local transcript = T.converse(tr, dutyPilot(), { "s_2883b989" })
 
-	lu.assertEquals(ids(transcript), { "duty_missions", "duty_not_now" }, "screens")
-	lu.assertTrue(transcript[2].stop, "duty_not_now ends the conversation")
-	lu.assertEquals(transcript[2].options, {}, "duty_not_now: options")
+	lu.assertEquals(ids(transcript), { "duty_missions", "not_ready" }, "screens")
+	lu.assertEquals(transcript[2].text, P .. "s_792ad840", "not_ready: NPC line")
+	lu.assertTrue(transcript[2].stop, "not_ready ends the conversation")
+	lu.assertEquals(transcript[2].options, {}, "not_ready: options")
 	lu.assertEquals(rec.starts, {}, "startQuest calls")
 end
 
@@ -1191,7 +1199,7 @@ function TestDingeHandlerSweep:test_entering_each_template_screen_pays_and_start
 		end
 	end
 
-	lu.assertEquals(entered, D.SCREEN_COUNT_CHOICE, "template screens entered (pilot-training-free-choice: 72, first_training_done is deleted)")
+	lu.assertEquals(entered, D.SCREEN_COUNT_F2, "template screens entered (space-convo-client-strings-dinge: 64)")
 end
 
 -- AC-10, I-5: the start tables of the data file and of the generic suite agree

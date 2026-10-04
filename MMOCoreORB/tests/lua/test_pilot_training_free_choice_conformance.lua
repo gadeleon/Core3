@@ -5,6 +5,10 @@
 -- in the superseded conformance tests of the three trainers (test_rsf_tier2_kaydine_training_template.lua, test_rsf_tier1_dinge_training_template.lua,
 -- test_rsf_tier4_imler_dialogue.lua, test_rsf_gate_screens_templates.lua). This file pins the tables, the literal shape of their ids, the retired strings
 -- and the "untouched since 1092dfb3fd" part (I-7), which reads that commit through `git show` like test_rsf_gate_screens_templates.lua does.
+--
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, D-4, D-5, D-9, I-6, Content contract 1-2) re-pins Dinge only:
+-- TRAIN_CHOICES entries are { skill, reply, trained_<x> } (one click, no purchase screens, no TRAIN_SCREENS), the foreign ids are the four replies plus
+-- s_cd72f93, Dinge has 64 screens, and the screens F2 rewrites or deletes are listed in CHANGED_SCREENS.dinge. Kaydine and Imler are untouched.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -75,7 +79,7 @@ TestFreeChoiceTables = {}
 
 function TestFreeChoiceTables:setUp() H.reset() end
 
--- AC-9: entries { skill, reply, screen } for Kaydine and Imler, { skill, reply, purchaseScreen, closingScreen } for Dinge, in the order starships, weapons, procedures, droid
+-- AC-9: entries { skill, reply, screen } for all three trainers (Dinge's screen is trained_<x>: one click, F2 D-4), in the order starships, weapons, procedures, droid
 for _, name in ipairs(ORDER) do
 	TestFreeChoiceTables["test_" .. name .. "_train_choices_equal_the_answer_key_in_skill_reply_link_and_order"] = function()
 		local h = handlerGlobal(name)
@@ -85,19 +89,21 @@ for _, name in ipairs(ORDER) do
 		local want = {}
 
 		for i, row in ipairs(TRAINERS[name].rows) do
-			want[i] = { row.skill, row.reply, row.screen, row.closing }
+			want[i] = { row.skill, row.reply, row.screen or row.closing }
 		end
 
 		local got = {}
 
 		for i, entry in ipairs(h.TRAIN_CHOICES) do
-			got[i] = { entry[1], entry[2], entry[3], entry[4] }
+			got[i] = { entry[1], entry[2], entry[3] }
+			lu.assertNil(entry[4], TRAINERS[name].global .. ".TRAIN_CHOICES[" .. i .. "]: no fourth field (Dinge's purchase screens are gone)")
 		end
 
-		lu.assertEquals(got, want, TRAINERS[name].global .. ".TRAIN_CHOICES ({ skill, reply, screen [, closing screen] } in order starships, weapons, procedures, droid)")
+		lu.assertEquals(got, want, TRAINERS[name].global .. ".TRAIN_CHOICES ({ skill, reply, screen } in order starships, weapons, procedures, droid)")
 	end
 
-	-- AC-9: every link a table names is a screen of the trainer's template, and the purchase screens are the ones TRAIN_SCREENS buys
+	-- AC-9: every link a table names is a screen of the trainer's template; Kaydine's and Imler's purchase screens are the ones TRAIN_SCREENS buys,
+	-- Dinge has no purchase screens and no TRAIN_SCREENS (F2 D-7) and links to trained_<x>
 	TestFreeChoiceTables["test_every_link_of_the_" .. name .. "_train_choices_is_a_template_screen_and_the_purchase_screens_agree_with_train_screens"] = function()
 		local h = handlerGlobal(name)
 		local ids = screenIds(name)
@@ -106,12 +112,16 @@ for _, name in ipairs(ORDER) do
 
 		for i, entry in ipairs(h.TRAIN_CHOICES) do
 			lu.assertNotNil(ids[entry[3]], name .. " TRAIN_CHOICES[" .. i .. "]: screen '" .. tostring(entry[3]) .. "' is not in " .. TRAINERS[name].template)
-			lu.assertEquals(h.TRAIN_SCREENS[entry[3]], entry[1], name .. " TRAIN_CHOICES[" .. i .. "]: TRAIN_SCREENS['" .. tostring(entry[3]) .. "'] buys the skill of the entry")
 
 			if name == "dinge" then
-				lu.assertNotNil(ids[entry[4]], name .. " TRAIN_CHOICES[" .. i .. "]: closing screen '" .. tostring(entry[4]) .. "' is not in " .. TRAINERS[name].template)
-				lu.assertEquals(entry[4], "trained_" .. entry[3]:gsub("^train_", ""), name .. " TRAIN_CHOICES[" .. i .. "]: closing screen of the purchase screen")
+				lu.assertEquals(entry[3], "trained_" .. entry[1]:match("^pilot_neutral_(%a+)_01$"), name .. " TRAIN_CHOICES[" .. i .. "]: the closing screen of the skill")
+			else
+				lu.assertEquals(h.TRAIN_SCREENS[entry[3]], entry[1], name .. " TRAIN_CHOICES[" .. i .. "]: TRAIN_SCREENS['" .. tostring(entry[3]) .. "'] buys the skill of the entry")
 			end
+		end
+
+		if name == "dinge" then
+			lu.assertNil(h.TRAIN_SCREENS, "dingeConvoHandler.TRAIN_SCREENS must be removed (its purchase screens no longer exist)")
 		end
 	end
 
@@ -155,10 +165,10 @@ for _, name in ipairs(ORDER) do
 		for _, row in ipairs(TRAINERS[name].rows) do
 			lu.assertNotNil(body:find('"' .. row.skill .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.skill .. "\"")
 			lu.assertNotNil(body:find('"' .. row.reply .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.reply .. "\"")
-			lu.assertNotNil(body:find('"' .. row.screen .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.screen .. "\"")
+			lu.assertNotNil(body:find('"' .. (row.screen or row.closing) .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. (row.screen or row.closing) .. "\"")
 
-			if row.closing then
-				lu.assertNotNil(body:find('"' .. row.closing .. '"', 1, true), name .. " TRAIN_CHOICES: literal \"" .. row.closing .. "\"")
+			if name == "dinge" then
+				lu.assertNil(body:find('"train_' .. row.x .. '"', 1, true), "dinge TRAIN_CHOICES still names the deleted purchase screen train_" .. row.x)
 			end
 		end
 	end
@@ -205,7 +215,7 @@ for _, name in ipairs(ORDER) do
 	end
 end
 
--- I-6: the foreign string ids of a trainer's template + handler are exactly its four choice replies
+-- I-6: the foreign string ids of a trainer's template + handler are exactly its four choice replies (Dinge: plus "Good choice.", s_cd72f93, F2 D-9)
 for _, name in ipairs({ "kaydine", "dinge" }) do
 	TestFreeChoiceStrings["test_the_only_foreign_string_ids_in_the_" .. name .. "_files_are_the_four_choice_replies"] = function()
 		local java = Swgjava.read(H.FIXTURES .. "script/conversation/" .. TRAINERS[name].java)
@@ -223,6 +233,10 @@ for _, name in ipairs({ "kaydine", "dinge" }) do
 
 		for sid in pairs(foreign) do got[#got + 1] = sid end
 		for _, row in ipairs(TRAINERS[name].rows) do want[#want + 1] = row.sid end
+
+		if name == "dinge" then
+			want[#want + 1] = "s_cd72f93"
+		end
 
 		table.sort(got)
 		table.sort(want)
@@ -323,27 +337,44 @@ for _, name in ipairs(ORDER) do
 	end
 end
 
--- AC-9: the screen counts the spec names
-function TestFreeChoiceGraph:test_the_screen_counts_are_100_for_kaydine_72_for_dinge_and_182_for_imler()
+-- AC-9: the screen counts the specs name (Dinge: 64 since space-convo-client-strings-dinge Content contract 1)
+function TestFreeChoiceGraph:test_the_screen_counts_are_100_for_kaydine_64_for_dinge_and_182_for_imler()
 	local function count(name) return #H.conversationTemplateTable(TRAINERS[name].template).screens end
 
 	lu.assertEquals(count("kaydine"), 100, "kaydine_convo_template screens (87 + the 4 gate screens + the 9 sign-up screens of rsf-tier2-kaydine-signup)")
-	lu.assertEquals(count("dinge"), 72, "dinge_convo_template screens (73 - first_training_done)")
+	lu.assertEquals(count("dinge"), 64, "dinge_convo_template screens (72 - 8 deleted by space-convo-client-strings-dinge)")
 	lu.assertEquals(count("imler"), 182, "imler_convo_template screens")
 end
 
--- AC-6, D-6: the 72 Dinge screens show 72 distinct NPC lines and s_142 is shown by none
-function TestFreeChoiceGraph:test_dinge_screens_show_72_distinct_lines_and_none_shows_s_142()
-	local seen, n = {}, 0
+-- F2 D-6, R-3: none of Dinge's 64 screens shows an NGE lesson or closing line, and the only NPC lines shown by more than one screen are the three
+-- the spec names (the engine has no distinct-line rule; Rhea, Kaydine and Imler reuse lines too)
+function TestFreeChoiceGraph:test_dinge_shows_none_of_the_deleted_nge_lines_and_repeats_only_the_three_lines_the_spec_names()
+	local P = "@conversation/naboo_privateer_trainer_1:"
+	local byLine = {}
 
 	for _, s in ipairs(H.conversationTemplateTable("dinge_convo_template").screens) do
-		n = n + 1
-		lu.assertNil(seen[s.leftDialog], "screens '" .. tostring(seen[s.leftDialog]) .. "' and '" .. s.id .. "' show the same line " .. tostring(s.leftDialog))
-		lu.assertNotEquals(s.leftDialog, "@conversation/naboo_privateer_trainer_1:s_142", "screen '" .. s.id .. "' shows s_142")
-		seen[s.leftDialog] = s.id
+		for _, sid in ipairs({ "s_139", "s_140", "s_141", "s_142", "s_143", "s_144", "s_145", "s_146", "s_147", "s_149", "s_153", "s_157", "s_161" }) do
+			lu.assertNotEquals(s.leftDialog, P .. sid, "screen '" .. s.id .. "' shows " .. sid)
+		end
+
+		byLine[s.leftDialog] = byLine[s.leftDialog] or {}
+		table.insert(byLine[s.leftDialog], s.id)
 	end
 
-	lu.assertEquals(n, 72, "screens")
+	local repeated = {}
+
+	for line, screens in pairs(byLine) do
+		if #screens > 1 then
+			table.sort(screens)
+			repeated[line:match(":(s_%w+)$")] = screens
+		end
+	end
+
+	lu.assertEquals(repeated, {
+		s_b9c77549 = { "mission1_failed_will_do", "mission3_failed_retry1" },
+		s_7af03aab = { "mission1_failed_attacked", "mission3_failed_retry2" },
+		s_cd72f93 = { "trained_droid", "trained_procedures", "trained_starships", "trained_weapons" },
+	}, "NPC lines shown by more than one Dinge screen")
 end
 
 ---------------------------------------------------------------------------------------------
@@ -399,7 +430,21 @@ local function inlineBlocks(text)
 end
 
 local BLOCKS = { kaydine = varBlocks, dinge = varBlocks, imler = inlineBlocks }
+-- space-convo-client-strings-dinge: Dinge's changed or deleted screens (Content contract 1) join the three choice screens of pilot-training-free-choice
+local DINGE_F2 = {}
+
+for _, id in ipairs({ "yes_ship", "signup_ready_ship", "signup_ship_later", "mission3_failed", "mission3_failed_retry1", "mission3_failed_retry2", "mission4_offer",
+	"first_training", "train_starships", "train_weapons", "train_procedures", "train_droid", "trained_starships", "trained_weapons", "trained_procedures", "trained_droid",
+	"non_rsf_duty_offer", "duty_missions", "what_is_duty", "duty_no_training", "duty_not_now" }) do
+	DINGE_F2[id] = true
+end
+
 local CHANGED_SCREENS = { kaydine = { ready_train_pilot = true }, dinge = { more_training = true, first_training_lesson = true, first_training_done = true }, imler = { ready_train = true } }
+local CHOICE_SCREENS = { kaydine = CHANGED_SCREENS.kaydine, dinge = { more_training = true, first_training_lesson = true, first_training_done = true, first_training = true }, imler = CHANGED_SCREENS.imler }
+
+for id in pairs(DINGE_F2) do
+	CHANGED_SCREENS.dinge[id] = true
+end
 
 -- I-7: every screen not named in the spec is the very text of commit 1092dfb3fd; the named ones differ only in their options
 for _, name in ipairs(ORDER) do
@@ -434,6 +479,13 @@ for _, name in ipairs(ORDER) do
 		for _ in pairs(CHANGED_SCREENS[name]) do changed = changed + 1 end
 
 		lu.assertEquals(checked, oldCount - changed, "screens compared with " .. BASE)
+
+		-- space-convo-client-strings-dinge: the F2 screens really changed (or were deleted) since BASE
+		if name == "dinge" then
+			for id in pairs(DINGE_F2) do
+				lu.assertNotEquals(new[id], old[id], "dinge: screen '" .. id .. "' is still the very text of " .. BASE)
+			end
+		end
 	end
 
 	-- I-7: a choice screen keeps its id, line, end flag and animation; only its options change (here: become empty)
@@ -444,13 +496,13 @@ for _, name in ipairs(ORDER) do
 			return (body:gsub("options = {.-\n\t}", "options = {}", 1))
 		end
 
-		for id in pairs(CHANGED_SCREENS[name]) do
+		for id in pairs(CHOICE_SCREENS[name]) do
 			if new[id] == nil then
-				lu.assertEquals(id, "first_training_done", name .. ": only first_training_done may be deleted")
+				lu.assertTrue(id == "first_training_done" or id == "first_training_lesson", name .. ": only first_training_done and first_training_lesson may be deleted, not " .. id)
 			else
 				lu.assertNotNil(old[id], name .. ": screen '" .. id .. "' exists at " .. BASE)
 				lu.assertEquals(stripOptions(new[id]), stripOptions(old[id]), name .. ": screen '" .. id .. "' differs from " .. BASE .. " in more than its options")
-				lu.assertNotNil(new[id]:find("options = {}", 1, true), name .. ": screen '" .. id .. "' static options must be empty")
+				lu.assertNotNil(new[id]:find("options = {%s*}"), name .. ": screen '" .. id .. "' static options must be empty")
 			end
 		end
 	end
@@ -558,7 +610,7 @@ end
 
 local CHOICE_BRANCHES = {
 	kaydine = { ready_train_pilot = true },
-	dinge = { more_training = true, first_training_lesson = true },
+	dinge = { more_training = true, first_training = true, first_training_lesson = true },
 	imler = { ready_train = true },
 }
 
@@ -587,16 +639,35 @@ for _, name in ipairs(ORDER) do
 	end
 end
 
--- I-7, AC-5: Dinge's paid purchase branch is untouched; the free branch is the only part of getNextConversationScreen that changes
-function TestFreeChoiceNothingElseMoves:test_dinge_paid_purchase_branch_equals_commit_1092dfb3fd()
-	local function purchase(text)
+-- I-7, F2 AC-8: the paid purchase keeps the guards and calls of commit 1092dfb3fd (XP check, engine check, deducting grant, tier 1 -> 2); their behavior is
+-- pinned by test_pilot_training_free_choice_dinge.lua, this only keeps the calls in the handler text
+function TestFreeChoiceNothingElseMoves:test_dinge_get_next_conversation_screen_keeps_the_paid_guards_and_calls_of_commit_1092dfb3fd()
+	local function guards(text)
 		local fn = functionBlocks(text)["dingeConvoHandler:getNextConversationScreen"]
-		local a = fn:find("\telseif (skill ~= nil) then", 1, true)
 
-		lu.assertNotNil(a, "dingeConvoHandler:getNextConversationScreen: the 'elseif (skill ~= nil) then' branch")
+		lu.assertNotNil(fn, "dingeConvoHandler:getNextConversationScreen")
 
-		return fn:sub(a)
+		return fn
 	end
 
-	lu.assertEquals(purchase(readFile(TRAINERS.dinge.handler)), purchase(baseFile(TRAINERS.dinge.handler)), "the paid purchase branch")
+	local now = guards(readFile(TRAINERS.dinge.handler))
+	local old = guards(baseFile(TRAINERS.dinge.handler))
+
+	lu.assertNil(now:find("TRAIN_SCREENS", 1, true), "getNextConversationScreen still reads TRAIN_SCREENS (removed by space-convo-client-strings-dinge D-7)")
+	lu.assertNil(now:find("first_training_lesson", 1, true), "getNextConversationScreen still names first_training_lesson")
+
+	for _, needle in ipairs({
+		"hasExperienceForTraining(pPlayer, 1)",
+		"LuaSkillManager():fulfillsSkillPrerequisitesAndXp(pPlayer, ",
+		"getPilotTier() == 1",
+		'hasCompletedPilotTier(pPlayer, "neutral", 1)',
+		"incrementPilotTier()",
+	}) do
+		lu.assertNotNil(old:find(needle, 1, true), "setup: " .. needle .. " is in the handler at " .. BASE)
+		lu.assertNotNil(now:find(needle, 1, true), "dingeConvoHandler:getNextConversationScreen no longer contains " .. needle)
+	end
+
+	lu.assertNotNil(now:find("grantSpaceSkill(pPlayer, ", 1, true), "the paid and free grants go through SpaceHelpers:grantSpaceSkill")
+	lu.assertNotNil(now:find(", true)", 1, true), "the paid grant passes deductExperience true")
+	lu.assertNotNil(now:find(", false)", 1, true), "the free grant passes deductExperience false")
 end

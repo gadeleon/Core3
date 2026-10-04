@@ -1,6 +1,9 @@
 -- Kaydine and Dinge gate screens as data: template shape, SWG conformance (naboo_privateer_trainer_2.java / _1.java), string coverage,
 -- handler/template agreement and "everything else is unchanged since 0a76b16b5b".
 -- Spec: .claude/work/rsf-gate-screens/01-spec.md (AC-2, AC-5, invariants I-1, I-2, I-3, I-6, I-7; Appendix A, Exceptions E-G1..E-G2).
+-- Dinge parts re-pinned by .claude/work/space-convo-client-strings-dinge/01-spec.md (AC-2, AC-10; D-9, D-10): 64 screens, the F2 screens count as changed or
+-- deleted against 0a76b16b5b, the duty decline links to not_ready (G.F2_EXCEPTIONS), "Good choice." is the one foreign line besides the four choice replies,
+-- and the java usage is 58 of 73 NPC lines and 35 of 47 replies.
 --
 -- Answer key: rsf_gate_screens_data.lua (copied from the spec) and the SWG java fixtures parsed by harness/swgjava.lua. The kept-screen
 -- comparison reads the template files of commit 0a76b16b5b through `git show` and compares screen definition blocks as text.
@@ -126,6 +129,11 @@ local DELETED = { kaydine = G.KAYDINE_DELETED, dinge = G.DINGE_DELETED } -- pilo
 local CHOICE = { kaydine = P.KAYDINE, dinge = P.DINGE } -- the choice replies each handler adds (D-4); not java responses
 local OLD_COUNT = { kaydine = 87, dinge = 72 }
 
+-- space-convo-client-strings-dinge: the screens F2 changes or deletes are "touched" against the base commit like the gate-screens ones
+local F2_TOUCHED = { dinge = G.concat(G.DINGE_F2_CHANGED, G.DINGE_F2_DELETED) }
+local F2_DELETED = { dinge = G.DINGE_F2_DELETED }
+local FOREIGN_EXTRA = { dinge = { s_cd72f93 = "dinge_convo.lua" } } -- D-9: "Good choice." is in the client's string file but not in the java
+
 ---------------------------------------------------------------------------------------------
 -- The answer key itself (sanity of the spec tables)
 ---------------------------------------------------------------------------------------------
@@ -233,12 +241,17 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 		for _, id in ipairs(CHANGED[trainer]) do touched[id] = true end
 		for _, id in ipairs(NEW[trainer]) do touched[id] = true end
 		for _, id in ipairs(DELETED[trainer]) do touched[id] = true end
+		for _, id in ipairs(F2_TOUCHED[trainer] or {}) do touched[id] = true end
 
 		-- a deleted screen must be gone
 		local newBlocks = screenBlocks(readFile(files.convo))
 
 		for _, id in ipairs(DELETED[trainer]) do
 			lu.assertNil(newBlocks[id], files.template .. ": screen '" .. id .. "' must be deleted")
+		end
+
+		for _, id in ipairs(F2_DELETED[trainer] or {}) do
+			lu.assertNil(newBlocks[id], files.template .. ": screen '" .. id .. "' must be deleted (space-convo-client-strings-dinge)")
 		end
 
 		local oldCount, checked = 0, 0
@@ -255,7 +268,14 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 			end
 		end
 
-		lu.assertEquals(checked, OLD_COUNT[trainer] - #CHANGED[trainer] - #DELETED[trainer], "screens compared with " .. BASE)
+		local touchedInOld = 0
+
+		for id in pairs(touched) do
+			if old[id] ~= nil then touchedInOld = touchedInOld + 1 end
+		end
+
+		lu.assertEquals(checked, OLD_COUNT[trainer] - touchedInOld, "screens compared with " .. BASE)
+		lu.assertEquals(touchedInOld, #CHANGED[trainer] + #DELETED[trainer] + #(F2_TOUCHED[trainer] or {}), "touched screens that exist at " .. BASE)
 
 		local signup = {}
 
@@ -269,18 +289,8 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 	end
 end
 
--- AC-5; pilot-training-free-choice: Dinge's 72 screens show 72 distinct NPC lines
-function TestGateTemplates:test_dinge_screens_show_72_distinct_left_dialogs()
-	local seen, n = {}, 0
-
-	for _, s in ipairs(template("dinge").screens) do
-		n = n + 1
-		lu.assertNil(seen[s.leftDialog], "screens '" .. tostring(seen[s.leftDialog]) .. "' and '" .. s.id .. "' show the same line " .. tostring(s.leftDialog))
-		seen[s.leftDialog] = s.id
-	end
-
-	lu.assertEquals(n, G.DINGE_SCREEN_COUNT, "dinge_convo_template screens")
-end
+-- (Retired by space-convo-client-strings-dinge, R-3: Dinge's screens no longer show distinct NPC lines. The repeated lines are pinned by
+-- test_pilot_training_free_choice_conformance.lua TestFreeChoiceGraph.)
 
 -- AC-5: DH getInitialScreen and getNextConversationScreen are textually unchanged (D-7, I-7)
 local function functionText(text, name)
@@ -314,22 +324,8 @@ TestGateTemplates["test_dinge_handler_getInitialScreen_is_byte_identical_to_comm
 	lu.assertEquals(functionText(readFile(FILES.dinge.handler), name), old, name .. " changed since " .. BASE)
 end
 
-TestGateTemplates["test_dinge_handler_getNextConversationScreen_paid_purchase_branch_is_byte_identical_to_commit_" .. BASE] = function()
-	local name = "dingeConvoHandler:getNextConversationScreen"
-	local function purchase(text)
-		local fn = functionText(text, name)
-		local a = fn:find("\telseif (skill ~= nil) then", 1, true)
-
-		lu.assertNotNil(a, name .. ": the 'elseif (skill ~= nil) then' branch")
-
-		return fn:sub(a)
-	end
-
-	local old = purchase(baseFile(FILES.dinge.handler))
-
-	lu.assertTrue(#old > 300, "setup: the paid purchase branch found at " .. BASE)
-	lu.assertEquals(purchase(readFile(FILES.dinge.handler)), old, name .. ": the paid purchase branch changed since " .. BASE)
-end
+-- (Retired by space-convo-client-strings-dinge: getNextConversationScreen is rebuilt for the one-click training, D-4. The paid guards and calls are pinned
+-- by test_pilot_training_free_choice_dinge.lua and, in the handler text, by test_pilot_training_free_choice_conformance.lua.)
 
 -- AC-2, I-7: Kaydine's getInitialScreen keeps its head (migration first, JTL check) and the lines after the pilot gates
 function TestGateTemplates:test_kaydine_get_initial_screen_keeps_migration_as_its_first_statement_and_the_jtl_check()
@@ -391,7 +387,14 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 				-- E-G1 / E-G2 need no special case: the static link is the java's unconditional (last) successor, which the
 				-- handler re-points at display time (TestGateAnswerKey checks that the first successor is the duty line)
-				lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. row.id .. "' option " .. optionSid .. " -> java default successor")
+				local exception = G.F2_EXCEPTIONS[trainer .. "|" .. row.id .. "|" .. optionSid]
+
+				if exception then
+					lu.assertEquals(screen.options[i][2], exception.link, "screen '" .. row.id .. "' option " .. optionSid .. ": F2 exception link (D-10)")
+					lu.assertEquals(sidOf(target.leftDialog), exception.line, "screen '" .. row.id .. "' option " .. optionSid .. ": F2 exception line (D-10)")
+				else
+					lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. row.id .. "' option " .. optionSid .. " -> java default successor")
+				end
 			end
 		end
 
@@ -399,11 +402,11 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 	end
 
 	-- AC-2, AC-5, I-3; pilot-training-free-choice I-6: every PJ/PK sid in the four files is a node or a response of the java, except the four choice
-	-- replies of the trainer's handler (D-4), which must all be there
+	-- replies of the trainer's handler (D-4), which must all be there; Dinge's template also carries "Good choice." (s_cd72f93, D-9)
 	TestGateConformance["test_every_" .. trainer .. "_string_id_is_in_the_java_except_the_four_choice_replies"] = function()
 		local java = files.java
 		local foreign = {}
-		local choice, seenChoice = {}, {}
+		local choice, seenChoice, seenExtra = {}, {}, {}
 
 		for _, row in ipairs(CHOICE[trainer]) do
 			choice[row.sid] = true
@@ -413,6 +416,9 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 			for sid in readFile(path):gmatch(files.prefix:gsub("%p", "%%%0") .. "(s_[%w_]+)") do
 				if choice[sid] then
 					seenChoice[sid] = path:match("[^/]+$")
+				elseif (FOREIGN_EXTRA[trainer] or {})[sid] == path:match("[^/]+$") then
+					-- D-9: allowed in exactly that file
+					seenExtra[sid] = true
 				elseif java.nodes[sid] == nil and java.responses[sid] == nil then
 					foreign[#foreign + 1] = path:match("[^/]+$") .. ": " .. sid
 				end
@@ -424,6 +430,10 @@ for _, trainer in ipairs({ "kaydine", "dinge" }) do
 
 		for sid in pairs(choice) do
 			lu.assertEquals(seenChoice[sid], files.handler:match("[^/]+$"), "choice reply " .. sid .. " must be carried by the handler (and only by the handler)")
+		end
+
+		for sid, file in pairs(FOREIGN_EXTRA[trainer] or {}) do
+			lu.assertTrue(seenExtra[sid] == true, "the foreign line " .. sid .. " must be carried by " .. file .. " (space-convo-client-strings-dinge D-9)")
 		end
 	end
 end
@@ -464,11 +474,11 @@ local function used(trainer)
 	return set, npc, resp
 end
 
--- AC-5, I-3; pilot-training-free-choice: Dinge uses 72 of 73 NPC lines and 45 of 47 replies (s_142, s_141 and s_143 are unused)
-function TestGateConformance:test_dinge_uses_72_of_73_npc_lines_and_45_of_47_replies()
+-- AC-5, I-3; pilot-training-free-choice; space-convo-client-strings-dinge AC-2: Dinge uses 58 of 73 NPC lines and 35 of 47 replies (the NGE-only lines are gone)
+function TestGateConformance:test_dinge_uses_58_of_73_npc_lines_and_35_of_47_replies()
 	local set, npc, resp = used("dinge")
 
-	lu.assertEquals({ npc, resp }, { 72, 45 }, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (NPC lines, replies)")
+	lu.assertEquals({ npc, resp }, { 58, 35 }, "java strings used by dinge_convo.lua and dingeConvoHandler.lua (NPC lines, replies)")
 
 	for _, sid in ipairs({ "s_142", "s_141", "s_143" }) do
 		lu.assertNil(set[sid], sid .. " must be unused now")

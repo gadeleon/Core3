@@ -20,7 +20,7 @@ G.PJ = "@conversation/naboo_privateer_trainer_1:"
 G.KAYDINE_TEMPLATE = "kaydine_convo_template"
 G.DINGE_TEMPLATE = "dinge_convo_template"
 G.KAYDINE_SCREEN_COUNT = 100 -- 87 + rebel_pilot, imperial_pilot, not_ready_tier2_end, non_rsf_duty_options + the nine sign-up screens (rsf-tier2-kaydine-signup)
-G.DINGE_SCREEN_COUNT = 72 -- 72 + non_rsf_duty_offer, - first_training_done (pilot-training-free-choice D-6)
+G.DINGE_SCREEN_COUNT = 64 -- 72 - 8 screens deleted by space-convo-client-strings-dinge (was 72: 72 + non_rsf_duty_offer, - first_training_done)
 
 -- Appendix A-K. options are { option sid, static link }.
 G.KAYDINE_ROWS = {
@@ -44,7 +44,7 @@ G.DINGE_ROWS = {
 	{ id = "rebel_pilot", status = "chg", sid = "s_72f94b8e", animation = "slow_down", stop = true, options = {  } },
 	{ id = "imperial_pilot", status = "chg", sid = "s_7217d77", animation = "salute1", stop = true, options = {  } },
 	{ id = "non_rsf_pilot", status = "kept", sid = "s_6b25cc31", animation = "", stop = false, options = { {"s_c1ff5062", "non_rsf_duty_missions"} } },
-	{ id = "non_rsf_duty_offer", status = "new", sid = "s_1e029d90", animation = "dismiss", stop = false, options = { {"s_6106187c", "what_is_duty"}, {"s_e814cf37", "duty_options"}, {"s_db74ddc6", "duty_no_training"}, {"s_2883b989", "duty_not_now"} } },
+	{ id = "non_rsf_duty_offer", status = "new", sid = "s_1e029d90", animation = "dismiss", stop = false, options = { {"s_6106187c", "what_is_duty"}, {"s_e814cf37", "duty_options"}, {"s_db74ddc6", "duty_no_training"}, {"s_2883b989", "not_ready"} } },
 	{ id = "non_rsf_duty_missions", status = "kept", sid = "s_38d8b2c4", animation = "", stop = true, options = {  } },
 }
 
@@ -54,6 +54,18 @@ G.KAYDINE_CHANGED = { "pilot_not_rsf", "not_ready_tier2", "on_mission", "ready_t
 G.DINGE_NEW = { "non_rsf_duty_offer" }
 G.DINGE_CHANGED = { "rebel_pilot", "imperial_pilot", "more_training", "first_training_lesson" }
 G.DINGE_DELETED = { "first_training_done" }
+
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, Content contract 1, D-10): the screens that feature changes or
+-- deletes. Both lists name screens that exist at commit 0a76b16b5b (the "kept" comparison base); non_rsf_duty_offer is new there and already in DINGE_ROWS.
+G.DINGE_F2_CHANGED = { "yes_ship", "mission3_failed", "mission3_failed_retry1", "mission3_failed_retry2", "mission4_offer", "first_training",
+	"trained_starships", "trained_weapons", "trained_procedures", "trained_droid", "duty_missions", "what_is_duty", "duty_no_training" }
+G.DINGE_F2_DELETED = { "signup_ready_ship", "signup_ship_later", "duty_not_now", "train_starships", "train_weapons", "train_procedures", "train_droid" }
+
+-- The one option of Appendix A-D whose static link is not the java's unconditional successor (D-10): the duty menus' decline rejoins not_ready
+-- (s_792ad840) instead of the NGE-numbered s_138. key = "<trainer>|<screen row>|<option sid>"
+G.F2_EXCEPTIONS = {
+	["dinge|non_rsf_duty_offer|s_2883b989"] = { link = "not_ready", line = "s_792ad840" },
+}
 G.KAYDINE_DELETED = {}
 
 -- The options whose static link differs from the java default (the java default is the last, unconditional successor)
@@ -65,6 +77,9 @@ G.EXCEPTIONS = {
 -- Conversation flow, "What the off-track pilot can reach"
 G.KAYDINE_REACH = { "accept_duty_destroy", "accept_duty_escort", "accept_duty_recovery", "non_rsf_duty_options", "non_rsf_missions", "pilot_not_rsf" }
 G.DINGE_REACH = { "destroy_duty", "duty_no_training", "duty_not_now", "duty_options", "escort_duty", "non_rsf_duty_missions", "non_rsf_duty_offer", "non_rsf_pilot", "not_ready", "what_is_duty" }
+-- space-convo-client-strings-dinge (AC-6, D-10): duty_not_now is deleted, so the walks reach exactly this set. G.DINGE_REACH stays the allowed superset the
+-- "reaches only" walk tests use (they pass before and after the feature); the exact-union walk test uses DINGE_REACH_NOW.
+G.DINGE_REACH_NOW = { "destroy_duty", "duty_no_training", "duty_options", "escort_duty", "non_rsf_duty_missions", "non_rsf_duty_offer", "non_rsf_pilot", "not_ready", "what_is_duty" }
 
 -- String usage: rsf-gate-screens left the signup dialog and the fallthrough unused (87/99 NPC lines); pilot-training-free-choice retired s_187;
 -- rsf-tier2-kaydine-signup (I-6) uses them: 96/99 NPC lines and 55/59 replies, only the NGE-only branch B lines (D-8) and s_187 stay unused

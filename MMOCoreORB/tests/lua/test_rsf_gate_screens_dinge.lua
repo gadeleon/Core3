@@ -196,14 +196,15 @@ function TestDingeOffTrackDuties:test_s_6106187c_and_s_db74ddc6_loop_back_to_the
 	end
 end
 
--- AC-6
-function TestDingeOffTrackDuties:test_s_2883b989_ends_on_duty_not_now_and_starts_nothing()
+-- AC-6; space-convo-client-strings-dinge AC-6 / D-10: "Not right now, thanks." rejoins not_ready, "OK, OK. Come back when you're ready." (duty_not_now is deleted)
+function TestDingeOffTrackDuties:test_s_2883b989_ends_on_not_ready_and_starts_nothing()
 	local p = G.offTrack({ tier1 = 1 })
 	local spies = G.spies(p)
 	local transcript = G.converse("dinge", p, offer({ "s_2883b989" }))
 
-	lu.assertEquals(G.ids(transcript), { "non_rsf_pilot", "non_rsf_duty_offer", "duty_not_now" }, "screens")
-	lu.assertTrue(transcript[3].stop, "duty_not_now ends the conversation")
+	lu.assertEquals(G.ids(transcript), { "non_rsf_pilot", "non_rsf_duty_offer", "not_ready" }, "screens")
+	lu.assertEquals(G.sidOfStep(transcript[3]), "s_792ad840", "NPC line of not_ready")
+	lu.assertTrue(transcript[3].stop, "not_ready ends the conversation")
 	lu.assertEquals(spies.starts, {}, "quests started")
 end
 

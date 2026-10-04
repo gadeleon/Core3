@@ -11,12 +11,20 @@
 --   D.OLD_FOREIGN  the 5 sids that are not in the java and must leave both files (convo I-3)
 --   D.NEW_SIDS     the 18 java sids no Core3 file used before this feature (11 NPC lines + 7 responses)
 --   D.COST         XP_COST of every tier 1 skill (fixtures/skill/skills.pilot_neutral_01.tab)
+--
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, Content contract 1, D-4, D-9, AC-2) leaves D.ROWS as the key of
+-- rsf-tier1-dinge-training (its sanity tests still count 12 rows) and adds what the template looks like now:
+--   D.F2_KEPT          the two Appendix A screens that survive, with the single NGE reply their java node has; both have empty static options now
+--   D.F2_GONE          the six Appendix A screens that no longer exist (the four trained_<x> screens stay, with D.F2_CLOSING_SID)
+--   D.F2_UNUSED_SIDS   the 27 java strings no file uses: every NGE-numbered id of the java (the 24 gaps of F1 Appendix B plus s_141, s_142, s_143)
+--   D.F2_CLOSING_SID   "Good choice." (D-9), the NPC line of all four trained_<x> screens
 
 local D = {}
 
 D.PREFIX = "@conversation/naboo_privateer_trainer_1:"
 D.TEMPLATE = "dinge_convo_template"
 D.SCREEN_COUNT = 72 -- 67 - 6 deleted + 11 new
+D.SCREEN_COUNT_F2 = 64 -- space-convo-client-strings-dinge: 72 - 8 deleted
 D.COST = 7500
 
 -- Appendix A. `animation` "" = none. `stop` = the row is (end).
@@ -42,6 +50,14 @@ D.E_PN = { more_training = "s_143", first_training_lesson = "s_141" }
 D.DELETED_NOW = { "first_training_done" }
 D.SCREENS_AFTER_CHOICE = 72 -- 73 - first_training_done
 D.NOW_UNUSED_SIDS = { "s_141", "s_142", "s_143" } -- the java strings no file uses any more (1 NPC line, 2 responses)
+
+D.F2_KEPT = { first_training = "s_139", more_training = "s_143" }
+D.F2_GONE = { "first_training_lesson", "train_starships", "train_weapons", "train_procedures", "train_droid", "first_training_done" }
+D.F2_CLOSING_SID = "s_cd72f93"
+D.F2_UNUSED_SIDS = {
+	"s_138", "s_139", "s_140", "s_141", "s_142", "s_143", "s_144", "s_145", "s_146", "s_147", "s_148", "s_149", "s_151", "s_153", "s_155", "s_157", "s_159", "s_161",
+	"s_30", "s_32", "s_34", "s_36", "s_52", "s_54", "s_56", "s_58", "s_95",
+}
 
 -- E-T1: more_training's s_143 links to the java default (train_droid); the handler re-points it at run time
 D.EXCEPT = { ["more_training|s_143"] = "E-T1" }

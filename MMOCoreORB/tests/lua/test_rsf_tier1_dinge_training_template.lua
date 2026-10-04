@@ -4,6 +4,9 @@
 -- Answer keys: rsf_tier1_dinge_training_data.lua (Appendix A, copied from the spec), rsf_tier1_dinge_convo_data.lua (the 60 F7 rows) and the
 -- SWG java fixtures/script/conversation/naboo_privateer_trainer_1.java parsed by harness/swgjava.lua. Behavior is in
 -- test_rsf_tier1_dinge_training_routing.lua, _purchase.lua and _handler.lua.
+-- space-convo-client-strings-dinge (.claude/work/space-convo-client-strings-dinge/01-spec.md, AC-2, D-4, D-9, Appendix A) re-pins ten tests of this file:
+-- the template has 64 screens, only first_training and more_training of the 12 training rows keep their NPC line (static options empty), the four trained_<x>
+-- screens show "Good choice." (s_cd72f93), and DC + DH use 93 java strings, leaving every NGE-numbered id of the java unused (D.F2_UNUSED_SIDS).
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -184,14 +187,14 @@ TestDingeTrainingTemplate = {}
 
 function TestDingeTrainingTemplate:setUp() H.reset() end
 
--- AC-1; pilot-training-free-choice: first_training_done is deleted, 72 screens
-function TestDingeTrainingTemplate:test_the_template_has_72_screens_and_keeps_its_name_handler_and_initial_screen()
+-- AC-1; space-convo-client-strings-dinge AC-2: 64 screens
+function TestDingeTrainingTemplate:test_the_template_has_64_screens_and_keeps_its_name_handler_and_initial_screen()
 	local t = template()
 
 	lu.assertEquals(t.luaClassHandler, "dingeConvoHandler", "dinge_convo_template: luaClassHandler")
 	lu.assertEquals(t.templateType, "Lua", "dinge_convo_template: templateType")
 	lu.assertEquals(t.initialScreen, "", "dinge_convo_template: initialScreen")
-	lu.assertEquals(#t.screens, D.SCREENS_AFTER_CHOICE, "dinge_convo_template: number of screens (67 - 6 + 11, + non_rsf_duty_offer from rsf-gate-screens, - first_training_done)")
+	lu.assertEquals(#t.screens, D.SCREEN_COUNT_F2, "dinge_convo_template: number of screens (72 - 8 deleted by space-convo-client-strings-dinge)")
 end
 
 -- AC-1
@@ -203,34 +206,36 @@ function TestDingeTrainingTemplate:test_the_6_old_training_screens_are_deleted()
 	end
 end
 
--- AC-1; pilot-training-free-choice: more_training and the 10 new screens equal Appendix A, static links included, except E-PN2 / E-PN3 (empty static
--- options on more_training and first_training_lesson) and the deleted first_training_done
-function TestDingeTrainingTemplate:test_more_training_and_the_10_new_screens_equal_appendix_a_with_e_pn2_and_e_pn3()
+-- AC-1; space-convo-client-strings-dinge Content contract 1: first_training and more_training keep their Appendix A line, animation and end flag with empty
+-- static options (the handler adds the four choices); the four trained_<x> screens keep their id, animation and end flag but show "Good choice." (D-9); the
+-- other six training screens are deleted
+function TestDingeTrainingTemplate:test_first_training_more_training_and_the_four_trained_screens_equal_appendix_a_with_the_f2_changes_and_the_other_six_are_deleted()
 	local byId = screensById()
 	local checked = 0
-	local deleted = {}
 
-	for _, id in ipairs(D.DELETED_NOW) do
-		deleted[id] = true
+	for _, id in ipairs(D.F2_GONE) do
+		lu.assertNil(byId[id], "dinge_convo_template: screen '" .. id .. "' must be deleted")
 	end
 
 	for _, row in ipairs(D.ROWS) do
-		if deleted[row.id] then
-			lu.assertNil(byId[row.id], "dinge_convo_template: screen '" .. row.id .. "' must be deleted (D-6)")
-		else
+		if D.F2_KEPT[row.id] then
 			local want = expectedShape(row)
 
-			if D.E_PN[row.id] then
-				want.options = {}
-			end
-
+			want.options = {}
 			lu.assertNotNil(byId[row.id], "dinge_convo_template: missing training screen '" .. row.id .. "'")
-			lu.assertEquals(shape(byId[row.id]), want, "dinge_convo_template: training screen '" .. row.id .. "' (leftDialog, stopConversation, animation, options in order)")
+			lu.assertEquals(shape(byId[row.id]), want, "dinge_convo_template: training screen '" .. row.id .. "' (empty static options)")
+			checked = checked + 1
+		elseif row.id:find("^trained_") then
+			local want = expectedShape(row)
+
+			want.leftDialog = D.PREFIX .. D.F2_CLOSING_SID
+			lu.assertNotNil(byId[row.id], "dinge_convo_template: missing training screen '" .. row.id .. "'")
+			lu.assertEquals(shape(byId[row.id]), want, "dinge_convo_template: closing screen '" .. row.id .. "' (Good choice., ends, no options)")
 			checked = checked + 1
 		end
 	end
 
-	lu.assertEquals(checked, 11, "training screens checked (12 - first_training_done)")
+	lu.assertEquals(checked, 6, "training screens checked (first_training, more_training, trained_<x> x4)")
 end
 
 -- AC-1: no training screen carries an animation field that Appendix A does not list
@@ -244,11 +249,11 @@ function TestDingeTrainingTemplate:test_training_screens_without_an_appendix_ani
 	end
 end
 
--- AC-1, I-7: the 60 story screens still match the convo Appendix A rows
-function TestDingeTrainingTemplate:test_the_60_story_screens_still_match_the_convo_appendix_a_rows()
+-- AC-1, I-7; space-convo-client-strings-dinge: the 57 story screens that remain match the convo Appendix A rows after the F2 overlay (C.current())
+function TestDingeTrainingTemplate:test_the_57_story_screens_still_match_the_convo_appendix_a_rows_after_the_f2_overlay()
 	local byId = screensById()
 
-	for _, row in ipairs(C.ROWS) do
+	for _, row in ipairs(C.current()) do
 		local want = {
 			leftDialog = C.PREFIX .. row.sid,
 			stopConversation = row.stop and "true" or "false",
@@ -326,8 +331,9 @@ TestDingeTrainingConformance = {}
 
 function TestDingeTrainingConformance:setUp() H.reset() end
 
--- AC-2; pilot-training-free-choice: s_142 (first_training_done) is deleted, so 11 of the 12 sids have exactly one screen and s_142 has none
-function TestDingeTrainingConformance:test_each_of_the_11_training_npc_sids_has_exactly_one_screen_and_s_142_has_none()
+-- AC-2; space-convo-client-strings-dinge: of the 12 training NPC sids only first_training's (s_5e36283d) and more_training's (s_122b0165) are still shown, by
+-- one screen each; the other ten (s_140, s_142, s_144 .. s_147, s_149, s_153, s_157, s_161) are shown by none
+function TestDingeTrainingConformance:test_only_the_npc_sids_of_first_training_and_more_training_have_a_screen_the_other_ten_have_none()
 	local count = {}
 
 	for _, s in ipairs(template().screens) do
@@ -339,11 +345,15 @@ function TestDingeTrainingConformance:test_each_of_the_11_training_npc_sids_has_
 	end
 
 	for _, row in ipairs(D.ROWS) do
-		lu.assertEquals(count[row.sid] or 0, row.sid == "s_142" and 0 or 1, "number of screens showing " .. row.sid .. " (appendix row '" .. row.id .. "')")
+		lu.assertEquals(count[row.sid] or 0, D.F2_KEPT[row.id] and 1 or 0, "number of screens showing " .. row.sid .. " (appendix row '" .. row.id .. "')")
 	end
+
+	lu.assertEquals(count[D.F2_CLOSING_SID], 4, "number of screens showing " .. D.F2_CLOSING_SID .. " (Good choice.)")
 end
 
--- AC-2, I-2: option sids in order, successor line, end flag and animation of every training screen, against the java graph
+-- AC-2, I-2; space-convo-client-strings-dinge: first_training and more_training keep the java node's NPC line, end flag and animation; their single NGE reply
+-- (s_139, s_143) is replaced by the choices the handler adds, so the static options are empty. The trained_<x> screens keep the java node's end flag and
+-- animation of s_149 .. s_161 (none, ends); only their NPC line is the client's "Good choice." (D-9)
 function TestDingeTrainingConformance:test_every_training_screen_matches_the_java_graph()
 	local byId = screensById()
 	local checked = 0
@@ -352,62 +362,48 @@ function TestDingeTrainingConformance:test_every_training_screen_matches_the_jav
 		local screen = byId[row.id]
 		local node = GRAPH.nodes[row.sid]
 
-		if row.id == "first_training_done" then
-			-- E-PN3: deleted (D-6)
-			lu.assertNil(screen, "screen 'first_training_done' must be deleted")
-			goto continue
-		end
-
-		lu.assertNotNil(screen, "screen '" .. row.id .. "' is missing")
 		lu.assertNotNil(node, "answer key: " .. row.sid)
-		checked = checked + 1
 
-		lu.assertEquals(sidOf(screen.leftDialog), row.sid, "screen '" .. row.id .. "': NPC line")
-		lu.assertEquals(screen.stopConversation == "true", node.isEnd, "screen '" .. row.id .. "' (" .. row.sid .. "): stopConversation == \"true\" iff the java ends the conversation")
-		lu.assertEquals(screen.animation or "", node.animation, "screen '" .. row.id .. "' (" .. row.sid .. "): animation")
-
-		local got = {}
-
-		for i, option in ipairs(screen.options or {}) do
-			got[i] = sidOf(option[1])
-		end
-
-		-- E-PN2 / E-PN3: the single java reply is replaced by the choice the handler adds
-		local replaced = D.E_PN[row.id]
-
-		if replaced ~= nil then
-			lu.assertEquals(node.options, { replaced }, "answer key: " .. row.sid .. " has the one reply " .. replaced)
-			lu.assertEquals(got, {}, "screen '" .. row.id .. "' (" .. row.sid .. "): static options (E-PN2 / E-PN3)")
+		if D.F2_KEPT[row.id] then
+			lu.assertNotNil(screen, "screen '" .. row.id .. "' is missing")
+			checked = checked + 1
+			lu.assertEquals(sidOf(screen.leftDialog), row.sid, "screen '" .. row.id .. "': NPC line")
+			lu.assertEquals(screen.stopConversation == "true", node.isEnd, "screen '" .. row.id .. "' (" .. row.sid .. "): stopConversation == \"true\" iff the java ends the conversation")
+			lu.assertEquals(screen.animation or "", node.animation, "screen '" .. row.id .. "' (" .. row.sid .. "): animation")
+			lu.assertEquals(node.options, { D.F2_KEPT[row.id] }, "answer key: " .. row.sid .. " has the one reply " .. D.F2_KEPT[row.id])
+			lu.assertEquals(screen.options or {}, {}, "screen '" .. row.id .. "' (" .. row.sid .. "): static options")
+		elseif row.id:find("^trained_") then
+			lu.assertNotNil(screen, "screen '" .. row.id .. "' is missing")
+			checked = checked + 1
+			lu.assertEquals(sidOf(screen.leftDialog), D.F2_CLOSING_SID, "screen '" .. row.id .. "': NPC line")
+			lu.assertEquals(screen.stopConversation == "true", node.isEnd, "screen '" .. row.id .. "' (" .. row.sid .. "): stopConversation == \"true\" iff the java ends the conversation")
+			lu.assertEquals(screen.animation or "", node.animation, "screen '" .. row.id .. "' (" .. row.sid .. "): animation")
+			lu.assertEquals(screen.options or {}, {}, "screen '" .. row.id .. "': options")
 		else
-			lu.assertEquals(got, node.options, "screen '" .. row.id .. "' (" .. row.sid .. "): option sids in order")
+			lu.assertNil(screen, "screen '" .. row.id .. "' must be deleted")
 		end
-
-		for i, optionSid in ipairs(replaced ~= nil and {} or node.options) do
-			local target = byId[screen.options[i][2]]
-
-			lu.assertNotNil(target, "screen '" .. row.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
-
-			local successors = GRAPH.successorsOf(row.sid, optionSid)
-
-			lu.assertNotNil(successors, "answer key: no successor for " .. row.sid .. " -> " .. optionSid)
-
-			-- E-T1 (more_training, s_143): the static link is the java's unconditional default; the handler re-points it
-			lu.assertEquals(sidOf(target.leftDialog), successors[#successors], "screen '" .. row.id .. "' option " .. optionSid .. " -> successor NPC line (java default)")
-		end
-
-		::continue::
 	end
 
-	lu.assertEquals(checked, 11, "training screens checked against the java (12 - first_training_done)")
+	lu.assertEquals(checked, 6, "training screens checked against the java (first_training, more_training, trained_<x> x4)")
 end
 
--- AC-2, I-3: every leftDialog and option text of dinge_convo.lua is a java NPC line / response
+-- AC-2, I-3; space-convo-client-strings-dinge D-9: every leftDialog and option text of dinge_convo.lua is a java NPC line / response, except "Good choice."
+-- (s_cd72f93), which only the four trained_<x> screens show
 function TestDingeTrainingConformance:test_every_string_of_dinge_convo_is_in_the_java()
+	local foreign = 0
+
 	for _, s in ipairs(template().screens) do
 		local sid = sidOf(s.leftDialog)
 
 		lu.assertNotNil(sid, "screen '" .. s.id .. "': leftDialog '" .. tostring(s.leftDialog) .. "' is not @conversation/naboo_privateer_trainer_1:<sid>")
-		lu.assertNotNil(GRAPH.nodes[sid], "screen '" .. s.id .. "': leftDialog " .. sid .. " is not an NPC line of the java")
+
+		if C.DC_FOREIGN[sid] then
+			lu.assertTrue(s.id:find("^trained_") ~= nil, "screen '" .. s.id .. "' shows the foreign line " .. sid .. " but is not a trained_<x> screen")
+		else
+			lu.assertNotNil(GRAPH.nodes[sid], "screen '" .. s.id .. "': leftDialog " .. sid .. " is not an NPC line of the java")
+		end
+
+		foreign = foreign + (C.DC_FOREIGN[sid] and 1 or 0)
 
 		for i, option in ipairs(s.options or {}) do
 			local osid = sidOf(option[1])
@@ -416,6 +412,8 @@ function TestDingeTrainingConformance:test_every_string_of_dinge_convo_is_in_the
 			lu.assertTrue(GRAPH.responses[osid] == true, "screen '" .. s.id .. "' option " .. i .. ": " .. osid .. " is not a response of the java")
 		end
 	end
+
+	lu.assertEquals(foreign, 4, "screens showing the foreign line s_cd72f93 (the four trained_<x> screens, D-9)")
 end
 
 -- AC-2, I-3; pilot-training-free-choice I-6: every string literal DH carries is a java response, except the four choice replies (D-4)
@@ -441,28 +439,29 @@ function TestDingeTrainingConformance:test_every_string_literal_in_dinge_convo_h
 	lu.assertNil(seen.s_141, "dingeConvoHandler still carries the retired reply s_141")
 end
 
--- AC-2, I-3; pilot-training-free-choice: the old foreign NPC line s_cd72f93 stays in neither file (the four old option sids are the choice replies again)
-function TestDingeTrainingConformance:test_the_old_foreign_npc_line_s_cd72f93_is_in_neither_file()
-	local dc, dh = readFile(DC_PATH), readFile(DH_PATH)
-
-	for _, sid in ipairs(D.OLD_FOREIGN) do
-		lu.assertNil(dc:find(sid, 1, true), "dinge_convo.lua still carries " .. sid)
-		lu.assertNil(dh:find(sid, 1, true), "dingeConvoHandler.lua still carries " .. sid)
-	end
-end
-
--- AC-2, I-3; pilot-training-free-choice: the 72 screens show 72 distinct NPC lines
-function TestDingeTrainingConformance:test_the_72_screens_have_72_distinct_left_dialogs()
-	local seen, n = {}, 0
+-- AC-2, I-3; space-convo-client-strings-dinge D-9, I-6: the foreign NPC line s_cd72f93 ("Good choice.") is on exactly the four trained_<x> screens of dinge_convo.lua
+-- and nowhere in dingeConvoHandler.lua
+function TestDingeTrainingConformance:test_the_foreign_npc_line_s_cd72f93_is_only_on_the_four_trained_screens_and_not_in_the_handler()
+	local on = {}
 
 	for _, s in ipairs(template().screens) do
-		n = n + 1
-		lu.assertNil(seen[s.leftDialog], "screens '" .. tostring(seen[s.leftDialog]) .. "' and '" .. s.id .. "' show the same line " .. tostring(s.leftDialog))
-		seen[s.leftDialog] = s.id
+		if sidOf(s.leftDialog) == D.F2_CLOSING_SID then
+			on[#on + 1] = s.id
+		end
 	end
 
-	lu.assertEquals(n, 72, "screens")
+	table.sort(on)
+	lu.assertEquals(on, { "trained_droid", "trained_procedures", "trained_starships", "trained_weapons" }, "screens showing s_cd72f93")
+	lu.assertNil(readFile(DH_PATH):find(D.F2_CLOSING_SID, 1, true), "dingeConvoHandler.lua carries " .. D.F2_CLOSING_SID)
+
+	for _, sid in ipairs({ "s_e9c7c6bb", "s_52917b0d", "s_8179979d" }) do
+		lu.assertNil(readFile(DC_PATH):find(sid, 1, true), "dinge_convo.lua carries the unused client line " .. sid)
+		lu.assertNil(readFile(DH_PATH):find(sid, 1, true), "dingeConvoHandler.lua carries the unused client line " .. sid)
+	end
 end
+
+-- (Retired by space-convo-client-strings-dinge, R-3: the screens no longer show distinct NPC lines. The repeated lines are pinned by
+-- test_pilot_training_free_choice_conformance.lua TestFreeChoiceGraph.)
 
 -- Every java string DC and DH use (NPC lines as leftDialog, responses as option text or DH literal)
 local function usedSids()
@@ -493,8 +492,9 @@ local function usedSids()
 	return used
 end
 
--- AC-2, I-3; pilot-training-free-choice: DC + DH use 117 of the java's 120 strings (72 of 73 NPC lines + 45 of 47 responses); s_142, s_141 and s_143 are unused
-function TestDingeTrainingConformance:test_the_two_files_use_117_java_strings_all_but_s_141_s_142_and_s_143()
+-- AC-2, I-3; space-convo-client-strings-dinge AC-2: DC + DH use 93 of the java's 120 strings (58 of 73 NPC lines + 35 of 47 responses); the 27 unused are exactly
+-- the NGE-numbered ids of the java
+function TestDingeTrainingConformance:test_the_two_files_use_93_java_strings_all_but_the_27_nge_numbered_ones()
 	local used = usedSids()
 	local n, npc, resp = 0, 0, 0
 
@@ -504,7 +504,7 @@ function TestDingeTrainingConformance:test_the_two_files_use_117_java_strings_al
 		if GRAPH.nodes[sid] then npc = npc + 1 else resp = resp + 1 end
 	end
 
-	lu.assertEquals({ n, npc, resp }, { 117, 72, 45 }, "java strings used (total, NPC lines, responses)")
+	lu.assertEquals({ n, npc, resp }, { 93, 58, 35 }, "java strings used (total, NPC lines, responses)")
 
 	local unused = {}
 
@@ -517,23 +517,24 @@ function TestDingeTrainingConformance:test_the_two_files_use_117_java_strings_al
 	end
 
 	table.sort(unused)
-	lu.assertEquals(unused, D.NOW_UNUSED_SIDS, "java strings no file uses")
+
+	local want = {}
+
+	for i, sid in ipairs(D.F2_UNUSED_SIDS) do want[i] = sid end
+
+	table.sort(want)
+	lu.assertEquals(unused, want, "java strings no file uses")
 end
 
--- AC-2; pilot-training-free-choice: 15 of the 18 newly used sids are used; s_141, s_142, s_143 are not
-function TestDingeTrainingConformance:test_15_of_the_18_newly_used_sids_are_used_and_s_141_s_142_s_143_are_not()
+-- AC-2; space-convo-client-strings-dinge: of the 18 sids rsf-tier1-dinge-training first used, only s_5e36283d (first_training's line) is still used
+function TestDingeTrainingConformance:test_only_s_5e36283d_of_the_18_newly_used_sids_is_still_used()
 	local used = usedSids()
-	local gone = {}
-
-	for _, sid in ipairs(D.NOW_UNUSED_SIDS) do
-		gone[sid] = true
-	end
 
 	for _, sid in ipairs(D.NEW_SIDS) do
-		if gone[sid] then
-			lu.assertNil(used[sid], sid .. " is still used by dinge_convo.lua / dingeConvoHandler.lua")
-		else
+		if sid == "s_5e36283d" then
 			lu.assertTrue(used[sid] == true, sid .. " is not used by dinge_convo.lua / dingeConvoHandler.lua")
+		else
+			lu.assertNil(used[sid], sid .. " is still used by dinge_convo.lua / dingeConvoHandler.lua")
 		end
 	end
 end

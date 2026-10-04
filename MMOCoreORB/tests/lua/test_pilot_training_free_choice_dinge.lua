@@ -1,5 +1,8 @@
 -- Dinge (RSF tier 1): the pilot chooses which missing tier 1 skill to train, including the free first skill (pre-NGE free choice).
--- Spec: .claude/work/pilot-training-free-choice/01-spec.md (AC-4 .. AC-7; Content contract 2; invariants I-2 .. I-5; D-2, D-6, D-9).
+-- Spec: .claude/work/pilot-training-free-choice/01-spec.md (AC-4 .. AC-7; Content contract 2; invariants I-2 .. I-5; D-2, D-6, D-9),
+-- re-pinned to the pre-NGE one-click training by .claude/work/space-convo-client-strings-dinge/01-spec.md (D-4, D-5, D-6, D-9; AC-7 .. AC-9):
+-- the choice is made on first_training (free) or more_training (paid) and the conversation ends on the "Good choice." screen trained_<x>.
+-- The lesson step (s_139/s_140) and the train_<x> prompt-and-confirm screens (s_144 .. s_147) are gone; every grant guard is unchanged.
 --
 -- The choice replies are the answer key of pilot_training_free_choice_data.lua (copied from the spec). The SWG lines of the prompts and closing
 -- lines come from rsf_tier1_dinge_training_data.lua. The fake charges XP only with H.Engine.config.skillXpCosts set (see costs()).
@@ -71,14 +74,6 @@ local function row(x)
 	end
 end
 
-local function trainingRow(x)
-	for _, t in ipairs(D.TRAINING) do
-		if t.x == x then
-			return t
-		end
-	end
-end
-
 local function templateScreen(id)
 	for _, s in ipairs(H.conversationTemplateTable("dinge_convo_template").screens) do
 		if s.id == id then
@@ -136,7 +131,7 @@ for _, list in ipairs(subsets()) do
 		lu.assertEquals(transcript[1].text, P .. "s_122b0165", "more_training: NPC line")
 		lu.assertEquals(transcript[1].params.TU, "Ace", "more_training: %TU")
 		lu.assertFalse(transcript[1].stop, "more_training does not end the conversation")
-		lu.assertEquals(C.pairsOf(transcript[1]), C.expected(CHOICES, C.set(list)), "more_training: options (reply, link)")
+		lu.assertEquals(C.pairsOf(transcript[1]), C.expected(CHOICES, C.set(list), "closing"), "more_training: options (reply, link)")
 		lu.assertEquals(#transcript[1].options, 4 - #list, "more_training: number of options")
 		lu.assertEquals(#free(), 0, "awardSkill calls on display")
 		lu.assertEquals(#bought(), 0, "skillManagerAwardSkill calls on display")
@@ -154,20 +149,20 @@ function TestDingeFreeChoiceMoreTraining:test_the_retired_single_reply_s_143_is_
 	end
 end
 
--- AC-4: every reply leads to the SWG prompt of its skill (line, one option to the closing line)
-function TestDingeFreeChoiceMoreTraining:test_every_reply_leads_to_the_prompt_of_its_skill_with_its_swg_line()
+-- AC-8 (F2 D-9): every reply ends on the "Good choice." line of its skill right away (no prompt-and-confirm step)
+function TestDingeFreeChoiceMoreTraining:test_every_reply_ends_the_conversation_on_good_choice_of_its_skill_without_a_prompt()
 	for _, c in ipairs(CHOICES) do
 		H.reset()
+		costs()
 
 		-- a pilot holding one other skill, so more_training is the first screen
 		local other = c.x == "starships" and "pilot_neutral_weapons_01" or "pilot_neutral_starships_01"
 		local transcript = T.converse(tr, pilot({ other }, COST), { c.sid })
-		local t = trainingRow(c.x)
 
-		lu.assertEquals(ids(transcript), { "more_training", c.screen }, c.x .. ": screens")
-		lu.assertEquals(transcript[2].text, P .. t.promptSid, c.x .. ": prompt line")
-		lu.assertEquals(C.pairsOf(transcript[2]), { { P .. t.optionSid, c.closing } }, c.x .. ": prompt option and link")
-		lu.assertFalse(transcript[2].stop, c.x .. ": the prompt does not end the conversation")
+		lu.assertEquals(ids(transcript), { "more_training", c.closing }, c.x .. ": screens")
+		lu.assertEquals(transcript[2].text, P .. "s_cd72f93", c.x .. ": Good choice. line")
+		lu.assertEquals(transcript[2].options, {}, c.x .. ": options")
+		lu.assertTrue(transcript[2].stop, c.x .. ": the conversation ends")
 	end
 end
 
@@ -213,19 +208,17 @@ end
 for _, c in ipairs(CHOICES) do
 	-- AC-5, I-3, I-4: whichever other skills are held, the pick buys that skill once for 7500 XP and ends on its closing line
 	TestDingeFreeChoicePurchase["test_picking_" .. c.x .. "_buys_pilot_neutral_" .. c.x .. "_01_once_for_7500_xp_and_ends_on_" .. c.closing .. "_whatever_else_is_held"] = function()
-		local t = trainingRow(c.x)
-
 		for _, list in ipairs(othersOf(c.x)) do
 			H.reset()
 			costs()
 
 			local player = pilot(list, 3 * COST)
-			local transcript = T.converse(tr, player, { c.sid, 0 })
+			local transcript = T.converse(tr, player, { c.sid })
 
-			lu.assertEquals(ids(transcript), { "more_training", c.screen, c.closing }, D.label(list) .. " held: screens")
-			lu.assertEquals(transcript[3].text, P .. t.closingSid, D.label(list) .. " held: " .. c.closing .. " line")
-			lu.assertTrue(transcript[3].stop, D.label(list) .. " held: " .. c.closing .. " ends the conversation")
-			lu.assertEquals(transcript[3].options, {}, D.label(list) .. " held: " .. c.closing .. " options")
+			lu.assertEquals(ids(transcript), { "more_training", c.closing }, D.label(list) .. " held: screens")
+			lu.assertEquals(transcript[2].text, P .. "s_cd72f93", D.label(list) .. " held: " .. c.closing .. " line")
+			lu.assertTrue(transcript[2].stop, D.label(list) .. " held: " .. c.closing .. " ends the conversation")
+			lu.assertEquals(transcript[2].options, {}, D.label(list) .. " held: " .. c.closing .. " options")
 
 			local calls = bought()
 
@@ -245,9 +238,9 @@ function TestDingeFreeChoicePurchase:test_a_pilot_holding_droid_who_picks_proced
 	costs()
 
 	local player = pilot({ "pilot_neutral_droid_01" }, COST)
-	local transcript = T.converse(tr, player, { C.DINGE[3].sid, 0 })
+	local transcript = T.converse(tr, player, { C.DINGE[3].sid })
 
-	lu.assertEquals(ids(transcript), { "more_training", "train_procedures", "trained_procedures" }, "screens")
+	lu.assertEquals(ids(transcript), { "more_training", "trained_procedures" }, "screens")
 	lu.assertEquals(#bought(), 1, "skillManagerAwardSkill calls")
 	lu.assertEquals(exp(player), 0, "space_combat_general")
 end
@@ -261,15 +254,15 @@ for _, c in ipairs(CHOICES) do
 		costs()
 
 		local player = pilot({ other }, 3 * COST)
-		local transcript = T.converse(tr, player, { c.sid, function(p) p.skills[c.skill] = true end, 0 })
+		local transcript = T.converse(tr, player, { function(p) p.skills[c.skill] = true end, c.sid }) -- the skill arrives while more_training is shown
 
-		lu.assertEquals(transcript[2].id, c.screen, "second screen")
+		lu.assertEquals(transcript[1].id, "more_training", "first screen")
 		lu.assertEquals(#bought(), 0, "skillManagerAwardSkill calls")
 		lu.assertEquals(#free(), 0, "awardSkill calls")
 		lu.assertEquals(exp(player), 3 * COST, "space_combat_general")
-		lu.assertEquals(#transcript, 3, "screens")
-		lu.assertNotEquals(transcript[3].id, c.closing, "no success line for a skill that was not bought")
-		lu.assertEquals(transcript[3].id, freshFirstScreen({ other, c.skill }, 3 * COST), "third screen is the fresh first screen of that pilot")
+		lu.assertEquals(#transcript, 2, "screens")
+		lu.assertNotEquals(transcript[2].id, c.closing, "no success line for a skill that was not bought")
+		lu.assertEquals(transcript[2].id, freshFirstScreen({ other, c.skill }, 3 * COST), "second screen is the fresh first screen of that pilot")
 	end
 
 	-- AC-5
@@ -277,14 +270,14 @@ for _, c in ipairs(CHOICES) do
 		costs()
 
 		local player = pilot({ other }, COST)
-		local transcript = T.converse(tr, player, { c.sid, function(p) p.ghost.experience.space_combat_general = COST - 1 end, 0 })
+		local transcript = T.converse(tr, player, { function(p) p.ghost.experience.space_combat_general = COST - 1 end, c.sid }) -- the XP is gone while more_training is shown
 
-		lu.assertEquals(transcript[2].id, c.screen, "second screen")
+		lu.assertEquals(transcript[1].id, "more_training", "first screen")
 		lu.assertEquals(#bought(), 0, "skillManagerAwardSkill calls")
 		lu.assertEquals(#free(), 0, "awardSkill calls")
 		lu.assertFalse(CreatureObject(player):hasSkill(c.skill), c.skill .. " held")
 		lu.assertEquals(exp(player), COST - 1, "space_combat_general")
-		lu.assertEquals(transcript[3].id, "duty_missions", "third screen: the start logic runs again for a pilot with less than 7500 XP")
+		lu.assertEquals(transcript[2].id, "duty_missions", "second screen: the start logic runs again for a pilot with less than 7500 XP")
 	end
 
 	-- AC-5
@@ -296,10 +289,12 @@ for _, c in ipairs(CHOICES) do
 		withEngineRefusal()
 
 		local messages = #H.messageLog(player)
-		local transcript = T.converse(tr, player, { c.sid, 0 })
+		local transcript = T.converse(tr, player, { c.sid })
 
-		lu.assertEquals(transcript[2].id, c.screen, "second screen")
+		lu.assertEquals(transcript[1].id, "more_training", "first screen")
+		lu.assertEquals(#transcript, 2, "screens")
 		lu.assertNotEquals(transcript[#transcript].id, c.closing, "no success line for a skill the engine refused")
+		lu.assertEquals(transcript[2].id, freshFirstScreen({ other }, 3 * COST), "second screen is the fresh first screen of that pilot")
 		lu.assertEquals(#bought(), 0, "skillManagerAwardSkill calls")
 		lu.assertEquals(#free(), 0, "awardSkill calls")
 		lu.assertEquals(#H.messageLog(player), messages, "system messages (no 'skill learned')")
@@ -317,7 +312,7 @@ function TestDingeFreeChoicePurchase:test_the_paid_pick_makes_exactly_one_grant_
 		local other = c.x == "starships" and "pilot_neutral_weapons_01" or "pilot_neutral_starships_01"
 		local calls = H.spyOn(SpaceHelpers, "grantSpaceSkill")
 
-		T.converse(tr, pilot({ other }, 3 * COST), { c.sid, 0 })
+		T.converse(tr, pilot({ other }, 3 * COST), { c.sid })
 		lu.assertEquals(#calls, 1, c.x .. ": grantSpaceSkill calls")
 		lu.assertEquals({ calls[1].args[2], calls[1].args[3] }, { c.skill, true }, c.x .. ": grantSpaceSkill (skill, deductExperience)")
 	end
@@ -341,9 +336,9 @@ function TestDingeFreeChoicePurchase:test_the_fourth_skill_raises_the_pilot_tier
 
 		lu.assertEquals(player.ghost:getPilotTier(), 1, last.x .. ": setup, pilot tier")
 
-		local transcript = T.converse(tr, player, { last.sid, 0 })
+		local transcript = T.converse(tr, player, { last.sid })
 
-		lu.assertEquals(ids(transcript), { "more_training", last.screen, last.closing }, last.x .. ": screens")
+		lu.assertEquals(ids(transcript), { "more_training", last.closing }, last.x .. ": screens")
 		lu.assertEquals(player.ghost:getPilotTier(), 2, last.x .. ": pilot tier after the fourth skill")
 		lu.assertEquals(T.converse(tr, player)[1].id, "completed_tier1", last.x .. ": the next first screen")
 	end
@@ -373,39 +368,40 @@ TestDingeFreeChoiceFirstTraining = {}
 function TestDingeFreeChoiceFirstTraining:setUp() H.reset() end
 function TestDingeFreeChoiceFirstTraining:tearDown() LuaSkillManager = REAL_SKILL_MANAGER end
 
--- AC-6: the template: no static option on the lesson, and first_training_done (s_142) is deleted
-function TestDingeFreeChoiceFirstTraining:test_the_lesson_has_no_static_option_and_first_training_done_does_not_exist()
-	local lesson = templateScreen("first_training_lesson")
+-- AC-7 (F2 D-4): first_training has no static option (the handler adds the choices); the lesson and first_training_done screens are gone
+function TestDingeFreeChoiceFirstTraining:test_first_training_has_no_static_option_and_the_lesson_and_first_training_done_do_not_exist()
+	local screen = templateScreen("first_training")
 
-	lu.assertNotNil(lesson, "dinge_convo_template: screen first_training_lesson")
-	lu.assertEquals(lesson.options, {}, "first_training_lesson: static options")
-	lu.assertEquals(lesson.leftDialog, P .. "s_140", "first_training_lesson: leftDialog")
-	lu.assertEquals(lesson.stopConversation, "false", "first_training_lesson: stopConversation")
+	lu.assertNotNil(screen, "dinge_convo_template: screen first_training")
+	lu.assertEquals(screen.options, {}, "first_training: static options")
+	lu.assertEquals(screen.leftDialog, P .. "s_5e36283d", "first_training: leftDialog")
+	lu.assertEquals(screen.stopConversation, "false", "first_training: stopConversation")
+	lu.assertEquals(screen.animation, "explain", "first_training: animation")
+	lu.assertNil(templateScreen("first_training_lesson"), "dinge_convo_template: screen first_training_lesson must be deleted")
 	lu.assertNil(templateScreen("first_training_done"), "dinge_convo_template: screen first_training_done must be deleted")
 
 	for _, s in ipairs(H.conversationTemplateTable("dinge_convo_template").screens) do
-		lu.assertNotEquals(s.leftDialog, P .. "s_142", "screen " .. tostring(s.id) .. " must not show s_142")
+		for _, sid in ipairs({ "s_139", "s_140", "s_142" }) do
+			lu.assertNotEquals(s.leftDialog, P .. sid, "screen " .. tostring(s.id) .. " must not show " .. sid)
+		end
 	end
 end
 
--- AC-6: first_training keeps its line and its one reply; the lesson offers the four choice replies, all four on every reachable path
+-- AC-7: first_training lists the four choice replies, all four on every reachable path
 for _, amount in ipairs({ 0, COST, 3 * COST }) do
-	TestDingeFreeChoiceFirstTraining["test_the_lesson_offers_the_four_choice_replies_linking_to_the_closing_lines_with_" .. amount .. "_xp"] = function()
+	TestDingeFreeChoiceFirstTraining["test_first_training_offers_the_four_choice_replies_linking_to_the_closing_lines_with_" .. amount .. "_xp"] = function()
 		costs()
 
 		local player = pilot({}, amount)
-		local transcript = T.converse(tr, player, { 0 })
+		local transcript = T.converse(tr, player)
 
-		lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson" }, "screens")
+		lu.assertEquals(ids(transcript), { "first_training" }, "screens")
 		lu.assertEquals(transcript[1].text, P .. "s_5e36283d", "first_training: NPC line")
-		lu.assertEquals(C.pairsOf(transcript[1]), { { P .. "s_139", "first_training_lesson" } }, "first_training: options")
+		lu.assertEquals(C.pairsOf(transcript[1]), C.expected(CHOICES, {}, "closing"), "first_training: options (reply, link)")
+		lu.assertEquals(#transcript[1].options, 4, "first_training: number of options")
 		lu.assertFalse(transcript[1].stop, "first_training does not end the conversation")
-		lu.assertEquals(transcript[2].text, P .. "s_140", "first_training_lesson: NPC line")
-		lu.assertEquals(C.pairsOf(transcript[2]), C.expected(CHOICES, {}, "closing"), "first_training_lesson: options (reply, link)")
-		lu.assertEquals(#transcript[2].options, 4, "first_training_lesson: number of options")
-		lu.assertFalse(transcript[2].stop, "first_training_lesson does not end the conversation")
 
-		-- I-5: nothing is granted while the two screens are displayed
+		-- I-4: nothing is granted while the screen is displayed
 		lu.assertEquals(#free(), 0, "awardSkill calls")
 		lu.assertEquals(#bought(), 0, "skillManagerAwardSkill calls")
 		lu.assertEquals(held(player), {}, "tier 1 skills held")
@@ -413,7 +409,7 @@ for _, amount in ipairs({ 0, COST, 3 * COST }) do
 	end
 end
 
--- AC-6: the retired replies are never offered on the lesson
+-- AC-6: the retired replies are never offered on the lesson (kept as it was: first_training now leads straight to the closing line, so there is no lesson)
 function TestDingeFreeChoiceFirstTraining:test_the_retired_reply_s_141_is_not_offered_on_the_lesson()
 	local transcript = T.converse(tr, pilot({}, 0), { 0 })
 
@@ -422,20 +418,27 @@ function TestDingeFreeChoiceFirstTraining:test_the_retired_reply_s_141_is_not_of
 	end
 end
 
--- AC-6: choosing reply k grants the k-th skill once, for free, and ends on its closing line
+-- AC-7: the retired replies are never offered on first_training (the old single reply s_139 and the lesson reply s_141)
+function TestDingeFreeChoiceFirstTraining:test_the_retired_replies_s_139_and_s_141_are_not_offered_on_first_training()
+	for _, o in ipairs(T.converse(tr, pilot({}, 0))[1].options) do
+		lu.assertNotEquals(o.text, P .. "s_139", "the NGE lesson reply")
+		lu.assertNotEquals(o.text, P .. "s_141", "the single fixed-order reply")
+	end
+end
+
+-- AC-7: choosing reply k on first_training grants the k-th skill once, for free, and ends on its closing line
 for _, amount in ipairs({ 0, COST, 3 * COST }) do
 	for _, c in ipairs(CHOICES) do
 		TestDingeFreeChoiceFirstTraining["test_choosing_" .. c.x .. "_grants_" .. c.skill .. "_once_for_free_with_" .. amount .. "_xp_and_ends_on_" .. c.closing] = function()
 			costs()
 
 			local player = pilot({}, amount)
-			local transcript = T.converse(tr, player, { 0, c.sid })
-			local t = trainingRow(c.x)
+			local transcript = T.converse(tr, player, { c.sid })
 
-			lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", c.closing }, "screens")
-			lu.assertEquals(transcript[3].text, P .. t.closingSid, c.closing .. ": NPC line")
-			lu.assertTrue(transcript[3].stop, c.closing .. " ends the conversation")
-			lu.assertEquals(transcript[3].options, {}, c.closing .. ": options")
+			lu.assertEquals(ids(transcript), { "first_training", c.closing }, "screens")
+			lu.assertEquals(transcript[2].text, P .. "s_cd72f93", c.closing .. ": NPC line (Good choice.)")
+			lu.assertTrue(transcript[2].stop, c.closing .. " ends the conversation")
+			lu.assertEquals(transcript[2].options, {}, c.closing .. ": options")
 
 			local calls = free()
 
@@ -450,16 +453,17 @@ for _, amount in ipairs({ 0, COST, 3 * COST }) do
 	end
 end
 
--- AC-6 (the spec's example): no skill, droid picked
+-- AC-7 (the spec's example): no skill, droid picked
 function TestDingeFreeChoiceFirstTraining:test_the_fourth_reply_grants_droid_for_free_and_ends_on_trained_droid()
 	local player = pilot({}, 0)
-	local transcript = T.converse(tr, player, { 0, 3 })
+	local transcript = T.converse(tr, player, { 3 })
 
-	lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", "trained_droid" }, "screens")
+	lu.assertEquals(ids(transcript), { "first_training", "trained_droid" }, "screens")
+	lu.assertEquals(#free(), 1, "awardSkill calls")
 	lu.assertEquals(free()[1][2], "pilot_neutral_droid_01", "awardSkill skill")
 end
 
--- AC-6, I-4: the grant is announced once and names the picked skill
+-- AC-7, I-4: the grant is announced once and names the picked skill
 function TestDingeFreeChoiceFirstTraining:test_the_free_grant_sends_one_skill_learned_message_naming_the_picked_skill()
 	for _, c in ipairs(CHOICES) do
 		H.reset()
@@ -467,7 +471,7 @@ function TestDingeFreeChoiceFirstTraining:test_the_free_grant_sends_one_skill_le
 		local player = pilot({}, 0)
 		local before = #H.messageLog(player)
 
-		T.converse(tr, player, { 0, c.sid })
+		T.converse(tr, player, { c.sid })
 
 		local log = H.messageLog(player)
 
@@ -477,20 +481,20 @@ function TestDingeFreeChoiceFirstTraining:test_the_free_grant_sends_one_skill_le
 	end
 end
 
--- AC-6, I-4: exactly one free grantSpaceSkill call for the picked skill, with deductExperience false
+-- AC-7, I-4: exactly one free grantSpaceSkill call for the picked skill, with deductExperience false
 function TestDingeFreeChoiceFirstTraining:test_the_pick_calls_grant_space_skill_once_with_deduct_false_for_the_picked_skill()
 	for _, c in ipairs(CHOICES) do
 		H.reset()
 
 		local calls = H.spyOn(SpaceHelpers, "grantSpaceSkill")
 
-		T.converse(tr, pilot({}, COST), { 0, c.sid })
+		T.converse(tr, pilot({}, COST), { c.sid })
 		lu.assertEquals(#calls, 1, c.x .. ": grantSpaceSkill calls")
 		lu.assertEquals({ calls[1].args[2], calls[1].args[3] }, { c.skill, false }, c.x .. ": grantSpaceSkill (skill, deductExperience)")
 	end
 end
 
--- AC-6: a pilot who holds any tier 1 skill when choosing gets nothing and sees the fresh first screen
+-- AC-7: a pilot who holds any tier 1 skill when choosing gets nothing and sees the fresh first screen
 for _, c in ipairs(CHOICES) do
 	for _, heldSkill in ipairs(D.SKILLS) do
 		for _, amount in ipairs({ 0, COST }) do
@@ -500,78 +504,78 @@ for _, c in ipairs(CHOICES) do
 				local player = pilot({}, amount)
 				local calls = H.spyOn(SpaceHelpers, "grantSpaceSkill")
 				local transcript = T.converse(tr, player, {
-					0,
-					function(p) p.skills[heldSkill] = true end, -- the skill arrives while the lesson is shown
+					function(p) p.skills[heldSkill] = true end, -- the skill arrives while first_training is shown
 					c.sid,
 				})
 
-				lu.assertEquals(transcript[2].id, "first_training_lesson", "second screen")
+				lu.assertEquals(transcript[1].id, "first_training", "first screen")
 				lu.assertEquals(#free(), 0, "awardSkill calls")
 				lu.assertEquals(#bought(), 0, "skillManagerAwardSkill calls")
 				lu.assertEquals(#calls, 0, "grantSpaceSkill calls")
 				lu.assertEquals(held(player), { heldSkill }, "tier 1 skills held")
 				lu.assertEquals(exp(player), amount, "space_combat_general")
-				lu.assertEquals(#transcript, 3, "screens")
-				lu.assertEquals(transcript[3].id, freshFirstScreen({ heldSkill }, amount), "third screen is the fresh first screen of that pilot")
-				lu.assertNotEquals(transcript[3].id, c.closing, "no success line for a skill that was not granted")
+				lu.assertEquals(#transcript, 2, "screens")
+				lu.assertEquals(transcript[2].id, freshFirstScreen({ heldSkill }, amount), "second screen is the fresh first screen of that pilot")
+				lu.assertNotEquals(transcript[2].id, c.closing, "no success line for a skill that was not granted")
 			end
 		end
 	end
 end
 
--- AC-6: choosing on the lesson again after the grant grants nothing more
-function TestDingeFreeChoiceFirstTraining:test_choosing_on_the_lesson_again_after_the_grant_grants_one_skill_in_all()
+-- AC-7: choosing on first_training again after the grant grants nothing more
+function TestDingeFreeChoiceFirstTraining:test_choosing_on_first_training_again_after_the_grant_grants_one_skill_in_all()
 	for _, c in ipairs(CHOICES) do
 		H.reset()
 		costs()
 
 		local player = pilot({}, COST)
 
-		T.converse(tr, player, { 0, c.sid })
+		T.converse(tr, player, { c.sid })
 		lu.assertEquals(#free(), 1, c.x .. ": awardSkill calls after the first conversation")
 
-		-- the lesson now offers the three skills still missing; every one of them is chosen in turn
+		-- first_training now offers the three skills still missing; every one of them is chosen in turn
 		for i = 1, 3 do
-			K.drive(tr, player, "first_training_lesson", { i - 1 })
+			K.drive(tr, player, "first_training", { i - 1 })
 		end
 
-		lu.assertEquals(#free(), 1, c.x .. ": awardSkill calls after choosing on the lesson again")
+		lu.assertEquals(#free(), 1, c.x .. ": awardSkill calls after choosing on first_training again")
 		lu.assertEquals(#bought(), 0, c.x .. ": skillManagerAwardSkill calls")
 		lu.assertEquals(held(player), { c.skill }, c.x .. ": tier 1 skills held")
 		lu.assertEquals(exp(player), COST, c.x .. ": space_combat_general")
 	end
 end
 
--- AC-6, I-4: a pilot who already holds a later skill (legacy) gets nothing free from the lesson
-function TestDingeFreeChoiceFirstTraining:test_the_lesson_gives_a_pilot_who_already_holds_droid_nothing_free_whatever_is_picked()
+-- AC-7, I-4: a pilot who already holds a later skill (legacy) gets nothing free from first_training
+function TestDingeFreeChoiceFirstTraining:test_first_training_gives_a_pilot_who_already_holds_droid_nothing_free_whatever_is_picked()
 	for i, c in ipairs(CHOICES) do
 		H.reset()
 		costs()
 
 		local player = pilot({ D.SKILLS[4] }, COST)
 
-		-- the lesson offers the three skills the pilot lacks; picking the one at position c (or the last) must grant nothing
-		K.drive(tr, player, "first_training_lesson", { math.min(i - 1, 2) })
+		-- first_training offers the three skills the pilot lacks; picking the one at position i (or the last) must grant nothing
+		K.drive(tr, player, "first_training", { math.min(i - 1, 2) })
 		lu.assertEquals(#free(), 0, c.x .. ": awardSkill calls")
 		lu.assertEquals(#bought(), 0, c.x .. ": skillManagerAwardSkill calls")
 		lu.assertEquals(held(player), { D.SKILLS[4] }, c.x .. ": tier 1 skills held")
 	end
 end
 
--- AC-6, I-4: nothing but a reply on the lesson grants for free (the paid prompts never use the free path)
+-- AC-7, AC-8, I-4: nothing but a reply on first_training grants for free (the same reply on more_training is the paid path)
 function TestDingeFreeChoiceFirstTraining:test_the_free_path_is_used_for_nothing_else()
-	for _, t in ipairs(D.TRAINING) do
+	for i, c in ipairs(CHOICES) do
 		H.reset()
 		costs()
 
-		K.drive(tr, pilot({}, 4 * COST), t.screen, { 0 })
-		lu.assertEquals(#free(), 0, t.screen .. ": awardSkill calls")
-		lu.assertEquals(#bought(), 1, t.screen .. ": skillManagerAwardSkill calls")
+		K.drive(tr, pilot({}, 4 * COST), "more_training", { i - 1 })
+		lu.assertEquals(#free(), 0, c.x .. " on more_training: awardSkill calls")
+		lu.assertEquals(#bought(), 1, c.x .. " on more_training: skillManagerAwardSkill calls")
+		lu.assertEquals(bought()[1][2], c.skill, c.x .. " on more_training: skill bought")
 	end
 end
 
 ---------------------------------------------------------------------------------------------
--- AC-7: an out-of-order career
+-- AC-9: an out-of-order career
 ---------------------------------------------------------------------------------------------
 
 TestDingeFreeChoiceCareer = {}
@@ -581,20 +585,19 @@ function TestDingeFreeChoiceCareer:tearDown() LuaSkillManager = REAL_SKILL_MANAG
 
 -- One visit that picks the last reply offered on the choice screen. Returns the transcript and the numbers of free and paid grants it made.
 local function lastReplyVisit(player)
-	local look = T.converse(tr, player, { 0 })
-	local choiceStep = look[1].id == "first_training" and look[2] or look[1]
+	local look = T.converse(tr, player)
+	local choiceStep = look[1]
 
-	lu.assertTrue(choiceStep.id == "first_training_lesson" or choiceStep.id == "more_training", "the visit reaches a choice screen, got " .. choiceStep.id)
+	lu.assertTrue(choiceStep.id == "first_training" or choiceStep.id == "more_training", "the visit reaches a choice screen, got " .. choiceStep.id)
 
 	local reply = choiceStep.options[#choiceStep.options].text
 	local freeBefore, boughtBefore = #free(), #bought()
-	local choices = look[1].id == "first_training" and { 0, reply, 0 } or { reply, 0 }
-	local transcript = T.converse(tr, player, choices)
+	local transcript = T.converse(tr, player, { reply })
 
 	return transcript, #free() - freeBefore, #bought() - boughtBefore, reply
 end
 
--- AC-7
+-- AC-9
 function TestDingeFreeChoiceCareer:test_picking_the_last_reply_everywhere_gets_droid_free_then_procedures_weapons_starships_paid_and_ends_with_no_xp_and_tier_2()
 	costs()
 
@@ -604,7 +607,7 @@ function TestDingeFreeChoiceCareer:test_picking_the_last_reply_everywhere_gets_d
 
 	local transcript, nFree, nBought, reply = lastReplyVisit(player)
 
-	lu.assertEquals(ids(transcript), { "first_training", "first_training_lesson", "trained_droid" }, "visit 1: screens")
+	lu.assertEquals(ids(transcript), { "first_training", "trained_droid" }, "visit 1: screens")
 	lu.assertEquals(reply, C.DINGE[4].reply, "visit 1: the last reply offered")
 	lu.assertEquals({ nFree, nBought }, { 1, 0 }, "visit 1: awardSkill, skillManagerAwardSkill calls")
 	lu.assertEquals(free()[1][2], "pilot_neutral_droid_01", "visit 1: free skill")
@@ -620,7 +623,7 @@ function TestDingeFreeChoiceCareer:test_picking_the_last_reply_everywhere_gets_d
 	for i, e in ipairs(expect) do
 		transcript, nFree, nBought, reply = lastReplyVisit(player)
 
-		lu.assertEquals(ids(transcript), { "more_training", "train_" .. e[1], "trained_" .. e[1] }, "visit " .. (i + 1) .. ": screens")
+		lu.assertEquals(ids(transcript), { "more_training", "trained_" .. e[1] }, "visit " .. (i + 1) .. ": screens")
 		lu.assertEquals(reply, row(e[1]).reply, "visit " .. (i + 1) .. ": the last reply offered")
 		lu.assertEquals({ nFree, nBought }, { 0, 1 }, "visit " .. (i + 1) .. ": awardSkill, skillManagerAwardSkill calls")
 		lu.assertEquals(bought()[i][2], "pilot_neutral_" .. e[1] .. "_01", "visit " .. (i + 1) .. ": skill bought")
@@ -636,7 +639,7 @@ function TestDingeFreeChoiceCareer:test_picking_the_last_reply_everywhere_gets_d
 	lu.assertEquals(player.ghost:getPilotTier(), 2, "pilot tier at the end")
 end
 
--- AC-7: no visit ever grants two skills, whatever is picked
+-- AC-9: no visit ever grants two skills, whatever is picked
 function TestDingeFreeChoiceCareer:test_no_visit_grants_two_skills_whichever_reply_is_picked_each_time()
 	for _, pickIndex in ipairs({ 0, 1, 2, 3 }) do
 		H.reset()
@@ -645,16 +648,13 @@ function TestDingeFreeChoiceCareer:test_no_visit_grants_two_skills_whichever_rep
 		local player = pilot({}, 10 * COST)
 
 		for visit = 1, 6 do
-			local look = T.converse(tr, player, { 0 })
-			local step = look[1].id == "first_training" and look[2] or look[1]
+			local look = T.converse(tr, player)
+			local step = look[1]
 			local n = #(step.options or {})
 			local before = #free() + #bought()
 
-			if n > 0 then
-				local reply = step.options[math.min(pickIndex, n - 1) + 1].text
-				local choices = look[1].id == "first_training" and { 0, reply, 0 } or { reply, 0 }
-
-				T.converse(tr, player, choices)
+			if step.id == "first_training" or step.id == "more_training" then
+				T.converse(tr, player, { step.options[math.min(pickIndex, n - 1) + 1].text })
 			else
 				T.converse(tr, player, { 0 })
 			end
@@ -669,7 +669,7 @@ function TestDingeFreeChoiceCareer:test_no_visit_grants_two_skills_whichever_rep
 	end
 end
 
--- AC-7: with 7500 XP only the free skill (the pick) is granted, the second visit buys one, the third shows the duty menu
+-- AC-9: with 7500 XP only the free skill (the pick) is granted, the second visit buys one, the third shows the duty menu
 function TestDingeFreeChoiceCareer:test_with_7500_xp_a_free_pick_then_one_paid_pick_then_the_duty_menu()
 	costs()
 
@@ -677,9 +677,9 @@ function TestDingeFreeChoiceCareer:test_with_7500_xp_a_free_pick_then_one_paid_p
 	local t1, f1, b1 = lastReplyVisit(player)
 	local t2, f2, b2 = lastReplyVisit(player)
 
-	lu.assertEquals(ids(t1), { "first_training", "first_training_lesson", "trained_droid" }, "visit 1: screens")
+	lu.assertEquals(ids(t1), { "first_training", "trained_droid" }, "visit 1: screens")
 	lu.assertEquals({ f1, b1 }, { 1, 0 }, "visit 1: awardSkill, skillManagerAwardSkill calls")
-	lu.assertEquals(ids(t2), { "more_training", "train_procedures", "trained_procedures" }, "visit 2: screens")
+	lu.assertEquals(ids(t2), { "more_training", "trained_procedures" }, "visit 2: screens")
 	lu.assertEquals({ f2, b2 }, { 0, 1 }, "visit 2: awardSkill, skillManagerAwardSkill calls")
 	lu.assertEquals(exp(player), 0, "space_combat_general after visit 2")
 	lu.assertEquals(T.converse(tr, player)[1].id, "duty_missions", "visit 3: first screen")

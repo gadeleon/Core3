@@ -50,7 +50,7 @@ non_rsf_duty_offer = ConvoScreen:new {
 		{"@conversation/naboo_privateer_trainer_1:s_6106187c", "what_is_duty"},
 		{"@conversation/naboo_privateer_trainer_1:s_e814cf37", "duty_options"},
 		{"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "duty_no_training"},
-		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "duty_not_now"},
+		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "not_ready"}, -- Not right now, thanks.
 	}
 }
 dinge_convo_template:addScreen(non_rsf_duty_offer);
@@ -139,31 +139,11 @@ yes_ship = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_1:s_5ed33504",
 	stopConversation = "false",
 	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_30", "signup_ready_ship"},
-		{"@conversation/naboo_privateer_trainer_1:s_34", "signup_ship_later"},
+		{"@conversation/naboo_privateer_trainer_1:s_36a4e374", "signup_offer"}, -- Yes, I am.
+		{"@conversation/naboo_privateer_trainer_1:s_68660d24", "signup_not_ready"}, -- I need to take care of some things first.
 	}
 }
 dinge_convo_template:addScreen(yes_ship);
-
-signup_ready_ship = ConvoScreen:new {
-	id = "signup_ready_ship",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_32",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_1db37a0f", "mission1_accept"},
-		{"@conversation/naboo_privateer_trainer_1:s_48566ef9", "mission1_boast"},
-		{"@conversation/naboo_privateer_trainer_1:s_7478cd28", "mission1_after_assignments"},
-	}
-}
-dinge_convo_template:addScreen(signup_ready_ship);
-
-signup_ship_later = ConvoScreen:new {
-	id = "signup_ship_later",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_36",
-	stopConversation = "true",
-	options = {}
-}
-dinge_convo_template:addScreen(signup_ship_later);
 
 no_ship = ConvoScreen:new {
 	id = "no_ship",
@@ -426,15 +406,15 @@ mission3_failed = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "cover_eyes",
 	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_52", "mission3_failed_retry1"},
-		{"@conversation/naboo_privateer_trainer_1:s_56", "mission3_failed_retry2"},
+		{"@conversation/naboo_privateer_trainer_1:s_ea059f38", "mission3_failed_retry1"}, -- Will do!
+		{"@conversation/naboo_privateer_trainer_1:s_aec5c3dd", "mission3_failed_retry2"}, -- It wasn't my fault. I was attacked!
 	}
 }
 dinge_convo_template:addScreen(mission3_failed);
 
 mission3_failed_retry1 = ConvoScreen:new {
 	id = "mission3_failed_retry1",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_54",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_b9c77549", -- That's what I want to hear. Now go!
 	stopConversation = "true",
 	animation = "point_away",
 	options = {}
@@ -443,7 +423,7 @@ dinge_convo_template:addScreen(mission3_failed_retry1);
 
 mission3_failed_retry2 = ConvoScreen:new {
 	id = "mission3_failed_retry2",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_58",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_7af03aab", -- I don't want to hear your excuses! Now get out there and complete the assignment!
 	stopConversation = "true",
 	animation = "cover_ears_mocking",
 	options = {}
@@ -478,7 +458,7 @@ mission4_offer = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "pound_fist_palm",
 	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_95", "mission4_accept"},
+		{"@conversation/naboo_privateer_trainer_1:s_7478cd28", "mission4_accept"}, -- Will you train me after this?
 	}
 }
 dinge_convo_template:addScreen(mission4_offer);
@@ -547,19 +527,9 @@ first_training = ConvoScreen:new {
 	leftDialog = "@conversation/naboo_privateer_trainer_1:s_5e36283d",
 	stopConversation = "false",
 	animation = "explain",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_139", "first_training_lesson"},
-	}
-}
-dinge_convo_template:addScreen(first_training);
-
-first_training_lesson = ConvoScreen:new {
-	id = "first_training_lesson",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_140",
-	stopConversation = "false",
 	options = {}
 }
-dinge_convo_template:addScreen(first_training_lesson);
+dinge_convo_template:addScreen(first_training);
 
 more_training = ConvoScreen:new {
 	id = "more_training",
@@ -570,49 +540,9 @@ more_training = ConvoScreen:new {
 }
 dinge_convo_template:addScreen(more_training);
 
-train_starships = ConvoScreen:new {
-	id = "train_starships",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_144",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_148", "trained_starships"},
-	}
-}
-dinge_convo_template:addScreen(train_starships);
-
-train_weapons = ConvoScreen:new {
-	id = "train_weapons",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_145",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_151", "trained_weapons"},
-	}
-}
-dinge_convo_template:addScreen(train_weapons);
-
-train_procedures = ConvoScreen:new {
-	id = "train_procedures",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_146",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_155", "trained_procedures"},
-	}
-}
-dinge_convo_template:addScreen(train_procedures);
-
-train_droid = ConvoScreen:new {
-	id = "train_droid",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_147",
-	stopConversation = "false",
-	options = {
-		{"@conversation/naboo_privateer_trainer_1:s_159", "trained_droid"},
-	}
-}
-dinge_convo_template:addScreen(train_droid);
-
 trained_starships = ConvoScreen:new {
 	id = "trained_starships",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_149",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
 	stopConversation = "true",
 	options = {}
 }
@@ -620,7 +550,7 @@ dinge_convo_template:addScreen(trained_starships);
 
 trained_weapons = ConvoScreen:new {
 	id = "trained_weapons",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_153",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
 	stopConversation = "true",
 	options = {}
 }
@@ -628,7 +558,7 @@ dinge_convo_template:addScreen(trained_weapons);
 
 trained_procedures = ConvoScreen:new {
 	id = "trained_procedures",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_157",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
 	stopConversation = "true",
 	options = {}
 }
@@ -636,7 +566,7 @@ dinge_convo_template:addScreen(trained_procedures);
 
 trained_droid = ConvoScreen:new {
 	id = "trained_droid",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_161",
+	leftDialog = "@conversation/naboo_privateer_trainer_1:s_cd72f93", -- Good choice.
 	stopConversation = "true",
 	options = {}
 }
@@ -653,7 +583,7 @@ duty_missions = ConvoScreen:new {
 		{"@conversation/naboo_privateer_trainer_1:s_6106187c", "what_is_duty"},
 		{"@conversation/naboo_privateer_trainer_1:s_e814cf37", "duty_options"},
 		{"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "duty_no_training"},
-		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "duty_not_now"},
+		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "not_ready"}, -- Not right now, thanks.
 	}
 }
 dinge_convo_template:addScreen(duty_missions);
@@ -666,7 +596,7 @@ what_is_duty = ConvoScreen:new {
 		{"@conversation/naboo_privateer_trainer_1:s_6106187c", "what_is_duty"},
 		{"@conversation/naboo_privateer_trainer_1:s_e814cf37", "duty_options"},
 		{"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "duty_no_training"},
-		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "duty_not_now"},
+		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "not_ready"}, -- Not right now, thanks.
 	}
 }
 dinge_convo_template:addScreen(what_is_duty);
@@ -679,18 +609,10 @@ duty_no_training = ConvoScreen:new {
 		{"@conversation/naboo_privateer_trainer_1:s_6106187c", "what_is_duty"},
 		{"@conversation/naboo_privateer_trainer_1:s_e814cf37", "duty_options"},
 		{"@conversation/naboo_privateer_trainer_1:s_db74ddc6", "duty_no_training"},
-		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "duty_not_now"},
+		{"@conversation/naboo_privateer_trainer_1:s_2883b989", "not_ready"}, -- Not right now, thanks.
 	}
 }
 dinge_convo_template:addScreen(duty_no_training);
-
-duty_not_now = ConvoScreen:new {
-	id = "duty_not_now",
-	leftDialog = "@conversation/naboo_privateer_trainer_1:s_138",
-	stopConversation = "true",
-	options = {}
-}
-dinge_convo_template:addScreen(duty_not_now);
 
 duty_options = ConvoScreen:new {
 	id = "duty_options",

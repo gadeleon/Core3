@@ -42,7 +42,7 @@ arkon_convo:addScreen(ConvoScreen:new {
 	id = "duty_info",
 	leftDialog = "@conversation/corellia_rebel_tier4:s_4bce8f6f",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_384", "s_386"},
+		{"@conversation/corellia_rebel_tier4:s_42880861", "s_386"}, -- Okay...
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
@@ -317,19 +317,19 @@ arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_9f50a13",
 	leftDialog = "@conversation/corellia_rebel_tier4:s_9f50a13",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_100", "mission1_accept_b"},
+		{"@conversation/corellia_rebel_tier4:s_9d0a2207", "mission1_accept_b"}, -- Should I target the Black Suns directly?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "mission1_accept_b",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_102",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_526ce515", -- Negative! They outgun YOU, too. Don't try to blast them to smithereens. Just hold them off long enough to give our mining vessels the time they need to escape.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_104", "s_106"},
+		{"@conversation/corellia_rebel_tier4:s_410d920c", "s_106"}, -- Alright, let's do this!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_106",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_106",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_a434ad25", -- One more thing Rebel. All the missions I provide you with will be high risk missions and might be too much to handle by yourself. If you have any favors you can call in, doing so during my missions might be a good idea.
 	stopConversation = "true",
 	options = {}
 })
@@ -343,29 +343,29 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_115",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_115",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_d98a6441", -- Apparently, the Black Suns are preparing to launch an assault on one of our mining interests in the Dathomir system.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_117", "s_119"},
+		{"@conversation/corellia_rebel_tier4:s_f5cc7cf3", "s_119"}, -- Can't the vessels defend themselves?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_119",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_119",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_c95dbd1", -- They're outgunned! So we need to help them out.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_121", "mission1_accept_c"},
+		{"@conversation/corellia_rebel_tier4:s_9d0a2207", "mission1_accept_c"}, -- Should I target the Black Suns directly?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "mission1_accept_c",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_123",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_526ce515", -- Negative! They outgun YOU, too. Don't try to blast them to smithereens. Just hold them off long enough to give our mining vessels the time they need to escape.
 	animation = "shake_head_no",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_125", "s_127"},
+		{"@conversation/corellia_rebel_tier4:s_410d920c", "s_127"}, -- Alright, let's do this!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_127",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_127",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_a434ad25", -- One more thing Rebel. All the missions I provide you with will be high risk missions and might be too much to handle by yourself. If you have any favors you can call in, doing so during my missions might be a good idea.
 	stopConversation = "true",
 	options = {}
 })
@@ -468,50 +468,50 @@ arkon_convo:addScreen(ConvoScreen:new {
 	leftDialog = "@conversation/corellia_rebel_tier4:s_d16ee99f",
 	animation = "explain",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_156", "s_158"},
+		{"@conversation/corellia_rebel_tier4:s_841d27db", "s_158"}, -- Why?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_158",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_158",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_900f01d1", -- What?
 	animation = "listen",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_160", "s_162"},
+		{"@conversation/corellia_rebel_tier4:s_c985b91", "s_162"}, -- I said, 'Why?'
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_162",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_162",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_d6f2e64d", -- What am I, a mind reader? They're probably concerned about Alliance attacks.
 	animation = "shrug_shoulders",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_164", "s_166"},
+		{"@conversation/corellia_rebel_tier4:s_29544149", "s_166"}, -- Then why send an Inquisitor?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_166",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_166",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_f59d9106", -- Well, %TU, think about it. The Empire needs to know what the Alliance is planning. And no one is better at gathering information than an Inquisitor.
 	animation = "rub_chin_thoughtful",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_168", "s_170"},
+		{"@conversation/corellia_rebel_tier4:s_37e345fe", "s_170"}, -- Have you ever seen an Inquisitor up close?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_170",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_170",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_9a01b8f2", -- Once...a long, long time ago. Let's not talk about it right now. I want you to kill that Inquisitor before he reaches the Imperial fleet in Dathomir.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_172", "mission2_accept_b"},
+		{"@conversation/corellia_rebel_tier4:s_eb1c3d4e", "mission2_accept_b"}, -- Are you crazy? No one can kill an Inquisitor!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "mission2_accept_b",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_174",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_f3603d67", -- Don't talk back to me, junior! And don't be ridiculous! The Inquisitors are mortal, like the rest of us. Believe me, they CAN be killed. I know that for a fact. Now I want you to get out there, immediately!
 	animation = "point_accusingly",
 	stopConversation = "true",
 	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_178",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_178",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_900f01d1", -- What?
 	animation = "listen",
 	options = {
 		{"@conversation/corellia_rebel_tier4:s_3b95cf2f", "s_ff9fae78"},
@@ -624,30 +624,30 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_207",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_207",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_8cac3c56", -- I thought you would! Now you don't have to take the whole base apart. You're just going to pave the way for an Alliance B-Wing squadron. They've had their sights set on this base for a while.
 	animation = "explain",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_209", "s_211"},
+		{"@conversation/corellia_rebel_tier4:s_98199797", "s_211"}, -- Why is the Alliance sending pirates? This sounds like strictly a Rebel operation.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_211",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_211",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_1bb2f893", -- They're using my men because they know every inch of Dathomir space. They'll run rings around those Imperials. I suggest you follow their every move. I trained them all myself.
 	animation = "tap_head",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_213", "mission3_accept_b"},
+		{"@conversation/corellia_rebel_tier4:s_7ae51280", "mission3_accept_b"}, -- You did?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "mission3_accept_b",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_215",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_11769c29", -- Sure! I wasn't ALWAYS an old man, you know. I used to have a few more marbles rolling around upstairs. Now go on; get out of here.
 	animation = "wave_on_dismissing",
 	stopConversation = "true",
 	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_220",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_220",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_ff9fae78", -- What kind of question is that?
 	options = {
 		{"@conversation/corellia_rebel_tier4:s_b45dc260", "s_268606ba"},
 	}
@@ -677,37 +677,37 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_229",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_229",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_882e7ab9", -- Well, the Empire has no idea what the Alliance has planned, thanks to you.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_231", "s_233"},
+		{"@conversation/corellia_rebel_tier4:s_d06c9b96", "s_233"}, -- Even I don't know what the Alliance has planned.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_233",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_233",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_a6e1a5f4", -- That's because it's top secret! In the meantime, let's keep gunning for the Empire. You're going to Dathomir. I want you to join some of my men on a guerilla strike against an Imperial base.
 	animation = "explain",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_235", "s_237"},
+		{"@conversation/corellia_rebel_tier4:s_bed0dfe7", "s_237"}, -- I like that!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_237",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_237",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_8cac3c56", -- I thought you would! Now you don't have to take the whole base apart. You're just going to pave the way for an Alliance B-Wing squadron. They've had their sights set on this base for a while.
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_239", "s_241"},
+		{"@conversation/corellia_rebel_tier4:s_98199797", "s_241"}, -- Why is the Alliance sending pirates? This sounds like strictly a Rebel operation.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_241",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_241",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_1bb2f893", -- They're using my men because they know every inch of Dathomir space. They'll run rings around those Imperials. I suggest you follow their every move. I trained them all myself.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_243", "mission3_accept_c"},
+		{"@conversation/corellia_rebel_tier4:s_7ae51280", "mission3_accept_c"}, -- You did?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "mission3_accept_c",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_245",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_11769c29", -- Sure! I wasn't ALWAYS an old man, you know. I used to have a few more marbles rolling around upstairs. Now go on; get out of here.
 	animation = "wave_on_dismissing",
 	stopConversation = "true",
 	options = {}
@@ -793,7 +793,7 @@ arkon_convo:addScreen(ConvoScreen:new {
 	leftDialog = "@conversation/corellia_rebel_tier4:s_8762aa6e",
 	animation = "tap_head",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_272", "s_b1f1f364"},
+		{"@conversation/corellia_rebel_tier4:s_77e48d5b", "s_b1f1f364"}, -- What do you mean?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
@@ -809,117 +809,89 @@ arkon_convo:addScreen(ConvoScreen:new {
 	leftDialog = "@conversation/corellia_rebel_tier4:s_dbcde2d3",
 	animation = "pound_fist_chest",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_277", "s_279"},
+		{"@conversation/corellia_rebel_tier4:s_99d3b4fd", "s_279"}, -- What have you got for me?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_279",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_279",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_50669846", -- Apparently, the Empire's had just about enough of our activities in the area. I don't know who they hate more, smugglers or Rebels.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_281", "s_283"},
+		{"@conversation/corellia_rebel_tier4:s_9a626852", "s_283"}, -- Same difference to them.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_283",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_283",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_e93fce3e", -- You're probably right, %NU. We've received word that they're planning to build a space station in the Lok system. They'll use it to monitor all the activity in the area.
 	animation = "rub_chin_thoughtful",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_285", "s_287"},
+		{"@conversation/corellia_rebel_tier4:s_53544796", "s_287"}, -- Sounds like a problem.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_287",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_287",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_b607bb2e", -- Yep. A BIG one. We can't let them build that station. So here's the plan! We're going to destroy the station components while they're en route to Lok.
 	animation = "nod_head_once",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_289", "s_291"},
+		{"@conversation/corellia_rebel_tier4:s_8729f60e", "s_291"}, -- Smart.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_291",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_291",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_31fd5acf", -- Of course it's smart! It was my idea. Now listen up. Your first objective is to find out what route those Imperial freighters plan to use.
 	animation = "tap_head",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_293", "s_295"},
+		{"@conversation/corellia_rebel_tier4:s_a9e4fd02", "s_295"}, -- How do I do that?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_295",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_295",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_127f2e23", -- You're going to kidnap one of their technical supervisors. He knows the plan. And pretty soon, you'll know the plan as well!
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_297", "mission4_accept_b"},
+		{"@conversation/corellia_rebel_tier4:s_69a739e6", "mission4_accept_b"}, -- Where do I find this guy?
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "mission4_accept_b",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_299",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_abf08a18", -- Check your ship's computer. All the information you need is there. Good luck.
 	stopConversation = "true",
 	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
-	id = "train_starships",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_422",
-	options = {
-		{"@conversation/corellia_rebel_tier4:s_426", "trained_starships"},
-	}
-})
-arkon_convo:addScreen(ConvoScreen:new {
-	id = "train_weapons",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_423",
-	options = {
-		{"@conversation/corellia_rebel_tier4:s_428", "trained_weapons"},
-	}
-})
-arkon_convo:addScreen(ConvoScreen:new {
-	id = "train_procedures",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_424",
-	options = {
-		{"@conversation/corellia_rebel_tier4:s_432", "trained_procedures"},
-	}
-})
-arkon_convo:addScreen(ConvoScreen:new {
-	id = "train_droid",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_425",
-	options = {
-		{"@conversation/corellia_rebel_tier4:s_434", "trained_droid"},
-	}
-})
-arkon_convo:addScreen(ConvoScreen:new {
 	id = "trained_starships",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_427",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_66d4c0f2", -- You don't have to shout! I've never seen anybody so excited about starships.
+	options = {
+		{"@conversation/corellia_rebel_tier4:s_2efd90c2", "trained_starships_end"}, -- I didn't shout!
+	}
+})
+arkon_convo:addScreen(ConvoScreen:new {
+	id = "trained_starships_end",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_ecfe38f9", -- Oh! Well, here you go. Bye now!
 	stopConversation = "true",
 	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "trained_weapons",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_429",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_7d2fc507", -- Say please!
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_430", "s_431"},
+		{"@conversation/corellia_rebel_tier4:s_69020482", "trained_weapons_end"}, -- I did!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
-	id = "s_431",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_431",
+	id = "trained_weapons_end",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_650af8ec", -- Don't tell ME what you did! Now go on, make yourself useful!
 	stopConversation = "true",
 	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "trained_procedures",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_433",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_62c873d4", -- Are you sure? Well too late it's yours now! Haha I'm just teasing you! That is a fine skill... for a NERF-HERDER! Now go on, get out of here!
 	stopConversation = "true",
 	options = {}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "trained_droid",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_435",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_ba9df4a6", -- Oh all right. Here you go. Now go away and stop bothering me.
 	animation = "giveup",
-	options = {
-		{"@conversation/corellia_rebel_tier4:s_436", "s_437"},
-	}
-})
-arkon_convo:addScreen(ConvoScreen:new {
-	id = "s_437",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_437",
 	stopConversation = "true",
 	options = {}
 })
@@ -959,8 +931,8 @@ arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_fc6dfba9",
 	leftDialog = "@conversation/corellia_rebel_tier4:s_fc6dfba9",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_325", "s_58e80738"},
-		{"@conversation/corellia_rebel_tier4:s_345", "s_347"},
+		{"@conversation/corellia_rebel_tier4:s_d9cced1f", "s_58e80738"}, -- Absolutely.
+		{"@conversation/corellia_rebel_tier4:s_73313039", "s_347"}, -- Really, I just want to work.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
@@ -972,9 +944,9 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_347",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_347",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_28d914fc", -- Well listen up. We are dealing with several situations here, and I'd like to see what you can do. First of all, the Black Suns have been taking a lot of business from us lately. Nym doesn't like it. We need a pilot to send them a message. A LOUD message. Heh!
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_349", "s_351"},
+		{"@conversation/corellia_rebel_tier4:s_42880861", "s_351"}, -- Okay...
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
@@ -1008,7 +980,7 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_337",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_337",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_dc241019", -- What'd you say?
 	animation = "listen",
 	options = {
 		{"@conversation/corellia_rebel_tier4:s_539f9a2e", "s_e3e480fe"},
@@ -1066,45 +1038,45 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_351",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_351",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_dc241019", -- What'd you say?
 	animation = "listen",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_353", "s_355"},
+		{"@conversation/corellia_rebel_tier4:s_48529763", "s_355"}, -- I said, 'Okay'!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_355",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_355",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_f13513cd", -- Hmph! Well here's some good news. One of our men has raided an Imperial outpost on Dathomir and he walked away with plenty of loot. Now all he has to do is escape! Easier said than done, of course, as the Empire wants their things back. So you could escort our man out of Dathomir...
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_357", "s_359"},
+		{"@conversation/corellia_rebel_tier4:s_c3363bcd", "s_359"}, -- Uh huh.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_359",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_359",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_dc241019", -- What'd you say?
 	animation = "listen",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_361", "s_363"},
+		{"@conversation/corellia_rebel_tier4:s_539f9a2e", "s_363"}, -- Nothing!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_363",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_363",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_e3e480fe", -- Don't smart off to me!
 	animation = "threaten",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_365", "s_367"},
+		{"@conversation/corellia_rebel_tier4:s_7e602d1b", "s_367"}, -- I'm not!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_367",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_367",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_6429f86b", -- Here's some MORE good news. Another group of our men infiltrated a number of Imperial troop transports in the Endor system. But they can't take control of those ships - not yet. First we need a pilot to disable the transport controls. This requires a pilot with skills.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_369", "s_371"},
+		{"@conversation/corellia_rebel_tier4:s_8e9d0848", "s_371"}, -- [nod]
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_371",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_371",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_9bbb9999", -- Hm, what else is there? Oh yes...you'll like this, it's a Rebel rescue mission! A Rebel fleet was carrying several scientists through the Dantooine system, they were ambushed by Imperial fighters! That's not right. I want a pilot to get out there and help those ships escape before more Imperial ships arrive! And that's it! So what's it going to be, junior?
 	options = {
 		{"@conversation/corellia_rebel_tier4:s_647ad2bc", "duty_destroy"},
 		{"@conversation/corellia_rebel_tier4:s_d9116b4d", "duty_escort"},
@@ -1115,45 +1087,45 @@ arkon_convo:addScreen(ConvoScreen:new {
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_386",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_386",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_dc241019", -- What'd you say?
 	animation = "listen",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_388", "s_390"},
+		{"@conversation/corellia_rebel_tier4:s_48529763", "s_390"}, -- I said, 'Okay'!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_390",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_390",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_f13513cd", -- Hmph! Well here's some good news. One of our men has raided an Imperial outpost on Dathomir and he walked away with plenty of loot. Now all he has to do is escape! Easier said than done, of course, as the Empire wants their things back. So you could escort our man out of Dathomir...
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_392", "s_394"},
+		{"@conversation/corellia_rebel_tier4:s_c3363bcd", "s_394"}, -- Uh huh.
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_394",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_394",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_dc241019", -- What'd you say?
 	animation = "listen",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_396", "s_398"},
+		{"@conversation/corellia_rebel_tier4:s_539f9a2e", "s_398"}, -- Nothing!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_398",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_398",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_e3e480fe", -- Don't smart off to me!
 	animation = "threaten",
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_400", "s_402"},
+		{"@conversation/corellia_rebel_tier4:s_7e602d1b", "s_402"}, -- I'm not!
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_402",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_402",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_6429f86b", -- Here's some MORE good news. Another group of our men infiltrated a number of Imperial troop transports in the Endor system. But they can't take control of those ships - not yet. First we need a pilot to disable the transport controls. This requires a pilot with skills.
 	options = {
-		{"@conversation/corellia_rebel_tier4:s_404", "s_406"},
+		{"@conversation/corellia_rebel_tier4:s_8e9d0848", "s_406"}, -- [nod]
 	}
 })
 arkon_convo:addScreen(ConvoScreen:new {
 	id = "s_406",
-	leftDialog = "@conversation/corellia_rebel_tier4:s_406",
+	leftDialog = "@conversation/corellia_rebel_tier4:s_9bbb9999", -- Hm, what else is there? Oh yes...you'll like this, it's a Rebel rescue mission! A Rebel fleet was carrying several scientists through the Dantooine system, they were ambushed by Imperial fighters! That's not right. I want a pilot to get out there and help those ships escape before more Imperial ships arrive! And that's it! So what's it going to be, junior?
 	options = {
 		{"@conversation/corellia_rebel_tier4:s_647ad2bc", "duty_destroy"},
 		{"@conversation/corellia_rebel_tier4:s_d9116b4d", "duty_escort"},

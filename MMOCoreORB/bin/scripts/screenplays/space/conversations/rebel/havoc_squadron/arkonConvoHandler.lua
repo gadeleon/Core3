@@ -49,13 +49,13 @@ arkonConvoHandler.TRAINED_SCREENS = {
 	trained_droid = "pilot_rebel_navy_droid_04",
 }
 
--- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order.
--- The replies are the skill names.
+-- Pre-NGE free choice of the next skill: { skill, reply, acknowledgment screen }, in SWG order.
+-- The replies are Arkon's pre-NGE client lines (space-convo-client-strings-arkon).
 arkonConvoHandler.TRAIN_CHOICES = {
-	{ "pilot_rebel_navy_starships_04", "@skl_n:pilot_rebel_navy_starships_04", "train_starships" },
-	{ "pilot_rebel_navy_weapons_04", "@skl_n:pilot_rebel_navy_weapons_04", "train_weapons" },
-	{ "pilot_rebel_navy_procedures_04", "@skl_n:pilot_rebel_navy_procedures_04", "train_procedures" },
-	{ "pilot_rebel_navy_droid_04", "@skl_n:pilot_rebel_navy_droid_04", "train_droid" }
+	{ "pilot_rebel_navy_starships_04", "@conversation/corellia_rebel_tier4:s_2a5db9a8", "trained_starships" },
+	{ "pilot_rebel_navy_weapons_04", "@conversation/corellia_rebel_tier4:s_77758001", "trained_weapons" },
+	{ "pilot_rebel_navy_procedures_04", "@conversation/corellia_rebel_tier4:s_6065ab8b", "trained_procedures" },
+	{ "pilot_rebel_navy_droid_04", "@conversation/corellia_rebel_tier4:s_f819adf9", "trained_droid" }
 }
 
 arkonConvoHandler.MET_SUFFIX = "HavocSquadronScreenplay:StartedArkon"

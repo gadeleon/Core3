@@ -42,14 +42,6 @@ imlerConvoHandler.DUTY_SCREENS = {
 	duty_rescue = "TIER4_QUEST_STRING_DUTY_4",
 }
 
--- Training screens: the skill bought when the player chooses the option on them
-imlerConvoHandler.TRAIN_SCREENS = {
-	train_starships = "pilot_neutral_starships_04",
-	train_weapons = "pilot_neutral_weapons_04",
-	train_procedures = "pilot_neutral_procedures_04",
-	train_droid = "pilot_neutral_droid_04",
-}
-
 imlerConvoHandler.MET_SUFFIX = "RsfSquadronScreenplay:StartedImler"
 imlerConvoHandler.READY_SUFFIX = "RsfSquadronScreenplay:readyForTier4Mission"
 
@@ -57,13 +49,14 @@ imlerConvoHandler.READY_SUFFIX = "RsfSquadronScreenplay:readyForTier4Mission"
 imlerConvoHandler.NOT_MY_TRACK_OPTION = "@conversation/naboo_privateer_tier4:s_c1ff5062"
 imlerConvoHandler.READY_MISSION_OPTION = "@conversation/naboo_privateer_tier4:s_39e697de"
 
--- Pre-NGE free choice of the next skill: { skill, reply, purchase screen }, in SWG order.
--- The replies are Turoldine's tier 4 replies (same four skills).
+-- Pre-NGE free choice of the next skill: { skill, reply, static link }, in SWG order.
+-- The replies are Imler's pre-NGE client lines (space-convo-client-strings-imler-a). getNextConversationScreen
+-- identifies the choice by its reply, buys the skill and picks the mission brief; the link is only the static default.
 imlerConvoHandler.TRAIN_CHOICES = {
-	{ "pilot_neutral_starships_04", "@conversation/corellia_privateer_tier4:s_2794eddd", "train_starships" },
-	{ "pilot_neutral_weapons_04", "@conversation/corellia_privateer_tier4:s_e16cb1fa", "train_weapons" },
-	{ "pilot_neutral_procedures_04", "@conversation/corellia_privateer_tier4:s_291ab969", "train_procedures" },
-	{ "pilot_neutral_droid_04", "@conversation/corellia_privateer_tier4:s_bc944dc4", "train_droid" }
+	{ "pilot_neutral_starships_04", "@conversation/naboo_privateer_tier4:s_ada4db16", "mission1_brief" }, -- Teach me about exotic vessels.
+	{ "pilot_neutral_weapons_04", "@conversation/naboo_privateer_tier4:s_25506b23", "mission1_brief" }, -- Teach me about heavy starship component use.
+	{ "pilot_neutral_procedures_04", "@conversation/naboo_privateer_tier4:s_fd7e4ac8", "mission1_brief" }, -- Teach me about expert techniques.
+	{ "pilot_neutral_droid_04", "@conversation/naboo_privateer_tier4:s_1813de4d", "mission1_brief" } -- Teach me about droid intelligence theory.
 }
 
 -- Quest globals are named <type>_<name>; they are looked up at call time.
@@ -238,13 +231,36 @@ function imlerConvoHandler:getLastScreenID(pPlayer)
 	return LuaConversationScreen(pLastScreen):getScreenID()
 end
 
--- Choosing the option on a train_<x> screen buys the skill, then the screen follows the number of
--- tier 4 skills held after the purchase
+-- Choosing a skill's reply on ready_train buys the skill (once), then the pilot is briefed on the mission the
+-- new skill count unlocks (pre-NGE one click: the choice reply, then the mission brief)
 function imlerConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, selectedOption, pNpc)
-	local skill = self.TRAIN_SCREENS[self:getLastScreenID(pPlayer) or ""]
+	if (self:getLastScreenID(pPlayer) ~= "ready_train") then
+		return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+	end
+
+	-- The skill is the one whose reply the pilot picked on the live (cloned) screen
+	local chosen = nil
+	local convSession = CreatureObject(pPlayer):getConversationSession()
+
+	if (convSession ~= nil) then
+		local pLastScreen = LuaConversationSession(convSession):getLastConversationScreen()
+
+		if (pLastScreen ~= nil) then
+			chosen = LuaConversationScreen(pLastScreen):getOptionText(selectedOption)
+		end
+	end
+
+	local skill = nil
+
+	for _, choice in ipairs(self.TRAIN_CHOICES) do
+		if (choice[2] == chosen) then
+			skill = choice[1]
+			break
+		end
+	end
 
 	if (skill == nil) then
-		return conv_handler.getNextConversationScreen(self, pConvTemplate, pPlayer, selectedOption, pNpc)
+		return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	end
 
 	if (not CreatureObject(pPlayer):hasSkill(skill) and SpaceHelpers:hasExperienceForTraining(pPlayer, 4)) then
@@ -262,10 +278,10 @@ function imlerConvoHandler:getNextConversationScreen(pConvTemplate, pPlayer, sel
 	end
 
 	local skillCount = SpaceHelpers:getPilotTierSkillCount(pPlayer, "neutral", 4)
-	local nextScreen = "trained_mission1"
+	local nextScreen = "mission1_brief"
 
 	if (skillCount >= 2 and skillCount <= 4) then
-		nextScreen = "trained_mission" .. skillCount
+		nextScreen = "mission" .. skillCount .. "_brief"
 	end
 
 	return LuaConversationTemplate(pConvTemplate):getScreen(nextScreen)
@@ -344,7 +360,8 @@ function imlerConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 			end
 		end
 
-	elseif (string.match(screenID, "^trained_mission%d$") ~= nil) then
+	-- A mission brief (after training or from ready_mission): the pilot is ready for that mission
+	elseif (string.match(screenID, "^mission%d_brief$") ~= nil) then
 		setQuestStatus(self:flagKey(pPlayer, self.READY_SUFFIX), 1)
 
 	elseif (screenID == "duty_info") then

@@ -193,12 +193,9 @@ function TestRheaMaybeGreat:setUp()
 	H.reset()
 end
 
--- AC-11: only the two deferred i_need_to links remain
-function TestRheaMaybeGreat:test_the_template_only_reports_the_deferred_i_need_to_links()
-	lu.assertEquals(H.conversationProblems("rhea_convo_template"), {
-		"screen 'thank_you' option 2 links to missing screen 'i_need_to'",
-		"screen 'yes_ship' option 2 links to missing screen 'i_need_to'",
-	}, "rhea_convo_template")
+-- AC-11 (superseded by space-trainer-dead-ends AC-10: the i_need_to screen now exists, so no problems remain)
+function TestRheaMaybeGreat:test_the_template_reports_no_problems_since_i_need_to_exists()
+	lu.assertEquals(H.conversationProblems("rhea_convo_template"), {}, "rhea_convo_template")
 end
 
 -- AC-11

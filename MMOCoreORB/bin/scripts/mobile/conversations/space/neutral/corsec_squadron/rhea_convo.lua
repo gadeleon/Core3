@@ -40,7 +40,7 @@ non_corsec_pilot = ConvoScreen:new {
 	stopConversation = "false",
 	animation = "point_accusingly",
 	options = {
-		{"@conversation/corellia_privateer_trainer:s_c1ff5062", "not_corsec_duty_missions"}, -- I'm looking for a mission. Do you have any?
+		{"@conversation/corellia_privateer_trainer:s_c1ff5062", "no_missions"}, -- I'm looking for a mission. Do you have any?
 	}
 }
 rhea_convo_template:addScreen(non_corsec_pilot);
@@ -566,8 +566,13 @@ not_corsec_duty_missions = ConvoScreen:new {
 	id = "not_corsec_duty_missions",
 	leftDialog = "@conversation/corellia_privateer_trainer:s_dadaabf", -- As a matter of fact, I do have some duty missions that you could perform. Who knows, maybe if you do well, you might be invited to join the CorSec. Are you ready for a duty mission?
 	animation = "nod_head_once",
-	stopConversation = "true",
-	options = {}
+	stopConversation = "false",
+	options = {
+		{"@conversation/corellia_privateer_trainer:s_6106187c", "what_is_duty"}, -- What is a duty mission?
+		{"@conversation/corellia_privateer_trainer:s_1a7f1a1b", "what_missions"}, -- Yes I am. What duty missions are available?
+		{"@conversation/corellia_privateer_trainer:s_6276c98", "about_training"}, -- No, but how about some training?
+		{"@conversation/corellia_privateer_trainer:s_2883b989", "not_right_now"}, -- Not right now, thanks.
+	}
 }
 rhea_convo_template:addScreen(not_corsec_duty_missions);
 
@@ -576,6 +581,14 @@ rhea_convo_template:addScreen(not_corsec_duty_missions);
 	Conversation Enders
 
 ]]
+
+i_need_to = ConvoScreen:new {
+	id = "i_need_to",
+	leftDialog = "@conversation/corellia_privateer_trainer:s_c697d2d5", -- Certainly. Just come speak with me again when you're ready.
+	stopConversation = "true",
+	options = {}
+}
+rhea_convo_template:addScreen(i_need_to);
 
 no_missions = ConvoScreen:new {
 	id = "no_missions",

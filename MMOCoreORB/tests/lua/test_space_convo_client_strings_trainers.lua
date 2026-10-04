@@ -137,15 +137,11 @@ function TestF1RheaTemplate:test_ridiculous_and_ridiculous_great_offer_yes_i_am_
 	end
 end
 
--- AC-5
-function TestF1RheaTemplate:test_the_template_still_reports_only_the_two_deferred_i_need_to_links()
+-- AC-5 (superseded by space-trainer-dead-ends AC-10: the two deferred i_need_to links now resolve)
+function TestF1RheaTemplate:test_the_template_reports_no_dead_links_since_i_need_to_exists()
 	local problems = H.conversationProblems("rhea_convo_template")
 
-	lu.assertEquals(#problems, 2, "rhea_convo_template problems: " .. table.concat(problems, " | "))
-
-	for _, p in ipairs(problems) do
-		lu.assertStrContains(p, "i_need_to")
-	end
+	lu.assertEquals(problems, {}, "rhea_convo_template problems: " .. table.concat(problems, " | "))
 end
 
 ---------------------------------------------------------------------------------------------

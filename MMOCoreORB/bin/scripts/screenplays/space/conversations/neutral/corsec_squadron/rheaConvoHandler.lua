@@ -1,4 +1,4 @@
--- Sgt. Rhea (CorSec tier 1) conversation handler; ported from SWG-Source corellia_privateer_trainer.java. Chain retry/won-check routing: feature space-trainer-fixes.
+-- Sgt. Rhea (CorSec tier 1) conversation handler; ported from SWG-Source corellia_privateer_trainer.java. Chain retry/won-check routing: feature space-trainer-fixes. Off-track duty gate (canFlyNonTrackDuty) and offer: feature space-trainer-dead-ends.
 rheaConvoHandler = conv_handler:new {}
 
 function rheaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -154,6 +154,22 @@ function rheaConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	return convoTemplate:getScreen("no_jtl")
 end
 
+function rheaConvoHandler:isOnMission(pPlayer)
+	local c = CorsecSquadronScreenplay
+
+	return SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_privateer_1")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.QUEST_STRING_2.type, c.QUEST_STRING_2.name)
+		or SpaceHelpers:isSpaceQuestChainActive(pPlayer, "patrol_corellia_privateer_3")
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.QUEST_STRING_4.type, c.QUEST_STRING_4.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.QUEST_STRING_DUTY_4_1.type, c.QUEST_STRING_DUTY_4_1.name)
+		or SpaceHelpers:isSpaceQuestActive(pPlayer, c.QUEST_STRING_DUTY_4_2.type, c.QUEST_STRING_DUTY_4_2.name)
+end
+
+-- SWG canFlyNonTrackDuty: any tier 1 neutral pilot skill and no space quest
+function rheaConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasPilotTierSkill(pPlayer, "neutral", 1) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
+end
+
 function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
 	if (pPlayer == nil or pConvScreen == nil) then
 		return
@@ -180,6 +196,11 @@ function rheaConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, select
 
 	if (ghost == nil) then
 		return pClonedScreen
+	end
+
+	if (screenID == "non_corsec_pilot") then
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/corellia_privateer_trainer:s_c1ff5062", self:canFlyNonTrackDuty(pPlayer) and "not_corsec_duty_missions" or "no_missions") -- I'm looking for a mission. Do you have any?
 	end
 
 	-- Handle additional training

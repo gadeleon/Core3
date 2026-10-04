@@ -389,6 +389,14 @@ non-zero for a zero-length (deleted) newest entry, naming the archive, or for a 
 nothing but the `.sids` fixtures. Never edit a fixture by hand. `test_space_convo_client_strings.lua` runs `--check` (and its negative cases on a temp copy)
 when `/tre/patch_12_00.tre` and `python3` exist, and skips with a message otherwise.
 
+### CorSec trainer dead ends (space-trainer-dead-ends)
+
+`space_trainer_dead_ends_data.lua` (not a test file) holds the spec literals (off-track menus, the quests that close each gate, the client text) and the
+builders: `D.pilot{skills, squadron, active, complete, datapad = "duty"|"story"}` is a neutral pilot from another squadron, `D.converse`, `D.pairsOf(step)`,
+`D.loadAllTemplates()` (every space template through `space_conversations.lua`). `test_space_trainer_dead_ends_{rhea,rikkh,templates}.lua` drive the
+off-track gate of Rhea (any one tier 1 skill) and Rikkh (all four), the refusals, the duties, `i_need_to`, the dead-link sweep and the answer keys
+(`fixtures/script/conversation/corellia_privateer_trainer_2.java` is a byte copy of SWG-Source).
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file
@@ -430,10 +438,9 @@ continues the record above (e.g. one `navPoints` value per row).
 
 Found by these tests and pinned so the gate stays green; fix them in a feature, then update the test:
 
-- **CorSec / Sgt. Rhea** (`rhea_convo.lua`): the option "I need to take care of some things first."
-  (`i_need_to`, on `thank_you` and `yes_ship`) links to a screen that is never added, so choosing it restarts the
-  conversation. Pinned in `test_example_rhea_conversation.lua`. Rikkh `non_corsec_missions` and Ramna's duplicate
-  `go_back_get_some` are the other known template defects (space-trainer-fixes findings F-2).
+- Ramna's duplicate `go_back_get_some` is a known template defect (space-trainer-fixes findings F-2). Rhea's `i_need_to` and Rikkh's
+  `non_corsec_missions` dead links are fixed by space-trainer-dead-ends. Dead links also remain in `gil_burtin_convo_template` (5),
+  `spacestation_dathomir_convotemplate` (1) and `spacestation_yavin4_convotemplate` (3); `test_space_trainer_dead_ends_templates.lua` skips those three.
 
 ## Layout
 

@@ -1,4 +1,4 @@
--- Rikkh (CorSec tier 2) conversation handler; ported from SWG-Source corellia_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes.
+-- Rikkh (CorSec tier 2) conversation handler; ported from SWG-Source corellia_privateer_trainer_2.java. Chain retry/won-check routing: feature space-trainer-fixes. Off-track duty gate (canFlyNonTrackDuty) and offer: feature space-trainer-dead-ends.
 rikkhConvoHandler = conv_handler:new {}
 
 function rikkhConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
@@ -137,6 +137,26 @@ function rikkhConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	return convoTemplate:getScreen("here_for_work")
 end
 
+function rikkhConvoHandler:isOnMission(pPlayer)
+	local c = CorsecSquadronScreenplay
+
+	for i = 1, 4 do
+		local quest = c["TIER2_QUEST_STRING_" .. i]
+		local duty = c["TIER2_QUEST_STRING_DUTY_" .. i]
+
+		if (SpaceHelpers:isSpaceQuestActive(pPlayer, quest.type, quest.name) or SpaceHelpers:isSpaceQuestActive(pPlayer, duty.type, duty.name)) then
+			return true
+		end
+	end
+
+	return false
+end
+
+-- SWG canFlyNonTrackDuty: all four tier 1 skills and no space quest
+function rikkhConvoHandler:canFlyNonTrackDuty(pPlayer)
+	return SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 1) and not self:isOnMission(pPlayer) and not SpaceHelpers:hasSpaceQuest(pPlayer)
+end
+
 function rikkhConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, pConvScreen)
 	if (pPlayer == nil or pConvScreen == nil) then
 		return
@@ -164,6 +184,11 @@ function rikkhConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selec
 
 	if (ghost == nil) then
 		return pClonedScreen
+	end
+
+	if (screenID == "pilot_not_corsec") then
+		clonedConversation:removeAllOptions()
+		clonedConversation:addOption("@conversation/corellia_privateer_trainer_2:s_b978843d", self:canFlyNonTrackDuty(pPlayer) and "non_corsec_duty_options" or "non_corsec_missions") -- I'm looking for a mission. Do you have anything I can do?
 	end
 
 	if (screenID == "ready_train_pilot") then

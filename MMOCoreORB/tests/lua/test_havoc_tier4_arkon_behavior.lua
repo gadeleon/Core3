@@ -8,6 +8,8 @@
 local lu = require("luaunit")
 local H = require("harness")
 local D = require("havoc_tier4_data")
+local DS = require("havoc_tier4_arkon_client_strings_data") -- space-convo-client-strings-arkon: Appendix A twin table
+local FC = require("havoc_tier4_arkon_free_choice_data")
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -144,13 +146,26 @@ local function setComplete(player, keys)
 	end
 end
 
+-- The pre-NGE id the client shows for an SWG (A4) id (space-convo-client-strings-arkon): the 78 NGE-numbered lines are shown as their twins
+local function twin(sid)
+	return DS.TWIN[sid] or sid
+end
+
 -- Option sids that lead from the NPC line shown by screen id `fromId` to the one shown by `toId`
--- (BFS over the SWG java graph, so every conditional successor counts as reachable).
+-- (BFS over the SWG java graph, so every conditional successor counts as reachable). The java names the NGE-numbered replies; Core3 shows their twins,
+-- so every step goes through the twin table (space-convo-client-strings-arkon; the shape of the walk is unchanged).
 local function pathBetween(fromId, toId)
 	local path = GRAPH.pathTo(D.SCREENS[fromId] or fromId, D.SCREENS[toId] or toId)
 
 	lu.assertNotNil(path, "answer key: no option path from " .. fromId .. " to " .. toId)
-	return path
+
+	local out = {}
+
+	for i, sid in ipairs(path) do
+		out[i] = twin(sid)
+	end
+
+	return out
 end
 
 local function concat(...)
@@ -650,26 +665,26 @@ local TRAINED = {
 	{ "droid", { "starships", "weapons", "procedures" }, "trained_droid" },
 }
 
--- Choices that walk ready_train -> trained_<x>, with an optional hook just before the last choice.
--- (path[1] is SWG's s_421; under havoc-tier4-arkon-free-choice the pick is the skill-name reply.)
+-- Choices that walk ready_train -> trained_<x>, with an optional hook just before the pick (space-convo-client-strings-arkon D-2: one click).
+-- The pick is the pilot's choice of the skill of the target screen, Arkon's pre-NGE reply "I would like <skill>, please." (D-10); the grant happens when
+-- trained_<x> is displayed, so a hook before the pick changes the state the grant sees.
 local function trainingChoices(screen, hook)
-	local path = pathBetween("ready_train", screen)
-	local choices = {}
+	local x = screen:match("^trained_(%a+)$")
+	local reply
 
-	for i, sid in ipairs(path) do
-		if i == #path and hook then
-			choices[#choices + 1] = hook
+	for _, c in ipairs(FC.CHOICES) do
+		if c.x == x then
+			reply = c.reply
 		end
-
-		-- havoc-tier4-arkon-free-choice: the first reply is the pilot's pick of the skill of the target screen, not SWG's s_421
-		if i == 1 then
-			sid = "@skl_n:pilot_rebel_navy_" .. screen:match("^trained_(%a+)$") .. "_04"
-		end
-
-		choices[#choices + 1] = sid
 	end
 
-	return choices
+	lu.assertNotNil(reply, "choice reply of " .. screen)
+
+	if hook then
+		return { hook, reply }
+	end
+
+	return { reply }
 end
 
 for _, row in ipairs(TRAINED) do
@@ -793,9 +808,7 @@ for _, menu in ipairs(MENUS) do
 				local rec = spyAllQuests()
 				local player = build()
 				local begin = startOverride or startScreen
-				local path = GRAPH.pathTo(D.SCREENS[begin], menuSid)
-
-				lu.assertNotNil(path, "answer key: no path from " .. begin .. " to " .. menuSid)
+				local path = pathBetween(begin, menuSid)
 
 				local transcript = converse(player, concat(path, { duty.option }, zeros(3)))
 				local menuShown = transcript[#path + 1]

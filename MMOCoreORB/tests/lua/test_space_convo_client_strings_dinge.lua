@@ -127,13 +127,15 @@ function TestF2DingeStaticUnresolved:test_dinge_template_and_handler_show_only_c
 end
 
 -- AC-1: Dinge's file left KNOWN_GAPS (470 -> 446) and nothing else was dropped from it; space-convo-client-strings-kaydine then took Kaydine's file out too (446 -> 381)
--- and space-convo-client-strings-dulios took Dulios' (381 -> 305, Appendix C): the other two files stay
-function TestF2DingeStaticUnresolved:test_dinges_file_is_not_in_the_ratchet_and_the_other_two_still_are()
+-- and space-convo-client-strings-dulios took Dulios' (381 -> 305, Appendix C); space-convo-client-strings-arkon took Arkon's (305 -> 211, Appendix C): only Imler's file stays
+function TestF2DingeStaticUnresolved:test_dinges_file_is_not_in_the_ratchet_and_only_imlers_file_still_is()
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_1"], "KNOWN_GAPS entry of Dinge's file")
 
-	for _, file in ipairs({ "conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4" }) do
+	for _, file in ipairs({ "conversation/naboo_privateer_tier4" }) do
 		lu.assertNotNil(D.KNOWN_GAPS[file], "KNOWN_GAPS entry of " .. file)
 	end
+
+	lu.assertNil(D.KNOWN_GAPS["conversation/corellia_rebel_tier4"], "KNOWN_GAPS entry of Arkon's file")
 
 	lu.assertEquals(CS.unresolvedByFile(SOURCES)["conversation/naboo_privateer_trainer_1"], nil, "unresolved ids of Dinge's file")
 end

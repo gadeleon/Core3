@@ -26,8 +26,8 @@ D.SCREENS = {
 	mission4_accept_a = "s_abf08a18", mission4_accept_b = "s_299",
 	mission1_decline = "s_9be0e2f1", mission2_decline = "s_f15aeb5", mission3_decline = "s_1af32f06", mission4_decline = "s_9e3df78d",
 	ready_train = "s_8907c99",
-	train_starships = "s_422", train_weapons = "s_423", train_procedures = "s_424", train_droid = "s_425",
-	trained_starships = "s_427", trained_weapons = "s_429", trained_procedures = "s_433", trained_droid = "s_435",
+	-- space-convo-client-strings-arkon (Content contract 1b, E-AK2): the train_<x> prompts are gone; the choice leads straight to the pre-NGE acknowledgment
+	trained_starships = "s_66d4c0f2", trained_weapons = "s_7d2fc507", trained_procedures = "s_62c873d4", trained_droid = "s_ba9df4a6",
 	intro = "s_71f899d5", intro_met = "s_450d7208", tier4_incomplete = "s_a5958aac", no_master = "s_b6b4b241",
 	here_for_work = "s_d318a2bb",
 	duty_destroy = "s_d8209030", duty_escort = "s_fed79efe", duty_recovery = "s_b0d064ef", duty_rescue = "s_835acc11",

@@ -337,7 +337,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 43 files, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -355,8 +355,7 @@ starting with `/` or `./` is used as is (the helper test scans `fixtures/client_
 
 A per-trainer test is `lu.assertEquals(CS.unresolved({ <template>, <handler> }), {})`. `space_convo_client_strings_data.lua` holds the **ratchet**:
 `KNOWN_GAPS` (file -> the ids still unresolved; `test_space_convo_client_strings.lua` requires the scan to equal it exactly, so a new gap fails and a fixed
-gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (14 stored prefixes, all unused `stringFile` locals, pinned by path and line text so a new prefix fails; no line uses a stored prefix any more, `KNOWN_PREFIX_USES` is `{}`, so a new use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446), so is Kaydine's (446 -> 381) and so is Dulios' (381 -> 305, two files left: `corellia_rebel_tier4` 94,
-`naboo_privateer_tier4` 211); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
+gap must be deleted from the list), `FIXTURE_COUNTS` and `KNOWN_DYNAMIC`, `KNOWN_PREFIX_USES` and `KNOWN_UNUSED_PREFIXES` (14 stored prefixes, all unused `stringFile` locals, pinned by path and line text so a new prefix fails; no line uses a stored prefix any more, `KNOWN_PREFIX_USES` is `{}`, so a new use fails). A feature that fixes a trainer's file deletes its `KNOWN_GAPS` entry. Dinge's entry is gone (470 -> 446), so is Kaydine's (446 -> 381) and so is Dulios' (381 -> 305) and so is Arkon's (305 -> 211, one file left: `naboo_privateer_tier4` 211); `test_space_convo_client_strings_dinge.lua` holds her per-trainer scan, the exact values of the 15 changed
 screens, the trailing `-- <client text>` comments and the sign-up, mission 3 failure, mission 4 offer and duty-decline journeys. Dinge trains in one click:
 the choice is made on `first_training` (free) or `more_training` (paid) and the conversation ends on `trained_<x>`, which shows "Good choice." (`s_cd72f93`).
 `test_space_convo_client_strings_kaydine.lua` holds Kaydine's: the scan, the exact values of the 38 changed screens (`rsf_tier2_kaydine_client_strings_data.lua`), the trailing
@@ -368,6 +367,11 @@ text, so a copy shares the id), one test per line (`rsf_tier3_dulios_client_stri
 identity checks against commit 239af59058 (`dulios_convo.lua` differs only on those 76 lines, the handler only by complete `TRAIN_CHOICES` literals), and the gate, offer, failure, reward
 and training transcripts. The T3 answer key `rsf_tier3_dulios_convo_data.lua` stays the java graph; conformance tests map its sids through `D.TWIN`. Repeated lines are by design
 (`D.LEFT_COUNTS`: one pre-NGE line can stand on up to 8 screens).
+`test_space_convo_client_strings_arkon.lua` holds Arkon's the same way (`havoc_tier4_arkon_client_strings_data.lua`: `D.SITES` 78 rows, `D.TWIN`, `D.TEXT`, `D.TRAINING_TEXT`, `D.LEFT_COUNTS`,
+`D.TRAINING`, `D.TRAIN_CHOICES`, the Appendix E block `D.BLOCK`; LF files, identity checks against commit f637c689a0). Arkon trains in one click: the free choice on `ready_train` (one reply per
+missing tier 4 skill, Arkon's own "I would like <skill>, please." lines) leads straight to `trained_<x>`, which grants the skill on display (XP-deducting, tier 4 -> 5 on the fourth); starships and
+weapons then have one more line (`trained_<x>_end`). `skl_n.sids` is gone: no space conversation source references `@skl_n` any more. The A4 answer key (`havoc_tier4_data.lua`) stays the java graph;
+the Arkon tests walk it through `D.TWIN`.
 
 **Regenerating the fixtures** (maintenance only, needs `/tre` and Python 3; run from `MMOCoreORB/`):
 

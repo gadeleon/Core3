@@ -166,10 +166,11 @@ function TestF3KaydineStaticUnresolved:test_kaydines_template_and_handler_show_o
 	lu.assertEquals(CS.unresolved(SOURCES), {}, "Kaydine: ids the pre-NGE client cannot resolve")
 end
 
--- AC-1: Kaydine's file left KNOWN_GAPS (446 -> 381); space-convo-client-strings-dulios then took Dulios' file out too (381 -> 305, Appendix C): the other two files stay
-function TestF3KaydineStaticUnresolved:test_kaydines_file_is_not_in_the_ratchet_and_the_other_two_still_are_with_305_ids()
+-- AC-1: Kaydine's file left KNOWN_GAPS (446 -> 381); space-convo-client-strings-dulios then took Dulios' file out too (381 -> 305, Appendix C) and
+-- space-convo-client-strings-arkon took Arkon's (305 -> 211, Appendix C): only Imler's file stays
+function TestF3KaydineStaticUnresolved:test_kaydines_file_is_not_in_the_ratchet_and_only_imlers_file_still_is_with_211_ids()
 	lu.assertNil(D.KNOWN_GAPS["conversation/naboo_privateer_trainer_2"], "KNOWN_GAPS entry of Kaydine's file")
-	lu.assertEquals(sortedKeys(D.KNOWN_GAPS), { "conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4" }, "KNOWN_GAPS files")
+	lu.assertEquals(sortedKeys(D.KNOWN_GAPS), { "conversation/naboo_privateer_tier4" }, "KNOWN_GAPS files")
 
 	local counts, total = {}, 0
 
@@ -178,8 +179,8 @@ function TestF3KaydineStaticUnresolved:test_kaydines_file_is_not_in_the_ratchet_
 		total = total + #list
 	end
 
-	lu.assertEquals(counts, { ["conversation/corellia_rebel_tier4"] = 94, ["conversation/naboo_privateer_tier4"] = 211 }, "KNOWN_GAPS counts")
-	lu.assertEquals(total, 305, "KNOWN_GAPS total")
+	lu.assertEquals(counts, { ["conversation/naboo_privateer_tier4"] = 211 }, "KNOWN_GAPS counts")
+	lu.assertEquals(total, 211, "KNOWN_GAPS total")
 	lu.assertNil(CS.unresolvedByFile(SOURCES)["conversation/naboo_privateer_trainer_2"], "unresolved ids of Kaydine's file")
 end
 

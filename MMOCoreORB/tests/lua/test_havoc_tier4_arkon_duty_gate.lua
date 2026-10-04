@@ -22,7 +22,7 @@ tryLoad("HavocSquadronScreenplay", function() H.loadSquadron("HavocSquadronScree
 tryLoad("arkon_convo.lua", function() H.loadMobile("conversations/space/rebel/havoc_squadron/arkon_convo.lua") end)
 tryLoad("arkonConvoHandler.lua", function() H.loadScreenplay("space/conversations/rebel/havoc_squadron/arkonConvoHandler.lua") end)
 
-local BASE = "c52928b270"
+local BASE = "f637c689a0" -- space-convo-client-strings-arkon (AC-9, Appendix C): re-based from c52928b270
 local AC_PATH = "mobile/conversations/space/rebel/havoc_squadron/arkon_convo.lua"
 local AH_PATH = "screenplays/space/conversations/rebel/havoc_squadron/arkonConvoHandler.lua"
 local OLD_RETURN = "\treturn SpaceHelpers:hasCompletedPilotTier(pPlayer, \"rebel_navy\", 3) and not self:isOnMission(pPlayer)"
@@ -208,34 +208,59 @@ function TestArkonDutyGate:test_can_fly_non_track_duty_is_called_only_inside_the
 end
 
 ---------------------------------------------------------------------------------------------
--- AC-4, I-3: nothing else moves, against c52928b270
+-- AC-4, I-3: nothing this feature owns moves. Re-based from c52928b270 to f637c689a0 by space-convo-client-strings-arkon (Appendix C): the template and the
+-- handler changed since (client strings, one-click training); what the duty gate owns is the canFlyNonTrackDuty function and the not_my_track / nontrack_* screens.
+-- The rest of both files is pinned by test_space_convo_client_strings_arkon.lua (AC-7).
 ---------------------------------------------------------------------------------------------
 
 TestArkonDutyGateNothingElseMoves = {}
 
 function TestArkonDutyGateNothingElseMoves:setUp() H.reset() end
 
--- AC-4
-function TestArkonDutyGateNothingElseMoves:test_the_template_is_byte_identical_to_commit_c52928b270()
-	lu.assertTrue(readFile(AC_PATH) == baseFile(AC_PATH), "arkon_convo.lua differs from " .. BASE)
+-- the addScreen block of `id` (from its `arkon_convo:addScreen(` line to the closing `})` line)
+local function screenBlock(text, id, what)
+	local at = text:find('id = "' .. id .. '"', 1, true)
+
+	lu.assertNotNil(at, what .. ": screen " .. id)
+
+	local s = at
+
+	while s > 1 and text:sub(s, s + #"arkon_convo:addScreen(" - 1) ~= "arkon_convo:addScreen(" do
+		s = s - 1
+	end
+
+	local e = text:find("\n})\n", at, true)
+
+	lu.assertNotNil(e, what .. ": end of screen " .. id)
+
+	return text:sub(s, e + 3)
 end
 
--- AC-4, I-3
-function TestArkonDutyGateNothingElseMoves:test_the_handler_differs_from_commit_c52928b270_only_in_the_can_fly_non_track_duty_return_line()
-	local old = replaceOnce(code(baseFile(AH_PATH)), OLD_RETURN, NEW_RETURN, "base handler")
+-- AC-4 (re-based by space-convo-client-strings-arkon)
+function TestArkonDutyGateNothingElseMoves:test_the_not_my_track_and_nontrack_screens_are_byte_identical_to_commit_f637c689a0()
+	local now, base = readFile(AC_PATH), baseFile(AC_PATH)
 
-	local new = code(readFile(AH_PATH))
-
-	if new ~= old then
-		local a, b = {}, {}
-
-		for l in (new .. "\n"):gmatch("(.-)\n") do a[#a + 1] = l end
-		for l in (old .. "\n"):gmatch("(.-)\n") do b[#b + 1] = l end
-
-		for i = 1, math.max(#a, #b) do
-			if a[i] ~= b[i] then
-				lu.fail("arkonConvoHandler.lua (comments and blank lines removed) first differs from the c52928b270 text plus the new clause at code line " .. i .. ":\n  now:      " .. tostring(a[i]) .. "\n  expected: " .. tostring(b[i]))
-			end
-		end
+	for _, id in ipairs({ "not_my_track", "nontrack_duty", "nontrack_no_duty" }) do
+		lu.assertTrue(screenBlock(now, id, "now") == screenBlock(base, id, BASE), "screen " .. id .. " differs from " .. BASE)
 	end
+end
+
+-- AC-4, I-3 (re-based by space-convo-client-strings-arkon)
+function TestArkonDutyGateNothingElseMoves:test_can_fly_non_track_duty_is_byte_identical_to_commit_f637c689a0_and_keeps_the_datapad_clause()
+	local function block(text, what)
+		local s = text:find("function arkonConvoHandler:canFlyNonTrackDuty", 1, true)
+
+		lu.assertNotNil(s, what .. ": canFlyNonTrackDuty")
+
+		local e = text:find("\nend\n", s, true)
+
+		lu.assertNotNil(e, what .. ": end of canFlyNonTrackDuty")
+
+		return text:sub(s, e + 4)
+	end
+
+	local now, base = block(readFile(AH_PATH), "now"), block(baseFile(AH_PATH), BASE)
+
+	lu.assertNotNil(base:find(NEW_RETURN, 1, true), "the base function already carries the datapad clause")
+	lu.assertTrue(now == base, "canFlyNonTrackDuty differs from " .. BASE)
 end

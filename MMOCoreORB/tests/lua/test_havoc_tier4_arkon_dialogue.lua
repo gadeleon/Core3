@@ -7,6 +7,7 @@ local lu = require("luaunit")
 local H = require("harness")
 local D = require("havoc_tier4_data")
 local FC = require("havoc_tier4_arkon_free_choice_data")
+local DS = require("havoc_tier4_arkon_client_strings_data") -- space-convo-client-strings-arkon: twin table (Appendix A), training ids (Appendix B)
 local Swgjava = require("harness.swgjava")
 
 local loadErrors = {}
@@ -53,6 +54,29 @@ end
 
 local function sidOf(text)
 	return type(text) == "string" and text:match("^@conversation/corellia_rebel_tier4:(s_[%w_]+)$") or nil
+end
+
+-- space-convo-client-strings-arkon: Core3 shows the pre-NGE twin of each of the 78 NGE-numbered SWG ids, and the training block is E-AK2 (Content contract 1b)
+local function twin(sid)
+	return DS.TWIN[sid] or sid
+end
+
+-- the SWG ids of the training dialogue, s_421 .. s_437: not mirrored by Core3 (E-AK2)
+local function isTraining(sid)
+	local n = tonumber(sid:match("^s_(%d+)$"))
+
+	return n ~= nil and n >= 421 and n <= 437
+end
+
+-- the template screen that shows SWG NPC line `sid`: the screen with that id, or the descriptive id the mandatory-screen table names for it
+local REVERSE = {}
+
+for id, sid in pairs(D.SCREENS) do
+	REVERSE[sid] = id
+end
+
+local function screenFor(t, sid)
+	return screensById(t)[REVERSE[sid] or sid]
 end
 
 local function readFile(path)
@@ -157,7 +181,8 @@ function TestArkonWiring:test_every_mandatory_screen_id_exists_with_its_sid()
 		local screen = byId[id]
 
 		lu.assertNotNil(screen, "arkon_convo: missing mandatory screen '" .. id .. "'")
-		lu.assertEquals(screen.leftDialog, D.PREFIX .. D.SCREENS[id], "arkon_convo: leftDialog of screen '" .. id .. "'")
+		-- through the twin table (the 78 NGE-numbered lines show their pre-NGE twins); the trained_<x> sids are the Content contract 1b lines
+		lu.assertEquals(screen.leftDialog, D.PREFIX .. twin(D.SCREENS[id]), "arkon_convo: leftDialog of screen '" .. id .. "'")
 	end
 end
 
@@ -190,81 +215,100 @@ function TestArkonDialogue:test_answer_key_has_186_npc_lines_and_346_distinct_si
 	lu.assertEquals(count, 346, "distinct string ids in corellia_rebel_tier4.java")
 end
 
--- AC-2, I-1
-function TestArkonDialogue:test_every_string_is_a_tier4_sid_that_exists_in_the_swg_java()
+-- AC-2, I-1; space-convo-client-strings-arkon (E-AK2): the only ids outside the SWG java are the 12 pre-NGE training lines
+function TestArkonDialogue:test_every_string_is_a_tier4_sid_that_exists_in_the_swg_java_or_is_one_of_the_12_training_lines()
 	local t = template()
 
 	for _, screen in ipairs(t.screens) do
 		local sid = sidOf(screen.leftDialog)
 
 		lu.assertNotNil(sid, "screen '" .. screen.id .. "': leftDialog '" .. tostring(screen.leftDialog) .. "' is not @conversation/corellia_rebel_tier4:<sid>")
-		lu.assertNotNil(GRAPH.nodes[sid], "screen '" .. screen.id .. "': leftDialog sid " .. sid .. " is not an NPC line in the SWG java")
+		lu.assertTrue(GRAPH.nodes[sid] ~= nil or DS.TRAINING_TEXT[sid] ~= nil, "screen '" .. screen.id .. "': leftDialog sid " .. sid .. " is neither an NPC line in the SWG java nor one of the 12 training lines")
 
 		for i, option in ipairs(screen.options or {}) do
 			local osid = sidOf(option[1])
 
 			lu.assertNotNil(osid, "screen '" .. screen.id .. "' option " .. i .. ": text '" .. tostring(option[1]) .. "' is not @conversation/corellia_rebel_tier4:<sid>")
-			lu.assertTrue(GRAPH.responses[osid] == true, "screen '" .. screen.id .. "' option " .. i .. ": sid " .. osid .. " is not a response in the SWG java")
+			lu.assertTrue(GRAPH.responses[osid] == true or DS.TRAINING_TEXT[osid] ~= nil, "screen '" .. screen.id .. "' option " .. i .. ": sid " .. osid .. " is neither a response in the SWG java nor one of the 12 training lines")
 		end
 	end
 end
 
--- AC-2
-function TestArkonDialogue:test_every_swg_npc_line_has_exactly_one_screen()
+-- AC-2; space-convo-client-strings-arkon (Appendix D): every shown SWG NPC line has exactly one screen by id, and a pre-NGE line is shown on as many screens as it has copies
+function TestArkonDialogue:test_every_shown_swg_npc_line_has_exactly_one_screen_and_the_left_dialog_multiplicities_are_those_of_appendix_d()
 	local t = template()
+	local byId = screensById(t)
 	local count = {}
 
 	for _, screen in ipairs(t.screens) do
 		count[screen.leftDialog] = (count[screen.leftDialog] or 0) + 1
 	end
 
+	local shown = 0
+
 	for _, sid in ipairs(GRAPH.order) do
-		lu.assertEquals(count[D.PREFIX .. sid], 1, "number of screens whose leftDialog is NPC line " .. sid)
+		if not isTraining(sid) then
+			shown = shown + 1
+
+			local id = REVERSE[sid] or sid
+
+			lu.assertNotNil(byId[id], "SWG NPC line " .. sid .. ": a screen with id '" .. id .. "'")
+			lu.assertEquals(count[D.PREFIX .. twin(sid)], DS.LEFT_COUNTS[twin(sid)] or 1, "number of screens whose leftDialog is " .. twin(sid) .. " (SWG " .. sid .. ")")
+		end
 	end
+
+	lu.assertEquals(shown, 186 - 10, "SWG NPC lines other than the training dialogue")
 end
 
--- AC-2
+-- AC-2; compared through the twin table (space-convo-client-strings-arkon, I-3); the training block is E-AK2
 function TestArkonDialogue:test_options_are_the_swg_responses_in_order_and_link_to_the_swg_successor()
 	local t = template()
 	local byId = screensById(t)
-	local byDialog = screensByDialog(t)
 
 	for _, sid in ipairs(GRAPH.order) do
-		local node = GRAPH.nodes[sid]
-		local screen = byDialog[D.PREFIX .. sid]
+		if not isTraining(sid) then
+			local node = GRAPH.nodes[sid]
+			local screen = screenFor(t, sid)
 
-		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
+			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
 
-		-- havoc-tier4-arkon-free-choice, E-AK1: ready_train's single SWG reply s_421 is replaced by handler-added choice replies
-		local exceptions = FC.EXCEPTIONS[screen.id] or {}
-		local wanted = {}
+			-- havoc-tier4-arkon-free-choice, E-AK1: ready_train's single SWG reply s_421 is replaced by handler-added choice replies
+			local exceptions = FC.EXCEPTIONS[screen.id] or {}
+			local wanted = {}
 
-		for _, optionSid in ipairs(node.options) do
-			if not exceptions[optionSid] then
-				wanted[#wanted + 1] = optionSid
+			for _, optionSid in ipairs(node.options) do
+				if not exceptions[optionSid] then
+					wanted[#wanted + 1] = twin(optionSid)
+				end
 			end
-		end
 
-		local got = {}
+			local got = {}
 
-		for i, option in ipairs(screen.options or {}) do
-			got[i] = sidOf(option[1])
-		end
+			for i, option in ipairs(screen.options or {}) do
+				got[i] = sidOf(option[1])
+			end
 
-		lu.assertEquals(got, wanted, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order")
+			lu.assertEquals(got, wanted, "screen '" .. screen.id .. "' (" .. sid .. "): option sids in order (twins of the SWG replies)")
 
-		for i, optionSid in ipairs(wanted) do
-			local successors = GRAPH.successorsOf(sid, optionSid)
+			local i = 0
 
-			lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
+			for _, optionSid in ipairs(node.options) do
+				if not exceptions[optionSid] then
+					i = i + 1
 
-			-- Conditional successors (s_6222b64d): the static link is the unconditional default,
-			-- which is the last successor in the java.
-			local expected = successors[#successors]
-			local target = byId[screen.options[i][2]]
+					local successors = GRAPH.successorsOf(sid, optionSid)
 
-			lu.assertNotNil(target, "screen '" .. screen.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
-			lu.assertEquals(target.leftDialog, D.PREFIX .. expected, "screen '" .. screen.id .. "' option " .. optionSid .. " -> successor NPC line")
+					lu.assertNotNil(successors, "answer key: no successor for " .. sid .. " -> " .. optionSid)
+
+					-- Conditional successors (s_6222b64d): the static link is the unconditional default,
+					-- which is the last successor in the java.
+					local expected = successors[#successors]
+					local target = byId[screen.options[i][2]]
+
+					lu.assertNotNil(target, "screen '" .. screen.id .. "' option " .. optionSid .. ": link '" .. tostring(screen.options[i][2]) .. "' is a screen")
+					lu.assertEquals(target.leftDialog, D.PREFIX .. twin(expected), "screen '" .. screen.id .. "' option " .. optionSid .. " -> successor NPC line (twin of " .. expected .. ")")
+				end
+			end
 		end
 	end
 end
@@ -278,27 +322,31 @@ function TestArkonDialogue:test_the_two_conditional_options_default_to_the_spec_
 	lu.assertEquals(byId.ready_train.options, {}, "ready_train: static options")
 end
 
--- AC-2
+-- AC-2; screens are found by id, not by their line, because copies share a line (space-convo-client-strings-arkon); the training block is E-AK2
 function TestArkonDialogue:test_stop_conversation_is_true_exactly_on_swg_end_lines()
-	local byDialog = screensByDialog(template())
+	local t = template()
 
 	for _, sid in ipairs(GRAPH.order) do
-		local screen = byDialog[D.PREFIX .. sid]
+		if not isTraining(sid) then
+			local screen = screenFor(t, sid)
 
-		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
-		lu.assertEquals(screen.stopConversation == "true", GRAPH.nodes[sid].isEnd, "screen '" .. screen.id .. "' (" .. sid .. "): stopConversation == \"true\" iff the line ends the conversation")
+			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
+			lu.assertEquals(screen.stopConversation == "true", GRAPH.nodes[sid].isEnd, "screen '" .. screen.id .. "' (" .. sid .. "): stopConversation == \"true\" iff the line ends the conversation")
+		end
 	end
 end
 
 -- AC-2
 function TestArkonDialogue:test_animation_matches_the_swg_doAnimationAction()
-	local byDialog = screensByDialog(template())
+	local t = template()
 
 	for _, sid in ipairs(GRAPH.order) do
-		local screen = byDialog[D.PREFIX .. sid]
+		if not isTraining(sid) then
+			local screen = screenFor(t, sid)
 
-		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
-		lu.assertEquals(screen.animation or "", GRAPH.nodes[sid].animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation")
+			lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
+			lu.assertEquals(screen.animation or "", GRAPH.nodes[sid].animation, "screen '" .. screen.id .. "' (" .. sid .. "): animation")
+		end
 	end
 end
 
@@ -308,8 +356,9 @@ function TestArkonDialogue:test_duty_menu_has_the_five_swg_options_on_all_five_s
 	local menuScreens = { "tier4_incomplete", "here_for_work" }
 
 	-- the end of both intro chains and of the duty-info chain also carry the menu
+	-- (space-convo-client-strings-arkon: the three menus share one line, so they are found by screen id)
 	for _, sid in ipairs({ "s_9bbb9999", "s_371", "s_406" }) do
-		local screen = screensByDialog(template())[D.PREFIX .. sid]
+		local screen = screenFor(template(), sid)
 		lu.assertNotNil(screen, "NPC line " .. sid .. " has a screen")
 		menuScreens[#menuScreens + 1] = screen.id
 	end

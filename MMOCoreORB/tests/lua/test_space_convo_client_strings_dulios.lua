@@ -209,10 +209,10 @@ function TestF4DuliosStaticUnresolved:test_dulios_template_and_handler_show_only
 	lu.assertEquals(CS.unresolved(SOURCES), {}, "Dulios: ids the pre-NGE client cannot resolve")
 end
 
--- AC-1: his file left KNOWN_GAPS (381 -> 305); two files remain
-function TestF4DuliosStaticUnresolved:test_dulios_file_is_not_in_the_ratchet_and_the_other_two_still_are_with_305_ids()
+-- AC-1: his file left KNOWN_GAPS (381 -> 305); space-convo-client-strings-arkon then took Arkon's file out too (305 -> 211, Appendix C): only Imler's file stays
+function TestF4DuliosStaticUnresolved:test_dulios_file_is_not_in_the_ratchet_and_only_imlers_file_still_is_with_211_ids()
 	lu.assertNil(KD.KNOWN_GAPS[FILE], "KNOWN_GAPS entry of Dulios' file")
-	lu.assertEquals(sortedKeys(KD.KNOWN_GAPS), { "conversation/corellia_rebel_tier4", "conversation/naboo_privateer_tier4" }, "KNOWN_GAPS files")
+	lu.assertEquals(sortedKeys(KD.KNOWN_GAPS), { "conversation/naboo_privateer_tier4" }, "KNOWN_GAPS files")
 
 	local counts, total = {}, 0
 
@@ -221,8 +221,8 @@ function TestF4DuliosStaticUnresolved:test_dulios_file_is_not_in_the_ratchet_and
 		total = total + #list
 	end
 
-	lu.assertEquals(counts, { ["conversation/corellia_rebel_tier4"] = 94, ["conversation/naboo_privateer_tier4"] = 211 }, "KNOWN_GAPS counts")
-	lu.assertEquals(total, 305, "KNOWN_GAPS total")
+	lu.assertEquals(counts, { ["conversation/naboo_privateer_tier4"] = 211 }, "KNOWN_GAPS counts")
+	lu.assertEquals(total, 211, "KNOWN_GAPS total")
 	lu.assertNil(CS.unresolvedByFile(SOURCES)[FILE], "unresolved ids of Dulios' file")
 end
 

@@ -1,15 +1,21 @@
 -- Shared answer key for Arkon's pre-NGE free choice of the next tier 4 skill (not a test file).
--- Spec: .claude/work/havoc-tier4-arkon-free-choice/01-spec.md (Choice reply strings D-7, Content contract 1-2, Data mapping E-AK1).
+-- Spec: .claude/work/havoc-tier4-arkon-free-choice/01-spec.md (Content contract 1-2, Data mapping E-AK1), as amended by
+-- .claude/work/space-convo-client-strings-arkon/01-spec.md (D-10: the replies are Arkon's pre-NGE lines; D-2: one click, the choice leads straight to trained_<x>; E-AK2).
 --
 -- Everything below is copied from the spec, not read from the handler, so a wrong production value makes a test fail instead of agreeing with itself:
 --   D.ORDER      the SWG canonical order of the four tier skills
---   D.CHOICES    { x, skill, reply (full string id), screen }   (Arkon's ready_train; the reply is the skill name, D-7)
+--   D.CHOICES    { x, skill, sid, reply (full string id), screen }   (Arkon's ready_train; the reply is Arkon's pre-NGE "I would like <skill>, please." line, D-10;
+--                screen = trained_<x>, the acknowledgment the choice leads to, which grants the skill on display)
 --   D.RETIRED    the single fixed-order reply that must leave the template and the handler
---   D.EXCEPTIONS the only deviations from the SWG java the conformance tests allow: [screen id][reply sid] = true (E-AK1)
+--   D.EXCEPTIONS the only deviations from the SWG java the conformance tests allow: [screen id][reply sid] = true (E-AK1). E-AK2 (the training screens) is handled by
+--                the arkon client-string tests (havoc_tier4_arkon_client_strings_data.lua)
 
 local D = {}
 
 D.ORDER = { "starships", "weapons", "procedures", "droid" }
+
+-- space-convo-client-strings-arkon D-10: copied from the spec (Content contract 2), not derived from a pattern
+local REPLY_SIDS = { starships = "s_2a5db9a8", weapons = "s_77758001", procedures = "s_6065ab8b", droid = "s_f819adf9" }
 
 D.CHOICES = {}
 
@@ -17,9 +23,9 @@ for i, x in ipairs(D.ORDER) do
 	D.CHOICES[i] = {
 		x = x,
 		skill = "pilot_rebel_navy_" .. x .. "_04",
-		reply = "@skl_n:pilot_rebel_navy_" .. x .. "_04",
-		screen = "train_" .. x,
-		closing = "trained_" .. x,
+		sid = REPLY_SIDS[x],
+		reply = "@conversation/corellia_rebel_tier4:" .. REPLY_SIDS[x],
+		screen = "trained_" .. x,
 	}
 end
 

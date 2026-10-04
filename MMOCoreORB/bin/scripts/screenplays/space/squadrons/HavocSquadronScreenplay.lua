@@ -177,13 +177,13 @@ assassinate_corellia_rebel_4 = SpaceAssassinateScreenplay:new {
 	sideQuest = false,
 	sideQuestType = "",
 
-	arrivalDelay = 6,
+	arrivalDelay = 10,
 	failTimer = 20,
 	mustDestroyEscort = false,
 
 	assassinateSpawns = {
 		target = "imp_tie_fighter_veteran_tier2",
-		escorts = {"imp_tie_fighter_tier1", "imp_tie_fighter_tier1", "imp_tie_fighter_tier1", "imp_tie_fighter_tier1"},
+		escorts = {"imp_tie_fighter_tier1", "imp_tie_fighter_tier1", "imp_tie_fighter_tier1"},
 	},
 
 	targetPatrols = {

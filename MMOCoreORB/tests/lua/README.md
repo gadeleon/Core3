@@ -416,8 +416,16 @@ off-track gate of Rhea (any one tier 1 skill) and Rikkh (all four), the refusals
 `S.kill(run, ship)`, `S.take(run)` (messages since the last take), `S.runKeys(run)` (run keys that must be gone when it ends) and the split spies.
 `test_space_assassinate_escort_fix_{data,kills,run}.lua` pin the data and fixtures (AC-1, AC-9), the kill/win rules for both flag values
 (AC-2, AC-3, AC-8 inactive kills) and the run behavior: journal tasks, in-zone start, leave-zone fail without split, timeout fail with split,
-escorts left at a win, key hygiene (AC-4 to AC-8). `S.isolate` also gives the first patrol point of `assassinate_corellia_privateer_tier4_2a`
-the `y` its line lacks (`z = 765, -5177`); the strict `spawnShipAgent` fake refuses a nil coordinate, the server reads it as 0.
+escorts left at a win, key hygiene (AC-4 to AC-8). `S.isolate` only spies the split targets. The file pins read the "now" side from commit
+`3330e0d8e9` (`git show`), so later edits of the squadron files do not supersede them.
+
+### Assassinate payload fixes (space-assassinate-payload-fixes)
+
+`test_space_assassinate_payload_fixes.lua` pins the 24 assassinate tables against their `.tab` fixtures (zone, target, escorts, path names and order,
+`arrivalDelay`: no exception list), every `targetPatrols` point against `ship_mobile/patrol_points` and the buildout extracts
+`fixtures/space_zones/buildout/<zone>.assassinate_points.tab` (I-3, exact, truncated toward zero), the literals of the edited tables, the deploy of 4_4a, 4_4b,
+rebel_4 and 4_2a, and, through `git show 3330e0d8e9`, the exact lines the feature changed in the CorSec, RSF and Havoc files (rewards and split delays unchanged).
+The extracts are made like the other ones: `{ head -n 2 $B/space_<zone>.tab; grep -F -f patterns $B/space_<zone>.tab; }` with one `nav_name|4|<name>|` pattern per point.
 
 ### SWG-Source fixtures
 

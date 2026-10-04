@@ -206,10 +206,10 @@ assassinate_corellia_privateer_tier1_4a = SpaceAssassinateScreenplay:new {
 	},
 
 	targetPatrols = {
-		{patrolPointName = "assassinate_4", x = 2650, z = -1672, y = -105},
-		{patrolPointName = "assassinate_5", x = 4431, z = -1858, y = 2196},
+		{patrolPointName = "assassinate_4", x = 2650, z = -1671, y = -104},
+		{patrolPointName = "assassinate_5", x = 4431, z = -1857, y = 2196},
 		{patrolPointName = "corellia_imperial_tier2_assassinate_1", x = -6932, z = -1364, y = -644},
-		{patrolPointName = "corellia_imperial_tier2_assassinate_2", x = -5276, z = -1117, y = -6270},
+		{patrolPointName = "corellia_imperial_tier2_assassinate_2", x = -5275, z = -1116, y = -6269},
 	},
 }
 
@@ -412,8 +412,8 @@ assassinate_corellia_privateer_tier2_4a = SpaceAssassinateScreenplay:new {
 	},
 
 	targetPatrols = {
-		{patrolPointName = "corellia_imperial_tier3_leg_4_assassinate_three_1", x = -137, z = -1281, y = 2629},
-		{patrolPointName = "corellia_imperial_tier4_recovery1_2", x = 1014, z = -432, y = 1398},
+		{patrolPointName = "corellia_imperial_tier3_leg_4_assassinate_three_1", x = -136, z = 1280, y = 2628},
+		{patrolPointName = "corellia_imperial_tier4_recovery1_2", x = 1014, z = -431, y = 1398},
 		{patrolPointName = "corellia_privateer_tier4_rescue_duty_2", x = 2514, z = 4958, y = 2580},
 	},
 }
@@ -1056,10 +1056,10 @@ assassinate_corellia_privateer_tier3_4 = SpaceAssassinateScreenplay:new {
 	},
 
 	targetPatrols = {
-		{patrolPointName = "corellia_privateer_tier3_assassin_1", x = 5978, z = 1103, y = -3021},
-		{patrolPointName = "corellia_privateer_tier3_assassin_2", x = 1503, z = 857, y = -4461},
-		{patrolPointName = "corellia_privateer_tier3_assassin_3", x = -1962, z = 658, y = -3496},
-		{patrolPointName = "corellia_privateer_tier3_assassin_4", x = -5906, z = 487, y = -2508},
+		{patrolPointName = "corellia_privateer_tier3_assassin_1", x = 5978, z = 1102, y = -3020},
+		{patrolPointName = "corellia_privateer_tier3_assassin_2", x = 1503, z = 856, y = -4460},
+		{patrolPointName = "corellia_privateer_tier3_assassin_3", x = -1961, z = 658, y = -3496},
+		{patrolPointName = "corellia_privateer_tier3_assassin_4", x = -5905, z = 486, y = -2508},
 	},
 }
 
@@ -1316,9 +1316,9 @@ assassinate_corellia_privateer_tier4_2a = SpaceAssassinateScreenplay:new {
 	},
 
 	targetPatrols = {
-		{patrolPointName = "bh_path_alpha_04", x = 520, z = 765, -5177},
+		{patrolPointName = "bh_path_alpha_04", x = 520, z = 765, y = -5177},
 		{patrolPointName = "corellia_imperial_tier3_leg_3_recovery_escort_3", x = -636, z = 3866, y = 330},
-		{patrolPointName = "corellia_imperial_tier4_escort1_2", x = -7504, z = -314, y = -4018},
+		{patrolPointName = "corellia_imperial_tier4_escort1_2", x = -7504, z = -313, y = -4018},
 		{patrolPointName = "corellia_imperial_tier4_recovery2_7", x = 5904, z = -3381, y = -2643},
 	},
 }
@@ -1574,7 +1574,7 @@ assassinate_corellia_privateer_tier4_4a = SpaceAssassinateScreenplay:new {
 
 	-- Screenplay Specific Variables
 
-	arrivalDelay = 12, -- Seconds
+	arrivalDelay = 15, -- Seconds
 	failTimer = 20, -- Minutes
 	mustDestroyEscort = true,
 
@@ -1616,18 +1616,18 @@ assassinate_corellia_privateer_tier4_4b = SpaceAssassinateScreenplay:new {
 
 	-- Screenplay Specific Variables
 
-	arrivalDelay = 12, -- Seconds
+	arrivalDelay = 15, -- Seconds
 	failTimer = 20, -- Minutes
 	mustDestroyEscort = true,
 
 	assassinateSpawns = {
-		target = "hidden_daggers_nebula_stalker_tier5",
-		escorts = {"hidden_daggers_enforcer_tier4", "hidden_daggers_enforcer_tier4"},
+		target = "hidden_daggers_executioner_tier5",
+		escorts = {"hidden_daggers_enforcer_tier4", "hidden_daggers_enforcer_tier4", "hidden_daggers_enforcer_tier4", "hidden_daggers_enforcer_tier4"},
 	},
 
 	targetPatrols = {
-		{patrolPointName = "corellia_privateer_tier4_leg_4_assassin_two_2", x = -6427, z = -5576, y = -4129},
 		{patrolPointName = "corellia_privateer_tier4_leg_4_assassin_two_1", x = -7303, z = -6224, y = -2668},
+		{patrolPointName = "corellia_privateer_tier4_leg_4_assassin_two_2", x = -6427, z = -5576, y = -4129},
 		{patrolPointName = "corellia_privateer_tier4_leg_4_assassin_two_3", x = -5716, z = -4752, y = -5611},
 		{patrolPointName = "corellia_privateer_tier4_leg_4_assassin_two_4", x = -4808, z = -3578, y = -7512},
 	},

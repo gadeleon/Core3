@@ -78,17 +78,8 @@ function S.splitsOnFailure(q)
 end
 
 -- Spy on the startQuest of the quest's split targets (they would run for real otherwise).
--- Also works around a data defect that is out of this feature's scope: the first patrol point of assassinate_corellia_privateer_tier4_2a
--- is written `{patrolPointName = "bh_path_alpha_04", x = 520, z = 765, -5177}` (no `y =`), so its y is nil. The server reads a nil
--- number argument as 0, the strict harness refuses it. The test gives the point the y the line was meant to have.
 function S.isolate(q)
 	local names = {}
-
-	for _, point in ipairs(q.targetPatrols or {}) do
-		if point.y == nil and type(point[1]) == "number" then
-			point.y = point[1]
-		end
-	end
 
 	if q.sideQuest then
 		names[#names + 1] = S.splitTarget(q)

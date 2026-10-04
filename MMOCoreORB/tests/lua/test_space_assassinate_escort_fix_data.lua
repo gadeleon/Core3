@@ -14,6 +14,8 @@ S.load()
 
 local SWG_GAME = "/home/swgemu/swg-source-research/dsrc/sku.0/sys.server/compiled/game/"
 local BASE_COMMIT = "c01803c4fc"
+-- The escort-fix commit: the "now" side of the pin below. Later features edit the working tree (space-assassinate-payload-fixes pins that).
+local FEATURE_COMMIT = "3330e0d8e9"
 
 local GLOBALS = S.globals()
 
@@ -135,7 +137,7 @@ function TestAssassinateEscortFixData:test_the_quest_type_defaults_mustDestroyEs
 	lu.assertEquals(rawget(SpaceAssassinateScreenplay, "mustDestroyEscort"), true, "SpaceAssassinateScreenplay.mustDestroyEscort")
 end
 
--- AC-1, D-13: the data lines are the only change in the three squadron files, one per table, right after its failTimer line
+-- AC-1, D-13: at the escort-fix commit the data lines are the only change in the three squadron files, one per table, right after its failTimer line
 local SQUADRON_FILES = {
 	{ "bin/scripts/screenplays/space/squadrons/CorsecSquadronScreenplay.lua", 10 },
 	{ "bin/scripts/screenplays/space/squadrons/RsfSquadronScreenplay.lua", 7 },
@@ -154,9 +156,12 @@ for _, row in ipairs(SQUADRON_FILES) do
 			lu.skip("git show " .. BASE_COMMIT .. " is unavailable: " .. base)
 		end
 
-		local now = readFile(path)
+		local nowRc, now = shell("git show " .. FEATURE_COMMIT .. ":MMOCoreORB/" .. path)
 
-		lu.assertNotNil(now, path)
+		if nowRc ~= 0 then
+			lu.skip("git show " .. FEATURE_COMMIT .. " is unavailable: " .. now)
+		end
+
 		lu.assertEquals(count(now, "\r"), 0, short .. ": stays LF")
 
 		local lines = {}
@@ -178,7 +183,7 @@ for _, row in ipairs(SQUADRON_FILES) do
 			baseLines[#baseLines + 1] = line
 		end
 
-		lu.assertEquals(#lines, #baseLines, short .. ": line count of the file minus the mustDestroyEscort lines, against " .. BASE_COMMIT)
+		lu.assertEquals(#lines, #baseLines, short .. ": line count of the file minus the mustDestroyEscort lines, against " .. BASE_COMMIT .. " (" .. FEATURE_COMMIT .. " side)")
 
 		for i = 1, #baseLines do
 			if lines[i] ~= baseLines[i] then

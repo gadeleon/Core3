@@ -1,0 +1,11 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.066198	0.310397	-0.948299	-0.997654	0.003969	-0.068344	-1109.43	2414.54	3581.47	nav_name|4|viopa_rebel_four_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.066198	0.310397	-0.948299	-0.997654	0.003969	-0.068344	-2303.03	2415.59	4011.29	nav_name|4|viopa_rebel_four_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.066198	0.310397	-0.948299	-0.997654	0.003969	-0.068344	-3674.07	2416.94	4444.07	nav_name|4|viopa_rebel_four_6|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.066198	0.310397	-0.948299	-0.997654	0.003969	-0.068344	533.64	2411.81	3116.79	nav_name|4|viopa_rebel_four_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.062399	0.310427	-0.948547	-0.997996	0.009429	-0.062566	1662.15	2407.28	2790.13	nav_name|4|viopa_rebel_four_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.051951	0.310587	-0.949124	-0.998646	0.018682	-0.048548	2800.00	2400.00	2800.00	nav_name|4|viopa_rebel_four_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.569781	0.790607	0.224256	-0.157854	0.162512	-0.973998	-2930.03	2690.08	-4742.84	nav_name|4|hostage_recovery_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.563631	0.823640	0.062738	0.817592	0.567091	-0.099757	-3467.95	2588.08	-6633.56	nav_name|4|hostage_escort_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.874516	-0.478735	-0.077681	-0.123457	-0.064844	-0.990229	-5082.65	2428.98	-476.42	nav_name|4|hostage_recovery_5|$|	script.space.quest_logic.quest_nav_point

@@ -1,0 +1,6 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.876363	0.369934	0.308442	-0.446805	0.385251	0.807433	3255.20	-758.64	-2450.30	nav_name|4|imperial_scout_flight_path_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.876363	0.369934	0.308442	-0.446805	0.385251	0.807433	3593.11	-1050.03	-3060.99	nav_name|4|imperial_scout_flight_path_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.913634	0.119925	0.388448	-0.403581	0.382611	0.831103	2290.84	302.64	-266.26	nav_name|4|imperial_scout_flight_path_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.958288	0.266834	0.102388	-0.222262	0.470555	0.853919	2804.42	-215.40	-1382.86	nav_name|4|imperial_scout_flight_path_3|$|	script.space.quest_logic.quest_nav_point

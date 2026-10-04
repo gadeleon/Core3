@@ -1,0 +1,11 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.200838	0.747155	-0.633581	-0.181580	-0.663944	-0.725402	1156.41	-7106.19	-2482.79	nav_name|4|naboo_privateer_tier3_leg_2_rescue_egress_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.036294	0.999339	0.002138	0.677969	0.023051	0.734729	752.97	-2678.08	-1479.75	nav_name|4|corellia_imperial_tier3_leg_1_recovery_recover_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.663140	0.742893	0.091409	0.732806	-0.669253	0.122860	2650.50	-1671.03	-104.62	nav_name|4|assassinate_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.395084	0.546598	-0.738336	0.325091	-0.668525	-0.668872	-6932.00	-1364.00	-644.00	nav_name|4|corellia_imperial_tier2_assassinate_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.316639	0.408692	-0.855985	0.455349	-0.726147	-0.515140	-5275.18	-1116.35	-6269.07	nav_name|4|corellia_imperial_tier2_assassinate_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.661867	0.742987	0.099512	0.732806	-0.669253	0.122860	4431.70	-1857.02	2196.47	nav_name|4|assassinate_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.891102	0.432702	-0.136770	-0.286401	0.302455	-0.909118	3933.87	-3285.29	-3098.57	nav_name|4|rebel_security_patrol_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.702579	0.663432	0.257371	-0.622952	-0.748236	0.228195	2915.72	3828.31	2887.19	nav_name|4|military_escort_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.953685	0.290114	0.079493	0.289112	-0.956992	0.024085	895.71	210.68	695.29	nav_name|4|trade_escort_4|$|	script.space.quest_logic.quest_nav_point

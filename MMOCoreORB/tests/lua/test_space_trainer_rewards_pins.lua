@@ -10,6 +10,23 @@ local D = require("space_trainer_rewards_data")
 
 local TAB = "\t"
 
+-- space-corsec-waypoints (AC-10): the feature after this one edits the CorSec and Havoc data again (quest points), so the "now" side of the
+-- two squadron pins is the rewards commit itself, read with `git show`; the claim "the rewards commit changed only the reward blocks" stays true
+-- forever. Skips when git cannot show it. (The RSF and handler pins read the working tree: nothing edits them.)
+local FEATURE_COMMIT = "97a8c4aed7"
+
+local function nowAtFeatureCommit(path)
+	local rc, text = D.shell("git show " .. FEATURE_COMMIT .. ":MMOCoreORB/" .. path)
+
+	if rc ~= 0 then
+		lu.skip("git show " .. FEATURE_COMMIT .. " is unavailable: " .. tostring(text))
+	end
+
+	lu.assertEquals(D.count(text, "\r"), 0, path .. " at " .. FEATURE_COMMIT .. ": stays LF")
+
+	return text
+end
+
 local function base(path)
 	local text, why = D.baseText(path)
 
@@ -123,7 +140,7 @@ function TestTrainerRewardsFilePins:setUp() H.reset() end
 -- AC-9
 function TestTrainerRewardsFilePins:test_CorsecSquadronScreenplay_differs_from_the_base_only_by_the_8_reward_blocks()
 	local want = applyRows(D.linesOf(base(D.CSP)), rowsIn({ rikkh = true, turoldine = true }))
-	local got = D.linesOf(now(D.CSP, true))
+	local got = D.linesOf(nowAtFeatureCommit(D.CSP))
 
 	lu.assertEquals(#want, 2180, "expected line count of the CorSec file (spec: 2158 + 22)")
 	lu.assertEquals(#got, 2180, "CorsecSquadronScreenplay.lua line count")
@@ -133,7 +150,7 @@ end
 -- AC-9
 function TestTrainerRewardsFilePins:test_HavocSquadronScreenplay_differs_from_the_base_only_by_the_8_reward_blocks()
 	local want = applyRows(D.linesOf(base(D.HSP)), rowsIn({ aqzow = true, viopa = true }))
-	local got = D.linesOf(now(D.HSP, true))
+	local got = D.linesOf(nowAtFeatureCommit(D.HSP))
 
 	lu.assertEquals(#want, 2306, "expected line count of the Havoc file (spec: 2284 + 22)")
 	lu.assertEquals(#got, 2306, "HavocSquadronScreenplay.lua line count")

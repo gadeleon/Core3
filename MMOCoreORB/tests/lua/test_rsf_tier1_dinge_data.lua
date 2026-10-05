@@ -625,22 +625,25 @@ function TestRsfTier1DingePoints:test_space_lok_and_corsec_keep_their_own_privat
 	lu.assertEquals({ lok.privateer_escort_2.x, lok.privateer_escort_2.z, lok.privateer_escort_2.y }, { -833, 145, 5234 }, "space_lok: privateer_escort_2")
 	lu.assertEquals({ lok.privateer_escort_3.x, lok.privateer_escort_3.z, lok.privateer_escort_3.y }, { -1502, 231, 6021 }, "space_lok: privateer_escort_3")
 
-	local corsec = {}
+	-- space-corsec-waypoints (AC-10): CorSec escort 14 no longer carries the invented privateer_escort_1..4 (they are not in space_yavin4);
+	-- it names SWG's yavin4_privateer_escort_1..4 at the truncated buildout values
+	local want = {
+		{ "yavin4_privateer_escort_1", -2162, 956, 4990 },
+		{ "yavin4_privateer_escort_2", -636, -294, 4769 },
+		{ "yavin4_privateer_escort_3", 2042, -1229, 5413 },
+		{ "yavin4_privateer_escort_4", -2064, -928, -3183 },
+	}
+	local have = {}
 
-	for _, global in ipairs(H.questGlobals()) do
-		local q = rawget(_G, global)
-
-		for _, p in ipairs(rawget(q, "escortPoints") or {}) do
-			if p.patrolPointName:match("^privateer_escort_%d$") and p.zoneName == "space_yavin4" then
-				corsec[p.patrolPointName] = { p.x, p.z, p.y, global }
-			end
-		end
+	for i, p in ipairs(H.expectGlobal("escort_corellia_privateer_14", "CorSec Rikkh mission 2 escort table").escortPoints) do
+		have[i] = { p.patrolPointName, p.x, p.z, p.y, p.zoneName }
 	end
 
-	lu.assertEquals(corsec.privateer_escort_1, { -2163, 956, 4991, "escort_corellia_privateer_14" }, "CorSec escort 14: privateer_escort_1 (zone space_yavin4)")
-	lu.assertEquals(corsec.privateer_escort_2, { -637, -295, 4770, "escort_corellia_privateer_14" }, "CorSec escort 14: privateer_escort_2")
-	lu.assertEquals(corsec.privateer_escort_3, { 2043, -1230, 5414, "escort_corellia_privateer_14" }, "CorSec escort 14: privateer_escort_3")
-	lu.assertEquals(corsec.privateer_escort_4, { -2064, -929, -3183, "escort_corellia_privateer_14" }, "CorSec escort 14: privateer_escort_4")
+	for i = 1, #want do
+		want[i][5] = "space_yavin4"
+	end
+
+	lu.assertEquals(have, want, "CorSec escort 14: escortPoints {name, x, z, y, zoneName}")
 end
 
 -- AC-9, R-6: no loaded quest names a deleted point in space_naboo any more

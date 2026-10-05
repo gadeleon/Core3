@@ -351,10 +351,10 @@ escort_corellia_privateer_14 = SpaceEscortScreenplay:new {
 	escortShips = {"freighterheavy_tier3"},
 
 	escortPoints = {
-		{patrolPointName = "privateer_escort_1", zoneName = "space_yavin4", x = -2163, z = 956, y = 4991, escortNumber = 1, radius = 250},
-		{patrolPointName = "privateer_escort_2", zoneName = "space_yavin4", x = -637, z = -295, y = 4770, escortNumber = 2, radius = 250},
-		{patrolPointName = "privateer_escort_3", zoneName = "space_yavin4", x = 2043, z = -1230, y = 5414, escortNumber = 3, radius = 250},
-		{patrolPointName = "privateer_escort_4", zoneName = "space_yavin4", x = -2064, z = -929, y = -3183, escortNumber = 4, radius = 250},
+		{patrolPointName = "yavin4_privateer_escort_1", zoneName = "space_yavin4", x = -2162, z = 956, y = 4990, escortNumber = 1, radius = 250},
+		{patrolPointName = "yavin4_privateer_escort_2", zoneName = "space_yavin4", x = -636, z = -294, y = 4769, escortNumber = 2, radius = 250},
+		{patrolPointName = "yavin4_privateer_escort_3", zoneName = "space_yavin4", x = 2042, z = -1229, y = 5413, escortNumber = 3, radius = 250},
+		{patrolPointName = "yavin4_privateer_escort_4", zoneName = "space_yavin4", x = -2064, z = -928, y = -3183, escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 180, -- In Seconds
@@ -489,10 +489,10 @@ escort_duty_corellia_privateer_10 = SpaceDutyEscortScreenplay:new {
 	escortShips = {"freighterheavy_tier1", "freighterlight_tier1", "freightermedium_tier1"},
 
 	escortPoints = {
-		{patrolPointName = "privateer_security_escort_1", zoneName = "space_lok", x = -5034, z = -5439, y = -4558, escortNumber = 1, radius = 250},
-		{patrolPointName = "privateer_security_escort_2", zoneName = "space_lok", x = -2103, z = -5336, y = -5600, escortNumber = 2, radius = 250},
-		{patrolPointName = "privateer_security_escort_3", zoneName = "space_lok", x = 1262, z = -5572, y = -5035, escortNumber = 3, radius = 250},
-		{patrolPointName = "privateer_security_escort_4", zoneName = "space_lok", x = 5940, z = -5892, y = -4039, escortNumber = 4, radius = 250},
+		{patrolPointName = "lok_privateer_escort_1", zoneName = "space_lok", x = 2674, z = 3425, y = 5460, escortNumber = 1, radius = 250},
+		{patrolPointName = "lok_privateer_escort_2", zoneName = "space_lok", x = 4217, z = 3326, y = 5246, escortNumber = 2, radius = 250},
+		{patrolPointName = "lok_privateer_escort_3", zoneName = "space_lok", x = 5908, z = 4911, y = 5012, escortNumber = 3, radius = 250},
+		{patrolPointName = "lok_privateer_escort_4", zoneName = "space_lok", x = 7095, z = 7369, y = 4847, escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 90, -- In Seconds
@@ -625,18 +625,18 @@ recovery_corellia_privateer_tier3_1 = SpaceRecoveryScreenplay:new {
 
 	preRecoveryPoints = {
 		{patrolPointName = "corellia_privateer_tier3_recovery_point_1", zoneName = "space_lok", x = 4250, z = 1204, y = 3259, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_2", zoneName = "space_lok", x = 4318, z = 463, y = 3868, escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_3", zoneName = "space_lok", x = 4379, z = -203, y = 4415, escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_4", zoneName = "space_lok", x = 4441, z = -876, y = 4967, escortNumber = 4, radius = 250},
-		{patrolPointName = "imperial_ss_interception_1", zoneName = "space_lok", x = 3230, z = -3912, y = -7336, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_2", zoneName = "space_lok", x = 4317, z = 462, y = 3867, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_3", zoneName = "space_lok", x = 4378, z = -203, y = 4414, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_4", zoneName = "space_lok", x = 4440, z = -876, y = 4966, escortNumber = 4, radius = 250},
+		{patrolPointName = "imperial_ss_interception_1", zoneName = "space_lok", x = 3230, z = -3912, y = 7336, escortNumber = 3, radius = 250},
 		{patrolPointName = "rebel_tier3_2_a_delivery", zoneName = "space_lok", x = 1000, z = -2000, y = -3452, escortNumber = 4, radius = 250},
 	},
 
 	recoveryPoints = {
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_5", zoneName = "space_lok", x = 4693, z = -604, y = 3823, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_6", zoneName = "space_lok", x = 5053, z = -1137, y = 3171, escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_7", zoneName = "space_lok", x = 5133, z = -1919, y = 2854, escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_recovery_point_8", zoneName = "space_lok", x = 5187, z = -2757, y = 2564, escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_5", zoneName = "space_lok", x = 4692, z = -604, y = 3823, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_6", zoneName = "space_lok", x = 5053, z = -1136, y = 3170, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_7", zoneName = "space_lok", x = 5133, z = -1919, y = 2853, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_8", zoneName = "space_lok", x = 5187, z = -2757, y = 2563, escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 110, -- In Seconds
@@ -706,8 +706,8 @@ escort_corellia_privateer_tier3_1_b = SpaceEscortScreenplay:new {
 	escortShips = {"freighterlight_tier3"},
 
 	escortPoints = {
-		{patrolPointName = "corellia_privateer_tier3_supply_escort_1", zoneName = "space_endor", x = 3799, z = -362, y = -3019, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_privateer_tier3_supply_escort_2", zoneName = "space_endor", x = 4281, z = 295, y = -2818, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_supply_escort_1", zoneName = "space_endor", x = 3798, z = -361, y = -3018, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_privateer_tier3_supply_escort_2", zoneName = "space_endor", x = 4280, z = 295, y = -2817, escortNumber = 2, radius = 250},
 		{patrolPointName = "corellia_privateer_tier3_supply_escort_3", zoneName = "space_endor", x = 4775, z = 743, y = -1925, escortNumber = 3, radius = 250},
 		{patrolPointName = "corellia_privateer_tier3_supply_escort_4", zoneName = "space_endor", x = 4895, z = 1220, y = -913, escortNumber = 4, radius = 250},
 	},
@@ -990,10 +990,10 @@ patrol_corellia_privateer_tier3_3_a = SpacePatrolScreenplay:new {
 	-- Screenplay Specific Variables
 
 	patrolPoints = {
-		{patrolPointName = "corellia_privateer_tier3_patrol_1", zoneName = "space_dantooine", x = 1633, z = -2059, y = -1925, patrolNumber = 1, radius = 150},
-		{patrolPointName = "corellia_privateer_tier3_patrol_2", zoneName = "space_dantooine", x = -4468, z = -3583, y = 624, patrolNumber = 2, radius = 150},
-		{patrolPointName = "corellia_privateer_tier3_patrol_3", zoneName = "space_dantooine", x = -4204, z = -3241, y = 3652, patrolNumber = 3, radius = 150},
-		{patrolPointName = "corellia_privateer_tier3_patrol_4", zoneName = "space_dantooine", x = -4204, z = -3241, y = 3652, patrolNumber = 4, radius = 150},
+		{patrolPointName = "corellia_privateer_tier3_patrol_1", zoneName = "space_dantooine", x = -4204, z = -3241, y = 3652, patrolNumber = 1, radius = 150},
+		{patrolPointName = "corellia_privateer_tier3_patrol_2", zoneName = "space_dantooine", x = -4773, z = -3338, y = 2891, patrolNumber = 2, radius = 150},
+		{patrolPointName = "corellia_privateer_tier3_patrol_3", zoneName = "space_dantooine", x = -4809, z = -3162, y = 1449, patrolNumber = 3, radius = 150},
+		{patrolPointName = "corellia_privateer_tier3_patrol_4", zoneName = "space_dantooine", x = -4468, z = -3583, y = 624, patrolNumber = 4, radius = 150},
 	},
 }
 
@@ -1370,7 +1370,7 @@ escort_corellia_privateer_tier4_2b = SpaceEscortScreenplay:new {
 		{patrolPointName = "corellia_privateer_tier4_leg_2_escort_2", zoneName = "space_dathomir", x = 683, z = 1485, y = 3209, escortNumber = 2, radius = 250},
 		{patrolPointName = "corellia_privateer_tier4_leg_2_escort_3", zoneName = "space_dathomir", x = -1642, z = 3578, y = 2633, escortNumber = 3, radius = 250},
 		{patrolPointName = "corellia_privateer_tier4_leg_2_escort_4", zoneName = "space_dathomir", x = -2146, z = 5611, y = 2738, escortNumber = 4, radius = 250},
-		{patrolPointName = "corellia_privateer_tier4_leg_2_escort_5", zoneName = "space_dathomir", x = -2682, z = 7408, y = 2855, escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_privateer_tier4_leg_2_escort_5", zoneName = "space_dathomir", x = -2682, z = 7408, y = 2855, escortNumber = 5, radius = 250},
 	},
 
 	attackDelay = 85, -- In Seconds
@@ -1876,11 +1876,10 @@ escort_duty_corellia_privateer_tier4_1 = SpaceDutyEscortScreenplay:new {
 	escortShips = {"freighterheavy_tier4", "freighterlight_tier4"},
 
 	escortPoints = {
-		{patrolPointName = "corellia_privateer_tier4_escort_duty_1", zoneName = "space_dathomir", x = 3523, z = 400, y = -4024, escortNumber = 1, radius = 250},
-		{patrolPointName = "corellia_privateer_tier4_escort_duty_2", zoneName = "space_dathomir", x = 2089, z = 4103, y = -4060, escortNumber = 2, radius = 250},
-		{patrolPointName = "corellia_privateer_tier4_escort_duty_3", zoneName = "space_dathomir", x = 1396, z = 5751, y = -3946, escortNumber = 3, radius = 250},
-		{patrolPointName = "corellia_privateer_tier4_escort_duty_4", zoneName = "space_dathomir", x = 817, z = 7127, y = -3851, escortNumber = 4, radius = 250},
-		{patrolPointName = "corellia_privateer_tier4_escort_duty_5", zoneName = "space_dathomir", x = 23729, z = 7391, y = -1995, escortNumber = 5, radius = 250},
+		{patrolPointName = "corellia_privateer_tier4_escort_duty_1", zoneName = "space_dathomir", x = 3523, z = 399, y = -4024, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_privateer_tier4_escort_duty_3", zoneName = "space_dathomir", x = 1395, z = 5751, y = -3946, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_privateer_tier4_escort_duty_4", zoneName = "space_dathomir", x = 817, z = 7126, y = -3851, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_privateer_tier4_escort_duty_5", zoneName = "space_dathomir", x = 2372, z = 7391, y = -1995, escortNumber = 4, radius = 250},
 	},
 
 	attackDelay = 90, -- In Seconds

@@ -79,9 +79,10 @@ destroy_corellia_rebel_2 = SpaceDestroyScreenplay:new {
 	killsRequired = 4,
 
 	shipLocations = {
-		{patrolPointName = "imperial_patrol_1", x = 590, z = -3500, y = -6000},
-		{patrolPointName = "imperial_patrol_2", x = -2500, z = 4000, y = 3500},
-		{patrolPointName = "imperial_patrol_3", x = -3800, z = 2500, y = 5000},
+		{patrolPointName = "imperial_fighter_five_spawner", x = -6064, z = 218, y = -2678},
+		{patrolPointName = "imperial_fighter_one_spawner", x = -3611, z = -3225, y = -2999},
+		{patrolPointName = "imperial_fighter_seven_spawner", x = -6458, z = -2137, y = -1846},
+		{patrolPointName = "imperial_fighter_three_spawner", x = -6902, z = -240, y = 174},
 	},
 
 	shipTypes = {

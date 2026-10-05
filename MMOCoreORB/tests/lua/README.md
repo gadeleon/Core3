@@ -438,6 +438,26 @@ cover the data and sweep (I-1 to I-4, AC-1 to AC-4), the Rikkh, Turoldine, Aqzow
 species selection of `SpaceQuestLogic:rewardPlayer` (AC-7) and the exact file diffs against 1d980a2452 (AC-9, `git show`, skipped without git).
 `fixtures/string/en/space/space_item.sids` is generated (`gen_client_sids.py space/space_item`, 1127 ids) and not listed in `FIXTURE_COUNTS`, like `space/quest.sids`.
 
+### Quest waypoints (space-corsec-waypoints)
+
+`space_corsec_waypoints_data.lua` (not a test file) holds the spec literals (the W-1 to W-8 and R values), the quest-point field map of the 13 point-carrying
+quest types (`W.fields(q)`, `W.points(q, f)`, `W.globals()`: every non-assassinate CorSec, RSF and Havoc table, discovered at run time) and the buildout extract
+reader (`W.extract(zone)`: nav points and spawners, truncated toward zero). `test_space_corsec_waypoints_conformance.lua` is table-driven with no exception list:
+names and order against the `.tab` (I-1), coordinates against `ship_mobile/patrol_points` and the extract (I-2, I-3), in-zone (I-5), numbering and zone (I-4), and
+the clone-gated check of every `patrol_points` entry against the full buildout in the research clone (I-6; skips with the clone path when it is absent, nothing large is
+committed). `test_space_corsec_waypoints_data.lua` pins the literals, the extracts and the 25 new fixtures, and the exact line diff of the CorSec and Havoc
+files against commit `97a8c4aed7` (`git show`, skipped without git). `test_space_corsec_waypoints_runtime.lua` runs the escort legs (one run per rendezvous
+start: waypoint, arrival, escort spawn, route, every area, completion), the active areas of `start()` and Kreezo's waypoints.
+
+The extracts `fixtures/space_zones/buildout/<zone>.quest_points.tab` (7 zones, 323 rows, CRLF) are the two header rows plus the rows of the nav points and spawners the
+quest tables use. For each zone make a patterns file with one `nav_name|4|<name>|` line per distinct nav point of a non-assassinate, non-destroy table of that
+`questZone` and one `strSpawnerName|4|<name>|` line per name in a destroy `validSpawns` or inspect `validSpawns` (names from the SWG `.tab`, never from Core3), then:
+
+```bash
+{ head -n 2 $B/space_<zone>.tab; tail -n +3 $B/space_<zone>.tab | grep -F -f patterns_<zone>.txt; } \
+  > tests/lua/fixtures/space_zones/buildout/space_<zone>.quest_points.tab
+```
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

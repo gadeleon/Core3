@@ -302,6 +302,9 @@ destroy_corellia_privateer_13a = SpaceDestroyScreenplay:new {
 	questZone = "space_lok",
 
 	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/booster/bst_mission_reward_neutral_mandal_m_series.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -334,6 +337,11 @@ escort_corellia_privateer_14 = SpaceEscortScreenplay:new {
 	questType = "escort",
 
 	questZone = "space_yavin4",
+
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_neutral_hk_military_blaster.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -368,7 +376,10 @@ inspect_corellia_privateer_15 = SpaceInspectScreenplay:new {
 
 	questZone = "space_lok",
 
-	creditReward = 0,
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_neutral_koensayr_ds23.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -394,8 +405,10 @@ assassinate_corellia_privateer_tier2_4a = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/droid_interface/ddi_mission_reward_neutral_sorosuub_w19.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -1194,7 +1207,10 @@ patrol_corellia_privateer_tier4_1a = SpacePatrolScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 0,
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/booster/bst_mission_reward_neutral_mandal_q_series.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "assassinate",
@@ -1295,8 +1311,10 @@ assassinate_corellia_privateer_tier4_2a = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_neutral_borstel_disruptor.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "escort",
@@ -1376,8 +1394,10 @@ space_battle_corellia_privateer_tier4_3a = SpaceBattleScreenplay:new {
 
 	questZone = "space_dantooine",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_neutral_armek_plasma_web.iff"},
+	},
 
 	parentQuest = "",
 	parentQuestType = "",
@@ -1559,8 +1579,10 @@ assassinate_corellia_privateer_tier4_4a = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_neutral_haor_chall_military.iff"},
+	},
 
 	parentQuest = "",
 	parentQuestType = "",

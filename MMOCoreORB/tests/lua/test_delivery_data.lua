@@ -241,7 +241,8 @@ function TestDeliveryDataInvariants:test_class_names_quest_types_and_rewards_are
 		-- rsf-tier3-renames (AC-1): delivery_no_pickup 3b replaces the delivery global; split delay 0 + 5
 		delivery_no_pickup_naboo_privateer_tier3_3b = { zone = "space_lok", credit = 0, side = "survival_naboo_privateer_tier3_3c", delay = 5, parent = "inspect_naboo_privateer_tier3_3a" },
 		delivery_corellia_rebel_tier3_2_a = { zone = "space_lok", credit = 0, side = "survival_corellia_rebel_tier3_2_b", delay = 3, parent = "inspect_corellia_rebel_tier3_2" },
-		delivery_corellia_rebel_tier3_3 = { zone = "space_endor", credit = 0, side = "assassinate_corellia_rebel_tier3_3_a", delay = 2, parent = "" },
+		-- space-trainer-rewards (AC-1, AC-10): Aqzow's mission 3 head pays SWG's 25000 (was 0)
+		delivery_corellia_rebel_tier3_3 = { zone = "space_endor", credit = 25000, side = "assassinate_corellia_rebel_tier3_3_a", delay = 2, parent = "" },
 		delivery_no_pickup_corellia_rebel_tier4_2_a = { zone = "space_dathomir", credit = 0, side = "", delay = 2, parent = "assassinate_corellia_rebel_tier4_2" },
 	}
 

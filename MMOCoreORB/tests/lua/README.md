@@ -90,7 +90,7 @@ end
 | `H.conversationTemplate(name)` | Fake C++ template (`pConvTemplate`) for it |
 | `H.conversationProblems(name)` | Dead option links, duplicate/missing screen ids; `{}` = OK |
 | `H.converse{template, player, npc, choices, handler}` | Drive a conversation like `ConversationObserver`; returns `{ {id, text, options, params, stop}, ... }`. Each choice is a 0-based option index, an option sid (`"s_6222b64d"`, matched against the screen just shown; errors listing the options if absent) or a function `hook(player)` that runs between screens without consuming a step (use it to change state mid-conversation) |
-| `H.newPlayer{...}` / `H.newNpc{...}` | Fake creatures. Player opts: `name, skills, pilot ("neutral"/"rebel"/"imperial"), faction, certifiedShip, activeQuests, completedQuests, squadronType, experience, screenPlayStates, pilotTier (default 0), gender (0 male default, 1 female), factionStanding ({rebel = n}), questStatus ({["<suffix>"] = v}, stored under the player's object id)` |
+| `H.newPlayer{...}` / `H.newNpc{...}` | Fake creatures. Player opts: `name, skills, pilot ("neutral"/"rebel"/"imperial"), faction, certifiedShip, activeQuests, completedQuests, squadronType, experience, screenPlayStates, pilotTier (default 0), gender (0 male default, 1 female), factionStanding ({rebel = n}), questStatus ({["<suffix>"] = v}, stored under the player's object id), species (number `getSpecies` returns, default 0 = human; `SPECIES_ITHORIAN`, ...), inventory (true: `getSlottedObject("inventory")` returns a container, so `SpaceHelpers:spaceItemReward` calls `giveItem`; items land in `player.inventory.items`)` |
 | `H.getQuestStatus(player, suffix)` / `H.setQuestStatus(player, suffix, v)` | Read/write the engine `getQuestStatus` store for `<objectID><suffix>`, the key shape handlers use. Values are strings (`setQuestStatus(k, 1)` reads back `"1"`); absent reads `nil` |
 | `H.spyOn(obj, "method", snapshotFn?)` | Replace a method with a recorder; returns `calls` (`{self, args, snapshot}` per call). The original is not called. `snapshotFn(self, ...)` runs at call time to capture "before" state. `H.reset()` restores every spy |
 | `H.questGlobals()` | Sorted names of every global space quest table (has `questType`, `questName`, `startQuest`), e.g. to spy on all of them |
@@ -426,6 +426,17 @@ escorts left at a win, key hygiene (AC-4 to AC-8). `S.isolate` only spies the sp
 `fixtures/space_zones/buildout/<zone>.assassinate_points.tab` (I-3, exact, truncated toward zero), the literals of the edited tables, the deploy of 4_4a, 4_4b,
 rebel_4 and 4_2a, and, through `git show 3330e0d8e9`, the exact lines the feature changed in the CorSec, RSF and Havoc files (rewards and split delays unchanged).
 The extracts are made like the other ones: `{ head -n 2 $B/space_<zone>.tab; grep -F -f patterns $B/space_<zone>.tab; }` with one `nav_name|4|<name>|` pattern per point.
+
+### Trainer mission rewards (space-trainer-rewards)
+
+`space_trainer_rewards_data.lua` (not a test file) holds the spec literals (the 12-row trainer map with the per-handler `:rewardPlayer` counts, the 16 R-rows, the four
+never-called SWG actions, the one D-11 exception) and the conformance machinery: `D.java(name)` parses `space_quest.giveReward(...)` calls and their call sites out of
+`fixtures/script/conversation/*.java`, `D.heads(trainer)` resolves the four pay heads of a handler from its source (direct globals, Dulios' file-local `MISSION_HEADS`,
+Imler/Arkon `MISSIONS[n].main`), `D.sweep(lookup)` compares every head with the reachable `giveReward` of its quest name, and `D.baseLookup()` evaluates the CorSec and Havoc
+squadron files of commit 1d980a2452 in a sandbox environment (nothing leaks into the real globals). `test_space_trainer_rewards_{conformance,runtime,species,pins}.lua`
+cover the data and sweep (I-1 to I-4, AC-1 to AC-4), the Rikkh, Turoldine, Aqzow and Viopa pay screens through `H.converse` with an inventory (AC-5, AC-6, AC-8), the
+species selection of `SpaceQuestLogic:rewardPlayer` (AC-7) and the exact file diffs against 1d980a2452 (AC-9, `git show`, skipped without git).
+`fixtures/string/en/space/space_item.sids` is generated (`gen_client_sids.py space/space_item`, 1127 ids) and not listed in `FIXTURE_COUNTS`, like `space/quest.sids`.
 
 ### SWG-Source fixtures
 

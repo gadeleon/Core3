@@ -14,6 +14,7 @@ S.load()
 
 local SWG_GAME = "/home/swgemu/swg-source-research/dsrc/sku.0/sys.server/compiled/game/"
 local FEATURE_COMMIT = "3330e0d8e9"
+local NOW_COMMIT = "1d980a2452" -- the last commit before space-trainer-rewards changed the CorSec and Havoc reward fields
 local SQUADRON_DIR = "bin/scripts/screenplays/space/squadrons/"
 
 local GLOBALS = S.globals()
@@ -628,7 +629,19 @@ for _, short in ipairs({ "CorsecSquadronScreenplay.lua", "HavocSquadronScreenpla
 			lu.skip("git show " .. FEATURE_COMMIT .. " is unavailable: " .. base)
 		end
 
+		-- space-trainer-rewards (AC-10): later features edit the CorSec and Havoc files (rewards), so their "now" side is the commit before
+		-- that feature; the RSP twin has not changed and still reads the working tree
 		local now = readFile(path)
+
+		if short ~= "RsfSquadronScreenplay.lua" then
+			local nowRc, shown = shell("git show " .. NOW_COMMIT .. ":MMOCoreORB/" .. path)
+
+			if nowRc ~= 0 then
+				lu.skip("git show " .. NOW_COMMIT .. " is unavailable: " .. shown)
+			end
+
+			now = shown
+		end
 
 		lu.assertNotNil(now, path)
 		lu.assertEquals(count(now, "\r"), 0, short .. ": stays LF")
@@ -655,9 +668,11 @@ TestAssassinatePayloadNoRewardOrDelayChange = {}
 
 function TestAssassinatePayloadNoRewardOrDelayChange:setUp() H.reset() end
 
--- global -> the lines of its table before "-- Screenplay Specific Variables" / arrivalDelay (rewards, split wiring and delay)
-local function headerLines(text)
-	local out, current, collecting = {}, nil, false
+-- global -> the lines of its table before "-- Screenplay Specific Variables" / arrivalDelay (rewards, split wiring and delay).
+-- space-trainer-rewards (AC-10): with `dropRewards` the creditReward and itemReward fields (one line or a multi-line block) are left out, because
+-- that feature sets SWG's pay on the CorSec and Havoc heads; the split fields and sideQuestDelay are still compared.
+local function headerLines(text, dropRewards)
+	local out, current, collecting, inItemBlock = {}, nil, false, false
 
 	for _, line in ipairs(linesOf(text)) do
 		local global = line:match("^(assassinate_[%w_]+) = SpaceAssassinateScreenplay:new")
@@ -668,7 +683,15 @@ local function headerLines(text)
 		elseif current and line:match("^%s*arrivalDelay%s*=") then
 			collecting = false
 		elseif current and collecting then
-			out[current][#out[current] + 1] = line
+			if dropRewards and inItemBlock then
+				inItemBlock = line ~= "\t},"
+			elseif dropRewards and line:match("^\titemReward = {$") then
+				inItemBlock = true
+			elseif dropRewards and (line:match("^\tcreditReward = ") or line:match("^\titemReward = {.*}")) then
+				-- dropped
+			else
+				out[current][#out[current] + 1] = line
+			end
 		end
 	end
 
@@ -687,7 +710,8 @@ for _, short in ipairs({ "CorsecSquadronScreenplay.lua", "HavocSquadronScreenpla
 		end
 
 		local now = readFile(path)
-		local before, after = headerLines(base), headerLines(now)
+		local dropRewards = short ~= "RsfSquadronScreenplay.lua" -- space-trainer-rewards (AC-10)
+		local before, after = headerLines(base, dropRewards), headerLines(now, dropRewards)
 		local tables = 0
 
 		for global, lines in pairs(before) do
@@ -699,16 +723,7 @@ for _, short in ipairs({ "CorsecSquadronScreenplay.lua", "HavocSquadronScreenpla
 	end
 end
 
--- D-9: the five tables that pay nothing today still pay nothing
-for _, global in ipairs({
-	"assassinate_corellia_privateer_tier2_4a", "assassinate_corellia_privateer_tier4_2a", "assassinate_corellia_privateer_tier4_4a",
-	"assassinate_viopa_rebel_4", "assassinate_corellia_rebel_tier3_4",
-}) do
-	-- D-9
-	TestAssassinatePayloadNoRewardOrDelayChange["test_" .. global .. "_still_pays_no_credits"] = function()
-		lu.assertEquals(S.quest(global).creditReward or 0, 0, global .. ": creditReward")
-	end
-end
+-- space-trainer-rewards (AC-10): the five D-9 "still pays no credits" tests are gone; their deferral is resolved there (AC-1 pins the new pay)
 
 -- D-10: the split delays stay (SWG uses 5)
 local DELAYS = {

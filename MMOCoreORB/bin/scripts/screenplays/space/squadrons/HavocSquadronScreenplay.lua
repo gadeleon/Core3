@@ -277,6 +277,9 @@ inspect_viopa_rebel_1 = SpaceInspectScreenplay:new {
 	questZone = "space_lok",
 
 	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_rebel_incom_k77.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "destroy_surpriseattack",
@@ -327,6 +330,9 @@ escort_viopa_rebel_2 = SpaceEscortScreenplay:new {
 	questZone = "space_dantooine",
 
 	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/droid_interface/ddi_mission_reward_rebel_moncal_d22.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -363,6 +369,9 @@ recovery_viopa_rebel_3 = SpaceRecoveryScreenplay:new {
 	questZone = "space_lok",
 
 	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/booster/bst_mission_reward_rebel_novaldex_hypernova.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -410,8 +419,10 @@ assassinate_viopa_rebel_4 = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_lok",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_rebel_taim_ion_driver.iff"},
+	},
 
 	sideQuest = false,
 	sideQuestType = "",
@@ -565,7 +576,10 @@ recovery_corellia_rebel_tier3_1 = SpaceRecoveryScreenplay:new {
 
 	questZone = "space_yavin4",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_rebel_corellian_triplate.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "patrol",
@@ -762,7 +776,10 @@ inspect_corellia_rebel_tier3_2 = SpaceInspectScreenplay:new {
 
 	questZone = "space_endor",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon_capacitor/cap_mission_reward_rebel_qualdex_battery_array.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "delivery",
@@ -918,7 +935,10 @@ delivery_corellia_rebel_tier3_3 = SpaceDeliveryScreenplay:new {
 
 	questZone = "space_endor",
 
-	creditReward = 0,
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_rebel_incom_military.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "assassinate",
@@ -1078,8 +1098,10 @@ assassinate_corellia_rebel_tier3_4 = SpaceAssassinateScreenplay:new {
 
 	questZone = "space_dathomir",
 
-	creditReward = 0,
-	itemReward = {},
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_rebel_slayn_hypervortex.iff"},
+	},
 
 	sideQuest = true,
 	sideQuestType = "patrol",

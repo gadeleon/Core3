@@ -210,7 +210,8 @@ function TestSpaceBattleDataInvariants:test_parent_side_quest_wiring_and_rewards
 	local child = quest("corellia_rebel_tier4_3_a")
 
 	lu.assertEquals({ a.sideQuest, a.sideQuestType, a.sideQuestName, a.sideQuestSplitType, a.sideQuestDelay, a.creditReward },
-		{ true, "assassinate", "corellia_privateer_tier4_3b", SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION, 1, 0 }, "3a: completion split wiring and reward")
+		-- space-trainer-rewards (AC-1, AC-10): Turoldine's mission 3 head pays SWG's 10000 (was 0)
+		{ true, "assassinate", "corellia_privateer_tier4_3b", SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION, 1, 10000 }, "3a: completion split wiring and reward")
 	lu.assertEquals({ lose.sideQuest, lose.sideQuestType, lose.sideQuestName, lose.sideQuestSplitType, lose.sideFailQuestType, lose.sideFailQuestName, lose.creditReward },
 		{ true, "space_battle", "corellia_rebel_tier4_3_a", SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL, "survival", "corellia_rebel_tier4_3_b", 10000 },
 		"4_3: bidirectional split wiring and reward")

@@ -225,6 +225,9 @@ FakeCreature.__index = FakeCreature
 -- completedQuests, pilotTier (number, default 0), factionStanding ({rebel = n}).
 -- questStatus: { ["<suffix>"] = value } stored as getQuestStatus("<objectID><suffix>"), the key
 -- shape the Havoc/CorSec handlers use (player object id first).
+-- species: number returned by getSpecies (default 0 = human; use SPECIES_ITHORIAN, SPECIES_WOOKIEE, ...).
+-- inventory: true gives the player an inventory container (getSlottedObject("inventory")); without it `SpaceHelpers:spaceItemReward`
+-- returns early and giveItem is never called (space-trainer-rewards). Items given land in `player.inventory.items`.
 -- parent: true or a name; the player stands in a fake building (root parent, not a ship).
 -- zone: name returned by getZoneName (default ""). ship: true or a Fakes.newShip option table; the
 -- player then sits in a fake player ship (getRootParent returns it, the ship's getPilot returns the
@@ -257,11 +260,17 @@ function Fakes.newCreature(opts)
 		bankCredits = 0,     -- sum of addBankCredits amounts
 		failedMissions = {}, -- quest crcs given to failQuestMission, in order
 		datapad = nil,
+		species = opts.species, -- read by getSpecies (default 0 = human); SPECIES_* values
+		inventory = nil,        -- opt-in (opts.inventory): the container getSlottedObject("inventory") returns
 	}, FakeCreature)
 
 	if not c.isNpc then
 		c.ghost = opts.ghost or Fakes.newGhost(opts)
 		c.datapad = Fakes.newContainer({ objectName = "datapad" })
+
+		if opts.inventory then
+			c.inventory = Fakes.newContainer({ objectName = "inventory" })
+		end
 	end
 
 	register(c)
@@ -341,7 +350,13 @@ function FakeCreature:isShipAiAgent() return false end
 function FakeCreature:isPlayerShip() return false end
 function FakeCreature:isActiveArea() return false end
 function FakeCreature:isMissionObject() return false end
-function FakeCreature:getSlottedObject(slot) if slot == "datapad" then return self.datapad end end
+function FakeCreature:getSlottedObject(slot)
+	if slot == "datapad" then
+		return self.datapad
+	elseif slot == "inventory" then
+		return self.inventory -- nil unless the player was built with `inventory = true`
+	end
+end
 
 -- A player inside a ship reports the ship's position, like the server's world position.
 function FakeCreature:getWorldPositionX() return self.rootParent and self.rootParent.x or 0 end

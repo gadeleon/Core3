@@ -490,7 +490,7 @@ end
 --   sets mission n's :attempted flag), skills (extra skills), questStatus (extra suffix -> value),
 --   win (list of missions, default 1..n-1, whose whole chain is complete and :reward is set), zone / ship (H.newPlayer: a pilot
 --   standing in a ship in that space zone), baseSkills (list: replaces the trainer's own skills for n; skills is still appended),
---   experience (table: replaces { space_combat_general = 0 })
+--   experience (table: replaces { space_combat_general = 0 }), species, inventory (H.newPlayer options)
 function T.player(tr, n, opts)
 	opts = opts or {}
 
@@ -563,6 +563,8 @@ function T.player(tr, n, opts)
 		questStatus = status,
 		zone = opts.zone,
 		ship = opts.ship,
+		species = opts.species,     -- space-trainer-rewards: SPECIES_* value (default human)
+		inventory = opts.inventory, -- space-trainer-rewards: true gives the pilot an inventory, so rewards call giveItem
 	}
 
 	return H.newPlayer(args)

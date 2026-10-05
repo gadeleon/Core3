@@ -95,6 +95,8 @@ function aqzowConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_4.name .. ":reward", 1)
 
 			assassinate_corellia_rebel_tier3_4:rewardPlayer(pPlayer)
+
+			ghost:increaseFactionStanding("rebel", 100)
 		end
 
 		return convoTemplate:getScreen("excellent_work4")
@@ -103,6 +105,8 @@ function aqzowConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_3.name .. ":reward", 1)
 
 			delivery_corellia_rebel_tier3_3:rewardPlayer(pPlayer)
+
+			ghost:increaseFactionStanding("rebel", 100)
 		end
 
 		return convoTemplate:getScreen("excellent_work3")
@@ -111,6 +115,8 @@ function aqzowConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_2.name .. ":reward", 1)
 
 			inspect_corellia_rebel_tier3_2:rewardPlayer(pPlayer)
+
+			ghost:increaseFactionStanding("rebel", 100)
 		end
 
 		return convoTemplate:getScreen("excellent_work2")
@@ -119,6 +125,8 @@ function aqzowConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 			setQuestStatus(playerID .. HavocSquadronScreenplay.TIER3_QUEST_STRING_1.name .. ":reward", 1)
 
 			recovery_corellia_rebel_tier3_1:rewardPlayer(pPlayer)
+
+			ghost:increaseFactionStanding("rebel", 100)
 		end
 
 		return convoTemplate:getScreen("excellent_work")

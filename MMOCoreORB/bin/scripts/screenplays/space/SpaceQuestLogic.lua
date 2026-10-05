@@ -84,11 +84,15 @@ function SpaceQuestLogic:rewardPlayer(pPlayer)
 		for j = 1, #itemTable.species, 1 do
 			local speciesIdentifier = itemTable.species[j]
 
-			if (rewardString == "" and speciesIdentifier == playerSpecies or speciesIdentifier == -1) then
+			if (speciesIdentifier == playerSpecies or speciesIdentifier == -1) then
 				rewardString = itemTable.item
 
 				break
 			end
+		end
+
+		if (rewardString ~= "") then
+			break
 		end
 	end
 

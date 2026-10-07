@@ -123,6 +123,7 @@
 #include "server/zone/objects/tangible/components/ThrowGrenadeMenuComponent.h"
 #include "server/zone/objects/tangible/components/GogglesObjectMenuComponent.h"
 #include "server/zone/objects/tangible/components/ArmorObjectMenuComponent.h"
+#include "server/zone/objects/tangible/components/ColorCustomizerMenuComponent.h"
 #include "server/zone/objects/tangible/components/PlaceableLootContainerComponent.h"
 #include "server/zone/objects/tangible/components/ScavengerChestContainerComponent.h"
 #include "server/zone/objects/tangible/components/ScavengerDroidContainerComponent.h"
@@ -287,6 +288,7 @@ ComponentManager::ComponentManager() {
 	components.put("CreatureHabitatMenuComponent", new CreatureHabitatMenuComponent());
 	components.put("WearableObjectMenuComponent", new WearableObjectMenuComponent());
 	components.put("ArmorObjectMenuComponent", new ArmorObjectMenuComponent());
+	components.put("ColorCustomizerMenuComponent", new ColorCustomizerMenuComponent());
 
 	components.put("CityHallZoneComponent", new CityHallZoneComponent());
 

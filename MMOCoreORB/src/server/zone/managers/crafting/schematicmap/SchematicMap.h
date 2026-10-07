@@ -50,6 +50,14 @@ public:
 		return schematicCrcMap.get(schemid);
 	}
 
+	int getSchematicCount() const {
+		return schematicCrcMap.size();
+	}
+
+	DraftSchematic* getSchematic(int index) {
+		return schematicCrcMap.elementAt(index).getValue();
+	}
+
 private:
 
 	void loadSchematicGroups();

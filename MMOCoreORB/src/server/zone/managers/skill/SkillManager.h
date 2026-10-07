@@ -124,6 +124,43 @@ public:
 		return skillMap.get(hashCode).get();
 	}
 
+	/**
+	 * Highest total of a skill mod one profession grants across all of its skill boxes, e.g. a
+	 * master tailor's clothing_customization. Professions are grouped by the first two parts of the
+	 * skill name (crafting_tailor_novice -> crafting_tailor).
+	 */
+	int getMaxProfessionSkillMod(const String& skillMod) {
+		VectorMap<String, int> totals;
+		totals.setAllowOverwriteInsertPlan();
+		HashTableIterator<uint32, Reference<Skill*> > iterator = skillMap.iterator();
+
+		while (iterator.hasNext()) {
+			Reference<Skill*> skill = iterator.getNextValue();
+
+			if (skill == nullptr)
+				continue;
+
+			const VectorMap<String, int>* mods = skill->getSkillModifiers();
+
+			if (mods == nullptr || !mods->contains(skillMod))
+				continue;
+
+			const String& name = skill->getSkillName();
+			int first = name.indexOf('_');
+			int second = first == -1 ? -1 : name.indexOf('_', first + 1);
+			String profession = second == -1 ? name : name.subString(0, second);
+
+			totals.put(profession, (totals.contains(profession) ? totals.get(profession) : 0) + mods->get(skillMod));
+		}
+
+		int max = 0;
+
+		for (int i = 0; i < totals.size(); ++i)
+			max = Math::max(max, totals.elementAt(i).getValue());
+
+		return max;
+	}
+
 	Ability* getAbility(const String& abilityName) const {
 		return abilityMap.get(abilityName).get();
 	}

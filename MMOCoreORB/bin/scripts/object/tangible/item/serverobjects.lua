@@ -50,6 +50,7 @@ includeFile("tangible/item/quest/serverobjects.lua")
 -- Server Objects
 includeFile("tangible/item/con_drinking_glass_01.lua")
 includeFile("tangible/item/droid_customization.lua")
+includeFile("tangible/item/color_kit.lua")
 includeFile("tangible/item/loot_credit_chip.lua")
 includeFile("tangible/item/lytus_family_artefact.lua")
 includeFile("tangible/item/vehicle_customization.lua")

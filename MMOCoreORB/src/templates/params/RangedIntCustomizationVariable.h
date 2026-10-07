@@ -51,6 +51,10 @@ public:
 		return defaultValue;
 	}
 
+	inline int getMaxValueExclusive() const {
+		return maxValueExclusive.get();
+	}
+
 	String toString() const {
 		StringBuffer stream;
 		/*stream << "variableName" << " = " << variableName.toString() << "\n";

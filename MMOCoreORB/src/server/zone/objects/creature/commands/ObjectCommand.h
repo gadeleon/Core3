@@ -152,6 +152,51 @@ public:
 
 				ManagedReference<ResourceManager*> resourceManager = server->getZoneServer()->getResourceManager();
 				resourceManager->givePlayerResource(creature, resourceName, quantity);
+			} else if (commandType.beginsWith("colorterminal")) {
+				// Persistent, stays where it is placed.
+				const String terminalTemplate = "object/tangible/terminal/terminal_color_customization.iff";
+				ManagedReference<SceneObject*> terminal = server->getZoneServer()->createObject(terminalTemplate.hashCode(), 1);
+
+				if (terminal == nullptr || creature->getZone() == nullptr)
+					return GENERALERROR;
+
+				Locker clocker(terminal, creature);
+
+				terminal->initializePosition(creature->getPositionX(), creature->getPositionZ(), creature->getPositionY());
+				terminal->setDirection(creature->getDirectionW(), creature->getDirectionX(), creature->getDirectionY(), creature->getDirectionZ());
+
+				ManagedReference<SceneObject*> parent = creature->getParent().get();
+
+				if (parent != nullptr && parent->isCellObject())
+					parent->transferObject(terminal, -1, true);
+				else
+					creature->getZone()->transferObject(terminal, -1, true);
+
+				creature->info(true) << "/object colorterminal created oid: " << terminal->getObjectID() << " at " << creature->getWorldPosition() << " on " << creature->getZone()->getZoneName();
+			} else if (commandType.beginsWith("colorkit")) {
+				ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
+
+				if (inventory == nullptr || inventory->isContainerFullRecursive()) {
+					creature->sendSystemMessage("Your inventory is full.");
+					return GENERALERROR;
+				}
+
+				const String kitTemplate = "object/tangible/item/color_kit.iff";
+				ManagedReference<SceneObject*> kit = server->getZoneServer()->createObject(kitTemplate.hashCode(), 2);
+
+				if (kit == nullptr)
+					return GENERALERROR;
+
+				Locker locker(kit);
+
+				if (!inventory->transferObject(kit, -1, true)) {
+					kit->destroyObjectFromDatabase(true);
+					return GENERALERROR;
+				}
+
+				inventory->broadcastObject(kit, true);
+
+				creature->info(true) << "/object colorkit created oid: " << kit->getObjectID();
 			} else if (commandType.beginsWith("creaturespawner")) {
 				if (!CreatureSpawner::handleCommand(creature))
 					return GENERALERROR;
@@ -339,6 +384,8 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object universalresource [<quantity>]");
 			creature->sendSystemMessage("SYNTAX: /object omnitool");
 			creature->sendSystemMessage("SYNTAX: /object creaturespawner");
+			creature->sendSystemMessage("SYNTAX: /object colorterminal");
+			creature->sendSystemMessage("SYNTAX: /object colorkit");
 
 			return INVALIDPARAMETERS;
 		}

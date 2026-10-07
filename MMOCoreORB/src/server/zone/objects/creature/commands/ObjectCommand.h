@@ -254,6 +254,9 @@ public:
 			} else if (commandType.beginsWith("grindingjedi")) {
 				if (!GrindingArmor::handleJediCommand(creature))
 					return GENERALERROR;
+			} else if (commandType.beginsWith("craftingclothes")) {
+				if (!GrindingArmor::handleCraftingClothesCommand(creature))
+					return GENERALERROR;
 			}
 
 		} catch (Exception& e) {
@@ -265,6 +268,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object characterbuilder");
 			creature->sendSystemMessage("SYNTAX: /object grindingarmor <family> [<slot>] [legal|super]");
 			creature->sendSystemMessage("SYNTAX: /object grindingjedi");
+			creature->sendSystemMessage("SYNTAX: /object craftingclothes");
 
 			return INVALIDPARAMETERS;
 		}

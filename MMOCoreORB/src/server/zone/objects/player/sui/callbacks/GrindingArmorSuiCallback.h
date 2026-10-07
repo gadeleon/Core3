@@ -34,6 +34,9 @@
  * /object grindingjedi uses the same flow with a Jedi robe picker first. Robes are always no-trade.
  * Every generated item skips the template's required skills/ranks when equipped.
  * The mod picker's top row, ALL ARMOR MODS, adds every armor attachment mod at +25.
+ *
+ * /object craftingclothes skips straight to the mod picker for a no-trade belt (wearable by every species), listing
+ * only the crafting assembly/experimentation/customization mods (ALL CRAFTING MODS on top).
  */
 
 class GrindingArmorRequest : public Object {
@@ -42,8 +45,11 @@ public:
 	String slot;
 	bool superMode = false;
 
-	// Set for /object grindingjedi, empty for armor
-	String robeTemplate;
+	// Set for /object grindingjedi and /object craftingclothes, empty for armor
+	String itemTemplate;
+
+	// Set for /object craftingclothes, the picker lists crafting mods instead of armor mods
+	bool craftingMods = false;
 
 	Vector<String> slots;
 	Vector<String> mods;
@@ -64,6 +70,9 @@ public:
 
 	// Top row of the mod picker, adds every armor attachment mod at once.
 	static constexpr const char* ALL_MODS_ENTRY = "ALL ARMOR MODS";
+	static constexpr const char* ALL_CRAFTING_MODS_ENTRY = "ALL CRAFTING MODS";
+
+	static constexpr const char* CRAFTING_BELT_TEMPLATE = "object/tangible/wearables/belt/belt_s02.iff";
 
 	/**
 	 * Parses /object grindingarmor arguments and opens the mod selection box.
@@ -73,6 +82,7 @@ public:
 
 	static void sendModBox(CreatureObject* creature, GrindingArmorRequest* request);
 	static void addAllArmorMods(CreatureObject* creature, GrindingArmorRequest* request);
+	static void addAllCraftingMods(GrindingArmorRequest* request);
 	static void generate(CreatureObject* creature, GrindingArmorRequest* request);
 
 	static void sendColorBox(CreatureObject* creature, GrindingArmorColorRequest* request);
@@ -88,10 +98,16 @@ public:
 
 	static const Vector<String>& getRobes();
 
+	/**
+	 * Opens the crafting mod picker for /object craftingclothes.
+	 */
+	static bool handleCraftingClothesCommand(CreatureObject* creature);
+
 private:
 	static const Vector<String>& getFamilies();
 	static const Vector<String>& getSlots();
 	static const Vector<String>& getJediMods();
+	static const Vector<String>& getCraftingMods();
 
 	static String getSchematicPath(const String& family, const String& slot);
 	static String getArmorTemplatePath(const String& family, const String& slot);
@@ -141,6 +157,8 @@ public:
 
 			if (mod == GrindingArmor::ALL_MODS_ENTRY)
 				GrindingArmor::addAllArmorMods(creature, request);
+			else if (mod == GrindingArmor::ALL_CRAFTING_MODS_ENTRY)
+				GrindingArmor::addAllCraftingMods(request);
 			else if (!request->mods.contains(mod))
 				request->mods.add(mod);
 		}
@@ -178,7 +196,7 @@ public:
 			return;
 		}
 
-		request->robeTemplate = "object/tangible/wearables/robe/" + robes.get(index) + ".iff";
+		request->itemTemplate = "object/tangible/wearables/robe/" + robes.get(index) + ".iff";
 
 		GrindingArmor::sendModBox(creature, request);
 	}
@@ -271,6 +289,53 @@ inline const Vector<String>& GrindingArmor::getJediMods() {
 				// Jedi crafting and utility
 				"force_assembly", "force_experimentation", "force_repair_bonus", "force_failure_reduction", "force_luck", "force_persuade",
 				"force_vehicle_control", "force_vehicle_speed"};
+
+		for (const char* name : names)
+			mods.add(name);
+	}
+
+	return mods;
+}
+
+inline const Vector<String>& GrindingArmor::getCraftingMods() {
+	static Vector<String> mods;
+
+	if (mods.size() == 0) {
+		// Assembly, experimentation and customization mods used by draft schematics, grouped by profession.
+		const char* names[] = {
+				// Artisan / general
+				"general_assembly", "general_experimentation", "general_customization", "camouflage",
+				// Tailor
+				"clothing_assembly", "clothing_experimentation", "clothing_customization", "artisan_clothing_customization",
+				// Armorsmith
+				"armor_assembly", "armor_experimentation", "armor_customization",
+				// Weaponsmith
+				"weapon_assembly", "weapon_experimentation", "weapon_customization", "grenade_assembly",
+				// Droid engineer
+				"droid_assembly", "droid_experimentation", "droid_customization",
+				// Architect
+				"structure_assembly", "structure_experimentation", "structure_customization",
+				// Chef
+				"food_assembly", "food_experimentation", "food_customization",
+				// Doctor and combat medic
+				"medicine_assembly", "medicine_experimentation", "medicine_customization",
+				"combat_medicine_assembly", "combat_medicine_experimentation", "combat_medicine_customization",
+				// Bio-engineer
+				"bio_engineer_assembly", "bio_engineer_experimentation", "bio_customization",
+				// Entertainer instruments
+				"instrument_assembly", "instrument_customization",
+				// Smuggler spice
+				"spice_assembly", "spice_experimentation", "spice_customization",
+				// Shipwright
+				"advanced_assembly", "advanced_ship_experimentation", "advanced_customization",
+				"chassis_assembly", "chassis_experimentation", "chassis_customization",
+				"engine_assembly", "engine_experimentation", "engine_customization",
+				"booster_assembly", "booster_experimentation", "booster_customization",
+				"shields_assembly", "shields_experimentation",
+				"power_systems", "power_systems_experimentation", "power_customization",
+				"weapon_systems", "weapon_systems_experimentation", "weapon_systems_customization",
+				// Jedi lightsaber
+				"jedi_saber_assembly", "jedi_saber_experimentation", "jedi_customization"};
 
 		for (const char* name : names)
 			mods.add(name);
@@ -425,6 +490,26 @@ inline bool GrindingArmor::handleJediCommand(CreatureObject* creature) {
 	return true;
 }
 
+inline bool GrindingArmor::handleCraftingClothesCommand(CreatureObject* creature) {
+	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
+
+	if (ghost == nullptr)
+		return false;
+
+	Reference<GrindingArmorRequest*> request = new GrindingArmorRequest();
+	request->family = "crafting_belt";
+	request->slots.add("belt");
+	request->itemTemplate = CRAFTING_BELT_TEMPLATE;
+	request->craftingMods = true;
+
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_MODS);
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_COLOR);
+
+	sendModBox(creature, request);
+
+	return true;
+}
+
 inline void GrindingArmor::sendRobeBox(CreatureObject* creature, GrindingArmorRequest* request) {
 	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
 
@@ -455,16 +540,19 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 	if (ghost == nullptr || lootManager == nullptr)
 		return;
 
-	bool jedi = !request->robeTemplate.isEmpty();
+	bool jedi = !request->itemTemplate.isEmpty() && !request->craftingMods;
+	bool crafting = request->craftingMods;
 
 	StringBuffer prompt;
 
-	if (jedi)
-		prompt << "Robe: " << request->robeTemplate.subString(request->robeTemplate.lastIndexOf('/') + 1, request->robeTemplate.lastIndexOf('.'));
+	if (crafting)
+		prompt << "Item: crafting belt (no trade)";
+	else if (jedi)
+		prompt << "Robe: " << request->itemTemplate.subString(request->itemTemplate.lastIndexOf('/') + 1, request->itemTemplate.lastIndexOf('.'));
 	else
 		prompt << "Family: " << request->family;
 
-	if (!jedi) {
+	if (!jedi && !crafting) {
 		prompt << "\nSlot: " << (request->slot.isEmpty() ? "full set" : request->slot);
 
 		bool craftable = request->slots.size() > 0 && isCraftable(getSchematicPath(request->family, request->slots.get(0)));
@@ -491,7 +579,10 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		prompt << request->mods.get(i);
 	}
 
-	prompt << "\n\nSelect a mod and press Add, or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod. Press Done to generate the " << (jedi ? "robe." : "armor.");
+	if (crafting)
+		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_CRAFTING_MODS_ENTRY << " to add every crafting mod. Press Done to generate the belt.";
+	else
+		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod. Press Done to generate the " << (jedi ? "robe." : "armor.");
 
 	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETHREEBUTTON);
 	box->setPromptTitle("Grinding Armor");
@@ -511,9 +602,17 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 			available.add(jediMods.get(i));
 	}
 
+	// Crafting belts only list crafting mods.
+	if (crafting) {
+		const Vector<String>& craftingMods = getCraftingMods();
+
+		for (int i = 0; i < craftingMods.size(); ++i)
+			available.add(craftingMods.get(i));
+	}
+
 	const SortedVector<String>* mods = lootManager->getLootableArmorAttachmentMods();
 
-	for (int i = 0; i < mods->size(); ++i) {
+	for (int i = 0; i < mods->size() && !crafting; ++i) {
 		if (!available.contains(mods->get(i)))
 			available.add(mods->get(i));
 	}
@@ -529,13 +628,18 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		unchosen.add(mod);
 	}
 
-	bool armorModsLeft = false;
+	if (crafting) {
+		if (unchosen.size() > 0)
+			box->addMenuItem(ALL_CRAFTING_MODS_ENTRY);
+	} else {
+		bool armorModsLeft = false;
 
-	for (int i = 0; i < mods->size() && !armorModsLeft; ++i)
-		armorModsLeft = unchosen.contains(mods->get(i));
+		for (int i = 0; i < mods->size() && !armorModsLeft; ++i)
+			armorModsLeft = unchosen.contains(mods->get(i));
 
-	if (armorModsLeft)
-		box->addMenuItem(ALL_MODS_ENTRY);
+		if (armorModsLeft)
+			box->addMenuItem(ALL_MODS_ENTRY);
+	}
 
 	for (int i = 0; i < unchosen.size(); ++i)
 		box->addMenuItem(unchosen.get(i));
@@ -556,6 +660,17 @@ inline void GrindingArmor::addAllArmorMods(CreatureObject* creature, GrindingArm
 
 	for (int i = 0; i < mods->size(); ++i) {
 		const String& mod = mods->get(i);
+
+		if (!request->mods.contains(mod) && !SkillModManager::instance()->isWearableModDisabled(mod))
+			request->mods.add(mod);
+	}
+}
+
+inline void GrindingArmor::addAllCraftingMods(GrindingArmorRequest* request) {
+	const Vector<String>& mods = getCraftingMods();
+
+	for (int i = 0; i < mods.size(); ++i) {
+		const String& mod = mods.get(i);
 
 		if (!request->mods.contains(mod) && !SkillModManager::instance()->isWearableModDisabled(mod))
 			request->mods.add(mod);
@@ -643,8 +758,8 @@ inline ManagedReference<TangibleObject*> GrindingArmor::createPiece(CreatureObje
 	String schematicPath = getSchematicPath(request->family, slot);
 	ManagedReference<TangibleObject*> prototype;
 
-	if (!request->robeTemplate.isEmpty())
-		prototype = createTemplatePrototype(creature, request->robeTemplate);
+	if (!request->itemTemplate.isEmpty())
+		prototype = createTemplatePrototype(creature, request->itemTemplate);
 	else if (isCraftable(schematicPath))
 		prototype = createCraftedPrototype(creature, schematicPath);
 	else
@@ -687,7 +802,7 @@ inline ManagedReference<TangibleObject*> GrindingArmor::createPiece(CreatureObje
 		prototype->setForceNoTrade(true);
 	}
 
-	if (!request->robeTemplate.isEmpty())
+	if (!request->itemTemplate.isEmpty())
 		prototype->setForceNoTrade(true);
 
 	// Set Crafter name and generate serial number
@@ -743,7 +858,12 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 	Reference<GrindingArmorColorRequest*> colorRequest = new GrindingArmorColorRequest();
 
 	StringBuffer log;
-	log << (request->robeTemplate.isEmpty() ? "/object grindingarmor " : "/object grindingjedi " + request->robeTemplate + " ") << request->family << " " << (request->slot.isEmpty() ? "full_set" : request->slot) << " " << (request->superMode ? "super" : "legal") << " mods:";
+	if (request->craftingMods)
+		log << "/object craftingclothes ";
+	else
+		log << (request->itemTemplate.isEmpty() ? "/object grindingarmor " : "/object grindingjedi " + request->itemTemplate + " ");
+
+	log << request->family << " " << (request->slot.isEmpty() ? "full_set" : request->slot) << " " << (request->superMode ? "super" : "legal") << " mods:";
 
 	for (int i = 0; i < request->mods.size(); ++i)
 		log << " " << request->mods.get(i);

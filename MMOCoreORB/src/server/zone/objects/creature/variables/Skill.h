@@ -33,6 +33,9 @@ protected:
 
 	int moneyRequired;
 	int pointsRequired;
+
+	// pointsRequired from the skill data, before /server playermanager skillpoints changes
+	int basePointsRequired;
 	int skillsRequiredCount;
 
 	Vector<String> skillsRequired;
@@ -76,6 +79,7 @@ public:
 		searchable = false;
 		skillsRequiredCount = 0;
 		pointsRequired = 0;
+		basePointsRequired = 0;
 		parentNode = nullptr;
 	}
 
@@ -100,6 +104,7 @@ public:
 		row->getValue(6, hidden);
 		row->getValue(7, moneyRequired);
 		row->getValue(8, pointsRequired);
+		basePointsRequired = pointsRequired;
 		row->getValue(9, skillsRequiredCount);
 		row->getValue(10, skillsRequired);
 		row->getValue(11, preclusionSkills);
@@ -137,6 +142,7 @@ public:
 		hidden = templateData->getIntField("hidden");
 		moneyRequired = templateData->getIntField("moneyRequired");
 		pointsRequired = templateData->getIntField("pointsRequired");
+		basePointsRequired = pointsRequired;
 		skillsRequiredCount = templateData->getIntField("skillsRequiredCount");
 
 		LuaObject skillsRequiredTable = templateData->getObjectField("skillsRequired");
@@ -320,6 +326,14 @@ public:
 	 */
 	inline int getSkillPointsRequired() const {
 		return pointsRequired;
+	}
+
+	inline int getBaseSkillPointsRequired() const {
+		return basePointsRequired;
+	}
+
+	inline void setSkillPointsRequired(int points) {
+		pointsRequired = points;
 	}
 
 	/**

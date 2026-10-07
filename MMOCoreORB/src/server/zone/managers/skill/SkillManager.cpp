@@ -23,6 +23,8 @@
 #include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
 #include "server/zone/objects/player/sui/callbacks/SurrenderPilotSuiCallback.h"
 #include "templates/faction/Factions.h"
+#include "server/chat/ChatManager.h"
+#include "server/zone/managers/player/PlayerMap.h"
 
 SkillManager::SkillManager()
 	: Logger("SkillManager") {
@@ -32,6 +34,10 @@ SkillManager::SkillManager()
 	performanceManager = new PerformanceManager();
 
 	apprenticeshipEnabled = false;
+
+	skillPointPool = 250;
+	skillPointCostMultiplier = 1.f;
+	skillPointCostOverrides.setAllowOverwriteInsertPlan();
 }
 
 SkillManager::~SkillManager() {
@@ -60,6 +66,27 @@ void SkillManager::loadLuaConfig() {
 	lua->runFile("scripts/managers/skill_manager.lua");
 
 	apprenticeshipEnabled = lua->getGlobalByte("apprenticeshipEnabled");
+
+	int pool = lua->getGlobalInt("skillPointPool");
+	skillPointPool = pool > 0 ? pool : 250;
+
+	float multiplier = lua->getGlobalFloat("skillPointCostMultiplier");
+	skillPointCostMultiplier = multiplier >= 0 ? multiplier : 1.f;
+
+	LuaObject overrides = lua->getGlobalObject("skillPointCostOverrides");
+
+	if (overrides.isValidTable()) {
+		for (int i = 1; i <= overrides.getTableSize(); ++i) {
+			LuaObject entry = overrides.getObjectAt(i);
+
+			if (entry.isValidTable())
+				skillPointCostOverrides.put(entry.getStringAt(1), entry.getIntAt(2));
+
+			entry.pop();
+		}
+	}
+
+	overrides.pop();
 
 	delete lua;
 	lua = nullptr;
@@ -159,6 +186,8 @@ void SkillManager::loadClientData() {
 		abilityMap.put("startDance+theatrical2", new Ability("startDance+theatrical2"));
 
 	loadXpLimits();
+
+	applySkillPointCosts();
 
 	info(true) << "Loaded " << skillMap.size() << " skills and " << abilityMap.size() << " abilities.";
 	info(true) << "Loaded " << droidProgramSizes.size() << " Droid Space Command Sizes.";
@@ -424,7 +453,7 @@ bool SkillManager::awardSkill(const String& skillName, CreatureObject* creature,
 
 		const SkillList* list = creature->getSkillList();
 
-		int totalSkillPointsWasted = 250;
+		int totalSkillPointsWasted = skillPointPool;
 
 		for (int i = 0; i < list->size(); ++i) {
 			Skill* skill = list->get(i);
@@ -630,7 +659,7 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 
 		const SkillList* list = creature->getSkillList();
 
-		int totalSkillPointsWasted = 250;
+		int totalSkillPointsWasted = skillPointPool;
 
 		for (int i = 0; i < list->size(); ++i) {
 			Skill* skill = list->get(i);
@@ -1005,5 +1034,117 @@ void SkillManager::getPlayerDroidCommands(PlayerObject* ghost, Vector<String>& p
 	for (int i = 0; i < droidCommands.size(); ++i) {
 		if (ghost->hasAbility(droidCommands.get(i)))
 			playerDroidCommands.add(droidCommands.get(i));
+	}
+}
+
+void SkillManager::applySkillPointCosts() {
+	Locker locker(&skillPointCostMutex);
+
+	int changed = 0;
+	HashTableIterator<uint32, Reference<Skill*> > iterator = skillMap.iterator();
+
+	while (iterator.hasNext()) {
+		Reference<Skill*> skill = iterator.getNextValue();
+
+		if (skill == nullptr)
+			continue;
+
+		int base = skill->getBaseSkillPointsRequired();
+		int cost = skillPointCostOverrides.contains(skill->getSkillName()) ? skillPointCostOverrides.get(skill->getSkillName()) : (int)round(base * skillPointCostMultiplier);
+
+		if (cost < 0)
+			cost = 0;
+
+		if (cost != base)
+			++changed;
+
+		skill->setSkillPointsRequired(cost);
+	}
+
+	info(true) << "Skill point pool " << skillPointPool << ", cost multiplier " << skillPointCostMultiplier << ", " << skillPointCostOverrides.size() << " override(s), " << changed << " skill cost(s) changed.";
+}
+
+void SkillManager::setSkillPointPool(int pool) {
+	skillPointPool = pool;
+}
+
+void SkillManager::setSkillPointCostMultiplier(float multiplier) {
+	{
+		Locker locker(&skillPointCostMutex);
+		skillPointCostMultiplier = multiplier;
+	}
+
+	applySkillPointCosts();
+}
+
+bool SkillManager::setSkillPointCostOverride(const String& skillName, int points) {
+	if (getSkill(skillName) == nullptr)
+		return false;
+
+	{
+		Locker locker(&skillPointCostMutex);
+
+		if (points < 0)
+			skillPointCostOverrides.drop(skillName);
+		else
+			skillPointCostOverrides.put(skillName, points);
+	}
+
+	applySkillPointCosts();
+
+	return true;
+}
+
+VectorMap<String, int> SkillManager::getSkillPointCostOverrides() {
+	Locker locker(&skillPointCostMutex);
+
+	return skillPointCostOverrides;
+}
+
+void SkillManager::updateSkillPoints(CreatureObject* creature) {
+	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
+
+	if (ghost == nullptr)
+		return;
+
+	const SkillList* list = creature->getSkillList();
+	int points = skillPointPool;
+
+	for (int i = 0; i < list->size(); ++i) {
+		Skill* skill = list->get(i);
+
+		if (skill != nullptr)
+			points -= skill->getSkillPointsRequired();
+	}
+
+	if (ghost->getSkillPoints() != points)
+		ghost->setSkillPoints(points);
+}
+
+void SkillManager::updateOnlineSkillPoints(ZoneServer* zoneServer) {
+	ChatManager* chatManager = zoneServer->getChatManager();
+
+	if (chatManager == nullptr)
+		return;
+
+	Vector<ManagedReference<CreatureObject*> > players;
+
+	{
+		Locker locker(chatManager);
+
+		PlayerMap* playerMap = chatManager->getPlayerMap();
+		playerMap->resetIterator(false);
+
+		while (playerMap->hasNext(false))
+			players.add(playerMap->getNextValue(false));
+	}
+
+	for (int i = 0; i < players.size(); ++i) {
+		ManagedReference<CreatureObject*> player = players.get(i);
+
+		Core::getTaskManager()->executeTask([player] () {
+			Locker locker(player);
+			SkillManager::instance()->updateSkillPoints(player);
+		}, "UpdateSkillPointsLambda");
 	}
 }

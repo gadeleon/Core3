@@ -12,6 +12,7 @@
 #include "server/zone/ZoneServer.h"
 #include "server/chat/ChatManager.h"
 #include "server/zone/managers/player/PlayerManager.h"
+#include "server/zone/managers/skill/SkillManager.h"
 
 #include "server/zone/managers/collision/PathFinderManager.h"
 
@@ -148,6 +149,9 @@ public:
 
 			return 0;
 
+		} else if (command == "skillpoints") {
+			return handleSkillPoints(player, tokenizer);
+
 		} else if (command == "setxpmodifier") {
 			if (!tokenizer.hasMoreTokens()) {
 				sendXpModifierStatus(player, playerManager);
@@ -199,10 +203,100 @@ public:
 	static void sendSyntax(CreatureObject* player) {
 		if (player != nullptr) {
 			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value|reset] [hours]");
+			player->sendSystemMessage("Syntax: /server playermanager skillpoints [pool <points> | multiplier <value> | cost <skill_name> <points|reset>]");
 			player->sendSystemMessage("Syntax: /server playermanager [listjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [list_frsjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [listadmins]");
 		}
+	}
+
+	static int handleSkillPoints(CreatureObject* player, StringTokenizer& tokenizer) {
+		SkillManager* skillManager = SkillManager::instance();
+
+		if (!tokenizer.hasMoreTokens()) {
+			sendSkillPointStatus(player, skillManager);
+			return 0;
+		}
+
+		String option;
+		tokenizer.getStringToken(option);
+		option = option.toLowerCase();
+
+		try {
+			if (option == "pool") {
+				int pool = tokenizer.getIntToken();
+
+				if (pool < 1 || pool > 10000) {
+					player->sendSystemMessage("Skill point pool must be between 1 and 10000.");
+					return 1;
+				}
+
+				skillManager->setSkillPointPool(pool);
+				player->sendSystemMessage("Skill point pool set to " + String::valueOf(pool) + ".");
+
+			} else if (option == "multiplier") {
+				float multiplier = tokenizer.getFloatToken();
+
+				if (multiplier < 0 || multiplier > 100) {
+					player->sendSystemMessage("Skill point cost multiplier must be between 0 and 100.");
+					return 1;
+				}
+
+				skillManager->setSkillPointCostMultiplier(multiplier);
+				player->sendSystemMessage("Skill point costs are now " + String::valueOf(multiplier) + "x the normal cost (overrides still apply).");
+
+			} else if (option == "cost") {
+				String skillName, value;
+				tokenizer.getStringToken(skillName);
+				tokenizer.getStringToken(value);
+
+				int points = value.toLowerCase() == "reset" ? -1 : Integer::valueOf(value);
+
+				if (points < -1 || points > 10000) {
+					player->sendSystemMessage("Skill point cost must be between 0 and 10000, or reset.");
+					return 1;
+				}
+
+				if (!skillManager->setSkillPointCostOverride(skillName, points)) {
+					player->sendSystemMessage("Unknown skill '" + skillName + "'.");
+					return 1;
+				}
+
+				Skill* skill = skillManager->getSkill(skillName);
+				player->sendSystemMessage(skillName + " now costs " + String::valueOf(skill->getSkillPointsRequired()) + " skill points (normally " + String::valueOf(skill->getBaseSkillPointsRequired()) + ").");
+
+			} else {
+				sendSyntax(player);
+				return 1;
+			}
+		} catch (Exception& e) {
+			sendSyntax(player);
+			return 1;
+		}
+
+		// Free points of everyone online follow the new costs right away.
+		skillManager->updateOnlineSkillPoints(player->getZoneServer());
+
+		player->info(true) << "/server playermanager skillpoints " << option << " pool " << skillManager->getSkillPointPool() << " multiplier " << skillManager->getSkillPointCostMultiplier();
+
+		return 0;
+	}
+
+	static void sendSkillPointStatus(CreatureObject* player, SkillManager* skillManager) {
+		StringBuffer message;
+		message << "Skill point pool: " << skillManager->getSkillPointPool() << ", cost multiplier: " << skillManager->getSkillPointCostMultiplier() << "x";
+
+		VectorMap<String, int> overrides = skillManager->getSkillPointCostOverrides();
+
+		if (overrides.size() == 0)
+			message << ", no cost overrides.";
+		else
+			message << ", cost overrides:";
+
+		player->sendSystemMessage(message.toString());
+
+		for (int i = 0; i < overrides.size(); ++i)
+			player->sendSystemMessage("  " + overrides.elementAt(i).getKey() + " = " + String::valueOf(overrides.elementAt(i).getValue()));
 	}
 
 	static void sendXpModifierStatus(CreatureObject* player, PlayerManager* playerManager) {

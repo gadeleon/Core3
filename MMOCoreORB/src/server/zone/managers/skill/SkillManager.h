@@ -37,6 +37,14 @@ using namespace server::zone::objects::player;
 
 namespace server {
 namespace zone {
+	class ZoneServer;
+}
+}
+
+using namespace server::zone;
+
+namespace server {
+namespace zone {
 namespace managers {
 namespace skill {
 
@@ -56,6 +64,12 @@ class SkillManager : public Singleton<SkillManager>, public Logger, public Objec
 
 	bool apprenticeshipEnabled;
 
+	// Skill point costs, from skill_manager.lua and /server playermanager skillpoints
+	int skillPointPool;
+	float skillPointCostMultiplier;
+	VectorMap<String, int> skillPointCostOverrides;
+	Mutex skillPointCostMutex;
+
 public:
 	SkillManager();
 	~SkillManager();
@@ -68,6 +82,41 @@ public:
 	void loadFromLua();
 	void loadSkill(LuaObject* skill);
 	void loadXpLimits();
+
+	/**
+	 * Sets every skill's cost from its base cost: the override for that skill if there is one,
+	 * otherwise base cost * multiplier (rounded).
+	 */
+	void applySkillPointCosts();
+
+	int getSkillPointPool() const {
+		return skillPointPool;
+	}
+
+	float getSkillPointCostMultiplier() const {
+		return skillPointCostMultiplier;
+	}
+
+	void setSkillPointPool(int pool);
+	void setSkillPointCostMultiplier(float multiplier);
+
+	/**
+	 * @param points new cost, or -1 to remove the override
+	 * @return false if the skill doesn't exist
+	 */
+	bool setSkillPointCostOverride(const String& skillName, int points);
+
+	VectorMap<String, int> getSkillPointCostOverrides();
+
+	/**
+	 * Free skill points = pool - cost of every skill the character has.
+	 */
+	void updateSkillPoints(CreatureObject* creature);
+
+	/**
+	 * Recalculates free skill points for every online character after a cost change.
+	 */
+	void updateOnlineSkillPoints(ZoneServer* zoneServer);
 
 	void addAbility(PlayerObject* ghost, const String& abilityName, bool notifyClient = true);
 	void removeAbility(PlayerObject* ghost, const String& abilityName, bool notifyClient = true);

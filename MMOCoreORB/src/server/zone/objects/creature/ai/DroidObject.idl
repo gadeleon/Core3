@@ -61,6 +61,12 @@ class DroidObject extends AiAgent {
 	 */
 	protected float hitChance;
 
+	/**
+	 * Unboosted health and level, saved the first time DroidBoost is applied
+	 */
+	protected int unboostedHam;
+	protected int unboostedLevel;
+
 	public native void initializeTransientMembers();
 
 	/**
@@ -107,6 +113,8 @@ class DroidObject extends AiAgent {
 		armor = 0;
 		resist = 0;
 		hitChance = 0.2;
+		unboostedHam = 0;
+		unboostedLevel = 0;
 	}
 
 	/**
@@ -323,6 +331,31 @@ class DroidObject extends AiAgent {
 	@preLocked
 	public void setResists(float res){
 		resist = res;
+	}
+
+	@read
+	public int getUnboostedHam() {
+		return unboostedHam;
+	}
+
+	@preLocked
+	public void setUnboostedHam(int ham) {
+		unboostedHam = ham;
+	}
+
+	@read
+	public int getUnboostedLevel() {
+		return unboostedLevel;
+	}
+
+	@preLocked
+	public void setUnboostedLevel(int lvl) {
+		unboostedLevel = lvl;
+	}
+
+	@dirty
+	public float getResists() {
+		return resist;
 	}
 
 	@local

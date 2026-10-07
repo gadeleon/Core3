@@ -6,6 +6,7 @@
 #include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/ai/DroidObject.h"
+#include "server/zone/managers/creature/DroidBoost.h"
 #include "server/zone/objects/creature/ai/HelperDroidObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
@@ -477,6 +478,7 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 		droid->removePendingTask( "droid_power" );
 		droid->removePendingTask( "droid_skill_mod" );
 		droid->initDroidModules();
+		DroidBoost::apply(droid);
 		droid->onCall();
 		droid->loadSkillMods(player);
 		// Submit new power task

@@ -26,6 +26,10 @@ public:
 
 	String getModuleName() const;
 
+	float getRating() const {
+		return rating;
+	}
+
 	void initializeTransientMembers();
 
 	void fillAttributeList(AttributeListMessage* msg, CreatureObject* droid);

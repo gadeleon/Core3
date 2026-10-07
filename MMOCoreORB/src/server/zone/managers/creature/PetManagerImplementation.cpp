@@ -7,6 +7,7 @@
 #include "templates/manager/TemplateManager.h"
 #include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/ai/DroidObject.h"
+#include "server/zone/managers/creature/DroidBoost.h"
 #include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/events/PetIncapacitationRecoverTask.h"
 #include "server/zone/objects/intangible/tasks/PetControlDeviceStoreTask.h"
@@ -51,6 +52,21 @@ void PetManagerImplementation::loadLuaConfig() {
 	luaObject.pop();
 
 	info("Loaded " + String::valueOf(mountSpeedData.size()) + " mount speeds.", true);
+
+	LuaObject boostData = lua->getGlobalObject("droidBoost");
+	DroidBoost::Config& droidBoost = DroidBoost::getConfig();
+
+	if (boostData.isValidTable()) {
+		droidBoost.enabled = boostData.getBooleanField("enabled");
+		droidBoost.hamMultiplier = boostData.getFloatField("hamMultiplier", 1.f);
+		droidBoost.damageMultiplier = boostData.getFloatField("damageMultiplier", 1.f);
+		droidBoost.level = boostData.getIntField("level");
+		droidBoost.hitChanceBonus = boostData.getFloatField("hitChanceBonus");
+		droidBoost.resistBonus = boostData.getFloatField("resistBonus");
+		droidBoost.minimumArmor = boostData.getIntField("minimumArmor");
+	}
+
+	boostData.pop();
 
 	delete lua;
 	lua = nullptr;

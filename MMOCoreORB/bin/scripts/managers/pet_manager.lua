@@ -53,3 +53,15 @@ mountSpeedData = {
 	{"appearance/falumpaset_hue.sat", 7.5, 1.133, 300, 780},
 	{"appearance/kaadu_hue.sat", 7.5, 1.533, 120, 600},
 }
+
+-- Stronger pet droids with a combat module (R-series, DZ70, probot, LE repair). Applied every time the
+-- droid is called, so existing droids pick up changes. Set enabled = false to restore normal stats.
+droidBoost = {
+	enabled = true,
+	hamMultiplier = 6, -- health/action/mind, e.g. a 4500 health R-series gets 27000
+	damageMultiplier = 5, -- e.g. a 600 rating probot does 950-1000 instead of 190-200
+	level = 90, -- 0 keeps the droid's own level (18-19)
+	hitChanceBonus = 0.4, -- added to the 0.33-0.41 base, capped at 0.95
+	resistBonus = 40, -- added to the armor module resists, capped at 90
+	minimumArmor = 2, -- 0 none, 1 light, 2 medium, 3 heavy
+}

@@ -181,6 +181,12 @@ public:
 		return false;
 	}
 
+	/**
+	 * Uses up what is in the slot without returning it (/craft practice).
+	 */
+	virtual void consume() {
+	}
+
 	virtual bool isComponentSlot() {
 		return false;
 	}

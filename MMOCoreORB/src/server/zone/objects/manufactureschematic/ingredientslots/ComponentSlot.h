@@ -303,6 +303,22 @@ public:
 		return getPrototype();
 	}
 
+	void consume() {
+		for (int i = 0; i < contents.size(); ++i) {
+			ManagedReference<TangibleObject*> component = contents.get(i);
+
+			if (component == nullptr)
+				continue;
+
+			Locker locker(component);
+
+			component->destroyObjectFromWorld(true);
+			component->destroyObjectFromDatabase(true);
+		}
+
+		contents.removeAll();
+	}
+
 	bool isComponentSlot() {
 		return true;
 	}

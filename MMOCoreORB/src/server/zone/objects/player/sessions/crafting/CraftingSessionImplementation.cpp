@@ -658,7 +658,7 @@ namespace {
 	}
 }
 
-int CraftingSessionImplementation::fillIngredients() {
+int CraftingSessionImplementation::fillIngredients(bool practice) {
 	if (!validateSession())
 		return -1;
 
@@ -687,7 +687,7 @@ int CraftingSessionImplementation::fillIngredients() {
 	for (int slot = 0; slot < manufactureSchematic->getSlotCount(); ++slot) {
 		Reference<IngredientSlot*> ingredientSlot = manufactureSchematic->getSlot(slot);
 
-		if (ingredientSlot == nullptr || ingredientSlot->isFull())
+		if (ingredientSlot == nullptr || ingredientSlot->isFull() || (practice && ingredientSlot->isOptional()))
 			continue;
 
 		Vector<ManagedReference<TangibleObject*> > candidates;
@@ -762,7 +762,10 @@ int CraftingSessionImplementation::fillIngredients() {
 			if (!objectsParent->checkContainerPermission(crafter, ContainerPermissions::MOVEOUT))
 				continue;
 
-			if (manufactureSchematic->addIngredientToSlot(crafter, craftingComponentsSatchel, tano, slot) == IngredientSlot::OK)
+			// Practice skips the client slot updates, the window closes when it is done.
+			if (practice)
+				added = ingredientSlot->add(crafter, craftingComponentsSatchel, tano) || added;
+			else if (manufactureSchematic->addIngredientToSlot(crafter, craftingComponentsSatchel, tano, slot) == IngredientSlot::OK)
 				added = true;
 		}
 
@@ -771,6 +774,66 @@ int CraftingSessionImplementation::fillIngredients() {
 	}
 
 	return filledSlots;
+}
+
+int CraftingSessionImplementation::practice(int count) {
+	if (!validateSession())
+		return -1;
+
+	ManagedReference<CreatureObject*> crafter = this->crafter.get();
+	ManagedReference<ManufactureSchematic*> manufactureSchematic = this->manufactureSchematic.get();
+
+	if (crafter == nullptr || manufactureSchematic == nullptr || prototype.get() == nullptr || state != 2)
+		return -1;
+
+	DraftSchematic* draftSchematic = manufactureSchematic->getDraftSchematic();
+
+	if (draftSchematic == nullptr)
+		return -1;
+
+	int completed = 0;
+
+	for (int i = 0; i < count; ++i) {
+		fillIngredients(true);
+
+		Locker mlocker(manufactureSchematic);
+
+		bool ready = true;
+
+		for (int slot = 0; slot < manufactureSchematic->getSlotCount() && ready; ++slot) {
+			Reference<IngredientSlot*> ingredientSlot = manufactureSchematic->getSlot(slot);
+
+			if (ingredientSlot != nullptr && !ingredientSlot->isOptional() && !ingredientSlot->isFull())
+				ready = false;
+		}
+
+		if (!ready)
+			break;
+
+		for (int slot = 0; slot < manufactureSchematic->getSlotCount(); ++slot) {
+			Reference<IngredientSlot*> ingredientSlot = manufactureSchematic->getSlot(slot);
+
+			if (ingredientSlot != nullptr)
+				ingredientSlot->consume();
+		}
+
+		++completed;
+	}
+
+	// Same XP as practicing in the crafting window.
+	String xpType = draftSchematic->getXpType();
+	int xp = round(draftSchematic->getXpAmount() * 1.05f) * completed;
+
+	if (completed > 0 && !xpType.isEmpty() && xp > 0) {
+		Reference<PlayerManager*> playerManager = crafter->getZoneServer()->getPlayerManager();
+		playerManager->awardExperience(crafter, xpType, xp, true);
+	}
+
+	// Leftovers from a partly filled last round go back to their containers.
+	closeCraftingWindow(0, false);
+	cancelSession();
+
+	return completed;
 }
 
 void CraftingSessionImplementation::removeIngredient(TangibleObject* tano, int slotUpdated, int clientCounter) {

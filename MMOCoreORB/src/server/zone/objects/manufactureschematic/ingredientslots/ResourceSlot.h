@@ -170,6 +170,13 @@ public:
 		return quantity == 0;
 	}
 
+	void consume() {
+		// Units were already taken from the containers when added.
+		quantity = 0;
+		parents.removeAll();
+		currentSpawn = nullptr;
+	}
+
 	bool isResourceSlot() {
 		return true;
 	}

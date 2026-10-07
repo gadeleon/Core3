@@ -154,9 +154,17 @@ class CraftingSession extends Facade {
 	/**
 	 * /craft fill: fills every slot that isn't full from the crafter's inventory (including
 	 * containers in it), picking the best matching resource for the schematic.
+	 * @param practice true for /craft practice: required slots only, no client updates
 	 * @return number of slots that received ingredients, -1 if not in the assembly stage
 	 */
-	public native int fillIngredients();
+	public native int fillIngredients(boolean practice = false);
+
+	/**
+	 * /craft practice: practices the selected schematic up to count times, filling the slots from
+	 * the crafter's inventory each time, then awards the practice XP and closes the session.
+	 * @return number of practice crafts done, -1 if not in the assembly stage
+	 */
+	public native int practice(int count);
 
 	/**
 	 * The NextCraftingStageCommand uses this

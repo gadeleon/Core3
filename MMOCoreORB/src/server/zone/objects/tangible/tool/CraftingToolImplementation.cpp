@@ -13,6 +13,7 @@
 #include "server/zone/objects/manufactureschematic/craftingvalues/CraftingValues.h"
 #include "server/zone/packets/scene/AttributeListMessage.h"
 #include "server/zone/objects/player/sessions/crafting/CraftingSession.h"
+#include "server/zone/objects/tangible/tool/CraftingStation.h"
 
 void CraftingToolImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	TangibleObjectImplementation::loadTemplateData(templateData);
@@ -109,6 +110,9 @@ void CraftingToolImplementation::fillAttributeList(AttributeListMessage* alm, Cr
 
 	alm->insertAttribute("craft_tool_effectiveness", Math::getPrecision(effectiveness, 2));
 
+	if (omni)
+		alm->insertAttribute("craft_tool_type", "Omni (all schematics, built-in station)");
+
 	String statusString = "@crafting:tool_status_ready";
 
 	if (status == TOOL_FINISHED) {
@@ -132,7 +136,46 @@ void CraftingToolImplementation::updateCraftingValues(CraftingValues* values, bo
 }
 
 Vector<uint32>* CraftingToolImplementation::getToolTabs() {
+	if (omni) {
+		// Every tab used by the crafting tool templates.
+		static Vector<uint32> allTabs;
+
+		if (allTabs.size() == 0) {
+			const uint32 tabs[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
+					131072, 262144, 524288, 2148007936u};
+
+			for (uint32 tab : tabs)
+				allTabs.add(tab);
+		}
+
+		return &allTabs;
+	}
+
 	return &enabledTabs;
+}
+
+TangibleObject* CraftingToolImplementation::getOmniStation() {
+	if (!omni)
+		return nullptr;
+
+	if (omniStation == nullptr) {
+		const String stationTemplate = "object/tangible/crafting/station/weapon_station.iff";
+
+		ManagedReference<CraftingStation*> station = getZoneServer()->createObject(stationTemplate.hashCode(), 0).castTo<CraftingStation*>();
+
+		if (station == nullptr)
+			return nullptr;
+
+		Locker locker(station);
+
+		// High enough for every schematic.
+		station->setComplexityLevel(1000);
+		station->setEffectiveness(15);
+
+		omniStation = station;
+	}
+
+	return omniStation;
 }
 
 void CraftingToolImplementation::sendToolStartFailure(CreatureObject* player, const String& message) {

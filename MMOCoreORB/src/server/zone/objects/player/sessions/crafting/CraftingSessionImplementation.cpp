@@ -92,6 +92,11 @@ bool CraftingSessionImplementation::validateSession() {
 
 	auto strongStation = craftingStation.get();
 
+	// An omni tool's built-in station is not in the world, so there is no range to check.
+	if (strongStation != nullptr && strongTool->isOmni() && strongStation.get() == strongTool->getOmniStation()) {
+		strongStation = nullptr;
+	}
+
 	if (strongStation != nullptr) {
 		auto droidParent = strongStation->getDroidParent().get();
 
@@ -1607,12 +1612,16 @@ void CraftingSessionImplementation::createPrototype(int clientCounter, bool crea
 		String xpType = manufactureSchematic->getDraftSchematic()->getXpType();
 		int xp = manufactureSchematic->getDraftSchematic()->getXpAmount();
 
+		// Omni tools have no prototype countdown.
+		ManagedReference<CraftingTool*> craftingTool = this->craftingTool.get();
+		int timer = (craftingTool != nullptr && craftingTool->isOmni()) ? 0 : manufactureSchematic->getComplexity() * 2;
+
 		if (createItem) {
-			startCreationTasks(manufactureSchematic->getComplexity() * 2, false);
+			startCreationTasks(timer, false);
 
 		} else {
 			// This is for practicing
-			startCreationTasks(manufactureSchematic->getComplexity() * 2, true);
+			startCreationTasks(timer, true);
 			xp = round(xp * 1.05f);
 		}
 

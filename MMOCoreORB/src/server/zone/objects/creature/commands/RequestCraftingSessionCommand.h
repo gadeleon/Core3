@@ -106,6 +106,10 @@ public:
 				return GENERALERROR;
 			}
 
+			// Omni tools bring their own station for every schematic type.
+			if (craftingTool->isOmni())
+				craftingStation = cast<CraftingStation*>(craftingTool->getOmniStation());
+
 			if (craftingStation == nullptr) {
 				ManagedReference<PlayerManager*> playerMan = zoneServer->getPlayerManager();
 

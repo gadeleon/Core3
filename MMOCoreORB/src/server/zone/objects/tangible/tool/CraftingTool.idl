@@ -30,6 +30,14 @@ class CraftingTool extends ToolTangibleObject {
 	@dereferenced
 	protected Vector<unsigned int> enabledTabs;
 
+	/**
+	 * Omni crafting tool (/object omnitool): every schematic tab, a built-in crafting station
+	 * for experimentation anywhere, and no prototype countdown.
+	 */
+	protected boolean omni;
+
+	protected transient TangibleObject omniStation;
+
 	public static final int CLOTHING = 1; // Clothing and Armor Crafting Tool
 	public static final int FOOD = 2; // Food and Chemical Crafting Tool
 	public static final int GENERIC = 3; // Generic Crafting Tool
@@ -134,6 +142,27 @@ class CraftingTool extends ToolTangibleObject {
 	 */
 	@dirty
 	public native void sendToolStartFailure(CreatureObject player, final string message);
+
+	@dirty
+	public boolean isOmni() {
+		return omni;
+	}
+
+	@preLocked
+	public void setOmni(boolean val) {
+		omni = val;
+	}
+
+	@preLocked
+	public void setEffectiveness(float val) {
+		effectiveness = val;
+	}
+
+	/**
+	 * Built-in station of an omni tool, created when first needed. Not persisted or placed in the world,
+	 * like a droid's crafting module station.
+	 */
+	public native TangibleObject getOmniStation();
 
 	@dirty
 	public int getToolType() {

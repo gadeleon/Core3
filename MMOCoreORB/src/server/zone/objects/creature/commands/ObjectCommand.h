@@ -11,6 +11,7 @@
 #include "server/zone/managers/crafting/ComponentMap.h"
 #include "server/zone/managers/resource/resourcespawner/ResourceSpawner.h"
 #include "server/zone/objects/resource/ResourceContainer.h"
+#include "server/zone/objects/tangible/tool/CraftingTool.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
 #include "server/zone/objects/player/sui/callbacks/GrindingArmorSuiCallback.h"
 
@@ -150,6 +151,34 @@ public:
 
 				ManagedReference<ResourceManager*> resourceManager = server->getZoneServer()->getResourceManager();
 				resourceManager->givePlayerResource(creature, resourceName, quantity);
+			} else if (commandType.beginsWith("omnitool")) {
+				ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
+
+				if (inventory == nullptr || inventory->isContainerFullRecursive()) {
+					creature->sendSystemMessage("Your inventory is full.");
+					return GENERALERROR;
+				}
+
+				const String toolTemplate = "object/tangible/crafting/station/generic_tool.iff";
+				ManagedReference<CraftingTool*> tool = server->getZoneServer()->createObject(toolTemplate.hashCode(), 2).castTo<CraftingTool*>();
+
+				if (tool == nullptr)
+					return GENERALERROR;
+
+				Locker locker(tool);
+
+				tool->setOmni(true);
+				tool->setEffectiveness(15);
+				tool->setCustomObjectName("Omni Crafting Tool", false);
+
+				if (!inventory->transferObject(tool, -1, true)) {
+					tool->destroyObjectFromDatabase(true);
+					return GENERALERROR;
+				}
+
+				inventory->broadcastObject(tool, true);
+
+				creature->info(true) << "/object omnitool created oid: " << tool->getObjectID();
 			} else if (commandType.beginsWith("universalresource")) {
 				int quantity = 100000;
 
@@ -304,6 +333,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object grindingjedi");
 			creature->sendSystemMessage("SYNTAX: /object craftingclothes");
 			creature->sendSystemMessage("SYNTAX: /object universalresource [<quantity>]");
+			creature->sendSystemMessage("SYNTAX: /object omnitool");
 
 			return INVALIDPARAMETERS;
 		}

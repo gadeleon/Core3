@@ -197,6 +197,30 @@ public:
 				inventory->broadcastObject(kit, true);
 
 				creature->info(true) << "/object colorkit created oid: " << kit->getObjectID();
+			} else if (commandType.beginsWith("hologrindtracker")) {
+				ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
+
+				if (inventory == nullptr || inventory->isContainerFullRecursive()) {
+					creature->sendSystemMessage("Your inventory is full.");
+					return GENERALERROR;
+				}
+
+				const String trackerTemplate = "object/tangible/jedi/hologrind_tracker.iff";
+				ManagedReference<SceneObject*> tracker = server->getZoneServer()->createObject(trackerTemplate.hashCode(), 2);
+
+				if (tracker == nullptr)
+					return GENERALERROR;
+
+				Locker locker(tracker);
+
+				if (!inventory->transferObject(tracker, -1, true)) {
+					tracker->destroyObjectFromDatabase(true);
+					return GENERALERROR;
+				}
+
+				inventory->broadcastObject(tracker, true);
+
+				creature->info(true) << "/object hologrindtracker created oid: " << tracker->getObjectID();
 			} else if (commandType.beginsWith("creaturespawner")) {
 				if (!CreatureSpawner::handleCommand(creature))
 					return GENERALERROR;
@@ -386,6 +410,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object creaturespawner");
 			creature->sendSystemMessage("SYNTAX: /object colorterminal");
 			creature->sendSystemMessage("SYNTAX: /object colorkit");
+			creature->sendSystemMessage("SYNTAX: /object hologrindtracker");
 
 			return INVALIDPARAMETERS;
 		}

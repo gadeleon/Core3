@@ -33,6 +33,7 @@
  *
  * /object grindingjedi uses the same flow with a Jedi robe picker first. Robes are always no-trade.
  * Every generated item skips the template's required skills/ranks when equipped.
+ * The mod picker's top row, ALL ARMOR MODS, adds every armor attachment mod at +25.
  */
 
 class GrindingArmorRequest : public Object {
@@ -61,6 +62,9 @@ public:
 	static constexpr float SUPER_RESIST = 99.f;
 	static const int SUPER_CONDITION = 1000000;
 
+	// Top row of the mod picker, adds every armor attachment mod at once.
+	static constexpr const char* ALL_MODS_ENTRY = "ALL ARMOR MODS";
+
 	/**
 	 * Parses /object grindingarmor arguments and opens the mod selection box.
 	 * @return false if the arguments were invalid
@@ -68,6 +72,7 @@ public:
 	static bool handleCommand(CreatureObject* creature, StringTokenizer& args);
 
 	static void sendModBox(CreatureObject* creature, GrindingArmorRequest* request);
+	static void addAllArmorMods(CreatureObject* creature, GrindingArmorRequest* request);
 	static void generate(CreatureObject* creature, GrindingArmorRequest* request);
 
 	static void sendColorBox(CreatureObject* creature, GrindingArmorColorRequest* request);
@@ -134,7 +139,9 @@ public:
 		if (index >= 0 && index < listBox->getMenuSize()) {
 			String mod = listBox->getMenuItemName(index);
 
-			if (!request->mods.contains(mod))
+			if (mod == GrindingArmor::ALL_MODS_ENTRY)
+				GrindingArmor::addAllArmorMods(creature, request);
+			else if (!request->mods.contains(mod))
 				request->mods.add(mod);
 		}
 
@@ -484,7 +491,7 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		prompt << request->mods.get(i);
 	}
 
-	prompt << "\n\nSelect a mod and press Add. Press Done to generate the " << (jedi ? "robe." : "armor.");
+	prompt << "\n\nSelect a mod and press Add, or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod. Press Done to generate the " << (jedi ? "robe." : "armor.");
 
 	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETHREEBUTTON);
 	box->setPromptTitle("Grinding Armor");
@@ -511,19 +518,48 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 			available.add(mods->get(i));
 	}
 
+	Vector<String> unchosen;
+
 	for (int i = 0; i < available.size(); ++i) {
 		const String& mod = available.get(i);
 
 		if (request->mods.contains(mod) || SkillModManager::instance()->isWearableModDisabled(mod))
 			continue;
 
-		box->addMenuItem(mod);
+		unchosen.add(mod);
 	}
+
+	bool armorModsLeft = false;
+
+	for (int i = 0; i < mods->size() && !armorModsLeft; ++i)
+		armorModsLeft = unchosen.contains(mods->get(i));
+
+	if (armorModsLeft)
+		box->addMenuItem(ALL_MODS_ENTRY);
+
+	for (int i = 0; i < unchosen.size(); ++i)
+		box->addMenuItem(unchosen.get(i));
 
 	box->setCallback(new GrindingArmorModSuiCallback(creature->getZoneServer(), request));
 
 	ghost->addSuiBox(box);
 	creature->sendMessage(box->generateMessage());
+}
+
+inline void GrindingArmor::addAllArmorMods(CreatureObject* creature, GrindingArmorRequest* request) {
+	ManagedReference<LootManager*> lootManager = creature->getZoneServer()->getLootManager();
+
+	if (lootManager == nullptr)
+		return;
+
+	const SortedVector<String>* mods = lootManager->getLootableArmorAttachmentMods();
+
+	for (int i = 0; i < mods->size(); ++i) {
+		const String& mod = mods->get(i);
+
+		if (!request->mods.contains(mod) && !SkillModManager::instance()->isWearableModDisabled(mod))
+			request->mods.add(mod);
+	}
 }
 
 inline ManagedReference<TangibleObject*> GrindingArmor::createCraftedPrototype(CreatureObject* creature, const String& schematicPath) {

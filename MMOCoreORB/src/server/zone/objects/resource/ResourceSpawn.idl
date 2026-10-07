@@ -53,6 +53,11 @@ class ResourceSpawn extends SceneObject {
 	protected boolean dbDestroyed;
 	protected boolean energy;
 
+	/**
+	 * Universal resource (/object universalresource): fits every resource slot, never spawns
+	 */
+	protected boolean universal;
+
 	public ResourceSpawn() {
 		spawnType = "";
 		spawnPool = 0;
@@ -70,6 +75,7 @@ class ResourceSpawn extends SceneObject {
 		spawnPool = 0;
 		dbDestroyed = false;
 		energy = false;
+		universal = false;
 
 		setLoggingName("ResourceSpawn");
 	}
@@ -151,6 +157,9 @@ class ResourceSpawn extends SceneObject {
 
 	@read
 	public boolean isType(final string type) {
+		if (universal)
+			return true;
+
 		for(int i = 0; i < stfSpawnClasses.size(); ++i) {
 			if(stfSpawnClasses.get(i) == type)
 				return true;
@@ -160,6 +169,16 @@ class ResourceSpawn extends SceneObject {
 				return true;
 		}
 		return false;
+	}
+
+	@preLocked
+	public void setUniversal(boolean val) {
+		universal = val;
+	}
+
+	@read
+	public boolean isUniversal() {
+		return universal;
 	}
 
 	@preLocked

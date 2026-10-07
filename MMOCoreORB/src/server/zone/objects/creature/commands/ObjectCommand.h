@@ -9,6 +9,8 @@
 #include "server/zone/managers/loot/LootManager.h"
 #include "server/zone/managers/crafting/CraftingManager.h"
 #include "server/zone/managers/crafting/ComponentMap.h"
+#include "server/zone/managers/resource/resourcespawner/ResourceSpawner.h"
+#include "server/zone/objects/resource/ResourceContainer.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
 #include "server/zone/objects/player/sui/callbacks/GrindingArmorSuiCallback.h"
 
@@ -148,6 +150,38 @@ public:
 
 				ManagedReference<ResourceManager*> resourceManager = server->getZoneServer()->getResourceManager();
 				resourceManager->givePlayerResource(creature, resourceName, quantity);
+			} else if (commandType.beginsWith("universalresource")) {
+				int quantity = 100000;
+
+				if (args.hasMoreTokens())
+					quantity = args.getIntToken();
+
+				if (quantity < 1 || quantity > ResourceContainer::MAXSIZE)
+					quantity = ResourceContainer::MAXSIZE;
+
+				ManagedReference<ResourceManager*> resourceManager = server->getZoneServer()->getResourceManager();
+
+				if (resourceManager == nullptr)
+					return GENERALERROR;
+
+				String spawnName;
+
+				{
+					Locker locker(resourceManager);
+
+					ResourceSpawn* spawn = resourceManager->getResourceSpawner()->getUniversalResourceSpawn();
+
+					if (spawn == nullptr) {
+						creature->sendSystemMessage("Unable to create the universal resource.");
+						return GENERALERROR;
+					}
+
+					spawnName = spawn->getName();
+				}
+
+				resourceManager->givePlayerResource(creature, spawnName, quantity);
+
+				creature->info(true) << "/object universalresource " << quantity;
 			} else if (commandType.beginsWith("createarealoot")) {
 				String lootGroup;
 				args.getStringToken(lootGroup);
@@ -269,6 +303,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object grindingarmor <family> [<slot>] [legal|super]");
 			creature->sendSystemMessage("SYNTAX: /object grindingjedi");
 			creature->sendSystemMessage("SYNTAX: /object craftingclothes");
+			creature->sendSystemMessage("SYNTAX: /object universalresource [<quantity>]");
 
 			return INVALIDPARAMETERS;
 		}

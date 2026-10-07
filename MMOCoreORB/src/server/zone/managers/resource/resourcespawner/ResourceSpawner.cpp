@@ -476,6 +476,65 @@ ResourceSpawn* ResourceSpawner::manualCreateResourceSpawn(CreatureObject* player
 	return resourceSpawn;
 }
 
+ResourceSpawn* ResourceSpawner::getUniversalResourceSpawn() {
+	const String name = "Universal";
+	// Real resource type the universal resource is shown as (class, container and icon).
+	const String baseType = "steel_duralloy";
+
+	ManagedReference<ResourceSpawn*> existing = resourceMap->get(name.toLowerCase());
+
+	if (existing != nullptr) {
+		if (existing->isUniversal())
+			return existing;
+
+		error() << "Resource spawn " << name << " exists but is not the universal resource";
+		return nullptr;
+	}
+
+	auto resourceEntry = resourceTree->getEntry(baseType);
+
+	if (resourceEntry == nullptr) {
+		error() << "Universal resource base type not found: " << baseType;
+		return nullptr;
+	}
+
+	ResourceSpawn* newSpawn = dynamic_cast<ResourceSpawn*> (objectManager->createObject(0xb2825c5a, 1, "resourcespawns"));
+
+	if (newSpawn == nullptr)
+		return nullptr;
+
+	Locker locker(newSpawn);
+
+	newSpawn->setType(resourceEntry->getType());
+	newSpawn->setName(name);
+	newSpawn->setUniversal(true);
+
+	for (int i = 0; i < resourceEntry->getClassCount(); ++i)
+		newSpawn->addClass(resourceEntry->getClass(i));
+
+	for (int i = 0; i < resourceEntry->getStfClassCount(); ++i)
+		newSpawn->addStfClass(resourceEntry->getStfClass(i));
+
+	// Every crafting stat at max, including ones the base type doesn't have.
+	const char* attributes[] = {"res_cold_resist", "res_conductivity", "res_decay_resist", "res_heat_resist", "res_flavor",
+			"res_malleability", "res_potential_energy", "res_quality", "res_shock_resistance", "res_toughness"};
+
+	for (const char* attribute : attributes)
+		newSpawn->addAttribute(attribute, 1000);
+
+	// Never in shift: no spawn maps, no pool, can't be surveyed.
+	newSpawn->setSpawned(time(0));
+	newSpawn->setDespawned(0);
+	newSpawn->setSurveyToolType(resourceEntry->getSurveyToolType());
+	newSpawn->setContainerCRC(resourceEntry->getContainerCRC());
+
+	resourceMap->add(name, newSpawn);
+
+	info(true) << "Created universal resource spawn " << newSpawn->getObjectID();
+
+	return newSpawn;
+}
+
 ResourceSpawn* ResourceSpawner::createResourceSpawn(const String& type,
 		const Vector<String>& excludes, const String& zonerestriction) {
 

@@ -105,6 +105,13 @@ public:
 
 	ResourceSpawn* manualCreateResourceSpawn(CreatureObject* player, const UnicodeString& args);
 
+	/**
+	 * Returns the universal resource spawn, creating it the first time. It fits every crafting
+	 * resource slot and has 1000 in every stat. It is never in shift, so it can't be surveyed
+	 * or harvested.
+	 */
+	ResourceSpawn* getUniversalResourceSpawn();
+
 	ResourceSpawn* createRecycledResourceSpawn(const ResourceTreeEntry* entry) const;
 
 	ResourceSpawn* getRecycledVersion(const ResourceSpawn* resource) const;

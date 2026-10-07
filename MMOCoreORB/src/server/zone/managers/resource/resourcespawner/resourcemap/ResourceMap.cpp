@@ -45,6 +45,10 @@ float ResourceMap::getDensityAt(const String& resourcename, String zoneName, flo
 void ResourceMap::add(const String& resname, ManagedReference<ResourceSpawn* > resourceSpawn) {
 	put(resname.toLowerCase(), resourceSpawn);
 
+	// The universal resource is not listed by type (resource deeds) and never spawns on a planet.
+	if (resourceSpawn->isUniversal())
+		return;
+
 	/// Index the resources by type, for resource deeds
 	TypeResourceMap* typemap = typeResourceMap.get(resourceSpawn->getFinalClass());
 	if(typemap == nullptr) {

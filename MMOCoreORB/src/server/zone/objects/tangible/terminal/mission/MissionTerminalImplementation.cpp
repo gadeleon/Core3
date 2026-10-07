@@ -13,6 +13,7 @@
 #include "server/zone/managers/city/CityRemoveAmenityTask.h"
 #include "server/zone/objects/player/sessions/SlicingSession.h"
 #include "server/zone/managers/mission/MissionDirection.h"
+#include "server/zone/managers/mission/MissionDifficulty.h"
 
 void MissionTerminalImplementation::fillObjectMenuResponse(ObjectMenuResponse* menuResponse, CreatureObject* player) {
 	TerminalImplementation::fillObjectMenuResponse(menuResponse, player);
@@ -40,6 +41,19 @@ void MissionTerminalImplementation::fillObjectMenuResponse(ObjectMenuResponse* m
 		menuResponse->addRadialMenuItemToRadialID(150, 153, 3, "East");
 		menuResponse->addRadialMenuItemToRadialID(150, 154, 3, "South");
 		menuResponse->addRadialMenuItemToRadialID(150, 155, 3, "West");
+	}
+
+	// Destroy mission terminals can offer lairs above the player's level, for solo or small groups.
+	const Vector<int>& difficultyOffsets = MissionDifficulty::getOffsets();
+
+	if ((isGeneralTerminal() || isImperialTerminal() || isRebelTerminal()) && difficultyOffsets.size() > 0) {
+		String current = MissionDifficulty::getName(MissionDifficulty::getOffset(player));
+
+		menuResponse->addRadialMenuItem(MissionDifficulty::PARENT_RADIAL_ID, 3, "Mission Difficulty: " + current);
+		menuResponse->addRadialMenuItemToRadialID(MissionDifficulty::PARENT_RADIAL_ID, MissionDifficulty::FIRST_RADIAL_ID, 3, MissionDifficulty::getName(0));
+
+		for (int i = 0; i < difficultyOffsets.size(); ++i)
+			menuResponse->addRadialMenuItemToRadialID(MissionDifficulty::PARENT_RADIAL_ID, MissionDifficulty::FIRST_RADIAL_ID + 1 + i, 3, MissionDifficulty::getName(difficultyOffsets.get(i)));
 	}
 }
 
@@ -101,6 +115,18 @@ int MissionTerminalImplementation::handleObjectMenuSelect(CreatureObject* player
 			player->sendSystemMessage("Missions will be offered in any direction.");
 		else
 			player->sendSystemMessage("Missions will be offered to the " + String(MissionDirection::getName(direction)) + ". Refresh the terminal to see new missions.");
+
+		return 0;
+
+	} else if (MissionDifficulty::getOffsetForRadial(selectedID) >= 0) {
+		int offset = MissionDifficulty::getOffsetForRadial(selectedID);
+
+		MissionDifficulty::setOffset(player, offset);
+
+		if (offset == 0)
+			player->sendSystemMessage("Destroy missions will match your level.");
+		else
+			player->sendSystemMessage("Destroy missions will be offered " + String::valueOf(offset) + " levels above your level. Refresh the terminal to see new missions.");
 
 		return 0;
 	}

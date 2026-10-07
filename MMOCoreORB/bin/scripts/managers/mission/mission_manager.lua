@@ -92,3 +92,8 @@ destroyMissionBaseReward = 0
 destroyMissionDifficultyRewardFactor = 375
 destroyMissionRandomReward = 0
 destroyMissionDifficultyRandomReward = 15
+
+-- Level offsets offered by the "Mission Difficulty" radial on general, imperial and rebel terminals.
+-- Destroy missions are picked as if the player (or group) were that many levels higher. Max 9 entries,
+-- empty table hides the radial.
+missionDifficultyOffsets = { 10, 25, 50, 100 }

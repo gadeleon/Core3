@@ -7,6 +7,7 @@
 
 #include "server/zone/managers/mission/MissionManager.h"
 #include "server/zone/managers/mission/MissionDirection.h"
+#include "server/zone/managers/mission/MissionDifficulty.h"
 #include "server/zone/objects/tangible/terminal/mission/MissionTerminal.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/ai/AiAgent.h"
@@ -112,6 +113,19 @@ void MissionManagerImplementation::loadLuaSettings() {
 		destroyMissionDifficultyRewardFactor = lua->getGlobalLong("destroyMissionDifficultyRewardFactor");
 		destroyMissionRandomReward = lua->getGlobalLong("destroyMissionRandomReward");
 		destroyMissionDifficultyRandomReward = lua->getGlobalLong("destroyMissionDifficultyRandomReward");
+
+		LuaObject difficultyOffsets = lua->getGlobalObject("missionDifficultyOffsets");
+		Vector<int> offsets;
+
+		if (difficultyOffsets.isValidTable()) {
+			for (int i = 1; i <= difficultyOffsets.getTableSize(); i++) {
+				offsets.add(difficultyOffsets.getIntAt(i));
+			}
+		}
+
+		difficultyOffsets.pop();
+
+		MissionDifficulty::setOffsets(offsets);
 
 		delete lua;
 	}
@@ -826,7 +840,26 @@ void MissionManagerImplementation::randomizeGenericDestroyMission(CreatureObject
 	int playerLevel = server->getPlayerManager()->calculatePlayerLevel(player);
 	int maxDiff = randomLairSpawn->getMaxDifficulty();
 	int minDiff = randomLairSpawn->getMinDifficulty();
-	int difficultyLevel = System::random(maxDiff - minDiff) + minDiff;
+
+	// With a mission difficulty chosen, roll the lair level from the target level up instead of the lair's minimum.
+	int rollMinDiff = minDiff;
+	int difficultyOffset = MissionDifficulty::getOffset(player);
+
+	if (difficultyOffset > 0) {
+		int targetLevel = playerLevel;
+		Reference<GroupObject*> group = player->getGroup();
+
+		if (group != nullptr) {
+			bool includeFactionPets = faction != Factions::FACTIONNEUTRAL || ConfigManager::instance()->includeFactionPetsForMissionDifficulty();
+
+			Locker locker(group);
+			targetLevel = group->getGroupLevel(includeFactionPets);
+		}
+
+		rollMinDiff = Math::min(Math::max(minDiff, targetLevel + difficultyOffset - 5), maxDiff);
+	}
+
+	int difficultyLevel = System::random(maxDiff - rollMinDiff) + rollMinDiff;
 	int difficulty = (difficultyLevel - minDiff) / ((maxDiff > (minDiff + 5) ? maxDiff - minDiff : 5) / 5);
 
 	if (difficulty == 5)
@@ -1893,6 +1926,15 @@ LairSpawn* MissionManagerImplementation::getRandomLairSpawn(CreatureObject* play
 	//Cap the minLevel to prevent a group from being too high to get missions on a planet
 	int minLevel = Math::min(playerLevel - 5, minLevelCeiling);
 
+	// Chosen destroy mission difficulty raises the level lairs are picked for. The low level ceiling
+	// is skipped so easier lairs are not mixed in.
+	int difficultyOffset = type == MissionTypes::DESTROY ? MissionDifficulty::getOffset(player) : 0;
+
+	if (difficultyOffset > 0) {
+		playerLevel += difficultyOffset;
+		minLevel = playerLevel - 5;
+	}
+
 	//Try to pick random lair within playerLevel +-5;
 	while (counter > 0 && !foundLair) {
 		LairSpawn* randomLairSpawn = availableLairList->get(System::random(availableLairList->size() - 1));
@@ -1934,6 +1976,28 @@ LairSpawn* MissionManagerImplementation::getRandomLairSpawn(CreatureObject* play
 					}
 				}
 			}
+		}
+	}
+
+	if (!foundLair && difficultyOffset > 0) {
+		//Nothing this hard on the planet, pick randomly among the hardest lairs available
+		int hardest = 0;
+
+		for (int i = 0; i < availableLairList->size(); i++)
+			hardest = Math::max(hardest, availableLairList->get(i)->getMaxDifficulty());
+
+		Vector<LairSpawn*> hardestLairs;
+
+		for (int i = 0; i < availableLairList->size(); i++) {
+			LairSpawn* randomLairSpawn = availableLairList->get(i);
+
+			if (randomLairSpawn->getMaxDifficulty() >= hardest - 10)
+				hardestLairs.add(randomLairSpawn);
+		}
+
+		if (hardestLairs.size() > 0) {
+			lairSpawn = hardestLairs.get(System::random(hardestLairs.size() - 1));
+			foundLair = true;
 		}
 	}
 

@@ -152,6 +152,13 @@ class CraftingSession extends Facade {
 	public native void removeIngredient(TangibleObject tano, int slotUpdated, int clientCounter);
 
 	/**
+	 * /craft fill: fills every slot that isn't full from the crafter's inventory (including
+	 * containers in it), picking the best matching resource for the schematic.
+	 * @return number of slots that received ingredients, -1 if not in the assembly stage
+	 */
+	public native int fillIngredients();
+
+	/**
 	 * The NextCraftingStageCommand uses this
 	 */
 	@preLocked

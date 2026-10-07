@@ -15,6 +15,10 @@
 #include "server/zone/managers/crafting/CraftingManager.h"
 #include "server/zone/managers/crafting/ComponentMap.h"
 #include "server/zone/objects/manufactureschematic/ingredientslots/ComponentSlot.h"
+#include "server/zone/objects/manufactureschematic/ingredientslots/ResourceSlot.h"
+#include "server/zone/objects/resource/ResourceContainer.h"
+#include "server/zone/objects/resource/ResourceSpawn.h"
+#include "server/zone/objects/draftschematic/DraftSchematic.h"
 #include "server/zone/objects/tangible/tool/CraftingStation.h"
 
 #include "server/zone/packets/tangible/TangibleObjectDeltaMessage3.h"
@@ -613,6 +617,160 @@ void CraftingSessionImplementation::addIngredient(TangibleObject* tano, int slot
 	if (crafterGhost != nullptr && crafterGhost->getDebug()) {
 		crafter->sendSystemMessage("Adding ingredient: " + tano->getDisplayedName());
 	}
+}
+
+namespace {
+	// Everything in the container that could go in a slot. Crafting tools are skipped so their
+	// satchel contents (ingredients already in a slot) are never picked up again.
+	void collectIngredients(SceneObject* container, Vector<ManagedReference<TangibleObject*> >& ingredients) {
+		for (int i = 0; i < container->getContainerObjectsSize(); ++i) {
+			ManagedReference<SceneObject*> object = container->getContainerObject(i);
+
+			if (object == nullptr || object->isCraftingTool())
+				continue;
+
+			if (object->isResourceContainer() || object->isFactoryCrate() || (object->isTangibleObject() && object->getContainerObjectsSize() == 0)) {
+				ingredients.add(cast<TangibleObject*>(object.get()));
+			} else if (object->getContainerObjectsSize() > 0) {
+				collectIngredients(object, ingredients);
+			}
+		}
+	}
+
+	// How good the resource is for this schematic: its stats weighted like assembly/experimentation use them.
+	float getResourceScore(ResourceSpawn* spawn, DraftSchematic* draftSchematic) {
+		if (spawn->isUniversal())
+			return 1000000.f;
+
+		float score = 0;
+
+		for (int i = 0; i < draftSchematic->getResourceWeightCount(); ++i) {
+			ResourceWeight* weight = draftSchematic->getResourceWeight(i);
+
+			if (weight == nullptr)
+				continue;
+
+			for (int j = 0; j < weight->getPropertyListSize(); ++j)
+				score += spawn->getValueOf(weight->getTypeAndWeight(j) >> 4) * weight->getPropertyPercentage(j);
+		}
+
+		return score;
+	}
+}
+
+int CraftingSessionImplementation::fillIngredients() {
+	if (!validateSession())
+		return -1;
+
+	ManagedReference<CraftingTool*> craftingTool = this->craftingTool.get();
+	ManagedReference<CreatureObject*> crafter = this->crafter.get();
+	ManagedReference<ManufactureSchematic*> manufactureSchematic = this->manufactureSchematic.get();
+
+	if (crafter == nullptr || craftingTool == nullptr || manufactureSchematic == nullptr || prototype.get() == nullptr || state != 2)
+		return -1;
+
+	DraftSchematic* draftSchematic = manufactureSchematic->getDraftSchematic();
+	ManagedReference<SceneObject*> inventory = crafter->getInventory();
+
+	if (draftSchematic == nullptr || inventory == nullptr)
+		return -1;
+
+	Vector<ManagedReference<TangibleObject*> > ingredients;
+	collectIngredients(inventory, ingredients);
+
+	ManagedReference<SceneObject*> craftingComponentsSatchel = craftingTool->getCraftedComponentsSatchel();
+
+	Locker mlocker(manufactureSchematic);
+
+	int filledSlots = 0;
+
+	for (int slot = 0; slot < manufactureSchematic->getSlotCount(); ++slot) {
+		Reference<IngredientSlot*> ingredientSlot = manufactureSchematic->getSlot(slot);
+
+		if (ingredientSlot == nullptr || ingredientSlot->isFull())
+			continue;
+
+		Vector<ManagedReference<TangibleObject*> > candidates;
+
+		if (ingredientSlot->isResourceSlot()) {
+			// Group stacks by spawn; the best spawn with enough units wins, otherwise the best one.
+			VectorMap<uint64, int> unitsBySpawn;
+			ManagedReference<ResourceSpawn*> bestSpawn = nullptr;
+			float bestScore = -1;
+			bool bestHasEnough = false;
+			int needed = ingredientSlot->getQuantityNeeded() - ingredientSlot->getSlotQuantity();
+
+			for (int i = 0; i < ingredients.size(); ++i) {
+				ResourceContainer* resource = ingredients.get(i)->isResourceContainer() ? cast<ResourceContainer*>(ingredients.get(i).get()) : nullptr;
+
+				if (resource == nullptr || resource->getQuantity() <= 0)
+					continue;
+
+				ManagedReference<ResourceSpawn*> spawn = resource->getSpawnObject();
+
+				if (spawn == nullptr || !spawn->isType(ingredientSlot->getContentType()))
+					continue;
+
+				uint64 spawnID = spawn->getObjectID();
+				unitsBySpawn.put(spawnID, (unitsBySpawn.contains(spawnID) ? unitsBySpawn.get(spawnID) : 0) + resource->getQuantity());
+			}
+
+			for (int i = 0; i < ingredients.size(); ++i) {
+				ResourceContainer* resource = ingredients.get(i)->isResourceContainer() ? cast<ResourceContainer*>(ingredients.get(i).get()) : nullptr;
+
+				ResourceSpawn* spawn = resource != nullptr ? resource->getSpawnObject() : nullptr;
+
+				if (spawn == nullptr || !unitsBySpawn.contains(spawn->getObjectID()))
+					continue;
+
+				bool hasEnough = unitsBySpawn.get(spawn->getObjectID()) >= needed;
+				float score = getResourceScore(spawn, draftSchematic);
+
+				if ((hasEnough && !bestHasEnough) || (hasEnough == bestHasEnough && score > bestScore)) {
+					bestSpawn = spawn;
+					bestScore = score;
+					bestHasEnough = hasEnough;
+				}
+			}
+
+			for (int i = 0; i < ingredients.size() && bestSpawn != nullptr; ++i) {
+				ResourceContainer* resource = ingredients.get(i)->isResourceContainer() ? cast<ResourceContainer*>(ingredients.get(i).get()) : nullptr;
+
+				if (resource != nullptr && resource->getSpawnObject() == bestSpawn && resource->getQuantity() > 0)
+					candidates.add(resource);
+			}
+		} else if (ingredientSlot->isComponentSlot()) {
+			for (int i = 0; i < ingredients.size(); ++i) {
+				if (!ingredients.get(i)->isResourceContainer())
+					candidates.add(ingredients.get(i));
+			}
+		}
+
+		bool added = false;
+
+		for (int i = 0; i < candidates.size() && !ingredientSlot->isFull(); ++i) {
+			TangibleObject* tano = candidates.get(i);
+
+			Locker locker(tano, manufactureSchematic);
+
+			// Same checks as dragging an ingredient in.
+			if (tano->getParent().get() == nullptr || !tano->isASubChildOf(crafter) || (tano->isResourceContainer() && cast<ResourceContainer*>(tano)->getQuantity() <= 0))
+				continue;
+
+			ManagedReference<SceneObject*> objectsParent = tano->getParent().get();
+
+			if (!objectsParent->checkContainerPermission(crafter, ContainerPermissions::MOVEOUT))
+				continue;
+
+			if (manufactureSchematic->addIngredientToSlot(crafter, craftingComponentsSatchel, tano, slot) == IngredientSlot::OK)
+				added = true;
+		}
+
+		if (added)
+			++filledSlots;
+	}
+
+	return filledSlots;
 }
 
 void CraftingSessionImplementation::removeIngredient(TangibleObject* tano, int slotUpdated, int clientCounter) {

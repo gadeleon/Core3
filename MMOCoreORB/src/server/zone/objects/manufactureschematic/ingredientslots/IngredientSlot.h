@@ -150,6 +150,10 @@ public:
 		slotName = name;
 	}
 
+	const String& getContentType() {
+		return contentType;
+	}
+
 	const String& getSlotName() {
 		return slotName;
 	}

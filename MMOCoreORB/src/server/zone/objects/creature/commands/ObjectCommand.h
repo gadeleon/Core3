@@ -14,6 +14,7 @@
 #include "server/zone/objects/tangible/tool/CraftingTool.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
 #include "server/zone/objects/player/sui/callbacks/GrindingArmorSuiCallback.h"
+#include "server/zone/objects/player/sui/callbacks/CreatureSpawnerSuiCallback.h"
 
 
 class ObjectCommand : public QueueCommand {
@@ -151,6 +152,9 @@ public:
 
 				ManagedReference<ResourceManager*> resourceManager = server->getZoneServer()->getResourceManager();
 				resourceManager->givePlayerResource(creature, resourceName, quantity);
+			} else if (commandType.beginsWith("creaturespawner")) {
+				if (!CreatureSpawner::handleCommand(creature))
+					return GENERALERROR;
 			} else if (commandType.beginsWith("omnitool")) {
 				ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
 
@@ -334,6 +338,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object craftingclothes");
 			creature->sendSystemMessage("SYNTAX: /object universalresource [<quantity>]");
 			creature->sendSystemMessage("SYNTAX: /object omnitool");
+			creature->sendSystemMessage("SYNTAX: /object creaturespawner");
 
 			return INVALIDPARAMETERS;
 		}

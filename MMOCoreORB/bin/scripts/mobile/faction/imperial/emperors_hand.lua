@@ -32,6 +32,19 @@ emperors_hand = Creature:new {
 		"object/mobile/dressed_emperors_hand_human_female_01.iff",
 		"object/mobile/dressed_emperors_hand_zabrak_male_01.iff"},
 	lootGroups = {
+		-- Holocrons: 50% light and 50% dark per kill, rolled separately
+		{
+			groups = {
+				{group = "holocron_light", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
+		{
+			groups = {
+				{group = "holocron_dark", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
      	{
 			groups = {
 				{group = "imperial_marshall_tier_5", chance = 10000000}

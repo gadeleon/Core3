@@ -30,6 +30,19 @@ untrained_wielder_of_the_dark_side = Creature:new {
 
 	templates = {"object/mobile/dressed_untrained_wielder_of_the_darkside.iff"},
 	lootGroups = {
+		-- Holocrons: 50% light and 50% dark per kill, rolled separately
+		{
+			groups = {
+				{group = "holocron_light", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
+		{
+			groups = {
+				{group = "holocron_dark", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
 		{
 			groups = {
 				{group = "kun_tier_2", chance = 10000000}

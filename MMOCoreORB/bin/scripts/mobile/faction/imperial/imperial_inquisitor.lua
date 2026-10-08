@@ -30,6 +30,19 @@ imperial_inquisitor = Creature:new {
 
 	templates = {"object/mobile/dressed_imperial_inquisitor_human_male_01.iff"},
 	lootGroups = {
+		-- Holocrons: 50% light and 50% dark per kill, rolled separately
+		{
+			groups = {
+				{group = "holocron_light", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
+		{
+			groups = {
+				{group = "holocron_dark", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
 		{
 			groups = {
 				{group = "imperial_marshall_tier_4", chance = 10000000}

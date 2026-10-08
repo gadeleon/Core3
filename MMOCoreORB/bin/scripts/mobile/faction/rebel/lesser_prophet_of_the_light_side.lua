@@ -30,6 +30,19 @@ lesser_prophet_of_the_light_side = Creature:new {
 
 	templates = { "light_jedi" },
 	lootGroups = {
+		-- Holocrons: 50% light and 50% dark per kill, rolled separately
+		{
+			groups = {
+				{group = "holocron_light", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
+		{
+			groups = {
+				{group = "holocron_dark", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
 		{
 			groups = {
 				{group = "rebel_marshall_tier_3", chance = 10000000}

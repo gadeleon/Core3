@@ -31,6 +31,19 @@ senior_prophet_of_the_dark_side = Creature:new {
 		"object/mobile/dressed_dark_jedi_human_male_01.iff",
 		"object/mobile/dressed_dark_jedi_human_female_01.iff"},
 	lootGroups = {
+		-- Holocrons: 50% light and 50% dark per kill, rolled separately
+		{
+			groups = {
+				{group = "holocron_light", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
+		{
+			groups = {
+				{group = "holocron_dark", chance = 10000000}
+			},
+			lootChance = 5000000
+		},
 		{
 			groups = {
 				{group = "imperial_marshall_tier_4", chance = 10000000}

@@ -14,6 +14,7 @@
 #include "server/zone/objects/tangible/tool/CraftingTool.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
 #include "server/zone/objects/player/sui/callbacks/GrindingArmorSuiCallback.h"
+#include "server/zone/objects/player/sui/callbacks/GrindingWeapon.h"
 #include "server/zone/objects/player/sui/callbacks/CreatureSpawnerSuiCallback.h"
 
 
@@ -387,6 +388,9 @@ public:
 			} else if (commandType.beginsWith("grindingarmor")) {
 				if (!GrindingArmor::handleCommand(creature, args))
 					return INVALIDPARAMETERS;
+			} else if (commandType.beginsWith("grindingweapon")) {
+				if (!GrindingWeapon::handleCommand(creature, args))
+					return INVALIDPARAMETERS;
 			} else if (commandType.beginsWith("grindingjedi")) {
 				if (!GrindingArmor::handleJediCommand(creature))
 					return GENERALERROR;
@@ -403,6 +407,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object checklooted");
 			creature->sendSystemMessage("SYNTAX: /object characterbuilder");
 			creature->sendSystemMessage("SYNTAX: /object grindingarmor <family> [<slot>] [legal|super]");
+			creature->sendSystemMessage("SYNTAX: /object grindingweapon [<type>] [legal|super]");
 			creature->sendSystemMessage("SYNTAX: /object grindingjedi");
 			creature->sendSystemMessage("SYNTAX: /object craftingclothes");
 			creature->sendSystemMessage("SYNTAX: /object universalresource [<quantity>]");

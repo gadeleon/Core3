@@ -26,6 +26,9 @@ class WeaponObject extends TangibleObject {
 
 	protected boolean certified;
 
+	// Admin generated weapons can be used without the template's required certifications
+	protected boolean ignoreCertifications;
+
 	protected int armorPiercing;
 
 	protected int pointBlankAccuracy;
@@ -84,6 +87,7 @@ class WeaponObject extends TangibleObject {
 
 	public WeaponObject() {
 		certified = false;
+		ignoreCertifications = false;
 		armorPiercing = 0;
 
 		healthAttackCost = 0;
@@ -223,6 +227,15 @@ class WeaponObject extends TangibleObject {
 	@read
 	public boolean isCertified() {
 		return certified;
+	}
+
+	public void setIgnoreCertifications(boolean value) {
+		ignoreCertifications = value;
+	}
+
+	@read
+	public boolean isIgnoringCertifications() {
+		return ignoreCertifications;
 	}
 
 	@dirty

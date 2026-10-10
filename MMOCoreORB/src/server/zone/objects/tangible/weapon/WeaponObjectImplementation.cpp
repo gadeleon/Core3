@@ -671,6 +671,9 @@ bool WeaponObjectImplementation::isCertifiedFor(CreatureObject* object) const {
 	if (ghost == nullptr)
 		return false;
 
+	if (ignoreCertifications)
+		return true;
+
 	const auto certificationsRequired = weaponTemplate->getCertificationsRequired();
 
 	for (int i = 0; i < certificationsRequired->size(); ++i) {

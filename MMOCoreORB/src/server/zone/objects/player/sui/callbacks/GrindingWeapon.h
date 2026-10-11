@@ -13,8 +13,9 @@
  * Admin tool behind /object grindingweapon, the weapon counterpart of /object grindingarmor.
  *
  * Each weapon type maps to the player weapon template with the highest template max damage of that type
- * (client game object type from the shared templates, damage from the server templates). Lightsabers and
- * creature, droid, turret and vehicle weapons are left out.
+ * (client game object type from the shared templates, damage from the server templates), limited to kinetic
+ * and energy damage. Special heavy and thrown weapons have no kinetic or energy template, so they keep the
+ * highest damage of any type. Lightsabers and creature, droid, turret and vehicle weapons are left out.
  *
  * Every generated weapon skips its certification requirement and has 0/0/0 HAM attack costs.
  * Legal keeps the template stats. Super multiplies damage, uses the 1.0s combat speed floor, maxes accuracy
@@ -39,14 +40,14 @@ public:
 
 	static const Entry* getEntries() {
 		static const Entry entries[ENTRY_COUNT] = {
-			{"unarmed", "object/weapon/melee/special/blacksun_razor.iff"},
+			{"unarmed", "object/weapon/melee/special/vibroknuckler.iff"},
 			{"onehandmelee", "object/weapon/melee/baton/baton_gaderiffi.iff"},
-			{"twohandmelee", "object/weapon/melee/2h_sword/2h_sword_maul.iff"},
+			{"twohandmelee", "object/weapon/melee/2h_sword/2h_sword_blacksun_hack.iff"},
 			{"polearm", "object/weapon/melee/polearm/polearm_vibro_axe.iff"},
 			{"pistol", "object/weapon/ranged/pistol/pistol_republic_blaster.iff"},
 			{"carbine", "object/weapon/ranged/carbine/carbine_laser.iff"},
-			{"rifle", "object/weapon/ranged/rifle/rifle_berserker.iff"},
-			{"heavy", "object/weapon/ranged/heavy/heavy_acid_beam.iff"},
+			{"rifle", "object/weapon/ranged/rifle/rifle_t21.iff"},
+			{"heavy", "object/weapon/ranged/heavy/heavy_particle_beam.iff"},
 			{"specialheavy", "object/weapon/ranged/rifle/rifle_flame_thrower.iff"},
 			{"thrown", "object/weapon/ranged/grenade/grenade_bug_bomb.iff"}};
 

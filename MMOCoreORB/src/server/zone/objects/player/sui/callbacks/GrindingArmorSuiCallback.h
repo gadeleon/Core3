@@ -12,6 +12,10 @@
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
 #include "server/zone/objects/tangible/wearables/WearableObject.h"
 #include "server/zone/objects/tangible/wearables/WearableContainerObject.h"
+#include "server/zone/objects/tangible/component/lightsaber/LightsaberCrystalComponent.h"
+#include "server/zone/managers/loot/CrystalData.h"
+#include "server/zone/managers/stringid/StringIdManager.h"
+#include "server/zone/objects/player/sui/callbacks/GrindingWeapon.h"
 #include "server/zone/objects/draftschematic/DraftSchematic.h"
 #include "server/zone/objects/manufactureschematic/ManufactureSchematic.h"
 #include "server/zone/managers/crafting/CraftingManager.h"
@@ -31,9 +35,16 @@
  * craftable. Those pieces are created straight from the armor template, like the Death Watch Bunker
  * does, so legal mode keeps the template stats.
  *
- * /object grindingjedi uses the same flow with a Jedi robe picker first. Robes are always no-trade.
+ * /object grindingjedi [legal|super] uses the same flow with a Jedi robe picker first. Robes are always no-trade.
+ * It also generates a gen4 one-handed, two-handed and polearm lightsaber at 100% experimentation, each with a
+ * tuned color crystal and the rest of the slots filled with flawless Krayt dragon pearls at max stats.
+ * The color picker's blade palette sets every saber's color crystal. Sabers skip certifications, have 0 HAM
+ * and Force costs and are no-trade. Super applies the /object grindingweapon super stats, with the damage
+ * multiplier on the hilt only. The pearls become a super tier above flawless (multiplied damage and wound
+ * chance) so the bonus moves with the crystal. The client has no quality above flawless, so they are named "(Super)".
  * Every generated item skips the template's required skills/ranks when equipped.
  * The mod picker's top row, ALL ARMOR MODS, adds every armor attachment mod at +25.
+ * For robes, ALL FORCE MODS above it adds every Jedi mod at +25.
  *
  * /object craftingclothes skips straight to the mod picker for a no-trade belt (wearable by every species), listing
  * only the crafting assembly/experimentation/customization mods (ALL CRAFTING MODS on top).
@@ -50,6 +61,9 @@ public:
 
 	// Set for /object craftingclothes, the picker lists crafting mods instead of armor mods
 	bool craftingMods = false;
+
+	// Set for /object grindingjedi, lightsabers are generated with the robe
+	bool sabers = false;
 
 	Vector<String> slots;
 	Vector<String> mods;
@@ -71,8 +85,18 @@ public:
 	// Top row of the mod picker, adds every armor attachment mod at once.
 	static constexpr const char* ALL_MODS_ENTRY = "ALL ARMOR MODS";
 	static constexpr const char* ALL_CRAFTING_MODS_ENTRY = "ALL CRAFTING MODS";
+	static constexpr const char* ALL_FORCE_MODS_ENTRY = "ALL FORCE MODS";
 
 	static constexpr const char* CRAFTING_BELT_TEMPLATE = "object/tangible/wearables/belt/belt_s02.iff";
+
+	static constexpr const char* BLADE_COLOR_VARIABLE = "/private/index_color_blade";
+	// Blade color 31 means no color crystal is installed
+	static const int NO_BLADE_COLOR = 31;
+	// Blue, until a color is chosen in the picker
+	static const int DEFAULT_BLADE_COLOR = 0;
+	static const int FLAWLESS_ITEM_LEVEL = 350;
+	static constexpr const char* COLOR_CRYSTAL_TEMPLATE = "object/tangible/component/weapon/lightsaber/lightsaber_module_force_crystal.iff";
+	static constexpr const char* POWER_CRYSTAL_TEMPLATE = "object/tangible/component/weapon/lightsaber/lightsaber_module_krayt_dragon_pearl.iff";
 
 	/**
 	 * Parses /object grindingarmor arguments and opens the mod selection box.
@@ -83,6 +107,7 @@ public:
 	static void sendModBox(CreatureObject* creature, GrindingArmorRequest* request);
 	static void addAllArmorMods(CreatureObject* creature, GrindingArmorRequest* request);
 	static void addAllCraftingMods(GrindingArmorRequest* request);
+	static void addAllForceMods(GrindingArmorRequest* request);
 	static void generate(CreatureObject* creature, GrindingArmorRequest* request);
 
 	static void sendColorBox(CreatureObject* creature, GrindingArmorColorRequest* request);
@@ -91,9 +116,10 @@ public:
 	static void sendSyntax(CreatureObject* creature);
 
 	/**
-	 * Opens the Jedi robe picker for /object grindingjedi.
+	 * Parses /object grindingjedi arguments and opens the Jedi robe picker.
+	 * @return false if the arguments were invalid
 	 */
-	static bool handleJediCommand(CreatureObject* creature);
+	static bool handleJediCommand(CreatureObject* creature, StringTokenizer& args);
 	static void sendRobeBox(CreatureObject* creature, GrindingArmorRequest* request);
 
 	static const Vector<String>& getRobes();
@@ -108,6 +134,7 @@ private:
 	static const Vector<String>& getSlots();
 	static const Vector<String>& getJediMods();
 	static const Vector<String>& getCraftingMods();
+	static const Vector<String>& getSaberSchematics();
 
 	static String getSchematicPath(const String& family, const String& slot);
 	static String getArmorTemplatePath(const String& family, const String& slot);
@@ -118,6 +145,9 @@ private:
 	static ManagedReference<TangibleObject*> createCraftedPrototype(CreatureObject* creature, const String& schematicPath);
 	static ManagedReference<TangibleObject*> createTemplatePrototype(CreatureObject* creature, const String& templatePath);
 	static ManagedReference<TangibleObject*> createPiece(CreatureObject* creature, const String& slot, GrindingArmorRequest* request);
+	static ManagedReference<TangibleObject*> createSaber(CreatureObject* creature, const String& schematicPath, bool superMode);
+	static ManagedReference<LightsaberCrystalComponent*> createCrystal(CreatureObject* creature, const String& templatePath, bool power, bool superMode);
+	static ManagedReference<LightsaberCrystalComponent*> getColorCrystal(WeaponObject* saber);
 	static void getColorVariables(TangibleObject* piece, Vector<String>& variables);
 };
 
@@ -159,6 +189,8 @@ public:
 				GrindingArmor::addAllArmorMods(creature, request);
 			else if (mod == GrindingArmor::ALL_CRAFTING_MODS_ENTRY)
 				GrindingArmor::addAllCraftingMods(request);
+			else if (mod == GrindingArmor::ALL_FORCE_MODS_ENTRY)
+				GrindingArmor::addAllForceMods(request);
 			else if (!request->mods.contains(mod))
 				request->mods.add(mod);
 		}
@@ -268,6 +300,19 @@ inline const Vector<String>& GrindingArmor::getRobes() {
 	}
 
 	return robes;
+}
+
+inline const Vector<String>& GrindingArmor::getSaberSchematics() {
+	static Vector<String> schematics;
+
+	if (schematics.size() == 0) {
+		const char* names[] = {"lightsaber_one_hand_gen4", "lightsaber_two_hand_gen4", "lightsaber_polearm_gen4"};
+
+		for (const char* name : names)
+			schematics.add("object/draft_schematic/weapon/lightsaber/" + String(name) + ".iff");
+	}
+
+	return schematics;
 }
 
 inline const Vector<String>& GrindingArmor::getJediMods() {
@@ -472,15 +517,32 @@ inline bool GrindingArmor::handleCommand(CreatureObject* creature, StringTokeniz
 	return true;
 }
 
-inline bool GrindingArmor::handleJediCommand(CreatureObject* creature) {
+inline bool GrindingArmor::handleJediCommand(CreatureObject* creature, StringTokenizer& args) {
 	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
 
 	if (ghost == nullptr)
 		return false;
 
+	bool superMode = false;
+
+	if (args.hasMoreTokens()) {
+		String mode;
+		args.getStringToken(mode);
+		mode = mode.toLowerCase();
+
+		if ((mode != "legal" && mode != "super") || args.hasMoreTokens()) {
+			creature->sendSystemMessage("SYNTAX: /object grindingjedi [legal|super]");
+			return false;
+		}
+
+		superMode = (mode == "super");
+	}
+
 	Reference<GrindingArmorRequest*> request = new GrindingArmorRequest();
 	request->family = "jedi_robe";
 	request->slots.add("robe");
+	request->superMode = superMode;
+	request->sabers = true;
 
 	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_MODS);
 	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_COLOR);
@@ -552,6 +614,11 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 	else
 		prompt << "Family: " << request->family;
 
+	if (jedi) {
+		prompt << "\nLightsabers: gen4 one-handed, two-handed and polearm with Krayt dragon pearls";
+		prompt << "\nMode: " << (request->superMode ? "super" : "legal (100% experimentation)");
+	}
+
 	if (!jedi && !crafting) {
 		prompt << "\nSlot: " << (request->slot.isEmpty() ? "full set" : request->slot);
 
@@ -582,7 +649,7 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 	if (crafting)
 		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_CRAFTING_MODS_ENTRY << " to add every crafting mod. Press Done to generate the belt.";
 	else
-		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod. Press Done to generate the " << (jedi ? "robe." : "armor.");
+		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod" << (jedi ? String(", or ") + ALL_FORCE_MODS_ENTRY + " to add every Force mod" : "") << ". Press Done to generate the " << (jedi ? "robe and lightsabers." : "armor.");
 
 	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETHREEBUTTON);
 	box->setPromptTitle("Grinding Armor");
@@ -632,6 +699,17 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		if (unchosen.size() > 0)
 			box->addMenuItem(ALL_CRAFTING_MODS_ENTRY);
 	} else {
+		if (jedi) {
+			const Vector<String>& jediMods = getJediMods();
+			bool forceModsLeft = false;
+
+			for (int i = 0; i < jediMods.size() && !forceModsLeft; ++i)
+				forceModsLeft = unchosen.contains(jediMods.get(i));
+
+			if (forceModsLeft)
+				box->addMenuItem(ALL_FORCE_MODS_ENTRY);
+		}
+
 		bool armorModsLeft = false;
 
 		for (int i = 0; i < mods->size() && !armorModsLeft; ++i)
@@ -660,6 +738,17 @@ inline void GrindingArmor::addAllArmorMods(CreatureObject* creature, GrindingArm
 
 	for (int i = 0; i < mods->size(); ++i) {
 		const String& mod = mods->get(i);
+
+		if (!request->mods.contains(mod) && !SkillModManager::instance()->isWearableModDisabled(mod))
+			request->mods.add(mod);
+	}
+}
+
+inline void GrindingArmor::addAllForceMods(GrindingArmorRequest* request) {
+	const Vector<String>& mods = getJediMods();
+
+	for (int i = 0; i < mods.size(); ++i) {
+		const String& mod = mods.get(i);
 
 		if (!request->mods.contains(mod) && !SkillModManager::instance()->isWearableModDisabled(mod))
 			request->mods.add(mod);
@@ -828,13 +917,33 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 		return;
 
 	int freeSlots = (int)inventory->getContainerVolumeLimit() - inventory->getCountableObjectsRecursive();
+	int neededSlots = request->slots.size() + (request->sabers ? getSaberSchematics().size() : 0);
 
-	if (freeSlots < request->slots.size()) {
-		creature->sendSystemMessage("You need " + String::valueOf(request->slots.size()) + " free inventory slots to generate this armor.");
+	if (freeSlots < neededSlots) {
+		creature->sendSystemMessage("You need " + String::valueOf(neededSlots) + " free inventory slots to generate this " + (request->sabers ? "robe and lightsabers." : "armor."));
 		return;
 	}
 
 	Vector<ManagedReference<TangibleObject*> > pieces;
+
+	for (int i = 0; request->sabers && i < getSaberSchematics().size(); ++i) {
+		ManagedReference<TangibleObject*> saber = createSaber(creature, getSaberSchematics().get(i), request->superMode);
+
+		if (saber == nullptr) {
+			creature->sendSystemMessage("Unable to create " + getSaberSchematics().get(i) + ". Nothing was generated.");
+
+			for (int j = 0; j < pieces.size(); ++j) {
+				TangibleObject* created = pieces.get(j);
+
+				Locker locker(created);
+				created->destroyObjectFromDatabase(true);
+			}
+
+			return;
+		}
+
+		pieces.add(saber);
+	}
 
 	for (int i = 0; i < request->slots.size(); ++i) {
 		ManagedReference<TangibleObject*> piece = createPiece(creature, request->slots.get(i), request);
@@ -898,9 +1007,166 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 
 	creature->info(true) << log.toString();
 
-	creature->sendSystemMessage("Generated " + String::valueOf(colorRequest->pieceIDs.size()) + " grinding armor piece(s).");
+	creature->sendSystemMessage("Generated " + String::valueOf(colorRequest->pieceIDs.size()) + (request->sabers ? " grinding Jedi item(s)." : " grinding armor piece(s)."));
 
 	sendColorBox(creature, colorRequest);
+}
+
+inline ManagedReference<LightsaberCrystalComponent*> GrindingArmor::createCrystal(CreatureObject* creature, const String& templatePath, bool power, bool superMode) {
+	ZoneServer* zoneServer = creature->getZoneServer();
+	ManagedReference<LootManager*> lootManager = zoneServer->getLootManager();
+
+	if (lootManager == nullptr)
+		return nullptr;
+
+	ManagedReference<LightsaberCrystalComponent*> crystal = zoneServer->createObject(templatePath.hashCode(), 2).castTo<LightsaberCrystalComponent*>();
+
+	if (crystal == nullptr)
+		return nullptr;
+
+	Locker locker(crystal);
+
+	const CrystalData* crystalData = lootManager->getCrystalData(crystal->getObjectTemplate()->getTemplateFileName());
+
+	if (crystalData == nullptr) {
+		crystal->destroyObjectFromDatabase(true);
+		return nullptr;
+	}
+
+	crystal->setItemLevel(FLAWLESS_ITEM_LEVEL);
+	crystal->setQuality(LightsaberCrystalComponent::FLAWLESS);
+
+	if (power) {
+		// Super tier: the cost and speed reductions stay at flawless max, so a pearl moved
+		// to another saber does not push its costs far below zero.
+		float multiplier = superMode ? GrindingWeapon::SUPER_DAMAGE_MULTIPLIER : 1.f;
+
+		crystal->setColor(NO_BLADE_COLOR);
+		crystal->setDamage((int)(crystalData->getMaxDamage() * multiplier));
+		crystal->setWoundChance((int)(crystalData->getMaxWoundChance() * multiplier));
+		crystal->setSacHealth(crystalData->getMaxHealthSac());
+		crystal->setSacAction(crystalData->getMaxActionSac());
+		crystal->setSacMind(crystalData->getMaxMindSac());
+		crystal->setForceCost(crystalData->getMaxForceCost());
+		crystal->setAttackSpeed(crystalData->getMaxAttackSpeed());
+	} else {
+		crystal->setColor(DEFAULT_BLADE_COLOR);
+	}
+
+	crystal->updateCrystal(crystal->getColor());
+
+	crystal->setMaxCondition(superMode ? SUPER_CONDITION : crystalData->getMaxHitpoints(), false);
+	crystal->setConditionDamage(0, false);
+
+	// Tuned to the generating character, the same way LightsaberCrystalComponent::tuneCrystal names it.
+	crystal->setOwnerID(creature->getObjectID());
+	crystal->setOwnerName(creature->getDisplayedName());
+
+	String tuneName = StringIdManager::instance()->getStringId(crystal->getObjectName()->getFullPath().hashCode()).toString();
+	if (power && superMode)
+		tuneName = tuneName + " (Super)";
+
+	crystal->setCustomObjectName("\\#00FF00" + tuneName + " (tuned)\\#.", false);
+
+	return crystal;
+}
+
+inline ManagedReference<LightsaberCrystalComponent*> GrindingArmor::getColorCrystal(WeaponObject* saber) {
+	ManagedReference<SceneObject*> saberInv = saber->getSlottedObject("saber_inv");
+
+	if (saberInv == nullptr)
+		return nullptr;
+
+	for (int i = 0; i < saberInv->getContainerObjectsSize(); ++i) {
+		ManagedReference<LightsaberCrystalComponent*> crystal = saberInv->getContainerObject(i).castTo<LightsaberCrystalComponent*>();
+
+		if (crystal != nullptr && crystal->getColor() != NO_BLADE_COLOR)
+			return crystal;
+	}
+
+	return nullptr;
+}
+
+inline ManagedReference<TangibleObject*> GrindingArmor::createSaber(CreatureObject* creature, const String& schematicPath, bool superMode) {
+	ManagedReference<CraftingManager*> craftingManager = creature->getZoneServer()->getCraftingManager();
+
+	if (craftingManager == nullptr)
+		return nullptr;
+
+	ManagedReference<TangibleObject*> prototype = createCraftedPrototype(creature, schematicPath);
+
+	if (prototype == nullptr)
+		return nullptr;
+
+	if (!prototype->isWeaponObject()) {
+		Locker locker(prototype);
+		prototype->destroyObjectFromDatabase(true);
+		return nullptr;
+	}
+
+	WeaponObject* saber = cast<WeaponObject*>(prototype.get());
+
+	Locker locker(saber);
+
+	ManagedReference<SceneObject*> saberInv = saber->getSlottedObject("saber_inv");
+
+	if (saberInv == nullptr) {
+		saber->destroyObjectFromDatabase(true);
+		return nullptr;
+	}
+
+	// Super multiplies the hilt damage here. The super pearls carry their own multiplied damage.
+	if (superMode) {
+		saber->setMinDamage(saber->getMinDamage(false) * GrindingWeapon::SUPER_DAMAGE_MULTIPLIER);
+		saber->setMaxDamage(saber->getMaxDamage(false) * GrindingWeapon::SUPER_DAMAGE_MULTIPLIER);
+	}
+
+	// One color crystal, Krayt dragon pearls in the remaining slots. The saber inventory's
+	// notifyObjectInserted adds each pearl's stats and sets the blade color.
+	int crystalSlots = saberInv->getContainerVolumeLimit();
+
+	for (int i = 0; i < crystalSlots; ++i) {
+		bool power = (i > 0);
+		ManagedReference<LightsaberCrystalComponent*> crystal = createCrystal(creature, power ? POWER_CRYSTAL_TEMPLATE : COLOR_CRYSTAL_TEMPLATE, power, superMode);
+
+		if (crystal == nullptr || !saberInv->transferObject(crystal, -1, false)) {
+			if (crystal != nullptr) {
+				Locker clocker(crystal, saber);
+				crystal->destroyObjectFromDatabase(true);
+			}
+
+			saber->destroyObjectFromDatabase(true);
+			return nullptr;
+		}
+	}
+
+	saber->setIgnoreCertifications(true);
+
+	// After the crystals, which change the attack costs.
+	saber->setHealthAttackCost(0);
+	saber->setActionAttackCost(0);
+	saber->setMindAttackCost(0);
+	saber->setForceCost(0);
+
+	if (superMode)
+		GrindingWeapon::applySuperStats(saber, false);
+
+	saber->setForceNoTrade(true);
+
+	// Set Crafter name and generate serial number. Lightsabers can only be equipped by their crafter.
+	String name = creature->getFirstName();
+	saber->setCraftersName(name);
+	saber->setCraftersID(creature->getObjectID());
+
+	StringBuffer customName;
+	customName << saber->getDisplayedName() << " (System Generated by " << name << ")";
+	saber->setCustomObjectName(customName.toString(), false);
+
+	saber->setSerialNumber(craftingManager->generateSerial());
+
+	saber->updateToDatabase();
+
+	return prototype;
 }
 
 inline void GrindingArmor::getColorVariables(TangibleObject* piece, Vector<String>& variables) {
@@ -915,6 +1181,10 @@ inline void GrindingArmor::getColorVariables(TangibleObject* piece, Vector<Strin
 		if (key.beginsWith("/private/index_color"))
 			variables.add(key);
 	}
+
+	// Lightsabers always get the blade palette, which applyColor turns into the color crystal.
+	if (piece->isWeaponObject() && cast<WeaponObject*>(piece)->isJediWeapon() && !variables.contains(BLADE_COLOR_VARIABLE))
+		variables.add(BLADE_COLOR_VARIABLE);
 }
 
 inline void GrindingArmor::sendColorBox(CreatureObject* creature, GrindingArmorColorRequest* request) {
@@ -979,6 +1249,21 @@ inline void GrindingArmor::applyColor(CreatureObject* creature, GrindingArmorCol
 			continue;
 
 		Locker locker(piece, creature);
+
+		if (variable == BLADE_COLOR_VARIABLE && piece->isWeaponObject()) {
+			WeaponObject* saber = cast<WeaponObject*>(piece.get());
+			ManagedReference<LightsaberCrystalComponent*> crystal = getColorCrystal(saber);
+
+			if (crystal == nullptr || colorIndex >= NO_BLADE_COLOR)
+				continue;
+
+			Locker clocker(crystal, creature);
+			crystal->setColor(colorIndex);
+			crystal->updateCrystal(colorIndex);
+
+			saber->setBladeColor(colorIndex);
+		}
+
 		piece->setCustomizationVariable(variable, colorIndex, true);
 	}
 }

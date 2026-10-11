@@ -166,6 +166,14 @@ class LightsaberCrystalComponent extends Component {
 		ownerID = value;
 	}
 
+	public void setOwnerName(final string value) {
+		ownerName = value;
+	}
+
+	public void setDamage(int value) {
+		damage = value;
+	}
+
 	public void setItemLevel(int value) {
 		itemLevel = value;
 	}

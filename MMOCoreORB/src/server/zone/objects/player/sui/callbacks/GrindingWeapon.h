@@ -117,6 +117,27 @@ public:
 		return true;
 	}
 
+	/**
+	 * Applies the super mode stats. Also used by /object grindingjedi for its lightsabers, which multiply
+	 * the hilt damage before the crystals go in so the crystals carry their own super damage.
+	 */
+	static void applySuperStats(WeaponObject* weapon, bool multiplyDamage = true) {
+		if (multiplyDamage) {
+			weapon->setMinDamage(weapon->getMinDamage(false) * SUPER_DAMAGE_MULTIPLIER);
+			weapon->setMaxDamage(weapon->getMaxDamage(false) * SUPER_DAMAGE_MULTIPLIER);
+		}
+
+		weapon->setAttackSpeed(SUPER_ATTACK_SPEED);
+		weapon->setPointBlankAccuracy(SUPER_ACCURACY);
+		weapon->setIdealAccuracy(SUPER_ACCURACY);
+		weapon->setMaxRangeAccuracy(SUPER_ACCURACY);
+		weapon->setWoundsRatio(SUPER_WOUNDS_RATIO);
+
+		weapon->setMaxCondition(SUPER_CONDITION, false);
+		weapon->setConditionDamage(0, false);
+		weapon->setForceNoTrade(true);
+	}
+
 private:
 	static ManagedReference<WeaponObject*> createWeapon(CreatureObject* creature, const String& templatePath, bool superMode) {
 		ZoneServer* zoneServer = creature->getZoneServer();
@@ -141,19 +162,8 @@ private:
 		weapon->setActionAttackCost(0);
 		weapon->setMindAttackCost(0);
 
-		if (superMode) {
-			weapon->setMinDamage(weapon->getMinDamage(false) * SUPER_DAMAGE_MULTIPLIER);
-			weapon->setMaxDamage(weapon->getMaxDamage(false) * SUPER_DAMAGE_MULTIPLIER);
-			weapon->setAttackSpeed(SUPER_ATTACK_SPEED);
-			weapon->setPointBlankAccuracy(SUPER_ACCURACY);
-			weapon->setIdealAccuracy(SUPER_ACCURACY);
-			weapon->setMaxRangeAccuracy(SUPER_ACCURACY);
-			weapon->setWoundsRatio(SUPER_WOUNDS_RATIO);
-
-			weapon->setMaxCondition(SUPER_CONDITION, false);
-			weapon->setConditionDamage(0, false);
-			weapon->setForceNoTrade(true);
-		}
+		if (superMode)
+			applySuperStats(weapon);
 
 		// Set Crafter name and generate serial number
 		String name = creature->getFirstName();

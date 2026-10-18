@@ -331,6 +331,10 @@ public:
 	}
 
 	bool isWearingArmor(CreatureObject* creo) const {
+		// Pre-Pub9 Jedi (Force Sensitive slot) wore armor; only Pub9 Jedi lose their Force powers and specials in it
+		if (creo->hasSkill("jedi_padawan_novice"))
+			return false;
+
 		for (int i = 0; i < creo->getSlottedObjectsSize(); ++i) {
 			SceneObject* item = creo->getSlottedObject(i);
 			if (item != nullptr && item->isArmorObject())

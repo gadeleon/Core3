@@ -5,6 +5,8 @@
 #ifndef TRANSFERSTRUCTURECOMMAND_H_
 #define TRANSFERSTRUCTURECOMMAND_H_
 
+#include "server/zone/managers/jedi/JediRestrictions.h"
+
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/objects/region/CityRegion.h"
 #include "server/zone/managers/city/CityManager.h"
@@ -98,6 +100,9 @@ public:
 		}
 
 		CreatureObject* targetCreature = cast<CreatureObject*>( targetObject.get());
+
+		if (JediRestrictions::cantOwnStructures(targetCreature, creature))
+			return GENERALERROR;
 
 		if (structure->isOnBanList(targetCreature)) {
 			creature->sendSystemMessage("@player_structure:no_banned_player"); //You cannot transfer ownership to a banend player.

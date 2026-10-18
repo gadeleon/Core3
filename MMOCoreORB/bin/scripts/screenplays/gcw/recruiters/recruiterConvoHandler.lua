@@ -33,6 +33,11 @@ function RecruiterConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 			clonedConversation:addOption("@conversation/faction_recruiter_imperial:s_324", "faction_purchase")
 		end
 	elseif (screenID == "accept_join") then
+		if (recruiterScreenplay:prePub9JediCantJoin(pPlayer, pNpc)) then
+			CreatureObject(pPlayer):sendSystemMessage(recruiterScreenplay.prePub9JediCantJoinMessage)
+			return
+		end
+
 		CreatureObject(pPlayer):setFaction(recruiterScreenplay:getRecruiterFactionHashCode(pNpc))
 		CreatureObject(pPlayer):setFactionStatus(1)
 
@@ -55,6 +60,11 @@ function RecruiterConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 			return
 		end
 
+		if (recruiterScreenplay:isPrePub9Jedi(pPlayer)) then
+			CreatureObject(pPlayer):sendSystemMessage(recruiterScreenplay.prePub9JediCantLeaveMessage)
+			return
+		end
+
 		CreatureObject(pPlayer):setFutureFactionStatus(0)
 		writeData(CreatureObject(pPlayer):getObjectID() .. ":changingFactionStatus", 1)
 		createEvent(300000, "recruiterScreenplay", "handleGoOnLeave", pPlayer, "")
@@ -62,6 +72,11 @@ function RecruiterConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 	elseif (screenID == "accepted_resign") then
 		if (CreatureObject(pPlayer):hasSkill("force_rank_light_novice") or CreatureObject(pPlayer):hasSkill("force_rank_dark_novice")) then
 			CreatureObject(pPlayer):sendSystemMessage("@faction_recruiter:jedi_cant_resign")
+			return
+		end
+
+		if (recruiterScreenplay:prePub9JediCantResign(pPlayer)) then
+			CreatureObject(pPlayer):sendSystemMessage(recruiterScreenplay.prePub9JediCantResignMessage)
 			return
 		end
 
@@ -137,6 +152,9 @@ function RecruiterConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 			screenObject:setDialogTextDI(recruiterScreenplay.minimumFactionStanding)
 
 			return pConvScreen
+		elseif (recruiterScreenplay:prePub9JediCantJoin(pPlayer, pNpc)) then
+			CreatureObject(pPlayer):sendSystemMessage(recruiterScreenplay.prePub9JediCantJoinMessage)
+			return
 		else
 			recruiterFaction = recruiterFaction:gsub("^%l", string.upper)
 			clonedConversation:setDialogTextTO(recruiterFaction)
@@ -155,6 +173,11 @@ function RecruiterConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 
 		if (CreatureObject(pPlayer):hasSkill("force_rank_light_novice") or CreatureObject(pPlayer):hasSkill("force_rank_dark_novice")) then
 			CreatureObject(pPlayer):sendSystemMessage("@faction_recruiter:jedi_cant_resign")
+			return
+		end
+
+		if (recruiterScreenplay:prePub9JediCantResign(pPlayer)) then
+			CreatureObject(pPlayer):sendSystemMessage(recruiterScreenplay.prePub9JediCantResignMessage)
 			return
 		end
 

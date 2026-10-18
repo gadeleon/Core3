@@ -67,6 +67,7 @@
 #include "server/zone/managers/visibility/VisibilityManager.h"
 #include "server/zone/managers/jedi/JediManager.h"
 #include "server/zone/managers/jedi/JediDeaths.h"
+#include "server/zone/managers/jedi/JediRestrictions.h"
 #include "server/zone/objects/player/events/ForceRegenerationEvent.h"
 #include "server/login/account/AccountManager.h"
 #include "templates/creature/SharedCreatureObjectTemplate.h"
@@ -466,6 +467,11 @@ void PlayerObjectImplementation::unload() {
 }
 
 int PlayerObjectImplementation::calculateBhReward() {
+	ManagedReference<CreatureObject*> creature = getParent().get().castTo<CreatureObject*>();
+
+	if (JediDeaths::isPrePub9Jedi(creature))
+		return JediRestrictions::BOUNTY_REWARD;
+
 	int minReward = 25000; // Minimum reward for a player bounty
 
 	if (getJediState() >= 4) // Minimum if player is knight
@@ -1823,7 +1829,7 @@ void PlayerObjectImplementation::notifyOnline() {
 
 	MissionManager* missionManager = zoneServer->getMissionManager();
 
-	if (missionManager != nullptr && playerCreature->hasSkill("force_title_jedi_rank_02")) {
+	if (missionManager != nullptr && (playerCreature->hasSkill("force_title_jedi_rank_02") || JediDeaths::isPrePub9Jedi(playerCreature))) {
 		uint64 id = playerCreature->getObjectID();
 
 		if (!missionManager->hasPlayerBountyTargetInList(id))
@@ -1891,7 +1897,7 @@ void PlayerObjectImplementation::notifyOffline() {
 
 	MissionManager* missionManager = getZoneServer()->getMissionManager();
 
-	if (missionManager != nullptr && playerCreature->hasSkill("force_title_jedi_rank_02")) {
+	if (missionManager != nullptr && (playerCreature->hasSkill("force_title_jedi_rank_02") || JediDeaths::isPrePub9Jedi(playerCreature))) {
 		missionManager->updatePlayerBountyOnlineStatus(playerCreature->getObjectID(), false);
 	}
 

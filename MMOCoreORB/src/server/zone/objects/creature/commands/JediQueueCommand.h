@@ -13,6 +13,7 @@
 #include "QueueCommand.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/managers/visibility/VisibilityManager.h"
+#include "server/zone/managers/jedi/JediRestrictions.h"
 #include "server/zone/objects/creature/buffs/SingleUseBuff.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/managers/frs/FrsManager.h"
@@ -290,6 +291,7 @@ public:
 		ManagedReference<PlayerObject*> playerObject = creature->getPlayerObject();
 		playerObject->setForcePower(playerObject->getForcePower() - getFrsModifiedForceCost(creature));
 		VisibilityManager::instance()->increaseVisibility(creature, visMod);
+		JediRestrictions::flagTef(creature);
 	}
 
 	void setForceCost(int fc) {

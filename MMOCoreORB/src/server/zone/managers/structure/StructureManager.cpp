@@ -6,6 +6,7 @@
  */
 
 #include "StructureManager.h"
+#include "server/zone/managers/jedi/JediRestrictions.h"
 #include "engine/db/IndexDatabase.h"
 #include "server/zone/objects/scene/SceneObject.h"
 #include "conf/ConfigManager.h"
@@ -272,6 +273,9 @@ int StructureManager::placeStructureFromDeed(CreatureObject* creature, Structure
 
 	// Already placing a structure?
 	if (zone == nullptr || creature->containsActiveSession(SessionFacadeType::PLACESTRUCTURE))
+		return 1;
+
+	if (JediRestrictions::cantOwnStructures(creature, creature))
 		return 1;
 
 	String serverTemplatePath = deed->getGeneratedObjectTemplate();

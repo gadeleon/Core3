@@ -22,6 +22,7 @@
 #include "server/zone/objects/mission/bountyhunter/BountyHunterDroid.h"
 #include "server/zone/objects/mission/bountyhunter/events/BountyHunterTargetTask.h"
 #include "server/zone/managers/visibility/VisibilityManager.h"
+#include "server/zone/managers/jedi/JediDeaths.h"
 
 void BountyMissionObjectiveImplementation::setNpcTemplateToSpawn(SharedObjectTemplate* sp) {
 	npcTemplateToSpawn = sp;
@@ -645,6 +646,13 @@ void BountyMissionObjectiveImplementation::handlePlayerKilled(ManagedObject* arg
 	int maxXpLoss = -500000;
 
 	VisibilityManager::instance()->clearVisibility(target);
+
+	// Pre-Pub9 Jedi pay with a tracked death (JediDeaths) instead of Jedi experience
+	if (JediDeaths::isPrePub9Jedi(target)) {
+		complete();
+		return;
+	}
+
 	int rewardCreds = mission->getRewardCredits() + mission->getBonusCredits();
 	int xpLoss = rewardCreds * -2;
 

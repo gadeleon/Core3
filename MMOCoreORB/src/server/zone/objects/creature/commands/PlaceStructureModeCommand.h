@@ -5,6 +5,8 @@
 #ifndef PLACESTRUCTUREMODECOMMAND_H_
 #define PLACESTRUCTUREMODECOMMAND_H_
 
+#include "server/zone/managers/jedi/JediRestrictions.h"
+
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/packets/player/EnterStructurePlacementModeMessage.h"
 #include "templates/manager/TemplateManager.h"
@@ -20,6 +22,9 @@ public:
 		ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
 
 		if (ghost == nullptr)
+			return GENERALERROR;
+
+		if (JediRestrictions::cantOwnStructures(creature, creature))
 			return GENERALERROR;
 
 		if (creature->isRidingMount()) {

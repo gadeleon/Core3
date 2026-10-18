@@ -15,6 +15,7 @@
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/managers/visibility/VisibilityManager.h"
+#include "server/zone/managers/jedi/JediRestrictions.h"
 
 int PlayerContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) const {
 	CreatureObject* creo = dynamic_cast<CreatureObject*>(sceneObject);
@@ -163,6 +164,9 @@ int PlayerContainerComponent::notifyObjectInserted(SceneObject* sceneObject, Sce
 
 			if (weaponObject->isJediWeapon()) {
 				VisibilityManager::instance()->increaseVisibility(creo, VisibilityManager::SABERVISMOD);
+
+				if (creo->isInCombat())
+					JediRestrictions::flagTef(creo);
 			}
 		}
 	}

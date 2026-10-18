@@ -54,6 +54,24 @@ function recruiterScreenplay:getRecruiterFaction(pNpc)
 	return self:getFactionFromHashCode(TangibleObject(pNpc):getFaction())
 end
 
+-- Pre-Pub9 Jedi (Force Sensitive slot) are permanently PvP enabled: they can't go on leave,
+-- and only a Jedi who chose the Dark side may resign, to join the Empire
+recruiterScreenplay.prePub9JediCantLeaveMessage = "A Jedi cannot go on leave from the war."
+recruiterScreenplay.prePub9JediCantResignMessage = "Only a Jedi who has turned to the Dark side may leave the Rebellion."
+recruiterScreenplay.prePub9JediCantJoinMessage = "The Empire has no place for a Jedi who follows the Light side."
+
+function recruiterScreenplay:isPrePub9Jedi(pPlayer)
+	return CreatureObject(pPlayer):hasSkill("jedi_padawan_novice")
+end
+
+function recruiterScreenplay:prePub9JediCantResign(pPlayer)
+	return self:isPrePub9Jedi(pPlayer) and not CreatureObject(pPlayer):hasSkill("jedi_dark_side_journeyman_novice")
+end
+
+function recruiterScreenplay:prePub9JediCantJoin(pPlayer, pNpc)
+	return self:prePub9JediCantResign(pPlayer) and self:getRecruiterFaction(pNpc) == "imperial"
+end
+
 function recruiterScreenplay:getRecruiterEnemyFaction(pNpc)
 	if (self:getRecruiterFaction(pNpc) == "rebel") then
 		return self:getFactionHashCode("imperial")
@@ -771,6 +789,11 @@ function recruiterScreenplay:handleGoOnLeave(pPlayer)
 		return
 	end
 
+	if (self:isPrePub9Jedi(pPlayer)) then
+		CreatureObject(pPlayer):sendSystemMessage(self.prePub9JediCantLeaveMessage)
+		return
+	end
+
 	if (CreatureObject(pPlayer):hasSkill("force_rank_light_novice") or CreatureObject(pPlayer):hasSkill("force_rank_dark_novice")) then
 		CreatureObject(pPlayer):sendSystemMessage("@faction_recruiter:jedi_cant_resign")
 		return
@@ -801,6 +824,11 @@ end
 
 function recruiterScreenplay:handleResign(pPlayer)
 	if (pPlayer == nil) then
+		return
+	end
+
+	if (self:prePub9JediCantResign(pPlayer)) then
+		CreatureObject(pPlayer):sendSystemMessage(self.prePub9JediCantResignMessage)
 		return
 	end
 

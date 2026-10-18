@@ -21,6 +21,7 @@
 #include "server/zone/Zone.h"
 #include "server/zone/managers/collision/CollisionManager.h"
 #include "server/zone/managers/visibility/VisibilityManager.h"
+#include "server/zone/managers/jedi/JediRestrictions.h"
 #include "server/zone/managers/creature/LairObserver.h"
 #include "server/zone/managers/reaction/ReactionManager.h"
 #include "server/zone/managers/player/PlayerManager.h"
@@ -108,6 +109,7 @@ bool CombatManager::startCombat(CreatureObject* attacker, TangibleObject* defend
 
 		if (weapon != nullptr && weapon->isJediWeapon()) {
 			VisibilityManager::instance()->increaseVisibility(attacker, 25);
+			JediRestrictions::flagTef(attacker);
 		}
 	}
 
@@ -118,6 +120,7 @@ bool CombatManager::startCombat(CreatureObject* attacker, TangibleObject* defend
 
 		if (weapon != nullptr && weapon->isJediWeapon()) {
 			VisibilityManager::instance()->increaseVisibility(creo, 25);
+			JediRestrictions::flagTef(creo);
 		}
 	}
 

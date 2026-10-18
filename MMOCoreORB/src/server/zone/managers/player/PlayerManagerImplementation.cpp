@@ -15,6 +15,7 @@
 
 #include "server/zone/packets/charcreation/ClientCreateCharacterCallback.h"
 #include "server/zone/managers/jedi/JediDeaths.h"
+#include "server/zone/managers/jedi/JediRestrictions.h"
 #include "server/zone/packets/charcreation/ClientCreateCharacterFailed.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/ZoneProcessServer.h"
@@ -1833,7 +1834,9 @@ void PlayerManagerImplementation::sendPlayerToCloner(CreatureObject* player, uin
 		player->addShockWounds(100, true);
 	}
 
-	if (ConfigManager::instance()->useCovertOvertSystem()) {
+	// Pre-Pub9 Jedi are permanently PvP enabled, so cloning doesn't change their status
+	if (JediDeaths::isPrePub9Jedi(player)) {
+	} else if (ConfigManager::instance()->useCovertOvertSystem()) {
 		if ((player->getFactionStatus() == FactionStatus::OVERT) && !player->hasSkill("force_rank_light_novice") && !player->hasSkill("force_rank_dark_novice") && (cbot->getFacilityType() != CloningBuildingObjectTemplate::FACTION_IMPERIAL) && (cbot->getFacilityType() != CloningBuildingObjectTemplate::FACTION_REBEL))
 			player->setFactionStatus(FactionStatus::COVERT);
 	} else {

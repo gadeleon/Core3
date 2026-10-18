@@ -680,6 +680,12 @@ bool WeaponObjectImplementation::isCertifiedFor(CreatureObject* object) const {
 		const String& cert = certificationsRequired->get(i);
 
 		if (!ghost->hasAbility(cert) && !object->hasSkill(cert)) {
+			// Pre-Pub9 Jedi certify for every generation with one cert per saber type, e.g. cert_onehandlightsaber
+			int lightsaber = cert.indexOf("lightsaber_");
+
+			if (cert.beginsWith("cert_") && lightsaber > 0 && ghost->hasAbility(cert.subString(0, lightsaber + 10)))
+				continue;
+
 			return false;
 		}
 	}

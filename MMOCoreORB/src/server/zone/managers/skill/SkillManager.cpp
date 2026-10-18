@@ -111,6 +111,19 @@ void SkillManager::loadClientData() {
 		Reference<Skill*> skill = new Skill();
 		skill->parseDataTableRow(row);
 
+		// Pre-Pub9 Jedi: this client has no forceIntimidate (the 33m area power), so grant the area version it knows,
+		// and drop the empty command left by a trailing comma in the journeyman novice rows
+		if (skill->getSkillName().beginsWith("jedi_")) {
+			auto& jediCommands = skill->commands;
+
+			for (int j = jediCommands.size() - 1; j >= 0; --j) {
+				if (jediCommands.get(j).isEmpty())
+					jediCommands.remove(j);
+				else if (jediCommands.get(j) == "forceIntimidate")
+					jediCommands.set(j, "forceIntimidate2");
+			}
+		}
+
 		Skill* parent = skillMap.get(skill->getParentName().hashCode());
 
 		if (parent == nullptr)

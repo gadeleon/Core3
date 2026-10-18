@@ -67,6 +67,35 @@ void SchematicMap::loadSchematicGroups() {
 	delete iffStream;
 
 	buildSchematicGroups();
+	buildPrePub9JediSchematicGroups();
+}
+
+// Pre-Pub9 Jedi boxes grant one saber group per generation, as in schematic_group.iff up to patch_08;
+// patch_09 replaced most of them. The schematics keep their Pub9 groups too.
+void SchematicMap::buildPrePub9JediSchematicGroups() {
+	const char* sabers[][2] = {{"one_hand", "craftSaberOneHand"}, {"two_hand", "craftSaberTwoHand"}, {"polearm", "craftSaberPolearm"}};
+
+	for (const auto& saber : sabers) {
+		for (int gen = 1; gen <= 5; ++gen) {
+			String path = "object/draft_schematic/weapon/lightsaber/lightsaber_" + String(saber[0]) + "_gen" + String::valueOf(gen) + ".iff";
+			String groupName = String(saber[1]) + String::valueOf(gen);
+
+			DraftSchematic* schematic = schematicCrcMap.get(path.hashCode());
+
+			if (schematic == nullptr)
+				continue;
+
+			DraftSchematicGroup* group = groupMap.get(groupName);
+
+			if (group == nullptr) {
+				group = new DraftSchematicGroup();
+				groupMap.put(groupName, group);
+			}
+
+			if (!group->contains(schematic))
+				group->add(schematic);
+		}
+	}
 }
 
 void SchematicMap::loadDraftSchematicDatabase() {

@@ -2167,9 +2167,25 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 				trx.addState("combatGroupFactionPetLevel", group->getFactionPetLevel());
 			}
 
+			// Pre-Pub9 Jedi earn Jedi experience only from fights where they used a lightsaber,
+			// plus 10% of their lightsaber experience
+			bool prePub9Jedi = attackerCreo->hasSkill("jedi_padawan_novice");
+			bool usedLightsaber = false;
+			float lightsaberJediXp = 0;
+
+			if (prePub9Jedi) {
+				for (int j = 0; j < entry->size(); ++j) {
+					if (entry->elementAt(j).getKey().contains("lightsaber"))
+						usedLightsaber = true;
+				}
+			}
+
 			for (int j = 0; j < entry->size(); ++j) {
 				uint32 damage = entry->elementAt(j).getValue();
 				String xpType = entry->elementAt(j).getKey();
+
+				if (prePub9Jedi && xpType == "jedi_general" && !usedLightsaber)
+					continue;
 
 				float xpAmount = baseXp;
 				int playerLevel = calculatePlayerLevel(attackerCreo, xpType);
@@ -2196,11 +2212,19 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 					continue;
 				}
 
+				if (prePub9Jedi && xpType.contains("lightsaber"))
+					lightsaberJediXp += xpAmount * 0.1f;
+
 				//Award individual expType
 				awardExperience(attackerCreo, xpType, xpAmount);
 			}
 
-			awardExperience(attackerCreo, "combat_general", combatXp, true, 0.1f);
+			if (lightsaberJediXp > 0)
+				awardExperience(attackerCreo, "jedi_general", lightsaberJediXp);
+
+			// Pre-Pub9 Jedi have no use for combat experience
+			if (!prePub9Jedi)
+				awardExperience(attackerCreo, "combat_general", combatXp, true, 0.1f);
 
 
 			//Check if the group leader is a squad leader
@@ -4489,7 +4513,8 @@ int PlayerManagerImplementation::calculatePlayerLevel(CreatureObject* player) {
 }
 
 int PlayerManagerImplementation::calculatePlayerLevel(CreatureObject* player, String& xpType) {
-	if (xpType.isEmpty() || xpType == "jedi_general")
+	// Lightsaber lines are leveled like Jedi experience (private_jedi_difficulty), not by melee combat difficulty
+	if (xpType.isEmpty() || xpType == "jedi_general" || xpType.contains("lightsaber"))
 		return calculatePlayerLevel(player);
 
 	String weaponType;

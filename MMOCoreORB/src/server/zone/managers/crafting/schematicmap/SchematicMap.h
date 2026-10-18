@@ -63,6 +63,7 @@ private:
 	void loadSchematicGroups();
 	void loadDraftSchematicFile(String file);
 	void buildSchematicGroups();
+	void buildPrePub9JediSchematicGroups();
 };
 
 #endif /* SCHEMATICMAP_H_ */

@@ -34,6 +34,20 @@
 
 #define COMBAT_SPAM_RANGE 85 // Range at which players will see Combat Log Info
 
+// Pre-Pub9 Jedi earn their saber's weapon line experience instead of the saber's jedi_general
+static String getWeaponXpType(TangibleObject* attacker, WeaponObject* weapon) {
+	if (attacker->isPlayerCreature() && weapon->isJediWeapon() && attacker->asCreatureObject()->hasSkill("jedi_padawan_novice")) {
+		if (weapon->isJediTwoHandedWeapon())
+			return "combat_meleespecialize_twohandlightsaber";
+		else if (weapon->isJediPolearmWeapon())
+			return "combat_meleespecialize_polearmlightsaber";
+
+		return "combat_meleespecialize_onehandlightsaber";
+	}
+
+	return weapon->getXpType();
+}
+
 /*
 * Notes:
 * Every player that uses an attack ability, including peace, is considered the attacker in a CombatManager instance.
@@ -1432,7 +1446,7 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 	} else if (attacker->isPet()) {
 		xpType = "creaturehandler";
 	} else {
-		xpType = weapon->getXpType();
+		xpType = getWeaponXpType(attacker, weapon);
 	}
 
 	bool healthDamaged = (!!(poolsToDamage & HEALTH) && data.getHealthDamageMultiplier() > 0.0f);
@@ -1644,7 +1658,7 @@ int CombatManager::applyDamage(CreatureObject* attacker, WeaponObject* weapon, T
 	else if (attacker->isPet())
 		xpType = "creaturehandler";
 	else
-		xpType = weapon->getXpType();
+		xpType = getWeaponXpType(attacker, weapon);
 
 	if (defender->isTurret()) {
 		int damageType = 0, armorPiercing = 1;

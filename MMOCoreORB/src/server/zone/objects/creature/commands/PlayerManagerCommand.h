@@ -14,6 +14,7 @@
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/skill/SkillManager.h"
 #include "server/zone/managers/jedi/JediSlot.h"
+#include "server/zone/managers/jedi/JediDeaths.h"
 
 #include "server/zone/managers/collision/PathFinderManager.h"
 
@@ -156,6 +157,9 @@ public:
 		} else if (command == "jedislot") {
 			return handleJediSlot(player, target, tokenizer);
 
+		} else if (command == "jedideaths") {
+			return handleJediDeaths(player, target, tokenizer);
+
 		} else if (command == "setxpmodifier") {
 			if (!tokenizer.hasMoreTokens()) {
 				sendXpModifierStatus(player, playerManager);
@@ -209,10 +213,55 @@ public:
 			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value|reset] [hours]");
 			player->sendSystemMessage("Syntax: /server playermanager skillpoints [pool <points> | multiplier <value> | cost <skill_name> <points|reset>]");
 			player->sendSystemMessage("Syntax: /server playermanager jedislot [unlock | revoke | status] (targeted player's account, or yours)");
+			player->sendSystemMessage("Syntax: /server playermanager jedideaths [status | clear | age] (targeted pre-Pub9 Jedi, or you; age makes the tracked deaths a week old)");
 			player->sendSystemMessage("Syntax: /server playermanager [listjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [list_frsjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [listadmins]");
 		}
+	}
+
+	// Pre-Pub9 Jedi tracked deaths of the targeted player
+	static int handleJediDeaths(CreatureObject* player, uint64 target, StringTokenizer& tokenizer) {
+		ManagedReference<CreatureObject*> targetPlayer = player;
+		ManagedReference<SceneObject*> targetObject = player->getZoneServer()->getObject(target);
+
+		if (targetObject != nullptr && targetObject->isPlayerCreature())
+			targetPlayer = targetObject->asCreatureObject();
+
+		ManagedReference<PlayerObject*> targetGhost = targetPlayer->getPlayerObject();
+
+		if (targetGhost == nullptr || !JediDeaths::isPrePub9Jedi(targetPlayer)) {
+			player->sendSystemMessage("The target is not a pre-Pub9 Jedi.");
+			return 1;
+		}
+
+		String option = "status";
+
+		if (tokenizer.hasMoreTokens())
+			tokenizer.getStringToken(option);
+
+		option = option.toLowerCase();
+
+		// The command already holds the admin's lock
+		UniqueReference<Locker*> locker(targetPlayer != player ? new Locker(targetPlayer, player) : nullptr);
+
+		Vector<uint32> deaths = JediDeaths::getDeaths(targetGhost);
+
+		if (option == "clear") {
+			deaths.removeAll();
+		} else if (option == "age") {
+			for (int i = 0; i < deaths.size(); ++i)
+				deaths.set(i, deaths.get(i) - JediDeaths::DECAY_TIME);
+		} else if (option != "status") {
+			sendSyntax(player);
+			return 1;
+		}
+
+		JediDeaths::setDeaths(targetGhost, deaths);
+
+		player->sendSystemMessage(targetPlayer->getFirstName() + " has " + String::valueOf(deaths.size()) + " tracked deaths.");
+
+		return 0;
 	}
 
 	// Pre-Pub9 Force Sensitive character slot for the targeted player's account

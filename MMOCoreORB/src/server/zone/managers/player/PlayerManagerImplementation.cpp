@@ -14,6 +14,7 @@
 #endif // WITH_SWGREALMS_API
 
 #include "server/zone/packets/charcreation/ClientCreateCharacterCallback.h"
+#include "server/zone/managers/jedi/JediDeaths.h"
 #include "server/zone/packets/charcreation/ClientCreateCharacterFailed.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/ZoneProcessServer.h"
@@ -1374,6 +1375,10 @@ void PlayerManagerImplementation::killPlayer(TangibleObject* attacker, CreatureO
 
 	player->setPosture(CreaturePosture::DEAD, !isCombatAction, !isCombatAction);
 
+	// Pre-Pub9 Jedi deaths are tracked, except in duels
+	if (!attacker->isPlayerCreature() || !CombatManager::instance()->areInDuel(attacker->asCreatureObject(), player))
+		JediDeaths::onDeath(player);
+
 	sendActivateCloneRequest(player, typeofdeath);
 
 	stringId.setStringId("base_player", "prose_victim_dead");
@@ -1891,8 +1896,8 @@ void PlayerManagerImplementation::sendPlayerToCloner(CreatureObject* player, uin
 	player->notifyObservers(ObserverEventType::PLAYERCLONED, player, 0);
 
 
-	// Jedi experience loss.
-	if (ghost->getJediState() >= 2) {
+	// Jedi experience loss. Pre-Pub9 Jedi lose skills to tracked deaths instead (JediDeaths).
+	if (ghost->getJediState() >= 2 && !JediDeaths::isPrePub9Jedi(player)) {
 		int jediXpCap = ghost->getXpCap("jedi_general");
 		int xpLoss = (int)(jediXpCap * -0.05);
 		int curExp = ghost->getExperience("jedi_general");

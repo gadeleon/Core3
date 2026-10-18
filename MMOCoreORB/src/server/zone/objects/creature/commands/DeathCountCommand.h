@@ -5,6 +5,8 @@
 #ifndef DEATHCOUNTCOMMAND_H_
 #define DEATHCOUNTCOMMAND_H_
 
+#include "server/zone/managers/jedi/JediDeaths.h"
+
 class DeathCountCommand : public QueueCommand {
 public:
 
@@ -20,6 +22,9 @@ public:
 
 		if (!checkInvalidLocomotions(creature))
 			return INVALIDLOCOMOTION;
+
+		// Pre-Pub9 Jedi: You currently have %DI tracked deaths.
+		JediDeaths::sendDeathCount(creature);
 
 		return SUCCESS;
 	}

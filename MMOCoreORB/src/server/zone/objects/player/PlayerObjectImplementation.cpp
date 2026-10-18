@@ -66,6 +66,7 @@
 #include "server/zone/objects/player/events/SpawnHelperDroidTask.h"
 #include "server/zone/managers/visibility/VisibilityManager.h"
 #include "server/zone/managers/jedi/JediManager.h"
+#include "server/zone/managers/jedi/JediDeaths.h"
 #include "server/zone/objects/player/events/ForceRegenerationEvent.h"
 #include "server/login/account/AccountManager.h"
 #include "templates/creature/SharedCreatureObjectTemplate.h"
@@ -1763,6 +1764,10 @@ void PlayerObjectImplementation::notifyOnline() {
 
 	//Login to jedi manager
 	JediManager::instance()->onPlayerLoggedIn(playerCreature);
+
+	// Pre-Pub9 Jedi deaths older than a week decay
+	if (JediDeaths::isPrePub9Jedi(playerCreature))
+		JediDeaths::decay(playerCreature, asPlayerObject());
 
 	if (getFrsData()->getRank() >= 0) {
 		FrsManager* frsManager = zoneServer->getFrsManager();

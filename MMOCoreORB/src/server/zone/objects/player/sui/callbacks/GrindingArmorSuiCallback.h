@@ -46,6 +46,14 @@
  * The mod picker's top row, ALL ARMOR MODS, adds every armor attachment mod at +25.
  * For robes, ALL FORCE MODS above it adds every Jedi mod at +25.
  *
+ * /object pub8jedi <family> [<slot>] [legal|super] (super by default) is the armor flow for pre-Pub9 Jedi: a blade color
+ * picker first (Random rolls one per saber), then the mod picker with the pre-Pub9 Force mods (ALL FORCE MODS) and the
+ * armor mods. Besides the armor it generates gen5 one-handed, two-handed and polearm pre-Pub9 lightsabers, each full of
+ * The picker's top row, ALL PUB8 JEDI MODS, adds every mod a pre-Pub9 Jedi can use: the Force mods plus the passive
+ * armor mods (defenses, state defenses, resistances, slope_move).
+ * Ancient Crystals in the chosen color at max stats (super: multiplied damage and wound chance, named "(Super)"),
+ * no-trade, with 0 HAM and Force costs and the super weapon stats in super mode.
+ *
  * /object craftingclothes skips straight to the mod picker for a no-trade belt (wearable by every species), listing
  * only the crafting assembly/experimentation/customization mods (ALL CRAFTING MODS on top).
  */
@@ -64,6 +72,12 @@ public:
 
 	// Set for /object grindingjedi, lightsabers are generated with the robe
 	bool sabers = false;
+
+	// Set for /object pub8jedi: pre-Pub9 lightsabers with Ancient Crystals, and the pre-Pub9 Force mods
+	bool prePub9 = false;
+
+	// Blade color for /object pub8jedi, RANDOM_BLADE_COLOR rolls one per saber
+	int bladeColor = -1;
 
 	Vector<String> slots;
 	Vector<String> mods;
@@ -86,6 +100,7 @@ public:
 	static constexpr const char* ALL_MODS_ENTRY = "ALL ARMOR MODS";
 	static constexpr const char* ALL_CRAFTING_MODS_ENTRY = "ALL CRAFTING MODS";
 	static constexpr const char* ALL_FORCE_MODS_ENTRY = "ALL FORCE MODS";
+	static constexpr const char* ALL_PUB8_JEDI_MODS_ENTRY = "ALL PUB8 JEDI MODS";
 
 	static constexpr const char* CRAFTING_BELT_TEMPLATE = "object/tangible/wearables/belt/belt_s02.iff";
 
@@ -98,11 +113,17 @@ public:
 	static constexpr const char* COLOR_CRYSTAL_TEMPLATE = "object/tangible/component/weapon/lightsaber/lightsaber_module_force_crystal.iff";
 	static constexpr const char* POWER_CRYSTAL_TEMPLATE = "object/tangible/component/weapon/lightsaber/lightsaber_module_krayt_dragon_pearl.iff";
 
+	// /object pub8jedi
+	static constexpr const char* ANCIENT_CRYSTAL_TEMPLATE = "object/tangible/component/weapon/lightsaber/lightsaber_module_force_crystal_prepub9.iff";
+	static const int RANDOM_BLADE_COLOR = -1;
+	static const int PREPUB9_BLADE_COLORS = 12; // jedi_spam:saber_color_0 to saber_color_11
+
 	/**
 	 * Parses /object grindingarmor arguments and opens the mod selection box.
 	 * @return false if the arguments were invalid
 	 */
 	static bool handleCommand(CreatureObject* creature, StringTokenizer& args);
+	static Reference<GrindingArmorRequest*> parseArmorRequest(CreatureObject* creature, StringTokenizer& args, bool superMode);
 
 	static void sendModBox(CreatureObject* creature, GrindingArmorRequest* request);
 	static void addAllArmorMods(CreatureObject* creature, GrindingArmorRequest* request);
@@ -121,6 +142,18 @@ public:
 	 */
 	static bool handleJediCommand(CreatureObject* creature, StringTokenizer& args);
 	static void sendRobeBox(CreatureObject* creature, GrindingArmorRequest* request);
+
+	/**
+	 * /object pub8jedi <family> [<slot>] [legal|super]
+	 */
+	static bool handlePrePub9JediCommand(CreatureObject* creature, StringTokenizer& args);
+	static void sendBladeColorBox(CreatureObject* creature, GrindingArmorRequest* request);
+	static const Vector<String>& getPrePub9JediMods();
+	static const Vector<String>& getPrePub9SaberSchematics();
+	static ManagedReference<TangibleObject*> createPrePub9Saber(CreatureObject* creature, const String& schematicPath, GrindingArmorRequest* request);
+	static const Vector<String>& getForceMods(GrindingArmorRequest* request);
+	static const Vector<String>& getAllPrePub9JediMods();
+	static void addMods(GrindingArmorRequest* request, const Vector<String>& mods);
 
 	static const Vector<String>& getRobes();
 
@@ -191,6 +224,8 @@ public:
 				GrindingArmor::addAllCraftingMods(request);
 			else if (mod == GrindingArmor::ALL_FORCE_MODS_ENTRY)
 				GrindingArmor::addAllForceMods(request);
+			else if (mod == GrindingArmor::ALL_PUB8_JEDI_MODS_ENTRY)
+				GrindingArmor::addMods(request, GrindingArmor::getAllPrePub9JediMods());
 			else if (!request->mods.contains(mod))
 				request->mods.add(mod);
 		}
@@ -229,6 +264,41 @@ public:
 		}
 
 		request->itemTemplate = "object/tangible/wearables/robe/" + robes.get(index) + ".iff";
+
+		GrindingArmor::sendModBox(creature, request);
+	}
+};
+
+class GrindingPrePub9BladeColorSuiCallback : public SuiCallback {
+	Reference<GrindingArmorRequest*> request;
+
+public:
+	GrindingPrePub9BladeColorSuiCallback(ZoneServer* serv, GrindingArmorRequest* req) : SuiCallback(serv), request(req) {
+	}
+
+	void run(CreatureObject* creature, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
+		if (!suiBox->isListBox() || request == nullptr)
+			return;
+
+		if (cancelPressed) {
+			creature->sendSystemMessage("Pre-Pub9 Jedi generation cancelled.");
+			return;
+		}
+
+		if (args->size() < 1)
+			return;
+
+		// Row 0 is Random, then the pre-Pub9 blade colors in palette order
+		int index = Integer::valueOf(args->get(0).toString());
+
+		if (index < 0 || index > GrindingArmor::PREPUB9_BLADE_COLORS) {
+			GrindingArmor::sendBladeColorBox(creature, request);
+			return;
+		}
+
+		request->bladeColor = index - 1;
 
 		GrindingArmor::sendModBox(creature, request);
 	}
@@ -300,6 +370,88 @@ inline const Vector<String>& GrindingArmor::getRobes() {
 	}
 
 	return robes;
+}
+
+inline const Vector<String>& GrindingArmor::getPrePub9SaberSchematics() {
+	static Vector<String> schematics;
+
+	if (schematics.size() == 0) {
+		const char* names[] = {"lightsaber_one_hand_gen5_prepub9", "lightsaber_two_hand_gen5_prepub9", "lightsaber_polearm_gen5_prepub9"};
+
+		for (const char* name : names)
+			schematics.add("object/draft_schematic/weapon/lightsaber/" + String(name) + ".iff");
+	}
+
+	return schematics;
+}
+
+inline const Vector<String>& GrindingArmor::getPrePub9JediMods() {
+	static Vector<String> mods;
+
+	if (mods.size() == 0) {
+		// The skill mods of the pre-Pub9 Jedi tree (skills.iff jedi_*), plus Core3's lightsaber and Jedi defenses.
+		// Listed above the armor attachment mods in the pub8jedi picker.
+		const char* names[] = {
+				// Lightsaber combat
+				"onehandlightsaber_accuracy", "onehandlightsaber_speed", "onehandlightsaber_toughness",
+				"twohandlightsaber_accuracy", "twohandlightsaber_speed", "twohandlightsaber_toughness",
+				"polearmlightsaber_accuracy", "polearmlightsaber_speed", "polearmlightsaber_toughness",
+				"saber_block", "lightsaber_toughness",
+				// Force
+				"jedi_force_power_max", "jedi_force_power_regen", "jedi_toughness", "jedi_state_defense", "force_defense",
+				// Force powers
+				"forceknockdown_accuracy", "forcelightning_accuracy", "forcethrow_accuracy", "forceweaken_accuracy",
+				"mindblast_accuracy", "force_choke",
+				// Lightsaber crafting
+				"jedi_saber_assembly"};
+
+		for (const char* name : names)
+			mods.add(name);
+	}
+
+	return mods;
+}
+
+// Everything a pre-Pub9 Jedi can use: the Force mods plus the passive armor attachment mods.
+// Mods for other professions' commands, weapons, pets, foraging or camouflage are left out.
+inline const Vector<String>& GrindingArmor::getAllPrePub9JediMods() {
+	static Vector<String> mods;
+
+	if (mods.size() == 0) {
+		const Vector<String>& forceMods = getPrePub9JediMods();
+
+		for (int i = 0; i < forceMods.size(); ++i)
+			mods.add(forceMods.get(i));
+
+		const char* names[] = {
+				// Defenses (lightsabers are melee weapons)
+				"melee_defense", "ranged_defense", "dodge", "block", "counterattack",
+				// State defenses
+				"blind_defense", "dizzy_defense", "intimidate_defense", "knockdown_defense", "stun_defense",
+				"posture_change_down_defense", "posture_change_up_defense", "combat_bleeding_defense",
+				// Resistances
+				"resistance_bleeding", "resistance_disease", "resistance_fire", "resistance_poison",
+				// Movement
+				"slope_move"};
+
+		for (const char* name : names)
+			mods.add(name);
+	}
+
+	return mods;
+}
+
+inline void GrindingArmor::addMods(GrindingArmorRequest* request, const Vector<String>& mods) {
+	for (int i = 0; i < mods.size(); ++i) {
+		const String& mod = mods.get(i);
+
+		if (!request->mods.contains(mod) && !SkillModManager::instance()->isWearableModDisabled(mod))
+			request->mods.add(mod);
+	}
+}
+
+inline const Vector<String>& GrindingArmor::getForceMods(GrindingArmorRequest* request) {
+	return request->prePub9 ? getPrePub9JediMods() : getJediMods();
 }
 
 inline const Vector<String>& GrindingArmor::getSaberSchematics() {
@@ -454,7 +606,24 @@ inline bool GrindingArmor::handleCommand(CreatureObject* creature, StringTokeniz
 		return false;
 	}
 
+	Reference<GrindingArmorRequest*> request = parseArmorRequest(creature, args, false);
+
+	if (request == nullptr)
+		return false;
+
+	// Starting over replaces any grinding armor dialog that is still open.
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_MODS);
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_COLOR);
+
+	sendModBox(creature, request);
+
+	return true;
+}
+
+// <family> [<slot>] [legal|super], mode defaulting to superMode
+inline Reference<GrindingArmorRequest*> GrindingArmor::parseArmorRequest(CreatureObject* creature, StringTokenizer& args, bool superMode) {
 	Reference<GrindingArmorRequest*> request = new GrindingArmorRequest();
+	request->superMode = superMode;
 
 	args.getStringToken(request->family);
 	request->family = request->family.toLowerCase();
@@ -474,7 +643,7 @@ inline bool GrindingArmor::handleCommand(CreatureObject* creature, StringTokeniz
 			request->slot = token;
 		} else {
 			sendSyntax(creature);
-			return false;
+			return nullptr;
 		}
 	}
 
@@ -483,7 +652,7 @@ inline bool GrindingArmor::handleCommand(CreatureObject* creature, StringTokeniz
 	if (availableSlots.isEmpty()) {
 		creature->sendSystemMessage("Unknown armor family '" + request->family + "'.");
 		sendSyntax(creature);
-		return false;
+		return nullptr;
 	}
 
 	if (request->slot.isEmpty()) {
@@ -502,19 +671,13 @@ inline bool GrindingArmor::handleCommand(CreatureObject* creature, StringTokeniz
 
 		if (!schematicExists(getSchematicPath(request->family, slot))) {
 			creature->sendSystemMessage("Unknown slot '" + request->slot + "' for " + request->family + ". Valid slots: " + availableSlots);
-			return false;
+			return nullptr;
 		}
 
 		request->slots.add(slot);
 	}
 
-	// Starting over replaces any grinding armor dialog that is still open.
-	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_MODS);
-	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_COLOR);
-
-	sendModBox(creature, request);
-
-	return true;
+	return request;
 }
 
 inline bool GrindingArmor::handleJediCommand(CreatureObject* creature, StringTokenizer& args) {
@@ -550,6 +713,57 @@ inline bool GrindingArmor::handleJediCommand(CreatureObject* creature, StringTok
 	sendRobeBox(creature, request);
 
 	return true;
+}
+
+inline bool GrindingArmor::handlePrePub9JediCommand(CreatureObject* creature, StringTokenizer& args) {
+	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
+
+	if (ghost == nullptr)
+		return false;
+
+	if (!args.hasMoreTokens()) {
+		creature->sendSystemMessage("SYNTAX: /object pub8jedi <family> [<slot>] [legal|super] (super by default)");
+		sendSyntax(creature);
+		return false;
+	}
+
+	Reference<GrindingArmorRequest*> request = parseArmorRequest(creature, args, true);
+
+	if (request == nullptr)
+		return false;
+
+	request->prePub9 = true;
+	request->sabers = true;
+
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_MODS);
+	ghost->closeSuiWindowType(SuiWindowType::GRINDING_ARMOR_COLOR);
+
+	sendBladeColorBox(creature, request);
+
+	return true;
+}
+
+inline void GrindingArmor::sendBladeColorBox(CreatureObject* creature, GrindingArmorRequest* request) {
+	ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
+
+	if (ghost == nullptr)
+		return;
+
+	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETWOBUTTON);
+	box->setPromptTitle("Pre-Pub9 Jedi Lightsabers");
+	box->setPromptText("Choose the blade color of the gen5 one-handed, two-handed and polearm lightsabers. Random rolls a color for each saber.");
+	box->setOkButton(true, "@ok");
+	box->setCancelButton(true, "@ui:cancel");
+
+	box->addMenuItem("Random");
+
+	for (int i = 0; i < PREPUB9_BLADE_COLORS; ++i)
+		box->addMenuItem("@jedi_spam:saber_color_" + String::valueOf(i));
+
+	box->setCallback(new GrindingPrePub9BladeColorSuiCallback(creature->getZoneServer(), request));
+
+	ghost->addSuiBox(box);
+	creature->sendMessage(box->generateMessage());
 }
 
 inline bool GrindingArmor::handleCraftingClothesCommand(CreatureObject* creature) {
@@ -604,6 +818,7 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 
 	bool jedi = !request->itemTemplate.isEmpty() && !request->craftingMods;
 	bool crafting = request->craftingMods;
+	bool forceMods = jedi || request->prePub9;
 
 	StringBuffer prompt;
 
@@ -613,6 +828,11 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		prompt << "Robe: " << request->itemTemplate.subString(request->itemTemplate.lastIndexOf('/') + 1, request->itemTemplate.lastIndexOf('.'));
 	else
 		prompt << "Family: " << request->family;
+
+	if (request->prePub9) {
+		prompt << "\nLightsabers: gen5 one-handed, two-handed and polearm pre-Pub9 sabers with Ancient Crystals";
+		prompt << "\nBlade color: " << (request->bladeColor == RANDOM_BLADE_COLOR ? String("random") : "@jedi_spam:saber_color_" + String::valueOf(request->bladeColor));
+	}
 
 	if (jedi) {
 		prompt << "\nLightsabers: gen4 one-handed, two-handed and polearm with Krayt dragon pearls";
@@ -649,7 +869,7 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 	if (crafting)
 		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_CRAFTING_MODS_ENTRY << " to add every crafting mod. Press Done to generate the belt.";
 	else
-		prompt << "\n\nSelect a mod and press Add, or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod" << (jedi ? String(", or ") + ALL_FORCE_MODS_ENTRY + " to add every Force mod" : "") << ". Press Done to generate the " << (jedi ? "robe and lightsabers." : "armor.");
+		prompt << "\n\nSelect a mod and press Add" << (request->prePub9 ? String(", pick ") + ALL_PUB8_JEDI_MODS_ENTRY + " to add every mod a pre-Pub9 Jedi can use," : "") << " or pick " << ALL_MODS_ENTRY << " to add every armor attachment mod" << (forceMods ? String(", or ") + ALL_FORCE_MODS_ENTRY + " to add every Force mod" : "") << ". Press Done to generate the " << (jedi ? "robe and lightsabers." : (request->prePub9 ? "armor and lightsabers." : "armor."));
 
 	ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::GRINDING_ARMOR_MODS, SuiListBox::HANDLETHREEBUTTON);
 	box->setPromptTitle("Grinding Armor");
@@ -661,9 +881,9 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 
 	Vector<String> available;
 
-	// Jedi mods go on top for robes, followed by the armor attachment mods.
-	if (jedi) {
-		const Vector<String>& jediMods = getJediMods();
+	// Jedi mods go on top for robes and pre-Pub9 Jedi armor, followed by the armor attachment mods.
+	if (forceMods) {
+		const Vector<String>& jediMods = getForceMods(request);
 
 		for (int i = 0; i < jediMods.size(); ++i)
 			available.add(jediMods.get(i));
@@ -699,8 +919,19 @@ inline void GrindingArmor::sendModBox(CreatureObject* creature, GrindingArmorReq
 		if (unchosen.size() > 0)
 			box->addMenuItem(ALL_CRAFTING_MODS_ENTRY);
 	} else {
-		if (jedi) {
-			const Vector<String>& jediMods = getJediMods();
+		if (request->prePub9) {
+			const Vector<String>& allMods = getAllPrePub9JediMods();
+			bool pub8ModsLeft = false;
+
+			for (int i = 0; i < allMods.size() && !pub8ModsLeft; ++i)
+				pub8ModsLeft = !request->mods.contains(allMods.get(i)) && !SkillModManager::instance()->isWearableModDisabled(allMods.get(i));
+
+			if (pub8ModsLeft)
+				box->addMenuItem(ALL_PUB8_JEDI_MODS_ENTRY);
+		}
+
+		if (forceMods) {
+			const Vector<String>& jediMods = getForceMods(request);
 			bool forceModsLeft = false;
 
 			for (int i = 0; i < jediMods.size() && !forceModsLeft; ++i)
@@ -745,7 +976,7 @@ inline void GrindingArmor::addAllArmorMods(CreatureObject* creature, GrindingArm
 }
 
 inline void GrindingArmor::addAllForceMods(GrindingArmorRequest* request) {
-	const Vector<String>& mods = getJediMods();
+	const Vector<String>& mods = getForceMods(request);
 
 	for (int i = 0; i < mods.size(); ++i) {
 		const String& mod = mods.get(i);
@@ -917,7 +1148,8 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 		return;
 
 	int freeSlots = (int)inventory->getContainerVolumeLimit() - inventory->getCountableObjectsRecursive();
-	int neededSlots = request->slots.size() + (request->sabers ? getSaberSchematics().size() : 0);
+	const Vector<String>& saberSchematics = request->prePub9 ? getPrePub9SaberSchematics() : getSaberSchematics();
+	int neededSlots = request->slots.size() + (request->sabers ? saberSchematics.size() : 0);
 
 	if (freeSlots < neededSlots) {
 		creature->sendSystemMessage("You need " + String::valueOf(neededSlots) + " free inventory slots to generate this " + (request->sabers ? "robe and lightsabers." : "armor."));
@@ -926,11 +1158,11 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 
 	Vector<ManagedReference<TangibleObject*> > pieces;
 
-	for (int i = 0; request->sabers && i < getSaberSchematics().size(); ++i) {
-		ManagedReference<TangibleObject*> saber = createSaber(creature, getSaberSchematics().get(i), request->superMode);
+	for (int i = 0; request->sabers && i < saberSchematics.size(); ++i) {
+		ManagedReference<TangibleObject*> saber = request->prePub9 ? createPrePub9Saber(creature, saberSchematics.get(i), request) : createSaber(creature, saberSchematics.get(i), request->superMode);
 
 		if (saber == nullptr) {
-			creature->sendSystemMessage("Unable to create " + getSaberSchematics().get(i) + ". Nothing was generated.");
+			creature->sendSystemMessage("Unable to create " + saberSchematics.get(i) + ". Nothing was generated.");
 
 			for (int j = 0; j < pieces.size(); ++j) {
 				TangibleObject* created = pieces.get(j);
@@ -969,6 +1201,8 @@ inline void GrindingArmor::generate(CreatureObject* creature, GrindingArmorReque
 	StringBuffer log;
 	if (request->craftingMods)
 		log << "/object craftingclothes ";
+	else if (request->prePub9)
+		log << "/object pub8jedi blade_color " << request->bladeColor << " ";
 	else
 		log << (request->itemTemplate.isEmpty() ? "/object grindingarmor " : "/object grindingjedi " + request->itemTemplate + " ");
 
@@ -1169,6 +1403,103 @@ inline ManagedReference<TangibleObject*> GrindingArmor::createSaber(CreatureObje
 	return prototype;
 }
 
+inline ManagedReference<TangibleObject*> GrindingArmor::createPrePub9Saber(CreatureObject* creature, const String& schematicPath, GrindingArmorRequest* request) {
+	ZoneServer* zoneServer = creature->getZoneServer();
+	ManagedReference<CraftingManager*> craftingManager = zoneServer->getCraftingManager();
+	ManagedReference<LootManager*> lootManager = zoneServer->getLootManager();
+
+	if (craftingManager == nullptr || lootManager == nullptr)
+		return nullptr;
+
+	ManagedReference<TangibleObject*> prototype = createCraftedPrototype(creature, schematicPath);
+
+	if (prototype == nullptr)
+		return nullptr;
+
+	if (!prototype->isWeaponObject()) {
+		Locker locker(prototype);
+		prototype->destroyObjectFromDatabase(true);
+		return nullptr;
+	}
+
+	WeaponObject* saber = cast<WeaponObject*>(prototype.get());
+
+	Locker locker(saber);
+
+	ManagedReference<SceneObject*> saberInv = saber->getSlottedObject("saber_inv");
+
+	if (saberInv == nullptr) {
+		saber->destroyObjectFromDatabase(true);
+		return nullptr;
+	}
+
+	saber->setPrePub9Saber(true);
+
+	if (request->superMode) {
+		saber->setMinDamage(saber->getMinDamage(false) * GrindingWeapon::SUPER_DAMAGE_MULTIPLIER);
+		saber->setMaxDamage(saber->getMaxDamage(false) * GrindingWeapon::SUPER_DAMAGE_MULTIPLIER);
+	}
+
+	int color = request->bladeColor == RANDOM_BLADE_COLOR ? System::random(PREPUB9_BLADE_COLORS - 1) : request->bladeColor;
+
+	// Every slot gets an Ancient Crystal in the blade color; the saber inventory's
+	// notifyObjectInserted adds each crystal's stats and sets the blade color.
+	int crystalSlots = saberInv->getContainerVolumeLimit();
+
+	for (int i = 0; i < crystalSlots; ++i) {
+		ManagedReference<LightsaberCrystalComponent*> crystal = createCrystal(creature, ANCIENT_CRYSTAL_TEMPLATE, true, request->superMode);
+
+		if (crystal != nullptr) {
+			Locker clocker(crystal, saber);
+
+			// Pre-Pub9 crystals aren't tuned, and keep a blade color with their stats
+			crystal->setOwnerID(0);
+			crystal->setOwnerName("");
+			crystal->setColor(color);
+			crystal->updateCrystal(color);
+			crystal->setCustomObjectName(String("Ancient Crystal") + (request->superMode ? " (Super)" : ""), false);
+		}
+
+		if (crystal == nullptr || !saberInv->transferObject(crystal, -1, false)) {
+			if (crystal != nullptr) {
+				Locker clocker(crystal, saber);
+				crystal->destroyObjectFromDatabase(true);
+			}
+
+			saber->destroyObjectFromDatabase(true);
+			return nullptr;
+		}
+	}
+
+	saber->setIgnoreCertifications(true);
+
+	// After the crystals, which change the attack costs.
+	saber->setHealthAttackCost(0);
+	saber->setActionAttackCost(0);
+	saber->setMindAttackCost(0);
+	saber->setForceCost(0);
+
+	if (request->superMode)
+		GrindingWeapon::applySuperStats(saber, false);
+
+	saber->setForceNoTrade(true);
+
+	// Set Crafter name and generate serial number. Lightsabers can only be equipped by their crafter.
+	String name = creature->getFirstName();
+	saber->setCraftersName(name);
+	saber->setCraftersID(creature->getObjectID());
+
+	StringBuffer customName;
+	customName << saber->getDisplayedName() << " (System Generated by " << name << ")";
+	saber->setCustomObjectName(customName.toString(), false);
+
+	saber->setSerialNumber(craftingManager->generateSerial());
+
+	saber->updateToDatabase();
+
+	return prototype;
+}
+
 inline void GrindingArmor::getColorVariables(TangibleObject* piece, Vector<String>& variables) {
 	String appearanceFilename = piece->getObjectTemplate()->getAppearanceFilename();
 	VectorMap<String, Reference<CustomizationVariable*> > customizationVariables;
@@ -1183,8 +1514,13 @@ inline void GrindingArmor::getColorVariables(TangibleObject* piece, Vector<Strin
 	}
 
 	// Lightsabers always get the blade palette, which applyColor turns into the color crystal.
-	if (piece->isWeaponObject() && cast<WeaponObject*>(piece)->isJediWeapon() && !variables.contains(BLADE_COLOR_VARIABLE))
-		variables.add(BLADE_COLOR_VARIABLE);
+	// Pre-Pub9 sabers get their color from the pub8jedi blade color picker instead.
+	if (piece->isWeaponObject() && cast<WeaponObject*>(piece)->isJediWeapon()) {
+		if (cast<WeaponObject*>(piece)->isPrePub9Saber())
+			variables.removeElement(BLADE_COLOR_VARIABLE);
+		else if (!variables.contains(BLADE_COLOR_VARIABLE))
+			variables.add(BLADE_COLOR_VARIABLE);
+	}
 }
 
 inline void GrindingArmor::sendColorBox(CreatureObject* creature, GrindingArmorColorRequest* request) {

@@ -422,6 +422,9 @@ public:
 			} else if (commandType.beginsWith("grindingjedi")) {
 				if (!GrindingArmor::handleJediCommand(creature, args))
 					return INVALIDPARAMETERS;
+			} else if (commandType.beginsWith("pub8jedi")) {
+				if (!GrindingArmor::handlePrePub9JediCommand(creature, args))
+					return INVALIDPARAMETERS;
 			} else if (commandType.beginsWith("craftingclothes")) {
 				if (!GrindingArmor::handleCraftingClothesCommand(creature))
 					return GENERALERROR;
@@ -437,6 +440,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object grindingarmor <family> [<slot>] [legal|super]");
 			creature->sendSystemMessage("SYNTAX: /object grindingweapon [<type>] [legal|super]");
 			creature->sendSystemMessage("SYNTAX: /object grindingjedi [legal|super]");
+			creature->sendSystemMessage("SYNTAX: /object pub8jedi <family> [<slot>] [legal|super]");
 			creature->sendSystemMessage("SYNTAX: /object craftingclothes");
 			creature->sendSystemMessage("SYNTAX: /object universalresource [<quantity>]");
 			creature->sendSystemMessage("SYNTAX: /object omnitool");

@@ -25,7 +25,7 @@ function trainerConvHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, sele
 	local stringTable = "@skill_teacher:"
 	local isJediTrainer = false
 
-	if (trainerType == "trainer_jedi") then
+	if (string.find(trainerType, "^trainer_jedi")) then
 		isJediTrainer = true
 		stringTable = "@jedi_trainer:"
 	end
@@ -261,8 +261,23 @@ function trainerConvHandler:handleConfirmLearnScreen(pConvTemplate, pPlayer, pNp
 
 		local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
-		if (pGhost ~= nil and PlayerObject(pGhost):isJediTrainer(pNpc) and not CreatureObject(pPlayer):hasSkill("force_title_jedi_rank_03") and not JediTrials:isOnKnightTrials(pPlayer) and JediTrials:isEligibleForKnightTrials(pPlayer)) then
+		if (pGhost ~= nil and trainerType == "trainer_jedi" and PlayerObject(pGhost):isJediTrainer(pNpc) and not CreatureObject(pPlayer):hasSkill("force_title_jedi_rank_03") and not JediTrials:isOnKnightTrials(pPlayer) and JediTrials:isEligibleForKnightTrials(pPlayer)) then
 			KnightTrials:startKnightTrials(pPlayer)
+		end
+
+		-- Pre-Pub9 Jedi: choosing a path or becoming a Knight sends the Jedi to a new trainer
+		local tierEndString = SkillTrainer:getPrePub9JediTierEndString(skillName)
+
+		if (pGhost ~= nil and tierEndString ~= nil) then
+			deleteData(SceneObject(pPlayer):getObjectID() .. ":trainerTeachSkill")
+
+			PlayerObject(pGhost):assignNewJediTrainer()
+			CreatureObject(pPlayer):sendSystemMessage("@jedi_spam:trainer_updated")
+
+			clonedConversation:setDialogTextStringId(tierEndString)
+			clonedConversation:setStopConversation(true)
+
+			return pConvScreen
 		end
 	else
 		local messageString = LuaStringIdChatParameter(stringTable .. "prose_train_failed")

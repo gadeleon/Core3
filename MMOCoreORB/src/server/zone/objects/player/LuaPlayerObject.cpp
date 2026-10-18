@@ -19,6 +19,8 @@
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
 #include "server/zone/objects/player/sui/callbacks/EnclaveCouncilRankSuiCallback.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
+#include "server/zone/objects/creature/commands/QueueCommand.h"
+#include "server/zone/objects/creature/commands/FindMyTrainerCommand.h"
 
 const char LuaPlayerObject::className[] = "LuaPlayerObject";
 
@@ -88,6 +90,7 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "addSuiBox", &LuaPlayerObject::addSuiBox },
 		{ "removeSuiBox", &LuaPlayerObject::removeSuiBox },
 		{ "isJediTrainer", &LuaPlayerObject::isJediTrainer },
+		{ "assignNewJediTrainer", &LuaPlayerObject::assignNewJediTrainer },
 		{ "getVisibility", &LuaPlayerObject::getVisibility },
 		{ "setFrsCouncil", &LuaPlayerObject::setFrsCouncil },
 		{ "setFrsRank", &LuaPlayerObject::setFrsRank },
@@ -805,6 +808,20 @@ int LuaPlayerObject::isJediTrainer(lua_State* L) {
 	lua_pushboolean(L, result);
 
 	return 1;
+}
+
+// Moves the Jedi to a different trainer and gives a waypoint to it
+int LuaPlayerObject::assignNewJediTrainer(lua_State* L) {
+	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(realObject->getParent().get().get());
+	ZoneServer* zoneServer = realObject->getZoneServer();
+
+	if (creature == nullptr || zoneServer == nullptr)
+		return 0;
+
+	FindMyTrainerCommand::setJediTrainer(zoneServer, realObject, true);
+	FindMyTrainerCommand::sendTrainerWaypoint(zoneServer, creature, realObject);
+
+	return 0;
 }
 
 int LuaPlayerObject::getVisibility(lua_State* L) {

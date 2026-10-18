@@ -25,7 +25,15 @@ public:
 			return GENERALERROR;
 		}
 
-		skillManager->surrenderSkill(arguments.toString(), creature, true);
+		String skillName = arguments.toString();
+
+		// Pre-Pub9 Jedi skills cannot be surrendered
+		if (skillName.beginsWith("jedi_")) {
+			creature->sendSystemMessage("@jedi_spam:no_surrender_skill");
+			return GENERALERROR;
+		}
+
+		skillManager->surrenderSkill(skillName, creature, true);
 
 		return SUCCESS;
 	}

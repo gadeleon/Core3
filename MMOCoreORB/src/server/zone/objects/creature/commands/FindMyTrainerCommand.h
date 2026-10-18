@@ -25,7 +25,10 @@ public:
 		if (ghost == nullptr)
 			return GENERALERROR;
 
-		if (ghost->getJediState() < 2 || !creature->hasSkill("force_title_jedi_rank_02"))
+		// Pub9 Padawans, or pre-Pub9 Jedi from the Force Sensitive slot
+		bool pub9Padawan = ghost->getJediState() >= 2 && creature->hasSkill("force_title_jedi_rank_02");
+
+		if (!pub9Padawan && !creature->hasSkill("jedi_padawan_novice"))
 			return GENERALERROR;
 
 		auto zoneServer = server->getZoneServer();
@@ -33,6 +36,15 @@ public:
 		if (zoneServer == nullptr)
 			return GENERALERROR;
 
+		sendTrainerWaypoint(zoneServer, creature, ghost);
+
+		creature->sendSystemMessage("@jedi_spam:waypoint_created_to_trainer");
+
+		return SUCCESS;
+	}
+
+	// Adds a waypoint to the Jedi's trainer, picking a trainer first if the Jedi has none
+	static void sendTrainerWaypoint(ZoneServer* zoneServer, CreatureObject* creature, PlayerObject* ghost) {
 		String planet = ghost->getTrainerZoneName();
 
 		if (planet.isEmpty()) {
@@ -65,13 +77,10 @@ public:
 		waypointObj->setCustomObjectName(name, false);
 
 		ghost->addWaypoint(waypointObj, true, true);
-
-		creature->sendSystemMessage("@jedi_spam:waypoint_created_to_trainer");
-
-		return SUCCESS;
 	}
 
-	void setJediTrainer(ZoneServer* zoneServer, PlayerObject* ghost) const {
+	// Picks a random starting profession trainer as the Jedi's trainer; newTrainer avoids the current one
+	static void setJediTrainer(ZoneServer* zoneServer, PlayerObject* ghost, bool newTrainer = false) {
 		if (ghost == nullptr || zoneServer == nullptr)
 			return;
 
@@ -110,6 +119,9 @@ public:
 
 		bool found = false;
 		Vector3 coords;
+		Vector3 currentCoords = ghost->getJediTrainerCoordinates();
+		String currentZoneName = ghost->getTrainerZoneName();
+		int attempts = 0;
 		String zoneName = "";
 		int size = trainers.size();
 
@@ -139,6 +151,11 @@ public:
 
 			// Make sure it's not a player-city trainer.
 			if (city != nullptr && !city->isClientRegion())
+				continue;
+
+			Vector3 trainerCoords = trainerCreo->getWorldPosition();
+
+			if (newTrainer && ++attempts < 100 && trainerZone->getZoneName() == currentZoneName && trainerCoords.getX() == currentCoords.getX() && trainerCoords.getY() == currentCoords.getY())
 				continue;
 
 			zoneName = trainerZone->getZoneName();

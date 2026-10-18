@@ -964,6 +964,16 @@ bool SkillManager::fulfillsSkillPrerequisites(const String& skillName, CreatureO
 		}
 	}
 
+	// Pre-Pub9 Jedi: the light and dark side paths preclude each other
+	if (skillName.beginsWith("jedi_")) {
+		auto preclusionSkills = skill->getPreclusionSkills();
+
+		for (int i = 0; i < preclusionSkills->size(); ++i) {
+			if (creature->hasSkill(preclusionSkills->get(i)))
+				return false;
+		}
+	}
+
 	PlayerObject* ghost = creature->getPlayerObject();
 	if (ghost == nullptr || ghost->getJediState() < skill->getJediStateRequired()) {
 		return false;

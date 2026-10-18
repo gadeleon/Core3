@@ -5,6 +5,10 @@ function SkillTrainer:getTrainerType(pPlayer, pNpc, pConvTemplate)
 	local isJediTrainer = false
 
 	if (pGhost ~= nil and PlayerObject(pGhost):isJediTrainer(pNpc)) then
+		if (CreatureObject(pPlayer):hasSkill("jedi_padawan_novice")) then
+			return self:getPrePub9JediTrainerType(pPlayer)
+		end
+
 		return "trainer_jedi"
 	end
 
@@ -13,6 +17,32 @@ function SkillTrainer:getTrainerType(pPlayer, pNpc, pConvTemplate)
 	local screen = LuaConversationScreen(pScreen)
 
 	return screen:getOptionLink(0)
+end
+
+-- Pre-Pub9 Jedi have one personal trainer per tier: Padawan (and the choice of path), Knight, then Master
+function SkillTrainer:getPrePub9JediTrainerType(pPlayer)
+	local player = CreatureObject(pPlayer)
+
+	for _, side in ipairs({ "light", "dark" }) do
+		if (player:hasSkill("jedi_" .. side .. "_side_journeyman_master")) then
+			return "trainer_jedi_" .. side .. "_master"
+		elseif (player:hasSkill("jedi_" .. side .. "_side_journeyman_novice")) then
+			return "trainer_jedi_" .. side .. "_journeyman"
+		end
+	end
+
+	return "trainer_jedi_padawan"
+end
+
+-- Returns the jedi_spam/jedi_trainer string to show if learning skillName ends this pre-Pub9 Jedi trainer's tier, nil otherwise
+function SkillTrainer:getPrePub9JediTierEndString(skillName)
+	if (skillName == "jedi_light_side_journeyman_novice" or skillName == "jedi_dark_side_journeyman_novice") then
+		return "@jedi_trainer:chosen_path"
+	elseif (skillName == "jedi_light_side_journeyman_master" or skillName == "jedi_dark_side_journeyman_master") then
+		return "@jedi_spam:not_your_trainer"
+	end
+
+	return nil
 end
 
 function SkillTrainer:getTeachableSkills(pPlayer, trainerType, qualifiedOnly)

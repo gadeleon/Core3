@@ -26,10 +26,11 @@ class ClientCreateCharacterCallback : public MessageCallback {
 	float height;
 	UnicodeString bio;
 	uint8 tutflag;
+	uint8 jediflag;
 
 public:
 	ClientCreateCharacterCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server), species(0), height(0), tutflag(0) {
+		MessageCallback(client, server), species(0), height(0), tutflag(0), jediflag(0) {
 
 		setCustomTaskQueue("slowQueue");
 	}
@@ -75,6 +76,10 @@ public:
 			return true;
 		else
 			return false;
+	}
+
+	inline bool getJediFlag() const {
+		return jediflag != 0;
 	}
 
 	inline void getCharacterName(UnicodeString& name) const {

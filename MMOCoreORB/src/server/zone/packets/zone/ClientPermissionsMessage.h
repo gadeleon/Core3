@@ -19,14 +19,14 @@ public:
 		// Allow to create character
 		insertBoolean(true);
 
-		// Ignores character creation max bool, possibly Jedi Slot
+		// Allow to create pre-Pub9 Jedi character
 		insertBoolean(false);
 
-		// Unknown
+		// Can skip tutorial
 		insertBoolean(false);
 	}
 
-	ClientPermissionsMessage(bool canConnect, bool canCreateCharacter) : BaseMessage() {
+	ClientPermissionsMessage(bool canConnect, bool canCreateCharacter, bool canCreateJediCharacter = false) : BaseMessage() {
 		insertShort(0x04);
 		insertInt(STRING_HASHCODE("ClientPermissionsMessage"));
 
@@ -36,10 +36,10 @@ public:
 		// Allow to create character
 		insertBoolean(canCreateCharacter);
 
-		// Ignores character creation max bool, possibly Jedi Slot
-		insertBoolean(false);
+		// Allow to create pre-Pub9 Jedi character
+		insertBoolean(canCreateJediCharacter);
 
-		// Unknown
+		// Can skip tutorial
 		insertBoolean(false);
 	}
 };

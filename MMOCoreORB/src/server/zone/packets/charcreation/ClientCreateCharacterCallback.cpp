@@ -22,7 +22,7 @@ void ClientCreateCharacterCallback::parse(Message* message) {
 
 	message->parseAscii(profession);
 
-	message->shiftOffset(1); //move past some unknown byte
+	jediflag = message->parseByte(); //pre-Pub9 Jedi character bool.
 
 	height = message->parseFloat();
 

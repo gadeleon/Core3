@@ -24,6 +24,9 @@
 #include "templates/customization/CustomizationIdManager.h"
 #include "server/zone/managers/skill/imagedesign/ImageDesignManager.h"
 #include "server/zone/managers/jedi/JediManager.h"
+#include "server/zone/managers/jedi/JediSlot.h"
+#include "templates/faction/Factions.h"
+#include "server/zone/objects/player/FactionStatus.h"
 #include "server/zone/objects/transaction/TransactionLog.h"
 #include "server/zone/managers/player/creation/SendJtlRecruitment.h"
 
@@ -319,8 +322,20 @@ bool PlayerCreationManager::createCharacter(ClientCreateCharacterCallback* callb
 
 	auto client = callback->getClient();
 	auto maxchars = ConfigManager::instance()->getInt("Core3.PlayerCreationManager.MaxCharactersPerGalaxy", 10);
+	uint32 galaxyID = zoneServer.get()->getGalaxyID();
 
-	if (client->getCharacterCount(zoneServer.get()->getGalaxyID()) >= maxchars) {
+	// While the account's Force Sensitive slot is open, the character created is the Jedi
+	uint64 jediCharacterID = 0;
+	bool createJedi = JediSlot::isOpen(client, galaxyID, jediCharacterID);
+
+	if (callback->getJediFlag() && !createJedi) {
+		ErrorMessage* errMsg = new ErrorMessage("Create Error", "You do not have an available Force Sensitive character slot.", 0x0);
+		client->sendMessage(errMsg);
+
+		return false;
+	}
+
+	if (!createJedi && client->getCharacterCount(galaxyID) - (jediCharacterID != 0 ? 1 : 0) >= maxchars) {
 		ErrorMessage* errMsg = new ErrorMessage("Create Error", "You are limited to 10 characters per galaxy.", 0x0);
 		client->sendMessage(errMsg);
 
@@ -362,7 +377,9 @@ bool PlayerCreationManager::createCharacter(ClientCreateCharacterCallback* callb
 	String profession, customization, hairTemplate, hairCustomization;
 	callback->getSkill(profession);
 
-	if (profession.contains("jedi"))
+	if (createJedi)
+		profession = "jedi";
+	else if (profession.contains("jedi"))
 		profession = "crafting_artisan";
 
 	callback->getCustomizationString(customization);
@@ -545,6 +562,9 @@ bool PlayerCreationManager::createCharacter(ClientCreateCharacterCallback* callb
 		error(e.getMessage());
 	}
 
+	if (createJedi)
+		JediSlot::occupy(client->getAccountID(), playerCreature->getObjectID());
+
 	ClientCreateCharacterSuccess* msg = new ClientCreateCharacterSuccess(
 			playerCreature->getObjectID());
 	playerCreature->sendMessage(msg);
@@ -611,7 +631,18 @@ bool PlayerCreationManager::createCharacter(ClientCreateCharacterCallback* callb
 	JediManager::instance()->onPlayerCreated(playerCreature);
 
 	// Welcome Mail
-	chatManager->sendMail("system", "@newbie_tutorial/newbie_mail:welcome_subject", "@newbie_tutorial/newbie_mail:welcome_body", playerCreature->getFirstName());
+	if (createJedi) {
+		// Every Force Sensitive starts as a covert Rebel
+		playerCreature->setFaction(Factions::FACTIONREBEL);
+		playerCreature->setFactionStatus(FactionStatus::COVERT);
+
+		// The client shows the old Jedi skill trees only from Jedi state 2 (JEDI_STATE_REQUIRED in the client skills.iff override)
+		ghost->setJediState(2);
+
+		chatManager->sendMail("system", "@jedi_spam:welcome_subject", "@jedi_spam:welcome_body", playerCreature->getFirstName());
+	} else {
+		chatManager->sendMail("system", "@newbie_tutorial/newbie_mail:welcome_subject", "@newbie_tutorial/newbie_mail:welcome_body", playerCreature->getFirstName());
+	}
 
 	// Schedule Task to send out JTL Recruitment Mail
 	SendJtlRecruitment* jtlMailTask = new SendJtlRecruitment(playerCreature);

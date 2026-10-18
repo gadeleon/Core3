@@ -17,6 +17,7 @@
 #include "server/login/account/AccountManager.h"
 
 #include "ClientPermissionsMessage.h"
+#include "server/zone/managers/jedi/JediSlot.h"
 
 #ifdef WITH_SWGREALMS_API
 #include "server/login/SWGRealmsAPI.h"
@@ -168,11 +169,21 @@ public:
 			}
 		}
 
+		// The Jedi in the Force Sensitive slot does not count toward the character limit
+		uint64 jediCharacterID = 0;
+		bool canCreateJediCharacter = JediSlot::isOpen(client, galaxyID, jediCharacterID);
+		int characterCount = client->getCharacterCount(galaxyID) - (jediCharacterID != 0 ? 1 : 0);
+
 		auto allowedChars = ConfigManager::instance()->getInt("Core3.PlayerCreationManager.MaxCharactersPerGalaxy", 10);
-		bool canCreateCharacter = (client->getCharacterCount(galaxyID) < allowedChars);
+		bool canCreateCharacter = (characterCount < allowedChars);
+
+		// The client only creates a Jedi when it cannot create a regular character,
+		// so while the slot is open the next character created on this galaxy is the Jedi
+		if (canCreateJediCharacter)
+			canCreateCharacter = false;
 
 		// Check if player has permission to create more characters
-		auto permissionMessage = new ClientPermissionsMessage(canConnect, canCreateCharacter);
+		auto permissionMessage = new ClientPermissionsMessage(canConnect, canCreateCharacter, canCreateJediCharacter);
 		client->sendMessage(permissionMessage);
 	}
 

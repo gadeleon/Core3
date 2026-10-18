@@ -13,6 +13,7 @@
 #include "server/chat/ChatManager.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/skill/SkillManager.h"
+#include "server/zone/managers/jedi/JediSlot.h"
 
 #include "server/zone/managers/collision/PathFinderManager.h"
 
@@ -152,6 +153,9 @@ public:
 		} else if (command == "skillpoints") {
 			return handleSkillPoints(player, tokenizer);
 
+		} else if (command == "jedislot") {
+			return handleJediSlot(player, target, tokenizer);
+
 		} else if (command == "setxpmodifier") {
 			if (!tokenizer.hasMoreTokens()) {
 				sendXpModifierStatus(player, playerManager);
@@ -204,10 +208,58 @@ public:
 		if (player != nullptr) {
 			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value|reset] [hours]");
 			player->sendSystemMessage("Syntax: /server playermanager skillpoints [pool <points> | multiplier <value> | cost <skill_name> <points|reset>]");
+			player->sendSystemMessage("Syntax: /server playermanager jedislot [unlock | revoke | status] (targeted player's account, or yours)");
 			player->sendSystemMessage("Syntax: /server playermanager [listjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [list_frsjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [listadmins]");
 		}
+	}
+
+	// Pre-Pub9 Force Sensitive character slot for the targeted player's account
+	static int handleJediSlot(CreatureObject* player, uint64 target, StringTokenizer& tokenizer) {
+		ManagedReference<CreatureObject*> targetPlayer = player;
+		ManagedReference<SceneObject*> targetObject = player->getZoneServer()->getObject(target);
+
+		if (targetObject != nullptr && targetObject->isPlayerCreature())
+			targetPlayer = targetObject->asCreatureObject();
+
+		ManagedReference<PlayerObject*> targetGhost = targetPlayer->getPlayerObject();
+
+		if (targetGhost == nullptr)
+			return 1;
+
+		uint32 accountID = targetGhost->getAccountID();
+
+		String option = "status";
+
+		if (tokenizer.hasMoreTokens())
+			tokenizer.getStringToken(option);
+
+		option = option.toLowerCase();
+
+		if (option == "unlock") {
+			JediSlot::unlock(accountID);
+		} else if (option == "revoke") {
+			JediSlot::revoke(accountID);
+		} else if (option != "status") {
+			sendSyntax(player);
+			return 1;
+		}
+
+		uint64 characterID = 0;
+		StringBuffer message;
+		message << "Force Sensitive slot for " << targetPlayer->getFirstName() << "'s account (" << accountID << "): ";
+
+		if (!JediSlot::getSlot(accountID, characterID))
+			message << "locked.";
+		else if (characterID == 0)
+			message << "unlocked, open. The next character created on this galaxy is the Jedi.";
+		else
+			message << "unlocked, Jedi character " << characterID << " (open again if that character is deleted).";
+
+		player->sendSystemMessage(message.toString());
+
+		return 0;
 	}
 
 	static int handleSkillPoints(CreatureObject* player, StringTokenizer& tokenizer) {

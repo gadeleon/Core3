@@ -123,6 +123,22 @@ public:
 		invalidLocomotion.add(l);
 	}
 
+	/*
+	 * Copies the settings that come from the client command table, for server-only commands
+	 * that stand in for a client command (PrePub9Commands.h)
+	 */
+	void copyCommandTableSettings(const QueueCommand* other) {
+		stateMask = other->stateMask;
+		invalidLocomotion = other->invalidLocomotion;
+		targetType = other->targetType;
+		maxRangeToTarget = other->maxRangeToTarget;
+		addToQueue = other->addToQueue;
+		defaultTime = other->defaultTime;
+		characterAbility = other->characterAbility;
+		defaultPriority = other->defaultPriority;
+		commandGroup = other->commandGroup;
+	}
+
 	inline bool checkDistance(SceneObject* source, SceneObject* target, float range) const {
 		return (source->getWorldPosition().distanceTo(target->getWorldPosition()) - source->getTemplateRadius() - target->getTemplateRadius() <= range);
 	}

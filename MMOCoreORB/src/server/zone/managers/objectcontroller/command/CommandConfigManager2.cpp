@@ -1,4 +1,5 @@
 #include "CommandConfigManager.h"
+#include "server/zone/managers/jedi/PrePub9Commands.h"
 
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/ai/Creature.h"
@@ -638,8 +639,10 @@ void CommandConfigManager::registerCommands2() {
 	commandFactory.registerCommand<ForceFeedback2Command>(String("forceFeedback2").toLowerCase());
 	commandFactory.registerCommand<ForceIntimidate1Command>(String("forceIntimidate1").toLowerCase());
 	commandFactory.registerCommand<ForceIntimidate2Command>(String("forceIntimidate2").toLowerCase());
+	commandFactory.registerCommand<ForceIntimidate2Command>(String("forceIntimidate2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<ForceKnockdown1Command>(String("forceKnockdown1").toLowerCase());
 	commandFactory.registerCommand<ForceKnockdown2Command>(String("forceKnockdown2").toLowerCase());
+	commandFactory.registerCommand<ForceKnockdown2Command>(String("forceKnockdown2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<ForceKnockdown3Command>(String("forceKnockdown3").toLowerCase());
 	commandFactory.registerCommand<ForceLightningCone1Command>(String("forceLightningCone1").toLowerCase());
 	commandFactory.registerCommand<ForceLightningCone2Command>(String("forceLightningCone2").toLowerCase());
@@ -660,7 +663,9 @@ void CommandConfigManager::registerCommands2() {
 	commandFactory.registerCommand<ForceSpeed1Command>(String("forceSpeed1").toLowerCase());
 	commandFactory.registerCommand<ForceSpeed2Command>(String("forceSpeed2").toLowerCase());
 	commandFactory.registerCommand<ForceThrow1Command>(String("forceThrow1").toLowerCase());
+	commandFactory.registerCommand<ForceThrow1Command>(String("forceThrow1").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<ForceThrow2Command>(String("forceThrow2").toLowerCase());
+	commandFactory.registerCommand<ForceThrow2Command>(String("forceThrow2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<ForceWeaken1Command>(String("forceWeaken1").toLowerCase());
 	commandFactory.registerCommand<ForceWeaken2Command>(String("forceWeaken2").toLowerCase());
 	commandFactory.registerCommand<FormupCommand>(String("formup").toLowerCase());

@@ -33,6 +33,7 @@
 #include "server/zone/objects/creature/commands/SquadLeaderCommand.h"
 #include "server/zone/objects/creature/commands/ForceHealQueueCommand.h"
 #include "server/zone/objects/creature/commands/JediQueueCommand.h"
+#include "server/zone/managers/jedi/PrePub9Commands.h"
 #include "server/zone/objects/creature/commands/effect/StateEffect.h"
 #include "server/zone/objects/creature/commands/effect/DotEffect.h"
 #include "server/zone/objects/creature/commands/effect/CommandEffect.h"
@@ -393,6 +394,26 @@ void CommandConfigManager::registerSpecialCommands(CommandList* sCommands) {
 	createCommand(String("petPatrol").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("petClearPatrolPoints").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("petGetPatrolPoint").toLowerCase())->setCommandGroup(0xe1c9a54a);
+
+	// Pre-Pub9 Jedi versions of commands, see PrePub9Commands.h
+	const Vector<String>& prePub9Commands = PrePub9Commands::getCommands();
+
+	for (int i = 0; i < prePub9Commands.size(); ++i) {
+		if (createCommand(prePub9Commands.get(i) + PrePub9Commands::suffix()) == nullptr)
+			error() << "Could not create command " << prePub9Commands.get(i) << PrePub9Commands::suffix();
+	}
+}
+
+void CommandConfigManager::copyPrePub9CommandSettings() {
+	const Vector<String>& prePub9Commands = PrePub9Commands::getCommands();
+
+	for (int i = 0; i < prePub9Commands.size(); ++i) {
+		const QueueCommand* command = slashCommands->getSlashCommand(prePub9Commands.get(i));
+		QueueCommand* prePub9Command = slashCommands->getSlashCommand(prePub9Commands.get(i) + PrePub9Commands::suffix());
+
+		if (command != nullptr && prePub9Command != nullptr)
+			prePub9Command->copyCommandTableSettings(command);
+	}
 }
 
 void CommandConfigManager::registerFunctions() {

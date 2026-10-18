@@ -131,6 +131,7 @@ public:
 	void registerCommands4();
 
 	void registerSpecialCommands(CommandList* sCommands);
+	void copyPrePub9CommandSettings();
 
 	bool loadSlashCommandsFile() {
 		info("Loading commands...");
@@ -138,6 +139,10 @@ public:
 		loadCommandData("datatables/command/command_tables_shared.iff");
 		loadCommandData("datatables/command/command_tables_shared_ground.iff");
 		loadCommandData("datatables/command/command_tables_shared_space.iff");
+
+		// Before the Lua configs, which set the pre-Pub9 values
+		copyPrePub9CommandSettings();
+
 		bool res = runFile("scripts/commands/commands.lua");
 
 		if (!res)

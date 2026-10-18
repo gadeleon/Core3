@@ -1,4 +1,5 @@
 #include "CommandConfigManager.h"
+#include "server/zone/managers/jedi/PrePub9Commands.h"
 
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/ai/Creature.h"
@@ -375,7 +376,9 @@ void CommandConfigManager::registerCommands3() {
 	commandFactory.registerCommand<Melee2hSweep1Command>(String("melee2hSweep1").toLowerCase());
 	commandFactory.registerCommand<Melee2hSweep2Command>(String("melee2hSweep2").toLowerCase());
 	commandFactory.registerCommand<MindBlast1Command>(String("mindBlast1").toLowerCase());
+	commandFactory.registerCommand<MindBlast1Command>(String("mindBlast1").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<MindBlast2Command>(String("mindBlast2").toLowerCase());
+	commandFactory.registerCommand<MindBlast2Command>(String("mindBlast2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<MindShot1Command>(String("mindShot1").toLowerCase());
 	commandFactory.registerCommand<MindShot2Command>(String("mindShot2").toLowerCase());
 	commandFactory.registerCommand<MinefieldAttackCommand>(String("minefieldAttack").toLowerCase());
@@ -499,6 +502,7 @@ void CommandConfigManager::registerCommands3() {
 	commandFactory.registerCommand<Saber1hComboHit2Command>(String("saber1hComboHit2").toLowerCase());
 	commandFactory.registerCommand<Saber1hComboHit3Command>(String("saber1hComboHit3").toLowerCase());
 	commandFactory.registerCommand<Saber1hFlurryCommand>(String("saber1hFlurry").toLowerCase());
+	commandFactory.registerCommand<Saber1hFlurryCommand>(String("saber1hFlurry").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<Saber1hFlurry2Command>(String("saber1hFlurry2").toLowerCase());
 	commandFactory.registerCommand<Saber1hHeadHit1Command>(String("saber1hHeadHit1").toLowerCase());
 	commandFactory.registerCommand<Saber1hHeadHit2Command>(String("saber1hHeadHit2").toLowerCase());
@@ -508,16 +512,20 @@ void CommandConfigManager::registerCommands3() {
 	commandFactory.registerCommand<Saber1hHit3Command>(String("saber1hHit3").toLowerCase());
 	commandFactory.registerCommand<Saber2hBodyHit1Command>(String("saber2hBodyHit1").toLowerCase());
 	commandFactory.registerCommand<Saber2hBodyHit2Command>(String("saber2hBodyHit2").toLowerCase());
+	commandFactory.registerCommand<Saber2hBodyHit2Command>(String("saber2hBodyHit2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<Saber2hBodyHit3Command>(String("saber2hBodyHit3").toLowerCase());
 	commandFactory.registerCommand<Saber2hFrenzyCommand>(String("saber2hFrenzy").toLowerCase());
+	commandFactory.registerCommand<Saber2hFrenzyCommand>(String("saber2hFrenzy").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<Saber2hHit1Command>(String("saber2hHit1").toLowerCase());
 	commandFactory.registerCommand<Saber2hHit2Command>(String("saber2hHit2").toLowerCase());
 	commandFactory.registerCommand<Saber2hHit3Command>(String("saber2hHit3").toLowerCase());
 	commandFactory.registerCommand<Saber2hPhantomCommand>(String("saber2hPhantom").toLowerCase());
 	commandFactory.registerCommand<Saber2hSweep1Command>(String("saber2hSweep1").toLowerCase());
 	commandFactory.registerCommand<Saber2hSweep2Command>(String("saber2hSweep2").toLowerCase());
+	commandFactory.registerCommand<Saber2hSweep2Command>(String("saber2hSweep2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<Saber2hSweep3Command>(String("saber2hSweep3").toLowerCase());
 	commandFactory.registerCommand<SaberPolearmDervishCommand>(String("saberPolearmDervish").toLowerCase());
+	commandFactory.registerCommand<SaberPolearmDervishCommand>(String("saberPolearmDervish").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<SaberPolearmDervish2Command>(String("saberPolearmDervish2").toLowerCase());
 	commandFactory.registerCommand<SaberPolearmHit1Command>(String("saberPolearmHit1").toLowerCase());
 	commandFactory.registerCommand<SaberPolearmHit2Command>(String("saberPolearmHit2").toLowerCase());
@@ -530,6 +538,7 @@ void CommandConfigManager::registerCommands3() {
 	commandFactory.registerCommand<SaberPolearmSpinAttack3Command>(String("saberPolearmSpinAttack3").toLowerCase());
 	commandFactory.registerCommand<SaberSlash1Command>(String("saberSlash1").toLowerCase());
 	commandFactory.registerCommand<SaberSlash2Command>(String("saberSlash2").toLowerCase());
+	commandFactory.registerCommand<SaberSlash2Command>(String("saberSlash2").toLowerCase() + PrePub9Commands::suffix()); // Pre-Pub9 Jedi version
 	commandFactory.registerCommand<SaberThrow1Command>(String("saberThrow1").toLowerCase());
 	commandFactory.registerCommand<SaberThrow2Command>(String("saberThrow2").toLowerCase());
 	commandFactory.registerCommand<SaberThrow3Command>(String("saberThrow3").toLowerCase());

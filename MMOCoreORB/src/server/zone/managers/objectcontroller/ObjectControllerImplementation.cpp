@@ -11,6 +11,8 @@
 #include "server/zone/managers/skill/SkillModManager.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
+#include "server/zone/managers/jedi/JediDeaths.h"
+#include "server/zone/managers/jedi/PrePub9Commands.h"
 
 void ObjectControllerImplementation::loadCommands() {
 	configManager = new CommandConfigManager(server);
@@ -80,6 +82,14 @@ float ObjectControllerImplementation::activateCommand(CreatureObject* object, un
 		object->error() << "unregistered queue command 0x" << hex << actionCRC << " arguments: " << arguments.toString();
 
 		return 0.f;
+	}
+
+	// Pre-Pub9 Jedi use the pre-Pub9 version of a command where there is one (PrePub9Commands.h)
+	if (JediDeaths::isPrePub9Jedi(object)) {
+		const QueueCommand* prePub9Command = getQueueCommand(queueCommand->getQueueCommandName() + PrePub9Commands::suffix());
+
+		if (prePub9Command != nullptr)
+			queueCommand = prePub9Command;
 	}
 
 	float commandTime = queueCommand->getCommandDuration(object, arguments);

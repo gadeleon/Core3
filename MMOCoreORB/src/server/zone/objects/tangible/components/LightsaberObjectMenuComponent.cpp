@@ -23,6 +23,10 @@ void LightsaberObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObj
 
 	TangibleObjectMenuComponent::fillObjectMenuResponse(sceneObject, menuResponse, player);
 
+	// Pre-Pub9 sabers have their crystals crafted in
+	if (weapon->isPrePub9Saber())
+		return;
+
 	String text = "@jedi_spam:open_saber";
 	menuResponse->addRadialMenuItem(89, 3, text);
 
@@ -45,7 +49,7 @@ int LightsaberObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObje
 		return 1;
 
 	// Handle opening sabers
-	if (selectedID == 89) {
+	if (selectedID == 89 && !weapon->isPrePub9Saber()) {
 
 		ManagedReference<SceneObject*> parent = weapon->getParent().get();
 		if (parent != nullptr && parent->isPlayerCreature()){

@@ -6,6 +6,7 @@
 #define CREATEOBJECTTASK_H_
 
 #include "server/zone/objects/transaction/TransactionLog.h"
+#include "server/zone/objects/tangible/weapon/PrePub9Saber.h"
 
 class CreateObjectTask : public Task {
 
@@ -41,6 +42,10 @@ public:
 
 		ObjectManager* objectManager = crafter->getZoneServer()->getObjectManager();
 		objectManager->persistSceneObjectsRecursively(prototype, 1);
+
+		// Pre-Pub9 Jedi craft their crystals into the saber once its stats are final
+		if (prototype->isWeaponObject())
+			PrePub9Saber::finishCrafting(crafter, cast<WeaponObject*>(prototype.get()));
 
 		ManagedReference<SceneObject*> inventory = crafter->getInventory();
 

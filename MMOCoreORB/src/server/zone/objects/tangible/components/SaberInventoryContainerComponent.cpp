@@ -8,6 +8,7 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/objects/tangible/component/lightsaber/LightsaberCrystalComponent.h"
+#include "server/zone/objects/tangible/weapon/PrePub9Saber.h"
 
 int SaberInventoryContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) const {
 
@@ -123,8 +124,11 @@ int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObje
 			}
 
 			if (crystal->getColor() != 31) {
-				weao->setBladeColor(31);
-				weao->setCustomizationVariable("/private/index_color_blade", 31, true);
+				// Pre-Pub9 sabers fall back to the default blade instead of needing a color crystal
+				int color = weao->isPrePub9Saber() ? PrePub9Saber::DEFAULT_BLADE_COLOR : 31;
+
+				weao->setBladeColor(color);
+				weao->setCustomizationVariable("/private/index_color_blade", color, true);
 			}
 		}
 
@@ -135,6 +139,10 @@ bool SaberInventoryContainerComponent::checkContainerPermission(SceneObject* sce
 	ManagedReference<WeaponObject*> saber = cast<WeaponObject*>( sceneObject->getParent().get().get());
 
 	if (saber == nullptr)
+		return false;
+
+	// Pre-Pub9 sabers have their crystals crafted in
+	if (saber->isPrePub9Saber())
 		return false;
 
 

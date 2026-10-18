@@ -8,6 +8,8 @@
 #include "IngredientSlot.h"
 #include "server/zone/managers/object/ObjectManager.h"
 #include "server/zone/objects/factorycrate/FactoryCrate.h"
+#include "server/zone/objects/tangible/weapon/WeaponObject.h"
+#include "server/zone/objects/tangible/component/lightsaber/LightsaberCrystalComponent.h"
 
 // #define DEBUG_COMPONENT_SLOT
 
@@ -69,6 +71,26 @@ public:
 		/// Check types
 		if (!baseTemplate->isDerivedFrom(contentType))
 			return false;
+
+		// Pre-Pub9 lightsaber upgrades: the previous saber must be the crafter's own and unequipped,
+		// the upgrade module a power crystal or Krayt dragon pearl, and the optional color slot a color crystal
+		if (incomingTano->isWeaponObject() && cast<WeaponObject*>(incomingTano.get())->isJediWeapon()) {
+			if (incomingTano->getCraftersID() != player->getObjectID()) {
+				player->sendSystemMessage("@jedi_spam:not_your_lightsaber");
+				return false;
+			}
+
+			if (cast<WeaponObject*>(incomingTano.get())->isEquipped())
+				return false;
+		} else if (contentType.contains("lightsaber_module")) {
+			if (!incomingTano->isLightsaberCrystalObject())
+				return false;
+
+			bool colorCrystal = cast<LightsaberCrystalComponent*>(incomingTano.get())->getColor() != 31;
+
+			if (slotName == "lightsaber_module_color" ? !colorCrystal : (slotName == "misc_saber_upgrade_module" && colorCrystal))
+				return false;
+		}
 
 		// Serial Number check
 		if (requiresIdentical() && !contents.isEmpty()) {
@@ -206,6 +228,15 @@ public:
 
 				if (component->getUseCount() > 0) {
 					component->sendTo(player, true);
+				}
+			} else if (component->isWeaponObject() && cast<WeaponObject*>(component.get())->isJediWeapon()) {
+				// A lightsaber's crystal inventory cannot be cloned, so the saber itself goes into the slot
+				if (satchel->transferObject(component, -1, true)) {
+					contents.add(component);
+
+					// Required so component shows in slot
+					component->sendTo(player, true);
+					component->sendAttributeListTo(player);
 				}
 			} else {
 				ManagedReference<TangibleObject*> itemToUse = cast<TangibleObject*>(objectManager->cloneObject(component));

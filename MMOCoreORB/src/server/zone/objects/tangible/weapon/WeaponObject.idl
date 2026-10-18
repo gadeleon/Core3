@@ -29,6 +29,9 @@ class WeaponObject extends TangibleObject {
 	// Admin generated weapons can be used without the template's required certifications
 	protected boolean ignoreCertifications;
 
+	// Pre-Pub9 lightsaber: its crystals were crafted in and cannot be changed, and it needs no color crystal
+	protected boolean prePub9Saber;
+
 	protected int armorPiercing;
 
 	protected int pointBlankAccuracy;
@@ -88,6 +91,7 @@ class WeaponObject extends TangibleObject {
 	public WeaponObject() {
 		certified = false;
 		ignoreCertifications = false;
+		prePub9Saber = false;
 		armorPiercing = 0;
 
 		healthAttackCost = 0;
@@ -236,6 +240,15 @@ class WeaponObject extends TangibleObject {
 	@read
 	public boolean isIgnoringCertifications() {
 		return ignoreCertifications;
+	}
+
+	public void setPrePub9Saber(boolean value) {
+		prePub9Saber = value;
+	}
+
+	@read
+	public boolean isPrePub9Saber() {
+		return prePub9Saber;
 	}
 
 	@dirty

@@ -282,8 +282,14 @@ void LightsaberCrystalComponentImplementation::fillAttributeList(AttributeListMe
 	}
 
 	PlayerObject* player = object->getPlayerObject();
-	if (object->hasSkill("force_title_jedi_rank_01") || player->isPrivileged()) {
-		if (ownerID == 0) {
+
+	// Pre-Pub9 Jedi see a crystal's stats without tuning it, since they craft it into a saber
+	bool prePub9Jedi = object->hasSkill("jedi_padawan_novice");
+
+	if (object->hasSkill("force_title_jedi_rank_01") || prePub9Jedi || player->isPrivileged()) {
+		if (prePub9Jedi) {
+			// No tuning
+		} else if (ownerID == 0) {
 			StringBuffer str;
 			str << "\\#pcontrast2 UNTUNED";
 			alm->insertAttribute("crystal_owner", str);
@@ -296,7 +302,7 @@ void LightsaberCrystalComponentImplementation::fillAttributeList(AttributeListMe
 			str3 << "@jedi_spam:saber_color_" << getColor();
 			alm->insertAttribute("color", str3);
 		} else {
-			if (ownerID != 0 || player->isPrivileged()) {
+			if (ownerID != 0 || prePub9Jedi || player->isPrivileged()) {
 				alm->insertAttribute("mindamage", damage);
 				alm->insertAttribute("maxdamage", damage);
 				alm->insertAttribute("wpn_attack_speed", attackSpeed);

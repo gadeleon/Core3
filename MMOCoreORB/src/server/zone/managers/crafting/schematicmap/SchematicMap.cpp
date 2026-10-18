@@ -71,14 +71,16 @@ void SchematicMap::loadSchematicGroups() {
 }
 
 // Pre-Pub9 Jedi boxes grant one saber group per generation, as in schematic_group.iff up to patch_08;
-// patch_09 replaced most of them. The schematics keep their Pub9 groups too.
+// patch_09 replaced most of them and reused some of the names, so these groups end in _prepub9 (see SkillManager::loadClientData).
+// Generation 1 is shared with Pub9 and keeps its Pub9 group too;
+// generations 2 to 5 are the pre-Pub9 upgrade schematics (previous saber, gas, metal and a crystal).
 void SchematicMap::buildPrePub9JediSchematicGroups() {
 	const char* sabers[][2] = {{"one_hand", "craftSaberOneHand"}, {"two_hand", "craftSaberTwoHand"}, {"polearm", "craftSaberPolearm"}};
 
 	for (const auto& saber : sabers) {
 		for (int gen = 1; gen <= 5; ++gen) {
-			String path = "object/draft_schematic/weapon/lightsaber/lightsaber_" + String(saber[0]) + "_gen" + String::valueOf(gen) + ".iff";
-			String groupName = String(saber[1]) + String::valueOf(gen);
+			String path = "object/draft_schematic/weapon/lightsaber/lightsaber_" + String(saber[0]) + "_gen" + String::valueOf(gen) + (gen > 1 ? "_prepub9" : "") + ".iff";
+			String groupName = String(saber[1]) + String::valueOf(gen) + "_prepub9";
 
 			DraftSchematic* schematic = schematicCrcMap.get(path.hashCode());
 

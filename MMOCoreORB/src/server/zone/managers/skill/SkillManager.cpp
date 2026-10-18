@@ -122,6 +122,15 @@ void SkillManager::loadClientData() {
 				else if (jediCommands.get(j) == "forceIntimidate")
 					jediCommands.set(j, "forceIntimidate2");
 			}
+
+			// Pub9 reused some of the saber group names (craftSaberOneHand2...) for its own schematics,
+			// so the old boxes grant their own copies of the groups (see SchematicMap::buildPrePub9JediSchematicGroups)
+			auto& jediSchematics = skill->schematicsGranted;
+
+			for (int j = 0; j < jediSchematics.size(); ++j) {
+				if (jediSchematics.get(j).beginsWith("craftSaber"))
+					jediSchematics.set(j, jediSchematics.get(j) + "_prepub9");
+			}
 		}
 
 		Skill* parent = skillMap.get(skill->getParentName().hashCode());

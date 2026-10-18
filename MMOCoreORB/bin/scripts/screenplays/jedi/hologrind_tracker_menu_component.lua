@@ -2,6 +2,8 @@
 -- Follows the holocron rules: once only MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON professions could be
 -- revealed, the remaining unmastered ones stay hidden, with a hint at the category of each hidden one.
 -- MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON = 0 shows everything, like holocrons.
+-- With PREPUB9JEDISLOT, holocrons only hint the first MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON professions,
+-- so those are always listed and the later ones stay hidden until mastered.
 
 HologrindTrackerMenuComponent = { }
 
@@ -102,22 +104,35 @@ function HologrindTrackerMenuComponent:showProgress(pSceneObject, pPlayer)
 
 	local hiddenCount = total - maxShown
 
-	-- The last unmastered professions in the list are the hidden ones, so the same ones stay hidden every time.
 	local hidden = {}
-	local remaining = hiddenCount
+	local needed = total
 
-	for i = total, 1, -1 do
-		if (remaining <= 0) then
-			break
+	if PREPUB9JEDISLOT then
+		-- Holocrons only hint the first professions in the list; the later ones stay hidden until mastered.
+		needed = math.min(NUMBEROFPROFESSIONSTOMASTER, total)
+
+		for i = maxShown + 1, total, 1 do
+			if not PlayerObject(pGhost):hasBadge(professions[i]) then
+				hidden[i] = true
+			end
 		end
+	else
+		-- The last unmastered professions in the list are the hidden ones, so the same ones stay hidden every time.
+		local remaining = hiddenCount
 
-		if not PlayerObject(pGhost):hasBadge(professions[i]) then
-			hidden[i] = true
-			remaining = remaining - 1
+		for i = total, 1, -1 do
+			if (remaining <= 0) then
+				break
+			end
+
+			if not PlayerObject(pGhost):hasBadge(professions[i]) then
+				hidden[i] = true
+				remaining = remaining - 1
+			end
 		end
 	end
 
-	local text = "Hologrind professions mastered: " .. mastered .. " of " .. total .. "\n\n"
+	local text = "Hologrind professions mastered: " .. mastered .. " of " .. needed .. "\n\n"
 
 	for i = 1, total, 1 do
 		local skill = HologrindJediManager:getProfessionStringIdFromBadgeNumber(professions[i])
@@ -135,7 +150,13 @@ function HologrindTrackerMenuComponent:showProgress(pSceneObject, pPlayer)
 		end
 	end
 
-	if (PlayerObject(pGhost):isJedi()) then
+	if PREPUB9JEDISLOT then
+		local key = HologrindJediManager:getJediSlotKey(pPlayer)
+
+		if (key ~= nil and getQuestStatus(key) ~= nil) then
+			text = text .. "\nYou are attuned with the power of the Force. Your Force Sensitive character slot has been unlocked."
+		end
+	elseif (PlayerObject(pGhost):isJedi()) then
 		text = text .. "\nThe Force is with you. Your path to the Jedi has been revealed."
 	elseif (mastered >= total) then
 		text = text .. "\nAll paths are mastered. Perhaps you should meditate somewhere alone..."

@@ -212,7 +212,7 @@ public:
 		if (player != nullptr) {
 			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value|reset] [hours]");
 			player->sendSystemMessage("Syntax: /server playermanager skillpoints [pool <points> | multiplier <value> | cost <skill_name> <points|reset>]");
-			player->sendSystemMessage("Syntax: /server playermanager jedislot [unlock | revoke | status] (targeted player's account, or yours)");
+			player->sendSystemMessage("Syntax: /server playermanager jedislot [unlock | revoke | occupy | status] (targeted player's account, or yours; occupy links the slot to the targeted Jedi)");
 			player->sendSystemMessage("Syntax: /server playermanager jedideaths [status | clear | age] (targeted pre-Pub9 Jedi, or you; age makes the tracked deaths a week old)");
 			player->sendSystemMessage("Syntax: /server playermanager [listjedi]");
 			player->sendSystemMessage("Syntax: /server playermanager [list_frsjedi]");
@@ -290,6 +290,14 @@ public:
 			JediSlot::unlock(accountID);
 		} else if (option == "revoke") {
 			JediSlot::revoke(accountID);
+		} else if (option == "occupy") {
+			// Links the slot to the targeted Jedi, e.g. after testing a revoke and unlock
+			if (!targetPlayer->hasSkill("jedi_padawan_novice")) {
+				player->sendSystemMessage("The target is not a pre-Pub9 Jedi.");
+				return 1;
+			}
+
+			JediSlot::occupy(accountID, targetPlayer->getObjectID());
 		} else if (option != "status") {
 			sendSyntax(player);
 			return 1;

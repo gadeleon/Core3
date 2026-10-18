@@ -3,8 +3,19 @@ local ObjectManager = require("managers.object.object_manager")
 
 jediManagerName = "HologrindJediManager"
 
-NUMBEROFPROFESSIONSTOMASTER = 6
-MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON = NUMBEROFPROFESSIONSTOMASTER - 1 -- Set to 0 if you want all visible
+-- Pre-Pub9 Jedi: finishing the hologrind unlocks the account's Force Sensitive character slot (JediSlot.h)
+-- instead of the Pub9 Force sensitive path. Characters that already took the Pub9 path keep it.
+PREPUB9JEDISLOT = true
+
+if PREPUB9JEDISLOT then
+	-- Pre-Pub9 started at 5 professions, 4 hinted by holocrons and 1 hidden. The count can be raised quietly:
+	-- characters get extra hidden professions at login, and the holocrons still only hint the first 4.
+	NUMBEROFPROFESSIONSTOMASTER = 5
+	MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON = 4
+else
+	NUMBEROFPROFESSIONSTOMASTER = 6
+	MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON = NUMBEROFPROFESSIONSTOMASTER - 1 -- Set to 0 if you want all visible
+end
 
 HologrindJediManager = JediManager:new {
 	screenplayName = jediManagerName,
@@ -69,20 +80,79 @@ end
 -- Hologrind professions will be generated for the player.
 -- @param pCreatureObject pointer to the creature object of the created player.
 function HologrindJediManager:onPlayerCreated(pCreatureObject)
-	local skillList = self:getGrindableProfessionList()
+	self:addHologrindProfessions(pCreatureObject)
+end
 
+-- Gives the player random hologrind professions until there are NUMBEROFPROFESSIONSTOMASTER of them,
+-- so raising the number later adds hidden professions. Jedi from the Force Sensitive slot have none.
+-- @param pCreatureObject pointer to the creature object of the player.
+function HologrindJediManager:addHologrindProfessions(pCreatureObject)
 	local pGhost = CreatureObject(pCreatureObject):getPlayerObject()
 
-	if (pGhost == nil) then
+	if (pGhost == nil or self:isPrePub9Jedi(pCreatureObject)) then
 		return
 	end
 
-	for i = 1, NUMBEROFPROFESSIONSTOMASTER, 1 do
-		local numberOfSkillsInList = #skillList
-		local skillNumber = getRandomNumber(1, numberOfSkillsInList)
+	local professions = PlayerObject(pGhost):getHologrindProfessions()
+	local skillList = {}
+
+	for _, profession in ipairs(self:getGrindableProfessionList()) do
+		local assigned = false
+
+		for i = 1, #professions, 1 do
+			if professions[i] == profession[2] then
+				assigned = true
+			end
+		end
+
+		if not assigned then
+			table.insert(skillList, profession)
+		end
+	end
+
+	for i = #professions + 1, NUMBEROFPROFESSIONSTOMASTER, 1 do
+		if #skillList == 0 then
+			return
+		end
+
+		local skillNumber = getRandomNumber(1, #skillList)
 		PlayerObject(pGhost):addHologrindProfession(skillList[skillNumber][2])
 		table.remove(skillList, skillNumber)
 	end
+end
+
+-- Jedi from the pre-Pub9 Force Sensitive slot
+function HologrindJediManager:isPrePub9Jedi(pCreatureObject)
+	return CreatureObject(pCreatureObject):hasSkill("jedi_padawan_novice")
+end
+
+-- The account's Force Sensitive slot, stored as quest status like JediSlot.h
+function HologrindJediManager:getJediSlotKey(pCreatureObject)
+	local pGhost = CreatureObject(pCreatureObject):getPlayerObject()
+
+	if (pGhost == nil) then
+		return nil
+	end
+
+	return "jediSlot:" .. PlayerObject(pGhost):getAccountID()
+end
+
+-- Unlock the account's Force Sensitive character slot, once per account.
+-- @param pCreatureObject pointer to the creature object of the player who finished the hologrind.
+function HologrindJediManager:unlockJediSlot(pCreatureObject)
+	local key = self:getJediSlotKey(pCreatureObject)
+
+	if (key == nil or getQuestStatus(key) ~= nil) then
+		return
+	end
+
+	setQuestStatus(key, "0")
+
+	-- You begin to feel attuned with the power of the Force. Your Force Sensitive character slot has been unlocked.
+	CreatureObject(pCreatureObject):sendSystemMessage("@jedi_spam:force_sensitive")
+
+	local suiManager = LuaSuiManager()
+	suiManager:sendMessageBox(pCreatureObject, pCreatureObject, "@quest/force_sensitive/intro:force_sensitive", "@jedi_spam:force_sensitive", "@ok", "HologrindJediManager", "notifyOkPressed")
 end
 
 -- Check and count the number of mastered hologrind professions.
@@ -147,6 +217,14 @@ end
 -- Check if the player has mastered all hologrind professions and send sui window and award skills.
 -- @param pCreatureObject pointer to the creature object of the player to check the jedi progression on.
 function HologrindJediManager:checkIfProgressedToJedi(pCreatureObject)
+	if PREPUB9JEDISLOT then
+		if not self:isPrePub9Jedi(pCreatureObject) and self:getNumberOfMasteredProfessions(pCreatureObject) >= NUMBEROFPROFESSIONSTOMASTER then
+			self:unlockJediSlot(pCreatureObject)
+		end
+
+		return
+	end
+
 	if self:getNumberOfMasteredProfessions(pCreatureObject) >= NUMBEROFPROFESSIONSTOMASTER and not self:isJedi(pCreatureObject) then
 		self:sendSuiWindow(pCreatureObject)
 		self:awardJediStatusAndSkill(pCreatureObject)
@@ -181,6 +259,7 @@ function HologrindJediManager:onPlayerLoggedIn(pCreatureObject)
 		return
 	end
 
+	self:addHologrindProfessions(pCreatureObject)
 	self:checkIfProgressedToJedi(pCreatureObject)
 	self:registerObservers(pCreatureObject)
 end
@@ -201,6 +280,10 @@ end
 -- Find out and send the response from the holocron to the player
 -- @param pCreatureObject pointer to the creature object of the player who used the holocron.
 function HologrindJediManager:sendHolocronMessage(pCreatureObject)
+	if PREPUB9JEDISLOT then
+		return self:sendPrePub9HolocronMessage(pCreatureObject)
+	end
+
 	if self:getNumberOfMasteredProfessions(pCreatureObject) >= MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON then
 		-- The Holocron is quiet. The ancients' knowledge of the Force will no longer assist you on your journey. You must continue seeking on your own.
 		CreatureObject(pCreatureObject):sendSystemMessage("@jedi_spam:holocron_quiet")
@@ -223,6 +306,38 @@ function HologrindJediManager:sendHolocronMessage(pCreatureObject)
 
 		return false
 	end
+end
+
+-- Pre-Pub9 holocrons only ever hint the first MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON professions, then go quiet;
+-- the rest stay hidden.
+-- @param pCreatureObject pointer to the creature object of the player who used the holocron.
+-- @return true if the holocron is quiet and isn't used up.
+function HologrindJediManager:sendPrePub9HolocronMessage(pCreatureObject)
+	local pGhost = CreatureObject(pCreatureObject):getPlayerObject()
+
+	if (pGhost == nil) then
+		return false
+	end
+
+	if self:isPrePub9Jedi(pCreatureObject) then
+		-- A mysterious voice says, "Continue along the path you have chosen".
+		CreatureObject(pCreatureObject):sendSystemMessage("@jedi_spam:holocron_already_jedi")
+		return true
+	end
+
+	local professions = PlayerObject(pGhost):getHologrindProfessions()
+
+	for i = 1, math.min(#professions, MAXIMUMNUMBEROFPROFESSIONSTOSHOWWITHHOLOCRON), 1 do
+		if not PlayerObject(pGhost):hasBadge(professions[i]) then
+			local professionText = self:getProfessionStringIdFromBadgeNumber(professions[i])
+			CreatureObject(pCreatureObject):sendSystemMessageWithTO("@jedi_spam:holocron_light_information", "@skl_n:" .. professionText)
+			return false
+		end
+	end
+
+	-- The Holocron is quiet. The ancients' knowledge of the Force will no longer assist you on your journey. You must continue seeking on your own.
+	CreatureObject(pCreatureObject):sendSystemMessage("@jedi_spam:holocron_quiet")
+	return true
 end
 
 -- Handling of the useItem event.

@@ -45,8 +45,8 @@ object_draft_schematic_weapon_lightsaber_lightsaber_one_hand_gen3_prepub9 = obje
 
    templateType = DRAFTSCHEMATIC,
 
-   -- Pre-Pub9 upgrade: the previous generation saber, gas, metal and one power crystal or Krayt dragon pearl,
-   -- plus an optional color crystal to change the blade color
+   -- Pre-Pub9 upgrade: the previous generation saber, gas, metal and one pre-Pub9 Crystal or Krayt Dragon Pearl
+   -- (blade color and stats in one)
    customObjectName = "Third Generation Lightsaber",
 
    craftingToolTab = 2048, -- (See DraftSchematicObjectTemplate.h)
@@ -66,12 +66,12 @@ object_draft_schematic_weapon_lightsaber_lightsaber_one_hand_gen3_prepub9 = obje
    customizationStringNames = {},
    customizationDefaults = {},
 
-   ingredientTemplateNames = {"craft_weapon_ingredients_n", "craft_weapon_ingredients_n", "craft_weapon_ingredients_n", "craft_weapon_ingredients_n", "craft_weapon_ingredients_n"},
-   ingredientTitleNames = {"second_gen_saber", "insulation_media_recharge", "wiring_flux", "misc_saber_upgrade_module", "lightsaber_module_color"},
-   ingredientSlotType = {1, 0, 0, 1, 3},
-   resourceTypes = {"object/weapon/melee/sword/crafted_saber/shared_sword_lightsaber_one_handed_gen2.iff", "gas_inert_culsion", "copper_polysteel", "object/tangible/component/weapon/lightsaber/shared_base_lightsaber_module.iff", "object/tangible/component/weapon/lightsaber/shared_base_lightsaber_module.iff"},
-   resourceQuantities = {1, 25, 25, 1, 1},
-   contribution = {0, 100, 100, 0, 0},
+   ingredientTemplateNames = {"craft_weapon_ingredients_n", "craft_weapon_ingredients_n", "craft_weapon_ingredients_n", "craft_weapon_ingredients_n"},
+   ingredientTitleNames = {"second_gen_saber", "insulation_media_recharge", "wiring_flux", "misc_saber_upgrade_module"},
+   ingredientSlotType = {1, 0, 0, 1},
+   resourceTypes = {"object/weapon/melee/sword/crafted_saber/shared_sword_lightsaber_one_handed_gen2.iff", "gas_inert_culsion", "copper_polysteel", "object/tangible/component/weapon/lightsaber/shared_base_lightsaber_module.iff"},
+   resourceQuantities = {1, 25, 25, 1},
+   contribution = {0, 100, 100, 0},
 
 
    targetTemplate = "object/weapon/melee/sword/crafted_saber/sword_lightsaber_one_handed_gen3.iff",

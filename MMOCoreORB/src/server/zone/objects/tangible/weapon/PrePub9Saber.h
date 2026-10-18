@@ -11,7 +11,8 @@
 
 /**
  * Pre-Pub9 lightsabers, crafted by Jedi from the Force Sensitive slot (jedi_padawan_novice).
- * A saber is upgraded by crafting the next generation from it plus gas, metal and one lightsaber crystal or Krayt dragon pearl.
+ * A saber is upgraded by crafting the next generation from it plus gas, metal and one pre-Pub9 Crystal or Krayt Dragon Pearl,
+ * which have a blade color and stats in one.
  * The crystals are crafted in: they go into the saber's crystal inventory, which the Jedi cannot open.
  */
 class PrePub9Saber {
@@ -76,6 +77,11 @@ public:
 		saber->updateToDatabase();
 	}
 
+	// Pre-Pub9 Crystal or Krayt Dragon Pearl: a blade color and stats in one
+	static bool isPrePub9Crystal(SceneObject* crystal) {
+		return crystal != nullptr && crystal->isLightsaberCrystalObject() && crystal->getObjectTemplate()->getTemplateFileName().endsWith("_prepub9");
+	}
+
 	static void setBladeColor(WeaponObject* saber, int color) {
 		saber->setBladeColor(color);
 		saber->setCustomizationVariable("/private/index_color_blade", color, true);
@@ -101,23 +107,10 @@ private:
 		}
 	}
 
-	// A new color crystal replaces the saber's color crystal; the saber inventory applies the crystal's stats or color
+	// The saber inventory applies the crystal's stats and color; the blade takes the color of the last crystal
 	static bool addCrystal(WeaponObject* saber, SceneObject* saberInv, LightsaberCrystalComponent* crystal) {
 		if (crystal->isDestroyed())
 			return false;
-
-		if (crystal->getColor() != NO_COLOR) {
-			for (int i = saberInv->getContainerObjectsSize() - 1; i >= 0; --i) {
-				ManagedReference<LightsaberCrystalComponent*> inside = saberInv->getContainerObject(i).castTo<LightsaberCrystalComponent*>();
-
-				if (inside != nullptr && inside->getColor() != NO_COLOR) {
-					saberInv->removeObject(inside, nullptr, false);
-
-					Locker ilocker(inside, saber);
-					inside->destroyObjectFromDatabase(true);
-				}
-			}
-		}
 
 		if (saberInv->getContainerObjectsSize() >= saberInv->getContainerVolumeLimit())
 			return false;

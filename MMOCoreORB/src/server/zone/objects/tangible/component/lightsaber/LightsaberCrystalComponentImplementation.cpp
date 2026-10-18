@@ -16,6 +16,7 @@
 #include "server/zone/managers/stringid/StringIdManager.h"
 #include "server/zone/managers/loot/CrystalData.h"
 #include "server/zone/managers/loot/LootManager.h"
+#include "server/zone/objects/tangible/weapon/PrePub9Saber.h"
 #include "server/zone/ZoneServer.h"
 
 void LightsaberCrystalComponentImplementation::initializeTransientMembers() {
@@ -77,7 +78,8 @@ void LightsaberCrystalComponentImplementation::generateCrystalStats() {
 
 	setMaxCondition(getRandomizedStat(minStat, maxStat, itemLevel));
 
-	if (color == 31) {
+	// Pre-Pub9 crystals have stats as well as a color
+	if (color == 31 || PrePub9Saber::isPrePub9Crystal(_this.getReferenceUnsafeStaticCast())) {
 		int minStat = crystalData->getMinDamage();
 		int maxStat = crystalData->getMaxDamage();
 
@@ -136,7 +138,7 @@ void LightsaberCrystalComponentImplementation::validateCrystalStats() {
 	if (getMaxCondition() > maxStat || getMaxCondition() < minStat)
 		setMaxCondition(getRandomizedStat(minStat, maxStat, itemLevel));
 
-	if (color == 31) {
+	if (color == 31 || PrePub9Saber::isPrePub9Crystal(_this.getReferenceUnsafeStaticCast())) {
 		minStat = crystalData->getMinDamage();
 		maxStat = crystalData->getMaxDamage();
 
@@ -297,11 +299,15 @@ void LightsaberCrystalComponentImplementation::fillAttributeList(AttributeListMe
 			alm->insertAttribute("crystal_owner", ownerName);
 		}
 
+		bool prePub9Crystal = PrePub9Saber::isPrePub9Crystal(_this.getReferenceUnsafeStaticCast());
+
 		if (getColor() != 31) {
 			StringBuffer str3;
 			str3 << "@jedi_spam:saber_color_" << getColor();
 			alm->insertAttribute("color", str3);
-		} else {
+		}
+
+		if (getColor() == 31 || prePub9Crystal) {
 			if (ownerID != 0 || prePub9Jedi || player->isPrivileged()) {
 				alm->insertAttribute("mindamage", damage);
 				alm->insertAttribute("maxdamage", damage);

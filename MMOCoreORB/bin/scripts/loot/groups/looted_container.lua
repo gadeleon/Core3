@@ -32,8 +32,9 @@ looted_container = {
 		{itemTemplate = "worklight", weight = 87719},
 
 		-- Uncommon
-		{itemTemplate = "force_color_crystal", weight = 43861},
-		{itemTemplate = "force_power_crystal", weight = 87722},
+		{itemTemplate = "force_color_crystal", weight = 21931},
+		{itemTemplate = "force_power_crystal", weight = 43861},
+		{itemTemplate = "force_crystal_prepub9", weight = 65791}, -- Pre-Pub9 Crystal, half of the crystal drops
 		{itemTemplate = "jedi_holocron_dark", weight = 43861},
 		{itemTemplate = "jedi_holocron_light", weight = 43861},
 		{itemTemplate = "attachment_clothing", weight = 43860},

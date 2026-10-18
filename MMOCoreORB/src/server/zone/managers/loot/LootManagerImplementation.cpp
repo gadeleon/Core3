@@ -197,6 +197,17 @@ bool LootManagerImplementation::loadConfigData() {
 	crystal->readObject(&crystalTable);
 	crystalData.put("lightsaber_module_krayt_dragon_pearl", crystal);
 	crystalTable.pop();
+
+	// Pre-Pub9 Crystal and Krayt Dragon Pearl (PrePub9Saber.h)
+	const char* prePub9Crystals[] = {"lightsaber_module_force_crystal_prepub9", "lightsaber_module_krayt_dragon_pearl_prepub9"};
+
+	for (const char* name : prePub9Crystals) {
+		crystalTable = luaObject.getObjectField(name);
+		crystal = new CrystalData();
+		crystal->readObject(&crystalTable);
+		crystalData.put(name, crystal);
+		crystalTable.pop();
+	}
 	luaObject.pop();
 
 	delete lua;

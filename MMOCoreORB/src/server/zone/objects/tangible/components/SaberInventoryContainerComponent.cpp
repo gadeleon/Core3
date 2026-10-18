@@ -75,7 +75,7 @@ int SaberInventoryContainerComponent::notifyObjectInserted(SceneObject* sceneObj
 
 	if (weao->isJediWeapon()) {
 		ManagedReference<LightsaberCrystalComponent*> crystal = cast<LightsaberCrystalComponent*>( object);
-		if (crystal->getColor() == 31){
+		if (crystal->getColor() == 31 || PrePub9Saber::isPrePub9Crystal(crystal)){
 			weao->setAttackSpeed(weao->getAttackSpeed() + crystal->getAttackSpeed());
 			weao->setMinDamage(weao->getMinDamage() + crystal->getDamage());
 			weao->setMaxDamage(weao->getMaxDamage() + crystal->getDamage());
@@ -112,7 +112,7 @@ int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObje
 
 			Locker locker(weao);
 
-			if (crystal->getColor() == 31){
+			if (crystal->getColor() == 31 || PrePub9Saber::isPrePub9Crystal(crystal)){
 				weao->setAttackSpeed(weao->getAttackSpeed() - crystal->getAttackSpeed());
 				weao->setMinDamage(weao->getMinDamage() - crystal->getDamage());
 				weao->setMaxDamage(weao->getMaxDamage() - crystal->getDamage());

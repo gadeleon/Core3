@@ -9,7 +9,7 @@
 #include "server/zone/managers/object/ObjectManager.h"
 #include "server/zone/objects/factorycrate/FactoryCrate.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
-#include "server/zone/objects/tangible/component/lightsaber/LightsaberCrystalComponent.h"
+#include "server/zone/objects/tangible/weapon/PrePub9Saber.h"
 
 // #define DEBUG_COMPONENT_SLOT
 
@@ -73,7 +73,7 @@ public:
 			return false;
 
 		// Pre-Pub9 lightsaber upgrades: the previous saber must be the crafter's own and unequipped,
-		// the upgrade module a power crystal or Krayt dragon pearl, and the optional color slot a color crystal
+		// and the upgrade module a pre-Pub9 Crystal or Krayt Dragon Pearl
 		if (incomingTano->isWeaponObject() && cast<WeaponObject*>(incomingTano.get())->isJediWeapon()) {
 			if (incomingTano->getCraftersID() != player->getObjectID()) {
 				player->sendSystemMessage("@jedi_spam:not_your_lightsaber");
@@ -82,14 +82,8 @@ public:
 
 			if (cast<WeaponObject*>(incomingTano.get())->isEquipped())
 				return false;
-		} else if (contentType.contains("lightsaber_module")) {
-			if (!incomingTano->isLightsaberCrystalObject())
-				return false;
-
-			bool colorCrystal = cast<LightsaberCrystalComponent*>(incomingTano.get())->getColor() != 31;
-
-			if (slotName == "lightsaber_module_color" ? !colorCrystal : (slotName == "misc_saber_upgrade_module" && colorCrystal))
-				return false;
+		} else if (slotName == "misc_saber_upgrade_module" && !PrePub9Saber::isPrePub9Crystal(incomingTano)) {
+			return false;
 		}
 
 		// Serial Number check

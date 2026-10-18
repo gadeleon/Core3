@@ -5,7 +5,8 @@ krayt_pearls = {
 	minimumLevel = 0,
 	maximumLevel = 0,
 	lootItems = {
-		{itemTemplate = "krayt_dragon_pearl", weight = 10000000}
+		{itemTemplate = "krayt_dragon_pearl", weight = 5000000},
+		{itemTemplate = "krayt_dragon_pearl_prepub9", weight = 5000000} -- Pre-Pub9 Krayt Dragon Pearl
 	}
 }
 

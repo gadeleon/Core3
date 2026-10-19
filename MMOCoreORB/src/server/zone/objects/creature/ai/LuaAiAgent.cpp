@@ -22,6 +22,7 @@
 #include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/intangible/tasks/PetControlDeviceStoreTask.h"
 #include "server/zone/objects/area/ActiveArea.h"
+#include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/managers/creature/PetManager.h"
 
 const char LuaAiAgent::className[] = "LuaAiAgent";
@@ -31,6 +32,7 @@ Luna<LuaAiAgent>::RegType LuaAiAgent::Register[] = {
 		{ "_getObject", &LuaSceneObject::_getObject },
 		{ "setAITemplate", &LuaAiAgent::setAITemplate },
 		{ "setFollowObject", &LuaAiAgent::setFollowObject },
+		{ "startConversationWith", &LuaAiAgent::startConversationWith },
 		{ "setOblivious", &LuaAiAgent::setOblivious },
 		{ "setWatchObject", &LuaAiAgent::setWatchObject },
 		{ "setStalkObject", &LuaAiAgent::setStalkObject },
@@ -182,6 +184,28 @@ int LuaAiAgent::setFollowObject(lua_State* L) {
 	SceneObject* obj = (SceneObject*) lua_touserdata(L, -1);
 
 	realObject->setFollowObject(obj);
+
+	return 0;
+}
+
+// startConversationWith(pPlayer): opens the NPC's conversation as if the player had started it (Holocomm)
+int LuaAiAgent::startConversationWith(lua_State* L) {
+	CreatureObject* player = (CreatureObject*) lua_touserdata(L, -1);
+
+	if (player == nullptr || !player->isPlayerCreature())
+		return 0;
+
+	PlayerObject* ghost = player->getPlayerObject();
+
+	if (ghost == nullptr)
+		return 0;
+
+	Locker locker(realObject, player);
+
+	ghost->setConversatingObject(realObject);
+
+	if (realObject->sendConversationStartTo(player))
+		realObject->notifyObservers(ObserverEventType::STARTCONVERSATION, player);
 
 	return 0;
 }

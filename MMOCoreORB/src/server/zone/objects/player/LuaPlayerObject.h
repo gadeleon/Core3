@@ -47,6 +47,7 @@ namespace player {
 		int awardBadge(lua_State* L);
 		int hasBadge(lua_State* L);
 		int addHologrindProfession(lua_State* L);
+		int setHologrindProfession(lua_State* L);
 		int getHologrindProfessions(lua_State* L);
 		int getForcePower(lua_State* L);
 		int getForcePowerMax(lua_State* L);

@@ -37,7 +37,7 @@ function HologrindJediManager:getGrindableProfessionList()
 		{ "crafting_architect_master", 		CRAFTING_ARCHITECT_MASTER  },
 		{ "crafting_armorsmith_master", 	CRAFTING_ARMORSMITH_MASTER  },
 		{ "crafting_artisan_master", 		CRAFTING_ARTISAN_MASTER  },
-		{ "outdoors_bio_engineer_master", 	OUTDOORS_BIOENGINEER_MASTER  },
+		{ "outdoors_bio_engineer_master", 	OUTDOORS_BIO_ENGINEER_MASTER  },
 		{ "combat_bountyhunter_master", 	COMBAT_BOUNTYHUNTER_MASTER  },
 		{ "combat_brawler_master", 		COMBAT_BRAWLER_MASTER  },
 		{ "combat_carbine_master", 		COMBAT_CARBINE_MASTER  },
@@ -85,6 +85,8 @@ end
 
 -- Gives the player random hologrind professions until there are NUMBEROFPROFESSIONSTOMASTER of them,
 -- so raising the number later adds hidden professions. Jedi from the Force Sensitive slot have none.
+-- Also replaces stored professions that aren't in the list: Bio-Engineer used a misspelled badge constant,
+-- so characters that rolled it stored badge 0 (count_5) instead.
 -- @param pCreatureObject pointer to the creature object of the player.
 function HologrindJediManager:addHologrindProfessions(pCreatureObject)
 	local pGhost = CreatureObject(pCreatureObject):getPlayerObject()
@@ -95,6 +97,7 @@ function HologrindJediManager:addHologrindProfessions(pCreatureObject)
 
 	local professions = PlayerObject(pGhost):getHologrindProfessions()
 	local skillList = {}
+	local valid = {}
 
 	for _, profession in ipairs(self:getGrindableProfessionList()) do
 		local assigned = false
@@ -102,11 +105,20 @@ function HologrindJediManager:addHologrindProfessions(pCreatureObject)
 		for i = 1, #professions, 1 do
 			if professions[i] == profession[2] then
 				assigned = true
+				valid[i] = true
 			end
 		end
 
 		if not assigned then
 			table.insert(skillList, profession)
+		end
+	end
+
+	for i = 1, #professions, 1 do
+		if not valid[i] and #skillList > 0 then
+			local skillNumber = getRandomNumber(1, #skillList)
+			PlayerObject(pGhost):setHologrindProfession(i, skillList[skillNumber][2])
+			table.remove(skillList, skillNumber)
 		end
 	end
 

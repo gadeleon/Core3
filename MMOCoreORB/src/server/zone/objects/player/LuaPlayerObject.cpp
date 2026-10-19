@@ -45,6 +45,7 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "awardBadge", &LuaPlayerObject::awardBadge },
 		{ "hasBadge", &LuaPlayerObject::hasBadge },
 		{ "addHologrindProfession", &LuaPlayerObject::addHologrindProfession },
+		{ "setHologrindProfession", &LuaPlayerObject::setHologrindProfession },
 		{ "getHologrindProfessions", &LuaPlayerObject::getHologrindProfessions },
 		{ "getForcePower", &LuaPlayerObject::getForcePower },
 		{ "getForcePowerMax", &LuaPlayerObject::getForcePowerMax },
@@ -377,6 +378,16 @@ int LuaPlayerObject::addHologrindProfession(lua_State* L){
 	byte profession = lua_tointeger(L, -1);
 
 	realObject->addHologrindProfession(profession);
+
+	return 0;
+}
+
+// setHologrindProfession(index, profession), index from 1 like getHologrindProfessions
+int LuaPlayerObject::setHologrindProfession(lua_State* L) {
+	int index = lua_tointeger(L, -2);
+	byte profession = lua_tointeger(L, -1);
+
+	realObject->setHologrindProfession(index - 1, profession);
 
 	return 0;
 }

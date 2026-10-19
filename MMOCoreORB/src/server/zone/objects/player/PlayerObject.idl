@@ -1737,6 +1737,11 @@ class PlayerObject extends IntangibleObject {
 		hologrindProfessions.add(prof);
 	}
 
+	public void setHologrindProfession(int index, byte prof) {
+		if (index >= 0 && index < hologrindProfessions.size())
+			hologrindProfessions.set(index, prof);
+	}
+
 	@local
 	@read
 	public final Vector<byte> getHologrindProfessions() {

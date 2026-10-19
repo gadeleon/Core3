@@ -269,10 +269,12 @@ public:
 
 			sendWoundMessage(creature, creatureTarget, attribute, healedWounds);
 
-			if (creatureTarget != creature && healedWounds > 0) {
+			// Healing yourself gives experience too, for soloing medics
+			if (healedWounds > 0)
 				awardXp(creature, "medical", round(healedWounds * 2.5f));
+
+			if (creatureTarget != creature && healedWounds > 0)
 				creature->notifyObservers(ObserverEventType::ABILITYUSED, creatureTarget, STRING_HASHCODE("tendwound"));
-			}
 
 		} else {
 			return GENERALERROR;

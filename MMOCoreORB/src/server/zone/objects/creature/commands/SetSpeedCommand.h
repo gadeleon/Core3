@@ -90,7 +90,10 @@ public:
 			return INVALIDPARAMETERS;
 		}
 
-		StringIdChatParameter startMessage("admin", "Speed set to " + String::valueOf(speed) + " for " + String::valueOf(duration) + " minutes.");
+		// Fun: ground speed is doubled, so /setSpeed 5 moves like /setSpeed 10 used to
+		float multiplier = speed * 2.f;
+
+		StringIdChatParameter startMessage("admin", "Speed set to " + String::valueOf(speed) + " (x" + String::valueOf(multiplier) + ") for " + String::valueOf(duration) + " minutes.");
 		StringIdChatParameter endMessage("admin", "Speed has been reset to default.");
 
 		duration *= 60; // Convert duration to seconds.
@@ -101,8 +104,8 @@ public:
 
 		Locker locker(buff);
 
-		buff->setSpeedMultiplierMod(speed);
-		buff->setAccelerationMultiplierMod(speed);
+		buff->setSpeedMultiplierMod(multiplier);
+		buff->setAccelerationMultiplierMod(multiplier);
 		buff->setStartMessage(startMessage);
 		buff->setEndMessage(endMessage);
 

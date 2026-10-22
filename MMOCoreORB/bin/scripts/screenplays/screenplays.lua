@@ -683,6 +683,9 @@ includeFile("poi/yavin4_blueleaf_temple.lua")
 includeFile("poi/yavin4_imperial_base.lua")
 includeFile("poi/yavin4_woolamander_temple.lua")
 
+-- Fun: grinding spots
+includeFile("poi/grinding_spots.lua")
+
 --Static Spawns
 includeFile("static_spawns/corellia_static_spawns.lua")
 includeFile("static_spawns/dantooine_static_spawns.lua")

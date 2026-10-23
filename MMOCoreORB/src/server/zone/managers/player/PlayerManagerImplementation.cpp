@@ -2054,6 +2054,24 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 
 			PetControlDevice* pcd = attackerCreo->getControlDevice().get().castTo<PetControlDevice*>();
 
+			// Fun: grouped creature, droid and faction pets earn squad leader experience for the group leader like a player would
+			ManagedReference<GroupObject*> petGroup = attackerCreo->getGroup();
+
+			if (pcd != nullptr && petGroup != nullptr && attacker->getZone() == zone && destructedObject->isInRangeZoneless(attacker, 80)) {
+				ManagedReference<CreatureObject*> groupLeader = petGroup->getLeader();
+
+				if (groupLeader != nullptr && groupLeader->isPlayerCreature()) {
+					float petXp = Math::min((float)baseXp * entry->getTotalDamage() / totalDamage, 7500.f) * groupExpMultiplier;
+
+					Locker squadLock(groupLeader, destructedObject);
+
+					if (groupLeader->hasSkill("outdoors_squadleader_novice")) {
+						int v = slExperience.get(groupLeader) + (petXp * 0.1f) + (petXp * 0.1f * petGroup->getGroupSize());
+						slExperience.put(groupLeader, v);
+					}
+				}
+			}
+
 			// only creature pets will award exp, so discard anything else
 			if (pcd == nullptr || pcd->getPetType() != PetManager::CREATUREPET) {
 				continue;
@@ -2186,8 +2204,15 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 
 
 			//Check if the group leader is a squad leader
-			if (group == nullptr)
+			// Fun: squad leaders earn squad leader experience solo, as a group of 1
+			if (group == nullptr) {
+				if (attackerCreo->hasSkill("outdoors_squadleader_novice")) {
+					int v = slExperience.get(attackerCreo) + (combatXp * 0.1f) + (combatXp * 0.1f);
+					slExperience.put(attackerCreo, v);
+				}
+
 				continue;
+			}
 
 			//Calculate squad leader group size experience @ 10% person + combat experience which is 10% of the variable
 			float squadXp = (combatXp * 0.1f) + (combatXp * 0.1f * group->getGroupSize());

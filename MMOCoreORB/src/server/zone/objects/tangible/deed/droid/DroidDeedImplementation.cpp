@@ -537,3 +537,32 @@ bool DroidDeedImplementation::isBombDroid() {
 
 	return false;
 }
+
+void DroidDeedImplementation::addFunCombatModule(int rating) {
+	ManagedReference<DroidComponent*> dcomp = getZoneServer()->createObject(STRING_HASHCODE("object/tangible/component/droid/combat_module.iff"), 1).castTo<DroidComponent*>();
+
+	if (dcomp == nullptr)
+		return;
+
+	Locker locker(dcomp, _this.getReferenceUnsafeStaticCast());
+
+	dcomp->setParent(nullptr);
+
+	// DroidCombatModuleDataComponent reads its rating from this attribute, here and when the droid is loaded
+	dcomp->addProperty("cmbt_module", (float)rating, 0, "exp_effectiveness");
+
+	BaseDroidModuleComponent* bmodule = cast<BaseDroidModuleComponent*>(dcomp->getDataObjectComponent()->get());
+
+	if (bmodule == nullptr) {
+		dcomp->destroyObjectFromDatabase(true);
+		return;
+	}
+
+	bmodule->initializeTransientMembers();
+	bmodule->setSpecies(species);
+
+	modules.put(bmodule->getModuleName(), dcomp);
+
+	overallQuality = 1.f;
+	combatRating = rating;
+}

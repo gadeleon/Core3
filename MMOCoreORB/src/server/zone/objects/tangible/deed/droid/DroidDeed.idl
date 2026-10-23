@@ -83,4 +83,11 @@ class DroidDeed extends Deed {
 
 	@dirty
 	public native boolean isBombDroid();
+
+	/**
+	 * Fun: /object combatdroid, gives the deed full quality and a combat module of the given rating
+	 * @pre { this object is locked }
+	 */
+	@preLocked
+	public native void addFunCombatModule(int rating);
 }

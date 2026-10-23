@@ -16,6 +16,7 @@
 #include "server/zone/objects/player/sui/callbacks/GrindingArmorSuiCallback.h"
 #include "server/zone/objects/player/sui/callbacks/GrindingWeapon.h"
 #include "server/zone/objects/player/sui/callbacks/CreatureSpawnerSuiCallback.h"
+#include "server/zone/objects/player/sui/callbacks/CombatDroid.h"
 
 
 class ObjectCommand : public QueueCommand {
@@ -249,6 +250,9 @@ public:
 			} else if (commandType.beginsWith("creaturespawner")) {
 				if (!CreatureSpawner::handleCommand(creature))
 					return GENERALERROR;
+			} else if (commandType.beginsWith("combatdroid")) {
+				if (!CombatDroid::handleCommand(creature, args))
+					return INVALIDPARAMETERS;
 			} else if (commandType.beginsWith("omnitool")) {
 				ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
 
@@ -441,6 +445,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object colorkit");
 			creature->sendSystemMessage("SYNTAX: /object hologrindtracker");
 			creature->sendSystemMessage("SYNTAX: /object holocomm");
+			creature->sendSystemMessage("SYNTAX: /object combatdroid [<type>]");
 
 			return INVALIDPARAMETERS;
 		}

@@ -516,7 +516,8 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 	elseif (pilotSquadron == BLACK_EPSILON_SQUADRON) then
 		pilotProfession = "imperialPilot"
 
-		-- TODO: Add BlackEpsilonSquadronScreenplay reset functions
+		-- Tier 1
+		BlackEpsilonSquadronScreenplay:resetHakasshaQuests(pPlayer)
 	elseif (pilotSquadron == STORM_SQUADRON) then
 		pilotProfession = "imperialPilot"
 

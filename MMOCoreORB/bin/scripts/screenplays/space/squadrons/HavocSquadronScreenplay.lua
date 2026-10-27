@@ -584,7 +584,7 @@ recovery_corellia_rebel_tier3_1 = SpaceRecoveryScreenplay:new {
 
 	sideQuest = true,
 	sideQuestType = "patrol",
-	sideQuestName = "corellia_rebel_tier3_1_A",
+	sideQuestName = "corellia_rebel_tier3_1_a",
 	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
 
 	arrivalDelay = 20,
@@ -624,10 +624,10 @@ recovery_corellia_rebel_tier3_1 = SpaceRecoveryScreenplay:new {
 registerScreenPlay("recovery_corellia_rebel_tier3_1", true)
 
 -- Mission 1 Side Quest A: Patrol (Space Yavin4 - Clear Imperial ships from Rebel escape route)
-patrol_corellia_rebel_tier3_1_A = SpacePatrolScreenplay:new {
-	className = "patrol_corellia_rebel_tier3_1_A",
+patrol_corellia_rebel_tier3_1_a = SpacePatrolScreenplay:new {
+	className = "patrol_corellia_rebel_tier3_1_a",
 
-	questName = "corellia_rebel_tier3_1_A",
+	questName = "corellia_rebel_tier3_1_a",
 	questType = "patrol",
 
 	questZone = "space_yavin4",
@@ -654,7 +654,7 @@ patrol_corellia_rebel_tier3_1_A = SpacePatrolScreenplay:new {
 	},
 }
 
-registerScreenPlay("patrol_corellia_rebel_tier3_1_A", true)
+registerScreenPlay("patrol_corellia_rebel_tier3_1_a", true)
 
 -- Mission 1 Side Quest B: Destroy Surprise Attack (Space Yavin4 - Destroy Imperial patrol on escape path)
 destroy_surpriseattack_corellia_rebel_tier3_1_b = SpaceSurpriseAttackScreenplay:new {
@@ -672,9 +672,9 @@ destroy_surpriseattack_corellia_rebel_tier3_1_b = SpaceSurpriseAttackScreenplay:
 
 	sideQuestDelay = 0,
 
-	parentQuest = "patrol_corellia_rebel_tier3_1_A",
+	parentQuest = "patrol_corellia_rebel_tier3_1_a",
 	parentQuestType = "patrol",
-	parentQuestName = "corellia_rebel_tier3_1_A",
+	parentQuestName = "corellia_rebel_tier3_1_a",
 
 	surpriseAttackShips = {
 		zone = "space_yavin4",
@@ -2067,7 +2067,7 @@ HavocSquadronScreenplay = ScreenPlay:new {
 
 	-- Tier 3 (Aqzow)
 	TIER3_QUEST_STRING_1 = {type = "recovery", name = "corellia_rebel_tier3_1"},
-	TIER3_QUEST_STRING_1_SIDE1 = {type = "patrol", name = "corellia_rebel_tier3_1_A"},
+	TIER3_QUEST_STRING_1_SIDE1 = {type = "patrol", name = "corellia_rebel_tier3_1_a"},
 	TIER3_QUEST_STRING_1_SIDE2 = {type = "destroy_surpriseattack", name = "corellia_rebel_tier3_1_b"},
 	TIER3_QUEST_STRING_1_SIDE3 = {type = "assassinate", name = "corellia_rebel_tier3_1_c"},
 	TIER3_QUEST_STRING_1_SIDE4 = {type = "space_battle", name = "corellia_rebel_tier3_1_d"},
@@ -2104,11 +2104,29 @@ HavocSquadronScreenplay = ScreenPlay:new {
 	TIER4_QUEST_STRING_DUTY_2 = {type = "rescue_duty", name = "corellia_rebel_tier4_1"},
 	TIER4_QUEST_STRING_DUTY_3 = {type = "recovery_duty", name = "corellia_rebel_tier4_1"},
 	TIER4_QUEST_STRING_DUTY_4 = {type = "destroy_duty", name = "corellia_rebel_tier4_1"},
+
+	-- Tier 3 names used before havoc-tier3-quest-name-case
+	LEGACY_TIER3_QUESTS = {
+		{type = "patrol", name = "corellia_rebel_tier3_1_A", moveTo = {{type = "patrol", name = "corellia_rebel_tier3_1_a"}}},
+	},
+	-- Ordered migration steps; step k runs once per character (marker <id>HavocSquadronScreenplay:legacyVersion)
+	LEGACY_MIGRATION_STEPS = {"migrateLegacyTier3"},
 }
 
 registerScreenPlay("HavocSquadronScreenplay", false)
 
 function HavocSquadronScreenplay:start()
+end
+
+function HavocSquadronScreenplay:migrateLegacyProgress(pPlayer)
+	return SpaceHelpers:runProgressMigrations(pPlayer, "HavocSquadronScreenplay", self.LEGACY_MIGRATION_STEPS)
+end
+
+-- Step 1: tier 3 mission 1 patrol name case
+function HavocSquadronScreenplay:migrateLegacyTier3(pPlayer)
+	for _, legacy in ipairs(self.LEGACY_TIER3_QUESTS) do
+		SpaceHelpers:migrateSpaceQuestEntry(pPlayer, legacy.type, legacy.name, legacy.moveTo)
+	end
 end
 
 -- Reset functions for quest clearing
@@ -2195,7 +2213,7 @@ function HavocSquadronScreenplay:resetAqzowQuests(pPlayer)
 
 	-- Mission 1
 	recovery_corellia_rebel_tier3_1:resetQuest(pPlayer)
-	patrol_corellia_rebel_tier3_1_A:resetQuest(pPlayer)
+	patrol_corellia_rebel_tier3_1_a:resetQuest(pPlayer)
 	destroy_surpriseattack_corellia_rebel_tier3_1_b:resetQuest(pPlayer)
 	assassinate_corellia_rebel_tier3_1_c:resetQuest(pPlayer)
 	space_battle_corellia_rebel_tier3_1_d:resetQuest(pPlayer)
@@ -2236,6 +2254,10 @@ function HavocSquadronScreenplay:resetAqzowQuests(pPlayer)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE2.type, self.TIER3_QUEST_STRING_4_SIDE2.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE3.type, self.TIER3_QUEST_STRING_4_SIDE3.name, false)
 	SpaceHelpers:clearSpaceQuest(pPlayer, self.TIER3_QUEST_STRING_4_SIDE4.type, self.TIER3_QUEST_STRING_4_SIDE4.name, false)
+
+	for _, legacy in ipairs(self.LEGACY_TIER3_QUESTS) do
+		SpaceHelpers:purgeSpaceQuest(pPlayer, legacy.type, legacy.name)
+	end
 
 	local playerID = SceneObject(pPlayer):getObjectID()
 

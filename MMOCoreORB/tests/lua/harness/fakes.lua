@@ -228,6 +228,8 @@ FakeCreature.__index = FakeCreature
 -- species: number returned by getSpecies (default 0 = human; use SPECIES_ITHORIAN, SPECIES_WOOKIEE, ...).
 -- inventory: true gives the player an inventory container (getSlottedObject("inventory")); without it `SpaceHelpers:spaceItemReward`
 -- returns early and giveItem is never called (space-trainer-rewards). Items given land in `player.inventory.items`.
+-- inventory = { limit = n } or inventoryFull = true (limit 0): the inventory is full once it holds `limit` items; giveItem without the overload
+-- argument then gives nothing (nil) and lists the template in `player.inventory.destroyed` (space-mission4-reward-fixes).
 -- parent: true or a name; the player stands in a fake building (root parent, not a ship).
 -- zone: name returned by getZoneName (default ""). ship: true or a Fakes.newShip option table; the
 -- player then sits in a fake player ship (getRootParent returns it, the ship's getPilot returns the
@@ -268,8 +270,16 @@ function Fakes.newCreature(opts)
 		c.ghost = opts.ghost or Fakes.newGhost(opts)
 		c.datapad = Fakes.newContainer({ objectName = "datapad" })
 
-		if opts.inventory then
+		if opts.inventory or opts.inventoryFull then
 			c.inventory = Fakes.newContainer({ objectName = "inventory" })
+
+			if type(opts.inventory) == "table" and opts.inventory.limit ~= nil then
+				c.inventory.limit = opts.inventory.limit
+			end
+
+			if opts.inventoryFull then
+				c.inventory.limit = 0
+			end
 		end
 	end
 
@@ -773,10 +783,20 @@ function FakeMission:setCreatorName(n) self.creatorName = n end
 function FakeMission:setSpaceDutyMission() self.spaceDuty = true end
 function FakeMission:sendTo(pPlayer) self.sentTo = pPlayer end
 
--- giveItem(pContainer, template, slot): mission objects get a FakeMission, anything else a plain
+-- giveItem(pContainer, template, slot[, overload]): mission objects get a FakeMission, anything else a plain
 -- container. The item is appended to the container's items.
-function Fakes.giveItem(pContainer, template, slot)
+-- A container with a `limit` (H.newPlayer{inventory = {limit = n}} or inventoryFull = true) is full once it holds `limit` items: without a truthy
+-- `overload` the call adds nothing, returns nil and records the item in `container.destroyed`, like DirectorManager.cpp:2462-2473 (transferObject
+-- fails, the item is destroyed). With `overload` the item lands in the container past the limit (ContainerComponent.cpp:304, allowOverflow).
+function Fakes.giveItem(pContainer, template, slot, overload)
 	local item
+
+	if pContainer.limit ~= nil and #pContainer.items >= pContainer.limit and not overload then
+		pContainer.destroyed = pContainer.destroyed or {}
+		pContainer.destroyed[#pContainer.destroyed + 1] = template
+
+		return nil
+	end
 
 	if template:find("mission_object", 1, true) then
 		item = Fakes.newMission()

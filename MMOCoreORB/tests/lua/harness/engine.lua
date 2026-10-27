@@ -728,9 +728,18 @@ function spawnSpaceActiveArea(zone, template, x, z, y, radius)
 	return area
 end
 
-function giveItem(pContainer, template, slot)
-	record("giveItem", pContainer, template, slot)
-	return Fakes.giveItem(pContainer, template, slot)
+-- DirectorManager::giveItem takes 3 or 4 arguments (slot, then the optional overload flag). The call is recorded with exactly the arguments
+-- the script passed, so a test can tell a 3-argument call (args.n == 3) from a 4-argument one (args[4] == true).
+function giveItem(pContainer, template, slot, ...)
+	local extra = select("#", ...)
+
+	if extra == 0 then
+		record("giveItem", pContainer, template, slot)
+	else
+		record("giveItem", pContainer, template, slot, ...)
+	end
+
+	return Fakes.giveItem(pContainer, template, slot, (...))
 end
 
 function grantStarterShip(pPlayer, faction)

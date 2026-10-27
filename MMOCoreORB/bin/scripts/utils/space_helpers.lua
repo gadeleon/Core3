@@ -1387,7 +1387,7 @@ function SpaceHelpers:spaceItemReward(pPlayer, itemString)
 		return
 	end
 
-	local pItem = giveItem(pInventory, itemString, -1)
+	local pItem = giveItem(pInventory, itemString, -1, true)
 
 	if (pItem ~= nil) then
 		local messageString = LuaStringIdChatParameter("@space/quest:quest_rewarded")

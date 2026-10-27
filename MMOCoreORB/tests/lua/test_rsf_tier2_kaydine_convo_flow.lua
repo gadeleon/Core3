@@ -687,9 +687,11 @@ function TestKaydineTierDone:test_all_four_skills_and_mission_4_won_show_complet
 	lu.assertEquals(rec.rewards, {}, "rewardPlayer calls")
 end
 
--- AC-8
-function TestKaydineTierDone:test_a_pilot_of_tier_4_sees_finished_tier3_with_the_same_follow_up()
-	local player = T.player(tr, 4, { complete = { E15 }, skills = SKILLS_02 })
+-- AC-8 (space-mission4-reward-fixes AC-2): with mission 4 paid a tier 4 pilot still sees finished_tier3 with the same follow-up.
+-- Before that feature the test had no :reward key and pinned the bug (an unpaid win was hidden behind the gate); that case is now
+-- test_a_pilot_of_tier_4_with_mission_4_won_and_unpaid_is_offered_the_reward.
+function TestKaydineTierDone:test_a_pilot_of_tier_4_with_mission_4_paid_sees_finished_tier3_with_the_same_follow_up()
+	local player = T.player(tr, 4, { complete = { E15 }, skills = SKILLS_02, questStatus = { ["naboo_privateer_15:reward"] = "1" } })
 
 	player.ghost:setPilotTier(4)
 
@@ -699,6 +701,22 @@ function TestKaydineTierDone:test_a_pilot_of_tier_4_sees_finished_tier3_with_the
 	lu.assertEquals(transcript[1].text, D.PREFIX .. "s_2d86b58b", "finished_tier3 line")
 	lu.assertEquals(optionsOf(transcript[1]), { { D.PREFIX .. "s_32c46e00", "completed_kaydine_end" } }, "finished_tier3 options")
 	lu.assertEquals(player.ghost:getPilotTier(), 4, "pilot tier is not changed")
+end
+
+-- AC-8 (space-mission4-reward-fixes AC-1, C-1; supersedes test_a_pilot_of_tier_4_sees_finished_tier3_with_the_same_follow_up):
+-- SWG has no pilot-tier check before the reward branch (naboo_privateer_trainer_2.java:4262), so a tier 4 pilot with mission 4 won and
+-- unpaid gets mission4_complete, and the reply pays it.
+function TestKaydineTierDone:test_a_pilot_of_tier_4_with_mission_4_won_and_unpaid_is_offered_the_reward()
+	local player = T.player(tr, 4, { complete = { E15 }, skills = SKILLS_02 })
+
+	player.ghost:setPilotTier(4)
+
+	local transcript = T.converse(tr, player, { 0 })
+
+	lu.assertEquals(ids(transcript), { "mission4_complete", "mission4_reward" }, "screens")
+	lu.assertEquals(transcript[1].text, D.PREFIX .. "s_afe7700f", "mission4_complete line")
+	lu.assertEquals(player.ghost:getPilotTier(), 4, "pilot tier is not changed")
+	lu.assertEquals(H.getQuestStatus(player, "naboo_privateer_15:reward"), "1", "mission 4 is paid")
 end
 
 ---------------------------------------------------------------------------------------------

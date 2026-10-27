@@ -373,7 +373,19 @@ function TestOffTrackGatesNothingElseMoves:test_get_initial_screen_is_byte_ident
 			return text:sub(s, e + 4)
 		end
 
-		lu.assertTrue(block(O.readFile(h[1]), "now") == block(baseFile(h[1]), BASE), h[2] .. ":getInitialScreen differs from " .. BASE)
+		-- space-mission4-reward-fixes (C-2) edits the tier-done line of Viopa's and Turoldine's getInitialScreen after this feature: their "now" side is
+		-- commit 4e917caf0f (the base of that feature); test_space_mission4_reward_pins.lua pins the allowed diff against it.
+		local now = O.readFile(h[1])
+
+		if h[2] == "viopaConvoHandler" or h[2] == "turoldineConvoHandler" then
+			local pipe = io.popen("git show 4e917caf0f:MMOCoreORB/bin/scripts/" .. h[1] .. " 2>&1")
+
+			now = pipe:read("a")
+			pipe:close()
+			lu.assertTrue(#now > 500 and now:find("^fatal") == nil, "git show 4e917caf0f did not return " .. h[1])
+		end
+
+		lu.assertTrue(block(now, "now") == block(baseFile(h[1]), BASE), h[2] .. ":getInitialScreen differs from " .. BASE)
 	end
 end
 

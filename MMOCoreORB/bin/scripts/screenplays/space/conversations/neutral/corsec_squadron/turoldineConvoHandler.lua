@@ -93,7 +93,7 @@ function turoldineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("on_mission")
 
 	-- Check if players have all the tier4 skill boxes and finished the last mission, then send them to next trainer.
-	elseif (questFourComplete and completedTier4) then
+	elseif (questFourComplete and completedTier4 and getQuestStatus(playerID .. CorsecSquadronScreenplay.TIER4_QUEST_STRING_4.name .. ":reward") == "1") then
 		-- Players has all the skill boxes, they should be a tier 3. Increment if not proper
 		if (ghost:getPilotTier() <= 4) then
 			-- Increment pilot to Tier 5!

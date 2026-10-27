@@ -1231,8 +1231,15 @@ local function functionText(text, name)
 end
 
 -- AC-9: the kept functions of the handler are byte-identical to the base commit
+-- space-mission4-reward-fixes (C-1) changes getInitialScreen after this feature: that one function is read from commit 4e917caf0f (the base of
+-- that feature, still equal to this feature's version); the allowed diff against 4e917caf0f is pinned by test_space_mission4_reward_pins.lua.
 function TestF3KaydineNothingElseMoves:test_the_kept_handler_functions_are_byte_identical_to_commit_6991fd0f9a()
 	local old, new = baseFile(KH), readFile(KH)
+	local pipe = io.popen("git show 4e917caf0f:MMOCoreORB/bin/scripts/" .. KH .. " 2>&1")
+	local before = pipe:read("a")
+
+	pipe:close()
+	lu.assertTrue(#before > 500 and before:find("^fatal") == nil, "git show 4e917caf0f did not return " .. KH)
 
 	for _, name in ipairs({
 		"kaydineConvoHandler:isSignedUp", "kaydineConvoHandler:getInitialScreen", "kaydineConvoHandler:isOnMission", "kaydineConvoHandler:canFlyNonTrackDuty",
@@ -1241,7 +1248,7 @@ function TestF3KaydineNothingElseMoves:test_the_kept_handler_functions_are_byte_
 		local want = functionText(old, name)
 
 		lu.assertTrue(#want > 100, "setup: " .. name .. " found at " .. BASE)
-		lu.assertEquals(functionText(new, name), want, name .. " changed since " .. BASE)
+		lu.assertEquals(functionText(name == "kaydineConvoHandler:getInitialScreen" and before or new, name), want, name .. " changed since " .. BASE)
 	end
 
 	lu.assertNotNil(new:find('kaydineConvoHandler.SIGNUP_SUFFIX = "RsfSquadronScreenplay:StartedKaydine"', 1, true), "SIGNUP_SUFFIX")

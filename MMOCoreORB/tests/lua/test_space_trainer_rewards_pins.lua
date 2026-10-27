@@ -231,13 +231,20 @@ function TestTrainerRewardsFilePins:test_SpaceQuestLogic_differs_from_the_base_o
 end
 
 -- AC-9: every other trainer handler and the shared helpers are byte-identical
+-- space-mission4-reward-fixes: that feature edits Kaydine, Rikkh, Turoldine and Viopa (and space_helpers.lua) after this one. For those the claim
+-- "the rewards commit left the file as it was at the base" is read from the rewards commit itself (`git show`, like the squadron pins above); the other
+-- handlers still compare the working tree. test_space_mission4_reward_pins.lua pins the allowed diff of the five files against 4e917caf0f.
+local EDITED_LATER = { kaydine = true, rikkh = true, turoldine = true, viopa = true }
+
 for _, key in ipairs(D.ORDER) do
 	if key ~= "aqzow" then
 		local path = D.HANDLER_DIR .. D.TRAINERS[key].handler
 
 		-- AC-9
 		TestTrainerRewardsFilePins["test_" .. key .. "ConvoHandler_is_byte_identical_to_the_base"] = function()
-			lu.assertEquals(now(path) == base(path), true, path .. " differs from " .. D.BASE_COMMIT)
+			local text = EDITED_LATER[key] and nowAtFeatureCommit(path) or now(path)
+
+			lu.assertEquals(text == base(path), true, path .. " differs from " .. D.BASE_COMMIT)
 		end
 	end
 end
@@ -251,7 +258,8 @@ end
 
 -- AC-9
 function TestTrainerRewardsFilePins:test_space_helpers_is_byte_identical_to_the_base()
-	lu.assertEquals(now(D.SH) == base(D.SH), true, D.SH .. " differs from " .. D.BASE_COMMIT)
+	-- space-mission4-reward-fixes edits it after this feature: read the rewards commit's copy (see EDITED_LATER above)
+	lu.assertEquals(nowAtFeatureCommit(D.SH) == base(D.SH), true, D.SH .. " differs from " .. D.BASE_COMMIT)
 end
 
 -- AC-9: the pinned files are LF only

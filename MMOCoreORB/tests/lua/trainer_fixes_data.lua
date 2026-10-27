@@ -565,6 +565,7 @@ function T.player(tr, n, opts)
 		ship = opts.ship,
 		species = opts.species,     -- space-trainer-rewards: SPECIES_* value (default human)
 		inventory = opts.inventory, -- space-trainer-rewards: true gives the pilot an inventory, so rewards call giveItem
+		inventoryFull = opts.inventoryFull, -- space-mission4-reward-fixes: the inventory is at its limit (giveItem without overload gives nothing)
 	}
 
 	return H.newPlayer(args)

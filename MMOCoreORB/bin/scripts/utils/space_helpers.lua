@@ -521,6 +521,9 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 
 		-- Tier 2
 		BlackEpsilonSquadronScreenplay:resetPriskQuests(pPlayer)
+
+		-- Tier 3
+		BlackEpsilonSquadronScreenplay:resetHaymirQuests(pPlayer)
 	elseif (pilotSquadron == STORM_SQUADRON) then
 		pilotProfession = "imperialPilot"
 

@@ -1,0 +1,14 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.642274	-0.517711	0.565208	-0.662807	0.004810	-0.748775	-4511.28	3086.68	-2187.41	nav_name|4|corellia_imperial_tier3_survival1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.074455	-0.573802	0.815603	0.356762	-0.748416	-0.559102	5567.95	-1556.37	-7266.57	nav_name|4|corellia_imperial_tier3_assassinate2_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.007066	0.708143	-0.706033	-0.426443	0.640764	0.638411	4172.62	4062.56	-4134.60	nav_name|4|corellia_imperial_tier3_assassinate2_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.074455	-0.573803	0.815602	0.260090	-0.778391	-0.571367	2767.54	5195.26	-2260.93	nav_name|4|corellia_tier3_assassinate2_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.117993	-0.469256	0.875144	-0.817101	-0.454927	-0.354101	4763.30	-1727.55	3174.94	nav_name|4|lok_imp_escort_duty_7|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.239367	-0.917914	0.316445	-0.732187	-0.384700	-0.562057	-5439.38	-2664.39	-5525.47	nav_name|4|lok_imp_escort_duty_9|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.024612	-0.816696	0.576543	-0.719921	-0.414624	-0.556598	-4979.05	-2229.12	1961.42	nav_name|4|lok_imp_escort_duty_8|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.575450	0.465725	-0.672278	0.624900	-0.780682	-0.005927	944.75	-1189.09	856.29	nav_name|4|lok_imp_recovery_9|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.701088	-0.639548	-0.315364	0.229637	-0.216203	0.948959	1779.89	289.89	-1042.65	nav_name|4|lok_imp_recovery_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.341969	0.137047	-0.929664	-0.329496	0.909012	0.255205	-997.57	669.92	653.97	nav_name|4|lok_imp_recovery_7|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.726569	-0.624811	-0.285849	0.598748	0.371679	0.709475	2371.72	588.93	-251.33	nav_name|4|lok_imp_recovery_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.575450	0.465725	-0.672278	0.624900	-0.780682	-0.005927	104.62	-139.52	864.26	nav_name|4|lok_imp_recovery_8|$|	script.space.quest_logic.quest_nav_point

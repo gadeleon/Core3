@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -498,6 +498,22 @@ files, the template and the handler (`P.load()` records a missing production fil
 generated from the spec table) and `black_epsilon_tier2_client_text.lua` the client's English text of the 140 lines. The answer key for the dialogue is
 `fixtures/script/conversation/corellia_imperial_trainer_2.java` (byte copy) through `harness/swgjava.lua`: the 63 original replies of Appendix A must lead where the java leads.
 The twelve `.tab` fixtures under `fixtures/spacequest/<type>/` are byte copies. `test_black_epsilon_tier2_pins.lua` compares the working tree with `git show 86bcd9d147` (skips once HEAD moves).
+
+### Black Epsilon tier 3 (black-epsilon-tier3-haymir)
+
+Haymir Rendundi's tier 3 (Imperial, Yavin 4 and Lok): 14 quest tables in `BlackEpsilonSquadronScreenplay.lua` for four missions (M1 patrol > inspect > delivery_no_pickup > recovery,
+M2 recovery > survival > escort > space_battle, M3 rescue > assassinate, M4 recovery > assassinate > survival > assassinate), his template `haymir_convo_template`, the handler
+`haymirConvoHandler` and `resetHaymirQuests` (called by the surrender, after Prisk's reset). `black_epsilon_tier3_data.lua` (not a test file) is the spec's data in one place:
+`T.expected()` (the whole table of each of the 14 globals, Appendix B), `T.POINTS[zone][name]`, `T.SPAWNER`, `T.MISSIONS`, `T.TRAIN` (the four free-choice topics), `T.load()` and the
+player builder `T.pilot{...}` (`pilot`, `faction`, `squadron`, `standing`, `ship`, `tier1 = n`, `t2 = n` (default 4), `t3 = { TRAIN indexes }`, `mission = { [n] = state }`,
+`paid = { n... }`, `xp`, `datapad`, `duty`, `species`, `pilotTier` (default 3), `inShip` + `zone`; the states are `"won" | "failed" | "attempted" | "active" | "partial" | "endonly" | "paid"`).
+`T.talk` / `T.drive` / `T.spyStarts` / `T.started` work as the tier 1 and 2 helpers. `black_epsilon_tier3_screens_data.lua` is Appendix A (74 rows, generated from the spec table) and
+`black_epsilon_tier3_client_text.lua` the client's English text of the 131 lines. The answer key for the dialogue is `fixtures/script/conversation/corellia_imperial_tier3.java`
+(byte copy) through `harness/swgjava.lua`. The 14 `.tab` fixtures under `fixtures/spacequest/<type>/` and `fixtures/spacequest/inspect_cargo/joint_operations_plan.tab` are byte copies; the
+`space_mobile.reb_yavinspy_tier4.tab` excerpt is `sed -n '1,2p;1408p'` of SWG `space_mobile.tab`, and the two buildout extracts
+`fixtures/space_zones/buildout/space_{yavin4,lok}.black_epsilon_tier3_points.tab` are made as the other extracts (one `nav_name|4|<name>|` pattern per point, and the
+`strSpawnerName|4|corellia_imperial_tier3_officerinspect|` spawner). `test_black_epsilon_tier3_runtime.lua` reads the inspect cargo from the REAL ship template file, not from a cargo set on a fake
+ship. `test_black_epsilon_tier3_pins.lua` compares the working tree with `git show 396bb839bc` (skips once HEAD moves); edited files come from `git diff --diff-filter=M`.
 
 ### SWG-Source fixtures
 

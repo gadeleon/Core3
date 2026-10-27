@@ -145,6 +145,7 @@ includeFile("space/squadrons/BlackEpsilonSquadronScreenplay.lua")
 
 includeFile("space/conversations/imperial/black_epsilon_squadron/hakasshaConvoHandler.lua")
 includeFile("space/conversations/imperial/black_epsilon_squadron/priskConvoHandler.lua")
+includeFile("space/conversations/imperial/black_epsilon_squadron/haymirConvoHandler.lua")
 
 -- Imperial Inquisition Squadron
 includeFile("space/squadrons/InquisitionSquadronScreenplay.lua")

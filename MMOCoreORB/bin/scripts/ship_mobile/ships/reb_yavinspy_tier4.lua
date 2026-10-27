@@ -24,6 +24,7 @@ reb_yavinspy_tier4 = ShipAgent:new {
 	color2 = 59,
 	texture = 5,
 	questLoot = "joint_operations_plan",
+	cargoString = "joint_operations_plans",
 	formationLocation = 2,
 	appearance = "rebel_pilot",
 

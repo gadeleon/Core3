@@ -93,5 +93,6 @@ includeFile("conversations/space/rebel/havoc_squadron/arkon_convo.lua")
 -- Black Epsilon Squadron
 includeFile("conversations/space/imperial/black_epsilon_squadron/hakassha_convo.lua")
 includeFile("conversations/space/imperial/black_epsilon_squadron/prisk_convo.lua")
+includeFile("conversations/space/imperial/black_epsilon_squadron/haymir_convo.lua")
 -- Imperial Inquisition Squadron
 -- Storm Squadron

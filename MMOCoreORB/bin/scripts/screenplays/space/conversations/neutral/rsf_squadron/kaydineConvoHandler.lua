@@ -88,7 +88,7 @@ function kaydineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	end
 
 	-- RSF neutral pilot has completed Tier 3
-	if (ghost:getPilotTier() > 3) then
+	if (ghost:getPilotTier() > 3 and not (SpaceHelpers:isSpaceQuestComplete(pPlayer, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.type, RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name) and getQuestStatus(playerID .. RsfSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward") ~= "1")) then
 		return convoTemplate:getScreen("finished_tier3")
 	end
 

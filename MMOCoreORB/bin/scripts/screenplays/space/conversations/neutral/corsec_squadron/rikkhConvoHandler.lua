@@ -44,7 +44,7 @@ function rikkhConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	end
 
 	-- Corsec neutral pilot has completed Tier3
-	if (ghost:getPilotTier() > 3) then
+	if (ghost:getPilotTier() > 3 and not (SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER2_QUEST_STRING_4.type, CorsecSquadronScreenplay.TIER2_QUEST_STRING_4.name) and getQuestStatus(playerID .. CorsecSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward") ~= "1")) then
 		return convoTemplate:getScreen("finished_tier3")
 	end
 
@@ -81,7 +81,7 @@ function rikkhConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("on_mission")
 
 	-- Check if players have all the tier2 skill boxes and finished the last mission, then send them to next trainer.
-	elseif (questFourComplete and completedTier2) then
+	elseif (questFourComplete and completedTier2 and getQuestStatus(playerID .. CorsecSquadronScreenplay.TIER2_QUEST_STRING_4.name .. ":reward") == "1") then
 		-- Players has all the skill boxes, they should be a tier 3. Increment if not proper
 		if (ghost:getPilotTier() <= 2) then
 			-- Increment pilot to Tier 2!

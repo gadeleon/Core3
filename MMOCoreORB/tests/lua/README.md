@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -483,6 +483,21 @@ text of the 295 ids (read from the /tre dump, used for the trailing comments and
 Appendix A must lead where the java leads. `fixtures/skill/skills.pilot_imperial_navy_01.tab` is a six-line excerpt of SWG `skills.tab` (header rows and the novice box plus
 the four `_01` skills, 7500 XP each) for `B.useSkillCosts()`. `test_black_epsilon_tier1_pins.lua` compares the working tree with `git show 9034fa3254` (the base of the
 feature): `space_helpers.lua` gains two lines, the two include files one each, nothing else under `bin/` or `src/` changes.
+
+### Black Epsilon tier 2 (black-epsilon-tier2-prisk)
+
+Prisk Kith'Vys's tier 2 (Imperial, Talus): 12 quest tables in `BlackEpsilonSquadronScreenplay.lua` (recovery 16, assassinate 12/14/17, inspect 13, patrol 15 with its surprise
+attack, the final survival, four duties), his template `prisk_convo_template`, the handler `priskConvoHandler` and `resetPriskQuests` (called by the surrender, after Hakassha's reset).
+`black_epsilon_tier2_data.lua` (not a test file) is the spec's data in one place: the 12 globals and their whole tables (`P.expected()`, Appendix B), the 37 points and the spawner,
+`P.MISSIONS` (mission n = 1..4 is assassinate 12, inspect 13, assassinate 14, patrol 15; the skill that leads to it), `P.TRAIN` (the four one-click topics), the load of the squadron
+files, the template and the handler (`P.load()` records a missing production file in `P.loadErrors`), and the player builder `P.pilot{...}` (documented at the function: `pilot`,
+`faction`, `squadron`, `standing`, `gender`, `ship`, `tier1 = n`, `t2 = { TRAIN indexes }`, `series`, `prisk`, `opening`, `mission = { [n] = state, final = state }`, `paid = { n... }`,
+`xp`, `datapad`, `duty`, `species`, `pilotTier`, `inShip` + `zone`; the states are `"won" | "failed" | "active" | "attempted"`, plus `"won4patrol"` for mission 4).
+`P.talk` / `P.drive` / `P.spyStarts` / `P.started` work as the tier 1 helpers; `P.useSkillCosts()` prices the four tier 2 skills at 60000 XP from
+`fixtures/skill/skills.pilot_imperial_navy_02.tab` (SWG `skills.tab` header rows and rows 625, 629, 633, 637). `black_epsilon_tier2_screens_data.lua` is Appendix A (85 rows,
+generated from the spec table) and `black_epsilon_tier2_client_text.lua` the client's English text of the 140 lines. The answer key for the dialogue is
+`fixtures/script/conversation/corellia_imperial_trainer_2.java` (byte copy) through `harness/swgjava.lua`: the 63 original replies of Appendix A must lead where the java leads.
+The twelve `.tab` fixtures under `fixtures/spacequest/<type>/` are byte copies. `test_black_epsilon_tier2_pins.lua` compares the working tree with `git show 86bcd9d147` (skips once HEAD moves).
 
 ### SWG-Source fixtures
 

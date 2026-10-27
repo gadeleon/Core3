@@ -24,6 +24,7 @@ rebel_spysmuggler_tier2 = ShipAgent:new {
 	color2 = 10,
 	texture = 5,
 	questLoot = "personnel_dossier",
+	cargoString = "personnel_dossier", -- personnel_dossier: space_mobile.tab cargo; inspect quest corellia_imperial_13 (feature black-epsilon-tier2-inspect-cargo)
 	appearance = "rebel_pilot",
 
 	tauntType = "rebel",

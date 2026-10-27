@@ -75,10 +75,11 @@ end
 TestClientStringFixtures = {}
 
 -- AC-1; AC-1 of space-convo-client-strings-arkon (01-spec.md, D-10, Appendix C): Arkon's skill-name replies (@skl_n) are gone, so skl_n.sids and its entry are deleted (44 -> 43)
-function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_43_files_of_appendix_a()
+-- black-epsilon-tier1-hakassha: Hakassha's conversation/corellia_imperial_trainer_1 is the 44th file (red until her template and handler exist)
+function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_44_files_of_appendix_a()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 43, "FIXTURE_COUNTS entries")
+	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 44, "FIXTURE_COUNTS entries")
 	lu.assertNil(D.FIXTURE_COUNTS["skl_n"], "FIXTURE_COUNTS entry of skl_n")
 	lu.assertNil(io.open(CS.FIXTURE_DIR .. "skl_n.sids", "r"), "fixture skl_n.sids must be deleted")
 	lu.assertEquals(referenced, sortedKeys(D.FIXTURE_COUNTS), "string files referenced by the space conversation sources")

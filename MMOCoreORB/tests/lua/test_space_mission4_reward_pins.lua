@@ -9,7 +9,7 @@ local lu = require("luaunit")
 local D = require("space_trainer_rewards_data")
 
 local BASE = "4e917caf0f"
-local FEATURE_COMMIT = nil
+local FEATURE_COMMIT = "9034fa3254"
 
 local HD = D.HANDLER_DIR
 local KAYDINE = HD .. "neutral/rsf_squadron/kaydineConvoHandler.lua"

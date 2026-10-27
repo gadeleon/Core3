@@ -3,6 +3,7 @@
 -- Each later feature (F2..F6) deletes its string file from KNOWN_GAPS. FIXTURE_COUNTS: ids per generated .sids fixture.
 -- space-convo-client-strings-imler-a (F6a): Imler's entry lost its 15 gate, duty-briefing and training ids (211 -> 196); the 196 left are the four mission briefings (F6b).
 -- space-convo-client-strings-imler-b (F6b): Imler's entry is gone (196 -> 0); KNOWN_GAPS is empty.
+-- black-epsilon-tier1-hakassha: Hakassha Sireen's conversation/corellia_imperial_trainer_1 (296 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -11,6 +12,7 @@ D.KNOWN_GAPS = {}
 D.FIXTURE_COUNTS = {
 	["chassis_npc"] = 17,
 	["conversation/chassis_npc"] = 12,
+	["conversation/corellia_imperial_trainer_1"] = 296,
 	["conversation/corellia_privateer_tier3"] = 239,
 	["conversation/corellia_privateer_tier4"] = 214,
 	["conversation/corellia_privateer_trainer"] = 117,

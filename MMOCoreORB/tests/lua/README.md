@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 43 files, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -466,6 +466,23 @@ names, and `test_havoc_tier3_name_case_client_names.lua` requires every quest ta
 `spacequest/destroy/corellia_rebel_master`. `test_havoc_tier3_name_case_data.lua` pins the rename of `patrol_corellia_rebel_tier3_1_A` to `_a` (names, chain, SWG and client-string
 fixtures, the exact diff of the Havoc file against `28bcf23cd8` through `git show`/`diff`), `test_havoc_tier3_name_case_migration.lua` the Havoc migration step 1 (marker
 `HavocSquadronScreenplay:legacyVersion`, run from Aqzow's `getInitialScreen`) and the surrender purge, built on `migration_scenario.lua` and the Aqzow entry of `trainer_fixes_data.lua`.
+
+### Black Epsilon tier 1 (black-epsilon-tier1-hakassha)
+
+Hakassha Sireen's tier 1 (Imperial, Talus): 7 quest tables in `BlackEpsilonSquadronScreenplay.lua`, her template `hakassha_convo_template`, the handler
+`hakasshaConvoHandler` and the surrender reset. `black_epsilon_tier1_data.lua` (not a test file) is the spec's data in one place: the 7 globals and their
+whole tables (`B.expected()`, Appendix B), the 15 points and 4 spawners, `B.TRAIN` (the four topics of the two-step training), the load of the squadron files, the
+template and the handler (`B.load()` records a missing production file in `B.loadErrors` instead of raising, so a red run reads "expected global X" with the reason),
+and the player builder `B.pilot{...}` (documented at the function: `pilot`, `faction`, `squadron`, `standing`, `ship`, `paid = k` for missions 1..k won and paid,
+`state = "won" | "failed" | "active"` for mission k+1, `tier = n` tier 1 skills, `xp`, `series`, `prisk`, `datapad`, `duty`, `species`, `pilotTier`, `inShip` + `zone`).
+`B.talk(player, choices)` is `H.converse` on the template, `B.drive(player, screenId, choices)` starts as if the pilot had just chosen a link to that screen.
+`species` defaults to `SPECIES_HUMAN` because the fake's own default `0` is not a species constant (the weird-head and bandolier rules compare with the constants).
+`black_epsilon_tier1_screens_data.lua` is Appendix A (161 rows, generated from the spec table) and `black_epsilon_tier1_client_text.lua` the client's English
+text of the 295 ids (read from the /tre dump, used for the trailing comments and the `%NU` lines). The answer key for the dialogue is the SWG java
+(`fixtures/script/conversation/corellia_imperial_trainer_1.java`, byte copy) through `harness/swgjava.lua`: every original (non-twin, non-rejoin, non-pre-NGE-only) reply of
+Appendix A must lead where the java leads. `fixtures/skill/skills.pilot_imperial_navy_01.tab` is a six-line excerpt of SWG `skills.tab` (header rows and the novice box plus
+the four `_01` skills, 7500 XP each) for `B.useSkillCosts()`. `test_black_epsilon_tier1_pins.lua` compares the working tree with `git show 9034fa3254` (the base of the
+feature): `space_helpers.lua` gains two lines, the two include files one each, nothing else under `bin/` or `src/` changes.
 
 ### SWG-Source fixtures
 

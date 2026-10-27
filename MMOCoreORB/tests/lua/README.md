@@ -458,6 +458,15 @@ quest tables use. For each zone make a patterns file with one `nav_name|4|<name>
   > tests/lua/fixtures/space_zones/buildout/space_<zone>.quest_points.tab
 ```
 
+### Quest name case and the client quest table (havoc-tier3-quest-name-case)
+
+The client resolves a journal entry through `misc/quest_crc_string_table.iff`, with a case-sensitive CRC of `spacequest/<type>/<name>`. `fixtures/misc/quest_crc_string_table.names`
+(756 sorted lines, generated read-only: `python3 -B tests/lua/tools/gen_client_sids.py --quest-names`, `--check` compares, `--names-file` points at a scratch copy) lists those
+names, and `test_havoc_tier3_name_case_client_names.lua` requires every quest table of the Corsec, Havoc and RSF files to be in it, except the one named orphan
+`spacequest/destroy/corellia_rebel_master`. `test_havoc_tier3_name_case_data.lua` pins the rename of `patrol_corellia_rebel_tier3_1_A` to `_a` (names, chain, SWG and client-string
+fixtures, the exact diff of the Havoc file against `28bcf23cd8` through `git show`/`diff`), `test_havoc_tier3_name_case_migration.lua` the Havoc migration step 1 (marker
+`HavocSquadronScreenplay:legacyVersion`, run from Aqzow's `getInitialScreen`) and the surrender purge, built on `migration_scenario.lua` and the Aqzow entry of `trainer_fixes_data.lua`.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

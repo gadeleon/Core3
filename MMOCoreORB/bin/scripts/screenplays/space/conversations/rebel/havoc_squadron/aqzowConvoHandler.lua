@@ -8,6 +8,8 @@ function aqzowConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return nil
 	end
 
+	HavocSquadronScreenplay:migrateLegacyProgress(pPlayer)
+
 	local convoTemplate = LuaConversationTemplate(pConvTemplate)
 
 	local playerID = CreatureObject(pPlayer):getObjectID()

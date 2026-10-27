@@ -183,7 +183,9 @@ function TestTrainerRewardsFilePins:test_aqzowConvoHandler_differs_from_the_base
 	lu.assertEquals(#lines, 283, "base line count")
 	lu.assertEquals(#want, 291, "expected line count")
 
-	local got = D.linesOf(now(D.AQZOW, true))
+	-- havoc-tier3-quest-name-case (D-6): the "now" side is the rewards commit itself (the working-tree handler gains the legacy
+	-- migration call later); the claim "the rewards commit changed only the 4 faction lines" stays true forever.
+	local got = D.linesOf(nowAtFeatureCommit(D.AQZOW))
 
 	lu.assertEquals(#got, 291, "aqzowConvoHandler.lua line count")
 	firstDifference("aqzowConvoHandler.lua", got, want)

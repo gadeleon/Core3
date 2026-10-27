@@ -406,6 +406,8 @@ local function base(path)
 	return text
 end
 
+local HAVOC_NOW_COMMIT = "28bcf23cd8"
+
 local function firstDifference(label, got, want)
 	for i = 1, math.max(#got, #want) do
 		if got[i] ~= want[i] then
@@ -467,10 +469,15 @@ function TestCorsecWaypointsFilePins:test_HavocSquadronScreenplay_differs_from_t
 	lu.assertEquals(#lines, 2306, "base line count of the Havoc file")
 	lu.assertEquals(#want, 2307, "expected line count of the Havoc file")
 
-	local text = W.readFile(W.HSP)
+	-- havoc-tier3-quest-name-case (D-6): the "now" side is the waypoints commit itself, read with git show; the working tree
+	-- Havoc file is edited again by later features. The claim "the waypoints commit changed only these lines" stays true forever.
+	local text = W.baseText(W.HSP, HAVOC_NOW_COMMIT)
 
-	lu.assertNotNil(text, W.HSP)
-	lu.assertEquals(W.count(text, "\r"), 0, "HavocSquadronScreenplay.lua stays LF")
+	if text == nil then
+		lu.skip("git show " .. HAVOC_NOW_COMMIT .. " is unavailable")
+	end
+
+	lu.assertEquals(W.count(text, "\r"), 0, "HavocSquadronScreenplay.lua at " .. HAVOC_NOW_COMMIT .. " stays LF")
 
 	local got = W.linesOf(text)
 

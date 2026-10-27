@@ -223,7 +223,7 @@ end
 
 -- AC-9
 function TestSquadronQuestConstants:test_the_three_fixed_havoc_constants_name_the_quests_that_run()
-	lu.assertEquals(HavocSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE1, { type = "patrol", name = "corellia_rebel_tier3_1_A" }, "TIER3_QUEST_STRING_1_SIDE1")
+	lu.assertEquals(HavocSquadronScreenplay.TIER3_QUEST_STRING_1_SIDE1, { type = "patrol", name = "corellia_rebel_tier3_1_a" }, "TIER3_QUEST_STRING_1_SIDE1")
 	lu.assertEquals(HavocSquadronScreenplay.TIER3_QUEST_STRING_2_SIDE1, { type = "delivery", name = "corellia_rebel_tier3_2_a" }, "TIER3_QUEST_STRING_2_SIDE1")
 	lu.assertEquals(HavocSquadronScreenplay.TIER3_QUEST_STRING_4_SIDE1, { type = "patrol", name = "corellia_rebel_tier3_4_a" }, "TIER3_QUEST_STRING_4_SIDE1")
 end
@@ -231,7 +231,7 @@ end
 -- AC-9: resetQuest is spied, so the entries can only be cleared through the constants
 function TestSquadronQuestConstants:test_reset_aqzow_quests_clears_the_three_fixed_entries_through_the_constants()
 	local entries = {
-		{ "patrol", "corellia_rebel_tier3_1_A" },
+		{ "patrol", "corellia_rebel_tier3_1_a" },
 		{ "delivery", "corellia_rebel_tier3_2_a" },
 		{ "patrol", "corellia_rebel_tier3_4_a" },
 	}

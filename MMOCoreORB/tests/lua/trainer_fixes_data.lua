@@ -305,7 +305,7 @@ T.TRAINERS.aqzow = {
 	handler = "space/conversations/rebel/havoc_squadron/aqzowConvoHandler.lua",
 	usesAttempted = true,
 	chains = {
-		{ "recovery_corellia_rebel_tier3_1", "patrol_corellia_rebel_tier3_1_A", "destroy_surpriseattack_corellia_rebel_tier3_1_b", "assassinate_corellia_rebel_tier3_1_c", "space_battle_corellia_rebel_tier3_1_d" },
+		{ "recovery_corellia_rebel_tier3_1", "patrol_corellia_rebel_tier3_1_a", "destroy_surpriseattack_corellia_rebel_tier3_1_b", "assassinate_corellia_rebel_tier3_1_c", "space_battle_corellia_rebel_tier3_1_d" },
 		{ "inspect_corellia_rebel_tier3_2", "delivery_corellia_rebel_tier3_2_a", "survival_corellia_rebel_tier3_2_b", "escort_corellia_rebel_tier3_2_c" },
 		{ "delivery_corellia_rebel_tier3_3", "assassinate_corellia_rebel_tier3_3_a", "space_battle_corellia_rebel_tier3_3_b", "escort_corellia_rebel_tier3_3_c" },
 		{ "assassinate_corellia_rebel_tier3_4", "patrol_corellia_rebel_tier3_4_a", "destroy_surpriseattack_corellia_rebel_tier3_4_b", "space_battle_corellia_rebel_tier3_4_c", "survival_corellia_rebel_tier3_4_d" },

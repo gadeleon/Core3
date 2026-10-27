@@ -22,6 +22,12 @@ TreFiles order that is missing from --tre-dir (in write and --check mode alike: 
 newest copy of a file and write a stale fixture).
 --check writes nothing, lists differing or missing fixtures and exits 1 if any.
 --fixture-dir points at another fixture tree (for example a scratch copy).
+
+--quest-names handles one more fixture instead of the .sids files: fixtures/misc/quest_crc_string_table.names, the
+list of quest names (one "spacequest/<type>/<name>" per line, byte-sorted, LF) of the client's misc/quest_crc_string_table.iff
+(first archive of the TreFiles order that holds it). The client maps journal CRCs to quests through this table, so a quest
+name that is not in it (case matters) has no readable journal entry. With --check it writes nothing and exits 1 on a
+difference; --names-file overrides the path (for a scratch copy).
 """
 import argparse
 import os
@@ -40,6 +46,10 @@ SOURCE_DIRS = [
     "bin/scripts/screenplays/space/conversations",
 ]
 LITERAL = re.compile(r'"@([\w/]+):([\w]+)"')
+
+
+QUEST_TABLE = b"misc/quest_crc_string_table.iff"
+DEFAULT_NAMES = os.path.join(ROOT, "tests", "lua", "fixtures", "misc", "quest_crc_string_table.names")
 
 
 class GenError(Exception):
@@ -99,6 +109,26 @@ def parse_ids(d):
     return ids
 
 
+def iff_chunks(b, off, end):
+    while off < end:
+        tag = b[off:off + 4]
+        ln = struct.unpack(">I", b[off + 4:off + 8])[0]
+        if tag == b"FORM":
+            yield from iff_chunks(b, off + 12, off + 8 + ln)
+        else:
+            yield tag, b[off + 8:off + 8 + ln]
+        off += 8 + ln
+
+
+def parse_quest_names(d):
+    c = dict(iff_chunks(d, 0, len(d)))
+    n = struct.unpack("<I", c[b"DATA"])[0]
+    offs = struct.unpack("<%dI" % n, c[b"STRT"])
+    s = c[b"STNG"]
+    names = [s[o:s.index(b"\0", o)] for o in offs]
+    return sorted(set(names))
+
+
 class Archives:
     def __init__(self, tre_dir):
         self.tre_dir = tre_dir
@@ -120,6 +150,16 @@ class Archives:
                     raise GenError("%s: zero-length (deleted) entry in %s" % (file, name))
                 return sorted(set(parse_ids(data)), key=lambda s: s.encode())
         raise GenError("%s: no archive in the TreFiles order holds %s" % (file, target.decode()))
+
+    def quest_names(self):
+        for name in tre_order():
+            t = self.open(name)
+            if t is not None and QUEST_TABLE in t.entries:
+                data = t.read(QUEST_TABLE)
+                if not data:
+                    raise GenError("quest table: zero-length (deleted) entry in %s" % name)
+                return parse_quest_names(data)
+        raise GenError("quest table: no archive in the TreFiles order holds %s" % QUEST_TABLE.decode())
 
     def close(self):
         for t in self.cache.values():
@@ -154,6 +194,8 @@ def main():
     ap.add_argument("--tre-dir", default="/tre")
     ap.add_argument("--fixture-dir", default=DEFAULT_FIXTURES)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--quest-names", action="store_true")
+    ap.add_argument("--names-file", default=DEFAULT_NAMES)
     ap.add_argument("files", nargs="*")
     a = ap.parse_args()
 
@@ -161,6 +203,27 @@ def main():
     if missing:
         print("ERROR archive(s) of the config.lua TreFiles order missing from %s: %s" % (a.tre_dir, ", ".join(missing)), file=sys.stderr)
         return 2
+
+    if a.quest_names:
+        arch = Archives(a.tre_dir)
+        try:
+            body = b"".join(n + b"\n" for n in arch.quest_names())
+        except GenError as e:
+            print("ERROR " + str(e), file=sys.stderr)
+            return 1
+        finally:
+            arch.close()
+        if a.check:
+            cur = open(a.names_file, "rb").read() if os.path.exists(a.names_file) else None
+            if cur != body:
+                print(("MISSING " if cur is None else "DIFFERS ") + a.names_file)
+                return 1
+            return 0
+        os.makedirs(os.path.dirname(a.names_file), exist_ok=True)
+        with open(a.names_file, "wb") as out:
+            out.write(body)
+        print("wrote %s (%d names)" % (a.names_file, body.count(b"\n")))
+        return 0
 
     files = sorted(set(a.files) if a.files else referenced_files() | existing_fixtures(a.fixture_dir))
     arch = Archives(a.tre_dir)

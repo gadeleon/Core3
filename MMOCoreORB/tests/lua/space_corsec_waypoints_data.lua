@@ -115,8 +115,8 @@ function W.count(text, plain)
 	end
 end
 
-function W.baseText(path)
-	local rc, out = W.shell("git show " .. W.FEATURE_COMMIT .. ":MMOCoreORB/" .. path)
+function W.baseText(path, commit)
+	local rc, out = W.shell("git show " .. (commit or W.FEATURE_COMMIT) .. ":MMOCoreORB/" .. path)
 
 	if rc ~= 0 then
 		return nil, out

@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -514,6 +514,27 @@ player builder `T.pilot{...}` (`pilot`, `faction`, `squadron`, `standing`, `ship
 `fixtures/space_zones/buildout/space_{yavin4,lok}.black_epsilon_tier3_points.tab` are made as the other extracts (one `nav_name|4|<name>|` pattern per point, and the
 `strSpawnerName|4|corellia_imperial_tier3_officerinspect|` spawner). `test_black_epsilon_tier3_runtime.lua` reads the inspect cargo from the REAL ship template file, not from a cargo set on a fake
 ship. `test_black_epsilon_tier3_pins.lua` compares the working tree with `git show 396bb839bc` (skips once HEAD moves); edited files come from `git diff --diff-filter=M`.
+
+### Black Epsilon tier 4 (black-epsilon-tier4-nin-gursawe)
+
+Nin Gursawe's tier 4 ("Insurgent", Imperial, Dantooine and Dathomir): 19 quest tables in `BlackEpsilonSquadronScreenplay.lua` (15 story tables for four missions: M1 patrol > inspect >
+survival, M2 recovery > inspect > delivery_no_pickup, M3 escort > rescue > patrol > inspect, M4 assassinate > recovery > destroy_surpriseattack > space_battle > assassinate; and the four
+duties), his template `nin_gursawe_convo_template` (158 screens), the handler `ninGursaweConvoHandler` and `resetNinGursaweQuests` (called by the surrender, after Haymir's reset). There is no
+master mission and no master skill: SWG's Nin never reaches them (the Declann feature owns them). `black_epsilon_tier4_data.lua` (not a test file) is the spec's data in one place:
+`T.expected()` (the whole table of each of the 19 globals, Appendix B; the long ship lists are derived from the `.tab` fixtures), `T.POINTS[zone][name]`, `T.SPAWNERS`, `T.INSPECTS`, `T.MISSIONS`,
+`T.TRAIN` (the four free-choice topics, bought with XP), `T.PATHS` / `T.RETRY_PATHS` (Appendix D), `T.KEYS` (the 11 status keys), `T.load()` and the player builder `T.pilot{...}` (`pilot`,
+`faction`, `squadron`, `standing`, `ship`, `tier1` / `t2` / `t3 = n` (default 4), `t4 = { TRAIN indexes }`, `master`, `mission = { [n] = state }`, `paid = { n... }`,
+`keys = { intro, met, declann }`, `xp`, `datapad`, `duty`, `species`, `pilotTier` (default 4), `inShip` + `zone`; the states are `"won" | "failed" | "attempted" | "active" | "partial" | "endonly" | "paid"`).
+`T.talk` / `T.drive` / `T.spyStarts` / `T.started` work as the tier 1 to 3 helpers; `T.useSkillCosts()` charges the 1,000,000 XP of `fixtures/skill/skills.pilot_imperial_navy_04.tab`;
+`T.recordGrants()` / `T.restore()` record the `SpaceHelpers:grantSpaceSkill` calls. `black_epsilon_tier4_screens_data.lua` is Appendix A (158 rows, generated from the spec table) and
+`black_epsilon_tier4_client_text.lua` the client's English text of the 306 lines. The answer key for the dialogue is `fixtures/script/conversation/corellia_imperial_tier4.java` (byte copy)
+through `harness/swgjava.lua`; the 64 reconstructed screens (`R` rows) have no java twin, and `test_black_epsilon_tier4_template.lua` checks the briefing routes by walking the loaded template
+(I-12), not by conversing every path. The 19 `.tab` fixtures under `fixtures/spacequest/<type>/` and `fixtures/spacequest/inspect_cargo/corellia_imperial_tier4_inspect{1,2,3}.tab` are
+byte copies; `space_mobile.corellia_imperial_tier4_inspect.tab` is rows 1-2, 1872, 1879 and 1884 of SWG `space_mobile.tab`, `skills.pilot_imperial_navy_04.tab` the `skills.tab` header rows and
+the four `_04` rows, and the two buildout extracts `fixtures/space_zones/buildout/space_{dantooine,dathomir}.black_epsilon_tier4_points.tab` are made as the other extracts (one
+`nav_name|4|<name>|` and one `strSpawnerName|4|<name>|` pattern per name in the 19 `.tab` files). `test_black_epsilon_tier4_runtime.lua` reads the inspect cargo from the REAL ship template
+files, not from a cargo set on a fake ship. `test_black_epsilon_tier4_pins.lua` compares the working tree with `git show 8bf0f63ead` (skips once HEAD moves); edited files come from
+`git diff --diff-filter=M`.
 
 ### SWG-Source fixtures
 

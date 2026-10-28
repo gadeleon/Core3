@@ -6,6 +6,7 @@
 -- black-epsilon-tier1-hakassha: Hakassha Sireen's conversation/corellia_imperial_trainer_1 (296 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- black-epsilon-tier2-prisk: Prisk Kith'Vys's conversation/corellia_imperial_trainer_2 (142 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- black-epsilon-tier3-haymir: Haymir Rendundi's conversation/corellia_imperial_tier3 (132 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- black-epsilon-tier4-nin-gursawe: Nin Gursawe's conversation/corellia_imperial_tier4 (307 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -15,6 +16,7 @@ D.FIXTURE_COUNTS = {
 	["chassis_npc"] = 17,
 	["conversation/chassis_npc"] = 12,
 	["conversation/corellia_imperial_tier3"] = 132,
+	["conversation/corellia_imperial_tier4"] = 307,
 	["conversation/corellia_imperial_trainer_1"] = 296,
 	["conversation/corellia_imperial_trainer_2"] = 142,
 	["conversation/corellia_privateer_tier3"] = 239,

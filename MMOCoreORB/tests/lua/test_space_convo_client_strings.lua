@@ -78,10 +78,11 @@ TestClientStringFixtures = {}
 -- black-epsilon-tier1-hakassha: Hakassha's conversation/corellia_imperial_trainer_1 is the 44th file (red until her template and handler exist)
 -- black-epsilon-tier2-prisk: Prisk's conversation/corellia_imperial_trainer_2 is the 45th file (red until his template and handler exist)
 -- black-epsilon-tier3-haymir: Haymir's conversation/corellia_imperial_tier3 is the 46th file (red until his template and handler exist)
-function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_46_files_of_appendix_a()
+-- black-epsilon-tier4-nin-gursawe: Nin Gursawe's conversation/corellia_imperial_tier4 is the 47th file (red until his template and handler exist)
+function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_47_files_of_appendix_a()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 46, "FIXTURE_COUNTS entries")
+	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 47, "FIXTURE_COUNTS entries")
 	lu.assertNil(D.FIXTURE_COUNTS["skl_n"], "FIXTURE_COUNTS entry of skl_n")
 	lu.assertNil(io.open(CS.FIXTURE_DIR .. "skl_n.sids", "r"), "fixture skl_n.sids must be deleted")
 	lu.assertEquals(referenced, sortedKeys(D.FIXTURE_COUNTS), "string files referenced by the space conversation sources")

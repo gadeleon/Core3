@@ -327,11 +327,11 @@ function TestF6aImlerStaticUnresolved:test_the_unresolved_ids_of_all_space_conve
 	lu.assertEquals(CS.unresolvedByFile(CS.spaceConversationSources()), KD.KNOWN_GAPS, "unresolvedByFile versus KNOWN_GAPS")
 end
 
--- AC-1: FIXTURE_COUNTS keeps its entries (44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir) (corellia_privateer_tier4 stays: Turoldine still references it)
-function TestF6aImlerStaticUnresolved:test_fixture_counts_still_hold_the_46_referenced_files_including_corellia_privateer_tier4()
+-- AC-1: FIXTURE_COUNTS keeps its entries (44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe) (corellia_privateer_tier4 stays: Turoldine still references it)
+function TestF6aImlerStaticUnresolved:test_fixture_counts_still_hold_the_47_referenced_files_including_corellia_privateer_tier4()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 46, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 47, "FIXTURE_COUNTS entries")
 	lu.assertEquals(referenced, sortedKeys(KD.FIXTURE_COUNTS), "string files referenced by the space conversation sources")
 	lu.assertNotNil(KD.FIXTURE_COUNTS["conversation/corellia_privateer_tier4"], "FIXTURE_COUNTS entry of Turoldine's file")
 end

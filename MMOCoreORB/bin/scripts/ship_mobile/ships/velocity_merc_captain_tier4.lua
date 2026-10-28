@@ -22,6 +22,7 @@ velocity_merc_captain_tier4 = ShipAgent:new {
 	color2 = 42,
 	texture = 1,
 	questLoot = "corellia_imperial_tier4_inspect1",
+	cargoString = "corellia_imperial_tier4_inspect1",
 	appearance = "velocity_pilots",
 
 	tauntType = "generic",

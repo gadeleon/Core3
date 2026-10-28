@@ -501,7 +501,7 @@ end
 
 -- AC-4: it is a generated fixture no conversation source references, so FIXTURE_COUNTS and KNOWN_GAPS do not move
 function TestTrainerRewardsItems:test_the_ratchet_data_is_unchanged()
-	lu.assertEquals(#sortedKeys(KD.FIXTURE_COUNTS), 46, "FIXTURE_COUNTS entries") -- 44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir
+	lu.assertEquals(#sortedKeys(KD.FIXTURE_COUNTS), 47, "FIXTURE_COUNTS entries") -- 44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe
 	lu.assertNil(KD.FIXTURE_COUNTS["space/space_item"], "space/space_item is outside FIXTURE_COUNTS")
 	lu.assertEquals(KD.KNOWN_GAPS, {}, "KNOWN_GAPS")
 	lu.assertNotNil(SIDS, "CS.sids(space/space_item)")

@@ -264,11 +264,11 @@ function TestF5ArkonStaticUnresolved:test_the_unresolved_ids_of_all_space_conver
 	lu.assertEquals(CS.unresolvedByFile(CS.spaceConversationSources()), KD.KNOWN_GAPS, "unresolvedByFile versus KNOWN_GAPS")
 end
 
--- AC-1 (D-10): FIXTURE_COUNTS has 46 entries (black-epsilon-tier1-hakassha added conversation/corellia_imperial_trainer_1, black-epsilon-tier2-prisk added conversation/corellia_imperial_trainer_2, black-epsilon-tier3-haymir added conversation/corellia_imperial_tier3), equal to the referenced files, without skl_n, and skl_n.sids is deleted
-function TestF5ArkonStaticUnresolved:test_fixture_counts_hold_the_46_referenced_files_without_skl_n_and_its_fixture_is_deleted()
+-- AC-1 (D-10): FIXTURE_COUNTS has 47 entries (black-epsilon-tier1-hakassha added conversation/corellia_imperial_trainer_1, black-epsilon-tier2-prisk added conversation/corellia_imperial_trainer_2, black-epsilon-tier3-haymir added conversation/corellia_imperial_tier3, black-epsilon-tier4-nin-gursawe added conversation/corellia_imperial_tier4), equal to the referenced files, without skl_n, and skl_n.sids is deleted
+function TestF5ArkonStaticUnresolved:test_fixture_counts_hold_the_47_referenced_files_without_skl_n_and_its_fixture_is_deleted()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 46, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 47, "FIXTURE_COUNTS entries")
 	lu.assertNil(KD.FIXTURE_COUNTS["skl_n"], "FIXTURE_COUNTS entry of skl_n")
 	lu.assertEquals(referenced, sortedKeys(KD.FIXTURE_COUNTS), "string files referenced by the space conversation sources")
 

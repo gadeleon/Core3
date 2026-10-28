@@ -89,6 +89,7 @@ includeFile("conversations/space/rebel/havoc_squadron/arkon_convo.lua")
 --includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")
 
 -- Imperial Pilot
+includeFile("conversations/space/imperial/nial_declann_convo.lua")
 
 -- Black Epsilon Squadron
 includeFile("conversations/space/imperial/black_epsilon_squadron/hakassha_convo.lua")

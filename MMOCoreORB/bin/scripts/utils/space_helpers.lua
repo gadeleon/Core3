@@ -537,6 +537,11 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 		-- TODO: Add InquisitionSquadronScreenplay reset functions
 	end
 
+	-- Master trainer (Grand Admiral Declann serves every Imperial squadron)
+	if (pilotProfession == "imperialPilot" and MasterTrainerScreenplay ~= nil) then
+		MasterTrainerScreenplay:resetDeclannQuests(pPlayer)
+	end
+
 	local pilotSkills = self.pilotSkills[pilotProfession]
 
 	for i = 1, #pilotSkills, 1 do

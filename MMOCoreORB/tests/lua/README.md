@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -535,6 +535,24 @@ the four `_04` rows, and the two buildout extracts `fixtures/space_zones/buildou
 `nav_name|4|<name>|` and one `strSpawnerName|4|<name>|` pattern per name in the 19 `.tab` files). `test_black_epsilon_tier4_runtime.lua` reads the inspect cargo from the REAL ship template
 files, not from a cargo set on a fake ship. `test_black_epsilon_tier4_pins.lua` compares the working tree with `git show 8bf0f63ead` (skips once HEAD moves); edited files come from
 `git diff --diff-filter=M`.
+
+### Master trainers: Declann (space-master-trainer-imperial)
+
+Grand Admiral Nial Declann (Theed Palace): the Imperial master trainer. Two quest tables (`destroy_master_imperial_1` / `_2`, Kessel, 30 kills of 8 Rebel fighter types, then the Rebel
+corvette) and `MasterTrainerScreenplay` in `screenplays/space/squadrons/MasterTrainerScreenplay.lua` (the shared home of both master trainers: quest strings, the two cross-trainer keys
+`MASTER_MISSION_IMPERIAL_KEY` / `MASTER_MISSION_REBEL_KEY`, `resetDeclannQuests`; the Rebel master trainer adds its quests there), the template `nial_declann_convo_template` (69 screens),
+the handler `nialDeclannConvoHandler` and the surrender hook (`SpaceHelpers:surrenderPilot` calls `resetDeclannQuests` for every Imperial squadron, nil-guarded). The privateer branch of J is a
+later feature: a ready privateer sees `privateer_ready` and no reply. `master_trainer_imperial_data.lua` (not a test file) is the spec's data in one place: `M.expected()` (the whole table of
+both globals; the ship list of mission 1 is derived from the `.tab`), `M.PATHS` (Appendix D), `M.paths(from)` (every option path from a screen of Appendix A), `M.UNUSED` (Appendix B), `M.KEYS`
+(the 5 keys the reset removes), `M.load()` (load errors go to `M.loadErrors`, so a red run reads "expected global X") and the player builder `M.pilot{...}` (`kind` = `"imperial"` default |
+`"neutral"` | `"rebel"` | `false`, `squadron` = `"black_epsilon"` | `"storm"` | `"inquisition"` | `"corsec"` | `"rsf"` | `"smuggler"` | `"havoc"` | `false`, `t4` = how many `_04` skills
+(default 4), `master`, `otherMaster`, `mission = { [n] = "won" | "failed" | "attempted" | "active" | "paid" }`, `paid = { n... }`, `keys = { rebel, imperial, nin }`, `standing`, `xp`,
+`datapad`, `other`, `species`, `inventory`, `inventoryFull`, `inShip` + `zone`). `M.talk` / `M.drive` / `M.spyStarts` / `M.started` / `M.recordGrants` work as the Black Epsilon helpers.
+`master_trainer_imperial_screens_data.lua` is Appendix A (69 rows, generated from the spec table) and `master_trainer_imperial_client_text.lua` the client's English text of the 203 lines.
+The answer key is `fixtures/script/conversation/imperial_master_trainer.java` (byte copy) through `harness/swgjava.lua`: every reply of Appendix A leads where J leads, except the 11 slot
+edges and `privateer_ready`. `fixtures/skill/skills.pilot_imperial_navy_master.tab` is rows 1, 2 and 623 of SWG `skills.tab` (the master box: XP_COST 7,500,000, never charged by J).
+The one ship name without a Core3 template, `rebel_smuggler_tier5`, is the only named exception of the asset check. `test_master_trainer_imperial_pins.lua` compares the working tree with
+`git show 48a226cb6d` (skips once HEAD moves); edited files come from `git diff --diff-filter=M`.
 
 ### SWG-Source fixtures
 

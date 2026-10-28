@@ -7,6 +7,7 @@
 -- black-epsilon-tier2-prisk: Prisk Kith'Vys's conversation/corellia_imperial_trainer_2 (142 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- black-epsilon-tier3-haymir: Haymir Rendundi's conversation/corellia_imperial_tier3 (132 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- black-epsilon-tier4-nin-gursawe: Nin Gursawe's conversation/corellia_imperial_tier4 (307 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- space-master-trainer-imperial: Grand Admiral Declann's conversation/imperial_master_trainer (204 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -38,6 +39,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/greeter_theed_freighter_captain"] = 76,
 	["conversation/greeter_theed_protocol_droid"] = 63,
 	["conversation/imperial_broker"] = 75,
+	["conversation/imperial_master_trainer"] = 204,
 	["conversation/lok_rebel_trainer_2"] = 329,
 	["conversation/lok_rebel_trainer_2_smuggler"] = 40,
 	["conversation/naboo_privateer_tier3"] = 216,

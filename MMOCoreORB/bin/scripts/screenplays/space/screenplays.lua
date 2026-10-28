@@ -154,6 +154,11 @@ includeFile("space/squadrons/InquisitionSquadronScreenplay.lua")
 -- Storm Squadron
 includeFile("space/squadrons/StormSquadronScreenplay.lua")
 
+-- Master Trainers
+includeFile("space/squadrons/MasterTrainerScreenplay.lua")
+
+includeFile("space/conversations/imperial/nialDeclannConvoHandler.lua")
+
 
 -- Spawning Sub Folder
 includeFile("space/spawning/screenplays.lua")

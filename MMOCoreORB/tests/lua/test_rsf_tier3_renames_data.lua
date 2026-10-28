@@ -246,7 +246,7 @@ end
 
 -- AC-3, I-1
 function TestRsfRenamesIdentity:test_the_quest_global_counts_are_165_19_8_and_8()
-	lu.assertEquals(#H.questGlobals(), 165, "space quest globals")
+	lu.assertEquals(#H.questGlobals(), 164, "space quest globals (164 since space-master-trainer-rebel removed destroy_corellia_rebel_master)")
 	lu.assertEquals(countOfType("destroy_surpriseattack"), 19, "surprise attack globals")
 	-- The spec says 7, which is the count of survival quests with a SWG-Source survival .tab (survival_scenario's S.NAMES). The
 	-- 9 survival globals before F2 (8 of them from S.NAMES' list plus the 4c placeholder, and RSF tier 4's survival 3c) become 8.

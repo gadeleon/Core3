@@ -460,7 +460,7 @@ end
 
 -- AC-5, I-1
 function TestRsfTier2KaydineIdentity:test_there_are_165_space_quest_globals()
-	lu.assertEquals(#H.questGlobals(), 165, "space quest globals (CorSec, Havoc and RSF loaded)")
+	lu.assertEquals(#H.questGlobals(), 164, "space quest globals (CorSec, Havoc and RSF loaded; 164 since space-master-trainer-rebel removed destroy_corellia_rebel_master)")
 end
 
 -- AC-5, I-2

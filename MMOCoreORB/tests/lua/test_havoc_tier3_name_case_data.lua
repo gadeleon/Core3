@@ -241,7 +241,7 @@ function TestHavocTier3NameCaseInvariants:test_every_quest_table_is_the_global_n
 		end
 	end
 
-	lu.assertEquals(n, 154, "scanned the quest tables of the Corsec, Havoc and RSF files")
+	lu.assertEquals(n, 153, "scanned the quest tables of the Corsec, Havoc and RSF files")
 	table.sort(problems)
 	lu.assertEquals(problems, {}, "className / global / registration")
 end
@@ -416,7 +416,61 @@ local function baseHsp()
 	return text
 end
 
--- AC-1 (I-6): HSP differs from the base only by the 9 renamed lines and three inserted blocks
+-- The base lines of the orphan quest (the table with its comment, blank lines and registration; the TIER4_QUEST_STRING_MASTER constant; the
+-- reset lines), found by content. Fails when the base does not hold exactly the 31 lines the Rebel master trainer spec lists.
+local function removeOrphan(lines)
+	local drop, n = {}, 0
+
+	local function mark(i)
+		drop[i] = true
+		n = n + 1
+	end
+
+	local first, last, const, reset
+
+	for i, line in ipairs(lines) do
+		if line == "destroy_corellia_rebel_master = SpaceDestroyScreenplay:new {" then
+			first = i
+		elseif line == 'registerScreenPlay("destroy_corellia_rebel_master", true)' then
+			last = i
+		elseif line:find("TIER4_QUEST_STRING_MASTER = ", 1, true) then
+			const = i
+		elseif line == "\tdestroy_corellia_rebel_master:resetQuest(pPlayer)" then
+			reset = i
+		end
+	end
+
+	lu.assertNotNil(first and last and const and reset, "the base holds the orphan table, its registration, its constant and its reset")
+	lu.assertEquals(lines[first - 1], "-- Master Mission: Destroy", "comment above the orphan table")
+	lu.assertEquals(lines[first - 2], "", "blank line above the orphan comment")
+	lu.assertEquals(lines[reset - 1], "\t-- Master", "comment above the orphan reset")
+	lu.assertEquals(lines[reset - 2], "", "blank line above the orphan reset comment")
+	lu.assertEquals(lines[reset + 1]:find("TIER4_QUEST_STRING_MASTER", 1, true) ~= nil, true, "the clearSpaceQuest line of the orphan")
+
+	for i = first - 2, last do
+		mark(i)
+	end
+
+	mark(const)
+
+	for i = reset - 2, reset + 1 do
+		mark(i)
+	end
+
+	lu.assertEquals(n, 31, "orphan lines removed from the expected text")
+
+	local out = {}
+
+	for i, line in ipairs(lines) do
+		if not drop[i] then
+			out[#out + 1] = line
+		end
+	end
+
+	return out
+end
+
+-- AC-1 (I-6): HSP differs from the base only by the 9 renamed lines, the 31 removed orphan lines and three inserted blocks
 function TestHavocTier3NameCaseFilePins:test_the_havoc_screenplay_differs_from_the_base_by_the_nine_renames_and_three_inserted_blocks()
 	local base = baseHsp()
 	local lines = linesOf(base)
@@ -436,6 +490,10 @@ function TestHavocTier3NameCaseFilePins:test_the_havoc_screenplay_differs_from_t
 	for _, i in ipairs(RENAMED_LINES) do
 		lines[i] = lines[i]:gsub(OLD, NEW)
 	end
+
+	-- space-master-trainer-rebel (Q-1 option A) removes the orphan destroy_corellia_rebel_master: 31 lines, matched by content (their line numbers
+	-- differ from the base's), so the diff against the working tree stays the three pure-insertion hunks
+	lines = removeOrphan(lines)
 
 	local expected = os.tmpname()
 	local f = assert(io.open(expected, "wb"))

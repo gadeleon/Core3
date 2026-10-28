@@ -554,6 +554,20 @@ edges and `privateer_ready`. `fixtures/skill/skills.pilot_imperial_navy_master.t
 The one ship name without a Core3 template, `rebel_smuggler_tier5`, is the only named exception of the asset check. `test_master_trainer_imperial_pins.lua` compares the working tree with
 `git show 48a226cb6d` (skips once HEAD moves); edited files come from `git diff --diff-filter=M`.
 
+### Master trainers: Burke (space-master-trainer-rebel)
+
+Admiral Willham Burke (Doaba Guerfel hotel): the Rebel master trainer. Two quest tables (`destroy_master_rebel_1` / `_2`, Kessel, 30 kills of 9 Imperial types, then the Imperial corvette)
+added to `MasterTrainerScreenplay` (quest strings `QUEST_STRING_REBEL_1/2`, `resetBurkeQuests`), the template `willham_burke_convo_template` (62 screens), the handler
+`willhamBurkeConvoHandler` and the surrender hook (`SpaceHelpers:surrenderPilot` calls `resetBurkeQuests` for every Rebel squadron, nil-guarded, after Arkon's reset). RJ has no squadron
+gate: Havoc, Vortex and Crimson Phoenix pilots are served alike. The privateer branch of RJ is a later feature (a ready privateer sees `privateer_ready` and no reply). The necklace and the
+medal gates are NGE and dropped. `master_trainer_rebel_data.lua` (not a test file) is the spec's data in one place and works as `master_trainer_imperial_data.lua` does (`M.pilot{...}` has
+`kind` = `"rebel"` default, `squadron` = `"havoc"` | `"vortex"` | `"crimson"` | ..., `keys = { rebel, imperial }`, `other` = true for an Arkon quest in the datapad; `M.standing` is the Rebel
+standing). `master_trainer_rebel_screens_data.lua` is Appendix A (62 rows, generated from the spec table) and `master_trainer_rebel_client_text.lua` the client's English text of the 155 lines.
+The answer key is `fixtures/script/conversation/rebel_master_trainer.java` (byte copy): every reply of Appendix A leads where RJ leads, except the one rejoined NGE slot (`s_559` -> `s_44bd3318`)
+and `privateer_ready`. `fixtures/skill/skills.pilot_rebel_navy_master.tab` is rows 1, 2 and 604 of SWG `skills.tab`. `test_master_trainer_rebel_orphan.lua` covers the removal of the
+non-SWG orphan `destroy_corellia_rebel_master` from the Havoc file (Q-1 option A; the HSP pin in `test_havoc_tier3_name_case_data.lua` removes its 31 lines by content).
+`test_master_trainer_rebel_pins.lua` compares the working tree with `git show 2fb246df23` (skips once HEAD moves); edited files come from `git diff --diff-filter=M`.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

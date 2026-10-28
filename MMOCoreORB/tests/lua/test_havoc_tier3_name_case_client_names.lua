@@ -14,8 +14,8 @@ T.load()
 local NAMES = H.FIXTURES .. "misc/quest_crc_string_table.names"
 local GEN = "PYTHONDONTWRITEBYTECODE=1 python3 -B tests/lua/tools/gen_client_sids.py --quest-names"
 
--- D-10: the single named exception (unreachable orphan; no SWG or client counterpart). Not KNOWN_GAPS.
-local EXCEPTIONS = { "spacequest/destroy/corellia_rebel_master" }
+-- D-10: no exception any more (space-master-trainer-rebel removed the unreachable orphan destroy_corellia_rebel_master). Not KNOWN_GAPS.
+local EXCEPTIONS = {}
 
 local function shell(cmd)
 	local pipe = assert(io.popen(cmd .. " 2>&1; echo \"rc=$?\""))
@@ -100,14 +100,14 @@ function TestHavocTier3ClientQuestNames:test_the_client_quest_name_list_is_commi
 end
 
 -- AC-5, I-4
-function TestHavocTier3ClientQuestNames:test_every_squadron_quest_table_is_a_quest_the_client_knows_except_the_named_orphan()
+function TestHavocTier3ClientQuestNames:test_every_squadron_quest_table_is_a_quest_the_client_knows()
 	local _, set = readNames()
 
 	lu.assertNotNil(set, "client quest name list")
 
 	local tables = squadronTables()
 
-	lu.assertEquals(#tables, 154, "Space*:new tables in the Corsec, Havoc and RSF files")
+	lu.assertEquals(#tables, 153, "Space*:new tables in the Corsec, Havoc and RSF files")
 	lu.assertEquals(missingFromClient(set, tables), EXCEPTIONS, "quest tables whose spacequest/<type>/<name> is not in the client quest table (I-4)")
 end
 

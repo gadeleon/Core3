@@ -216,7 +216,7 @@ function W.fixturePath(questType, questName)
 	return H.FIXTURES .. "spacequest/" .. questType .. "/" .. questName:lower() .. ".tab"
 end
 
--- the SWG record of a table, or nil when the table has no .tab (destroy_corellia_rebel_master)
+-- the SWG record of a table, or nil when the table has no .tab
 function W.swg(q)
 	if W.readFile(W.fixturePath(q.questType, q.questName)) == nil then
 		return nil

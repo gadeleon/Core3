@@ -8,6 +8,7 @@
 -- black-epsilon-tier3-haymir: Haymir Rendundi's conversation/corellia_imperial_tier3 (132 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- black-epsilon-tier4-nin-gursawe: Nin Gursawe's conversation/corellia_imperial_tier4 (307 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- space-master-trainer-imperial: Grand Admiral Declann's conversation/imperial_master_trainer (204 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- space-master-trainer-rebel: Admiral Burke's conversation/rebel_master_trainer (156 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -51,6 +52,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/pvp_station_imperial"] = 18,
 	["conversation/pvp_station_rebel"] = 20,
 	["conversation/rebel_broker"] = 51,
+	["conversation/rebel_master_trainer"] = 156,
 	["conversation/station_corellia"] = 105,
 	["conversation/station_dantooine"] = 143,
 	["conversation/station_dathomir"] = 184,

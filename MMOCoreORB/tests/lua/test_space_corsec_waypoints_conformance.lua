@@ -21,9 +21,9 @@ TestCorsecWaypointsDiscovery = {}
 
 function TestCorsecWaypointsDiscovery:setUp() H.reset() end
 
--- type -> number of tables (spec "Clean by type", after the edits)
+-- type -> number of tables (spec "Clean by type", after the edits; destroy 5 since space-master-trainer-rebel removed the orphan destroy_corellia_rebel_master)
 local TYPE_COUNTS = {
-	delivery = 5, delivery_no_pickup = 3, destroy = 6, escort = 15, escort_duty = 9, inspect = 7, patrol = 14,
+	delivery = 5, delivery_no_pickup = 3, destroy = 5, escort = 15, escort_duty = 9, inspect = 7, patrol = 14,
 	recovery = 6, recovery_duty = 6, rescue = 3, rescue_duty = 3, space_battle = 16, survival = 8,
 }
 
@@ -38,11 +38,11 @@ function TestCorsecWaypointsDiscovery:test_the_walk_covers_the_tables_of_every_p
 	end
 
 	lu.assertEquals(counts, TYPE_COUNTS, "non-assassinate quest tables by questType")
-	lu.assertEquals(#NAMES, 101, "quest tables walked")
+	lu.assertEquals(#NAMES, 100, "quest tables walked")
 end
 
--- AC-5: 100 tables have a SWG table, 75 with fixtures from earlier features and 25 with the new ones
-function TestCorsecWaypointsDiscovery:test_only_destroy_corellia_rebel_master_has_no_swg_table()
+-- AC-5: all 100 tables have a SWG table (space-master-trainer-rebel removed the one table that had none, the orphan destroy_corellia_rebel_master)
+function TestCorsecWaypointsDiscovery:test_every_walked_table_has_a_swg_table()
 	local without, with = {}, 0
 
 	for _, name in ipairs(NAMES) do
@@ -53,7 +53,7 @@ function TestCorsecWaypointsDiscovery:test_only_destroy_corellia_rebel_master_ha
 		end
 	end
 
-	lu.assertEquals(without, { "destroy_corellia_rebel_master" }, "tables without a SWG-Source .tab")
+	lu.assertEquals(without, {}, "tables without a SWG-Source .tab")
 	lu.assertEquals(with, 100, "tables compared with their SWG table")
 end
 

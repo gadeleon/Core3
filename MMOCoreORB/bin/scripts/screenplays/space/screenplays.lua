@@ -158,6 +158,7 @@ includeFile("space/squadrons/StormSquadronScreenplay.lua")
 includeFile("space/squadrons/MasterTrainerScreenplay.lua")
 
 includeFile("space/conversations/imperial/nialDeclannConvoHandler.lua")
+includeFile("space/conversations/rebel/willhamBurkeConvoHandler.lua")
 
 
 -- Spawning Sub Folder

@@ -68,6 +68,7 @@ includeFile("conversations/space/neutral/rsf_squadron/dulios_convo.lua")
 includeFile("conversations/space/neutral/rsf_squadron/imler_convo.lua")
 
 -- Rebel Pilot
+includeFile("conversations/space/rebel/willham_burke_convo.lua")
 
 -- Crimson Phoenix Squadron
 --includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")

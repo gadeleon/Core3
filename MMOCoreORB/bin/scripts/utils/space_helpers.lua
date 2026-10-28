@@ -542,6 +542,11 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 		MasterTrainerScreenplay:resetDeclannQuests(pPlayer)
 	end
 
+	-- Master trainer (Admiral Burke serves every Rebel squadron)
+	if (pilotProfession == "rebelPilot" and MasterTrainerScreenplay ~= nil) then
+		MasterTrainerScreenplay:resetBurkeQuests(pPlayer)
+	end
+
 	local pilotSkills = self.pilotSkills[pilotProfession]
 
 	for i = 1, #pilotSkills, 1 do

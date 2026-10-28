@@ -22,6 +22,7 @@ velocity_commander_tier4 = ShipAgent:new {
 	color2 = 42,
 	texture = 1,
 	questLoot = "corellia_imperial_tier4_inspect3",
+	cargoString = "corellia_imperial_tier4_inspect3",
 	appearance = "velocity_pilots",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

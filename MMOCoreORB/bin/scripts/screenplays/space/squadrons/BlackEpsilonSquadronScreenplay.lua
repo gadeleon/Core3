@@ -1188,6 +1188,718 @@ assassinate_corellia_imperial_tier3_4_c = SpaceAssassinateScreenplay:new {
 registerScreenPlay("assassinate_corellia_imperial_tier3_4_c", true)
 
 --[[
+	Tier 4 -- Nin Gursawe, "Insurgent" (Dantooine, Dathomir)
+	Ported from SWG-Source corellia_imperial_tier4_1..4, their splits and the four tier 4 duties; feature black-epsilon-tier4-nin-gursawe
+]]
+
+-- Mission 1 (Dantooine): Patrol > Inspect > Survival
+patrol_corellia_imperial_tier4_1 = SpacePatrolScreenplay:new {
+	className = "patrol_corellia_imperial_tier4_1",
+
+	questName = "corellia_imperial_tier4_1",
+	questType = "patrol",
+
+	questZone = "space_dantooine",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_imperial_sds_boltdriver.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "corellia_imperial_tier4_1_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT,
+
+	sideQuestPatrolStart = 3,
+	sideQuestDelay = 25,
+
+	patrolPoints = {
+		{patrolPointName = "corellia_imperial_tier4_patrol1_1", x = 286, z = 4652, y = -2476, patrolNumber = 1, radius = 150},
+		{patrolPointName = "corellia_imperial_tier4_patrol1_2", x = 1604, z = 6571, y = -2128, patrolNumber = 2, radius = 150},
+		{patrolPointName = "corellia_imperial_tier4_patrol1_3", x = 2515, z = 7401, y = -1887, patrolNumber = 3, radius = 150},
+		{patrolPointName = "corellia_imperial_tier4_patrol1_4", x = 1332, z = 6277, y = -3342, patrolNumber = 4, radius = 150},
+	},
+}
+
+registerScreenPlay("patrol_corellia_imperial_tier4_1", true)
+
+inspect_corellia_imperial_tier4_1_a = SpaceInspectScreenplay:new {
+	className = "inspect_corellia_imperial_tier4_1_a",
+
+	questName = "corellia_imperial_tier4_1_a",
+	questType = "inspect",
+
+	questZone = "space_dantooine",
+
+	sideQuest = true,
+	sideQuestType = "survival",
+	sideQuestName = "corellia_imperial_tier4_1_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "patrol_corellia_imperial_tier4_1",
+	parentQuestType = "patrol",
+	parentQuestName = "corellia_imperial_tier4_1",
+
+	-- Screenplay Specific Variables
+	shipList = {"velocity_merc_captain_tier4"},
+	validSpawns = {
+		{spawnName = "corellia_imperial_tier4_inspect1", x = 3133, z = 6113, y = -3618},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "corellia_imperial_tier4_inspect1",
+}
+
+registerScreenPlay("inspect_corellia_imperial_tier4_1_a", true)
+
+survival_corellia_imperial_tier4_1_b = SpaceSurvivalScreenplay:new {
+	className = "survival_corellia_imperial_tier4_1_b",
+
+	questName = "corellia_imperial_tier4_1_b",
+	questType = "survival",
+
+	questZone = "space_dantooine",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_corellia_imperial_tier4_1_a",
+	parentQuestType = "inspect",
+	parentQuestName = "corellia_imperial_tier4_1_a",
+
+	-- Screenplay Specific Variables
+	transmissionPoint = {patrolPointName = "corellia_imperial_tier4_survival1", x = 6539, z = 6763, y = -1866},
+	totalTransmissionTime = 600,
+	timesToUpdateProgress = 20,
+	transmissionStartDelay = 30,
+	delayToFirstAttack = 45,
+
+	attackShipLists = {
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_heartdagger_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+	},
+
+	attackPeriod = 100,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("survival_corellia_imperial_tier4_1_b", true)
+
+-- Mission 2 (Dantooine): Recovery > Inspect > Delivery (no pickup)
+recovery_corellia_imperial_tier4_2 = SpaceRecoveryScreenplay:new {
+	className = "recovery_corellia_imperial_tier4_2",
+
+	questName = "corellia_imperial_tier4_2",
+	questType = "recovery",
+
+	questZone = "space_dantooine",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_imperial_cygnus_holoscreen.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "corellia_imperial_tier4_2_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 15,
+	recoveryDelay = 30,
+	recoverShip = "deserted_freighter_tier4",
+
+	escortShips = {},
+
+	preRecoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier4_recovery1_1", x = -6362, z = -477, y = 3393, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery1_2", x = 1014, z = -431, y = 1398, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery1_3", x = 4953, z = -1996, y = -3978, escortNumber = 3, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier4_recovery1_4", x = 6538, z = -1692, y = -3169, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery1_5", x = 6068, z = -1909, y = -6308, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery1_6", x = 6312, z = -1058, y = -6910, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_corellia_imperial_tier4_2", true)
+
+inspect_corellia_imperial_tier4_2_a = SpaceInspectScreenplay:new {
+	className = "inspect_corellia_imperial_tier4_2_a",
+
+	questName = "corellia_imperial_tier4_2_a",
+	questType = "inspect",
+
+	questZone = "space_dantooine",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "corellia_imperial_tier4_2_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_corellia_imperial_tier4_2",
+	parentQuestType = "recovery",
+	parentQuestName = "corellia_imperial_tier4_2",
+
+	-- Screenplay Specific Variables
+	shipList = {"velocity_merc_group_leader_tier5"},
+	validSpawns = {
+		{spawnName = "corellia_imperial_tier4_inspect2", x = -3934, z = -6968, y = 2011},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "corellia_imperial_tier4_inspect2",
+}
+
+registerScreenPlay("inspect_corellia_imperial_tier4_2_a", true)
+
+delivery_no_pickup_corellia_imperial_tier4_2_b = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_corellia_imperial_tier4_2_b",
+
+	questName = "corellia_imperial_tier4_2_b",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_dantooine",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_corellia_imperial_tier4_2_a",
+	parentQuestType = "inspect",
+	parentQuestName = "corellia_imperial_tier4_2_a",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier4",
+	deliveryPoint = {patrolPointName = "corellia_imperial_tier4_delivery1", x = 2761, z = -325, y = 7265},
+
+	attackShipLists = {
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_corellia_imperial_tier4_2_b", true)
+
+-- Mission 3 (Dathomir): Escort > Rescue > Patrol > Inspect
+escort_corellia_imperial_tier4_3 = SpaceEscortScreenplay:new {
+	className = "escort_corellia_imperial_tier4_3",
+
+	questName = "corellia_imperial_tier4_3",
+	questType = "escort",
+
+	questZone = "space_dathomir",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_imperial_rss_special_durasteel.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "rescue",
+	sideQuestName = "corellia_imperial_tier4_3_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	escortShips = {"imperial_drop_ship_tier4"},
+
+	-- SWG numResponses is 0 but the client file has _1.._5 of each key (spec D-12)
+	escortPoints = {
+		{patrolPointName = "corellia_imperial_tier4_escort1_1", x = -6011, z = -147, y = -3735, zoneName = "space_dathomir", escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escort1_2", x = -7504, z = -313, y = -4018, zoneName = "space_dathomir", escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escort1_3", x = -6767, z = -456, y = -2553, zoneName = "space_dathomir", escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escort1_4", x = -4795, z = -1638, y = -4, zoneName = "space_dathomir", escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escort1_5", x = -2888, z = -3209, y = 2593, zoneName = "space_dathomir", escortNumber = 5, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_corellia_imperial_tier4_3", true)
+
+rescue_corellia_imperial_tier4_3_a = SpaceRescueScreenplay:new {
+	className = "rescue_corellia_imperial_tier4_3_a",
+
+	questName = "corellia_imperial_tier4_3_a",
+	questType = "rescue",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "patrol",
+	sideQuestName = "corellia_imperial_tier4_3_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "escort_corellia_imperial_tier4_3",
+	parentQuestType = "escort",
+	parentQuestName = "corellia_imperial_tier4_3",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "corellia_imperial_tier4_rescue1_1", x = -2721, z = -3343, y = 2806},
+		{patrolPointName = "corellia_imperial_tier4_rescue1_2", x = -1537, z = -4296, y = 4316},
+		{patrolPointName = "corellia_imperial_tier4_rescue1_3", x = -362, z = -5324, y = 5829},
+		{patrolPointName = "corellia_imperial_tier4_rescue1_4", x = 1272, z = -6755, y = 7134},
+	},
+
+	targetShipType = "imperial_drop_ship_tier4",
+	targetArrivalDelay = 0,
+
+	attackShipLists = {
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+	},
+
+	attackPeriod = 120,
+	attackListType = SpaceRescueScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_corellia_imperial_tier4_3_a", true)
+
+patrol_corellia_imperial_tier4_3_b = SpacePatrolScreenplay:new {
+	className = "patrol_corellia_imperial_tier4_3_b",
+
+	questName = "corellia_imperial_tier4_3_b",
+	questType = "patrol",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "corellia_imperial_tier4_3_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT,
+
+	sideQuestPatrolStart = 3,
+	sideQuestDelay = 20,
+
+	parentQuest = "rescue_corellia_imperial_tier4_3_a",
+	parentQuestType = "rescue",
+	parentQuestName = "corellia_imperial_tier4_3_a",
+
+	patrolPoints = {
+		{patrolPointName = "corellia_imperial_tier4_patrol2_1", x = -3927, z = -410, y = -4523, patrolNumber = 1, radius = 150},
+		{patrolPointName = "corellia_imperial_tier4_patrol2_2", x = -4370, z = -844, y = -5579, patrolNumber = 2, radius = 150},
+		{patrolPointName = "corellia_imperial_tier4_patrol2_3", x = -4978, z = -1440, y = -7029, patrolNumber = 3, radius = 150},
+		{patrolPointName = "corellia_imperial_tier4_patrol2_4", x = -3465, z = -823, y = -6823, patrolNumber = 4, radius = 150},
+	},
+}
+
+registerScreenPlay("patrol_corellia_imperial_tier4_3_b", true)
+
+inspect_corellia_imperial_tier4_3_c = SpaceInspectScreenplay:new {
+	className = "inspect_corellia_imperial_tier4_3_c",
+
+	questName = "corellia_imperial_tier4_3_c",
+	questType = "inspect",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "patrol_corellia_imperial_tier4_3_b",
+	parentQuestType = "patrol",
+	parentQuestName = "corellia_imperial_tier4_3_b",
+
+	-- Screenplay Specific Variables
+	shipList = {"velocity_commander_tier4"},
+	validSpawns = {
+		{spawnName = "corellia_imperial_tier4_inspect3", x = -1184, z = -670, y = -4776},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "corellia_imperial_tier4_inspect3",
+}
+
+registerScreenPlay("inspect_corellia_imperial_tier4_3_c", true)
+
+-- Mission 4 (Dathomir): Assassinate > Recovery > Surprise attack > Space battle > Assassinate
+assassinate_corellia_imperial_tier4_4 = SpaceAssassinateScreenplay:new {
+	className = "assassinate_corellia_imperial_tier4_4",
+
+	questType = "assassinate",
+	questName = "corellia_imperial_tier4_4",
+
+	questZone = "space_dathomir",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_imperial_rss_advanced_military.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "corellia_imperial_tier4_4_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "neja_bertolo_tier5",
+		escorts = {"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "corellia_imperial_tier4_assassinate1_1", x = -1685, z = -224, y = -6240},
+		{patrolPointName = "corellia_imperial_tier4_assassinate1_2", x = 514, z = 1172, y = -5948},
+		{patrolPointName = "corellia_imperial_tier4_assassinate1_3", x = 809, z = 2122, y = -3746},
+		{patrolPointName = "corellia_imperial_tier4_assassinate1_4", x = 1195, z = 3360, y = -877},
+	},
+}
+
+registerScreenPlay("assassinate_corellia_imperial_tier4_4", true)
+
+recovery_corellia_imperial_tier4_4_a = SpaceRecoveryScreenplay:new {
+	className = "recovery_corellia_imperial_tier4_4_a",
+
+	questName = "corellia_imperial_tier4_4_a",
+	questType = "recovery",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "corellia_imperial_tier4_4_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "assassinate_corellia_imperial_tier4_4",
+	parentQuestType = "assassinate",
+	parentQuestName = "corellia_imperial_tier4_4",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 10,
+	recoveryDelay = 30,
+	recoverShip = "velocity_smuggler_tier4",
+
+	escortShips = {"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier4_recovery2_1", x = -5207, z = 2117, y = -3438, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_2", x = -6148, z = -309, y = -2006, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_3", x = -4775, z = -2667, y = 3284, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_4", x = 8, z = -4809, y = 5248, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier4_recovery2_5", x = 5269, z = -4515, y = 3965, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_6", x = 5637, z = -4506, y = 1444, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_7", x = 5904, z = -3381, y = -2643, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_8", x = 6251, z = -1966, y = -7476, escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_corellia_imperial_tier4_4_a", true)
+
+destroy_surpriseattack_corellia_imperial_tier4_4_b = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_corellia_imperial_tier4_4_b",
+
+	questName = "corellia_imperial_tier4_4_b",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "space_battle",
+	sideQuestName = "corellia_imperial_tier4_4_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 10, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_corellia_imperial_tier4_4_a",
+	parentQuestType = "recovery",
+	parentQuestName = "corellia_imperial_tier4_4_a",
+
+	surpriseAttackShips = {
+		zone = "space_dathomir",
+		spawns = {{count = 8, shipName = "velocity_merc_heavy_fighter_tier4"}},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_corellia_imperial_tier4_4_b", true)
+
+space_battle_corellia_imperial_tier4_4_c = SpaceBattleScreenplay:new {
+	className = "space_battle_corellia_imperial_tier4_4_c",
+
+	questName = "corellia_imperial_tier4_4_c",
+	questType = "space_battle",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "corellia_imperial_tier4_4_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "destroy_surpriseattack_corellia_imperial_tier4_4_b",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "corellia_imperial_tier4_4_b",
+
+	-- Screenplay Specific Variables (spacequest/space_battle/corellia_imperial_tier4_4_c.tab)
+	battlePoint = {patrolPointName = "corellia_imperial_tier4_battle1", x = 6724, z = -6022, y = -7606, forward = {x = 0.122813, z = -0.992281, y = 0.017169}},
+
+	damageMultiplier = 4,
+	allyArrivalDelay = 30,
+	enemyArrivalDelay = 90,
+	allyOriginDist = 400,
+	enemyOriginDist = -400,
+	allyArrivalDist = 300,
+	enemyArrivalDist = 300,
+
+	allyForce = {
+		"imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4",
+	},
+
+	enemyForce = {
+		"tiberus_anderlock_tier5", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4",
+	},
+}
+
+registerScreenPlay("space_battle_corellia_imperial_tier4_4_c", true)
+
+assassinate_corellia_imperial_tier4_4_d = SpaceAssassinateScreenplay:new {
+	className = "assassinate_corellia_imperial_tier4_4_d",
+
+	questType = "assassinate",
+	questName = "corellia_imperial_tier4_4_d",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "space_battle_corellia_imperial_tier4_4_c",
+	parentQuestType = "space_battle",
+	parentQuestName = "corellia_imperial_tier4_4_c",
+
+	arrivalDelay = 15,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "onli_shien_tier5",
+		escorts = {"velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "corellia_imperial_tier4_recovery2_5", x = 5269, z = -4515, y = 3965},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_6", x = 5637, z = -4506, y = 1444},
+		{patrolPointName = "corellia_imperial_tier4_recovery2_7", x = 5904, z = -3381, y = -2643},
+	},
+}
+
+registerScreenPlay("assassinate_corellia_imperial_tier4_4_d", true)
+
+-- Nin Gursawe Duty Missions (Dantooine)
+destroy_duty_corellia_imperial_tier4_1 = SpaceDutyDestroyScreenplay:new {
+	className = "destroy_duty_corellia_imperial_tier4_1",
+
+	questName = "corellia_imperial_tier4_1",
+	questType = "destroy_duty",
+
+	questZone = "space_dantooine",
+
+	creditReward = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	totalLevels = 8,
+	totalRounds = 5,
+	totalWaves = 3,
+
+	bossShip = "velocity_merc_captain_tier5",
+	shipTypes = {
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+	},
+}
+
+registerScreenPlay("destroy_duty_corellia_imperial_tier4_1", true)
+
+escort_duty_corellia_imperial_tier4_2 = SpaceDutyEscortScreenplay:new {
+	className = "escort_duty_corellia_imperial_tier4_2",
+
+	questName = "corellia_imperial_tier4_2",
+	questType = "escort_duty",
+
+	questZone = "space_dantooine",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	escortShips = {"freighterlight_imperial", "freighterheavy_imperial", "freightermedium_imperial"},
+
+	escortPoints = {
+		{patrolPointName = "corellia_imperial_tier4_escortduty_1", x = 1919, z = 1533, y = -3439, zoneName = "space_dantooine", escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escortduty_2", x = 2450, z = 2475, y = -4817, zoneName = "space_dantooine", escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escortduty_3", x = 3378, z = 4066, y = -6793, zoneName = "space_dantooine", escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_escortduty_4", x = 4175, z = 4817, y = -7440, zoneName = "space_dantooine", escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_duty_corellia_imperial_tier4_2", true)
+
+recovery_duty_corellia_imperial_tier4_3 = SpaceDutyRecoveryScreenplay:new {
+	className = "recovery_duty_corellia_imperial_tier4_3",
+
+	questName = "corellia_imperial_tier4_3",
+	questType = "recovery_duty",
+
+	questZone = "space_dantooine",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+	numResponses = 5,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+	recoverShip = "velocity_smuggler_tier4",
+
+	escortShips = {"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_1", x = 912, z = -2978, y = 5685, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_2", x = -503, z = -4395, y = 4666, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_3", x = -2288, z = -6182, y = 3382, escortNumber = 3, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_4", x = -4084, z = -7307, y = 2090, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_5", x = -1914, z = -7056, y = 1779, escortNumber = 1, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_6", x = -1286, z = -5145, y = 130, escortNumber = 2, radius = 250},
+		{patrolPointName = "corellia_imperial_tier4_recoveryduty1_7", x = -3406, z = -1143, y = -3309, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_duty_corellia_imperial_tier4_3", true)
+
+rescue_duty_corellia_imperial_tier4_4 = SpaceDutyRescueScreenplay:new {
+	className = "rescue_duty_corellia_imperial_tier4_4",
+
+	questName = "corellia_imperial_tier4_4",
+	questType = "rescue_duty",
+
+	questZone = "space_dantooine",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- SWG attackListType sequential = 0
+	recoveryPath = {
+		{patrolPointName = "corellia_imperial_tier4_rescueduty_1", x = -471, z = -1739, y = 1798},
+		{patrolPointName = "corellia_imperial_tier4_rescueduty_2", x = 294, z = 509, y = 3594},
+		{patrolPointName = "corellia_imperial_tier4_rescueduty_3", x = 1562, z = 97, y = 5577},
+		{patrolPointName = "corellia_imperial_tier4_rescueduty_4", x = 2910, z = -386, y = 7314},
+	},
+
+	targetShipTypes = {"imp_freighterlight_tier4", "imp_freighterheavy_tier4", "imp_freightermedium_tier4"},
+	targetArrivalDelay = 30,
+
+	attackShipLists = {
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4"},
+		{"velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_light_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+		{"velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_med_fighter_tier4", "velocity_merc_heavy_fighter_tier4", "velocity_merc_heavy_fighter_tier4"},
+	},
+
+	attackPeriod = 120,
+	attackListType = 0,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_duty_corellia_imperial_tier4_4", true)
+
+--[[
 
 	BlackEpsilonSquadronScreenplay
 
@@ -1238,6 +1950,32 @@ BlackEpsilonSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_4_SIDE1 = {type = "assassinate", name = "corellia_imperial_tier3_4_a"},
 	TIER3_QUEST_STRING_4_SIDE2 = {type = "survival", name = "corellia_imperial_tier3_4_b"},
 	TIER3_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "corellia_imperial_tier3_4_c"},
+
+	-- Tier 4 (Nin Gursawe)
+	TIER4_QUEST_STRING_1 = {type = "patrol", name = "corellia_imperial_tier4_1"},
+	TIER4_QUEST_STRING_1_SIDE1 = {type = "inspect", name = "corellia_imperial_tier4_1_a"},
+	TIER4_QUEST_STRING_1_SIDE2 = {type = "survival", name = "corellia_imperial_tier4_1_b"},
+	TIER4_QUEST_STRING_2 = {type = "recovery", name = "corellia_imperial_tier4_2"},
+	TIER4_QUEST_STRING_2_SIDE1 = {type = "inspect", name = "corellia_imperial_tier4_2_a"},
+	TIER4_QUEST_STRING_2_SIDE2 = {type = "delivery_no_pickup", name = "corellia_imperial_tier4_2_b"},
+	TIER4_QUEST_STRING_3 = {type = "escort", name = "corellia_imperial_tier4_3"},
+	TIER4_QUEST_STRING_3_SIDE1 = {type = "rescue", name = "corellia_imperial_tier4_3_a"},
+	TIER4_QUEST_STRING_3_SIDE2 = {type = "patrol", name = "corellia_imperial_tier4_3_b"},
+	TIER4_QUEST_STRING_3_SIDE3 = {type = "inspect", name = "corellia_imperial_tier4_3_c"},
+	TIER4_QUEST_STRING_4 = {type = "assassinate", name = "corellia_imperial_tier4_4"},
+	TIER4_QUEST_STRING_4_SIDE1 = {type = "recovery", name = "corellia_imperial_tier4_4_a"},
+	TIER4_QUEST_STRING_4_SIDE2 = {type = "destroy_surpriseattack", name = "corellia_imperial_tier4_4_b"},
+	TIER4_QUEST_STRING_4_SIDE3 = {type = "space_battle", name = "corellia_imperial_tier4_4_c"},
+	TIER4_QUEST_STRING_4_SIDE4 = {type = "assassinate", name = "corellia_imperial_tier4_4_d"},
+	TIER4_QUEST_STRING_DUTY_1 = {type = "destroy_duty", name = "corellia_imperial_tier4_1"},
+	TIER4_QUEST_STRING_DUTY_2 = {type = "escort_duty", name = "corellia_imperial_tier4_2"},
+	TIER4_QUEST_STRING_DUTY_3 = {type = "recovery_duty", name = "corellia_imperial_tier4_3"},
+	TIER4_QUEST_STRING_DUTY_4 = {type = "rescue_duty", name = "corellia_imperial_tier4_4"},
+
+	-- Tier 4 flags (stored as <playerID><key>, value "1")
+	TIER4_INTRO_KEY = "BlackEpsilonSquadronScreenplay:meetInsurgent",
+	TIER4_MET_KEY = "BlackEpsilonSquadronScreenplay:metTier4",
+	TIER4_DECLANN_KEY = "BlackEpsilonSquadronScreenplay:workingForAdmiralDeclann",
 }
 
 registerScreenPlay("BlackEpsilonSquadronScreenplay", false)
@@ -1373,4 +2111,66 @@ function BlackEpsilonSquadronScreenplay:resetHaymirQuests(pPlayer)
 		removeQuestStatus(playerID .. self["TIER3_QUEST_STRING_" .. n].name .. ":attempted")
 		removeQuestStatus(playerID .. self["TIER3_QUEST_STRING_" .. n].name .. ":reward")
 	end
+end
+
+function BlackEpsilonSquadronScreenplay:resetNinGursaweQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	-- Missions 1-4 with all of their split children (the duties are left alone)
+	local tables = {
+		patrol_corellia_imperial_tier4_1,
+		inspect_corellia_imperial_tier4_1_a,
+		survival_corellia_imperial_tier4_1_b,
+		recovery_corellia_imperial_tier4_2,
+		inspect_corellia_imperial_tier4_2_a,
+		delivery_no_pickup_corellia_imperial_tier4_2_b,
+		escort_corellia_imperial_tier4_3,
+		rescue_corellia_imperial_tier4_3_a,
+		patrol_corellia_imperial_tier4_3_b,
+		inspect_corellia_imperial_tier4_3_c,
+		assassinate_corellia_imperial_tier4_4,
+		recovery_corellia_imperial_tier4_4_a,
+		destroy_surpriseattack_corellia_imperial_tier4_4_b,
+		space_battle_corellia_imperial_tier4_4_c,
+		assassinate_corellia_imperial_tier4_4_d,
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER4_QUEST_STRING_1,
+		self.TIER4_QUEST_STRING_1_SIDE1,
+		self.TIER4_QUEST_STRING_1_SIDE2,
+		self.TIER4_QUEST_STRING_2,
+		self.TIER4_QUEST_STRING_2_SIDE1,
+		self.TIER4_QUEST_STRING_2_SIDE2,
+		self.TIER4_QUEST_STRING_3,
+		self.TIER4_QUEST_STRING_3_SIDE1,
+		self.TIER4_QUEST_STRING_3_SIDE2,
+		self.TIER4_QUEST_STRING_3_SIDE3,
+		self.TIER4_QUEST_STRING_4,
+		self.TIER4_QUEST_STRING_4_SIDE1,
+		self.TIER4_QUEST_STRING_4_SIDE2,
+		self.TIER4_QUEST_STRING_4_SIDE3,
+		self.TIER4_QUEST_STRING_4_SIDE4,
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	for n = 1, 4 do
+		removeQuestStatus(playerID .. self["TIER4_QUEST_STRING_" .. n].name .. ":attempted")
+		removeQuestStatus(playerID .. self["TIER4_QUEST_STRING_" .. n].name .. ":reward")
+	end
+
+	removeQuestStatus(playerID .. self.TIER4_INTRO_KEY)
+	removeQuestStatus(playerID .. self.TIER4_MET_KEY)
+	removeQuestStatus(playerID .. self.TIER4_DECLANN_KEY)
 end

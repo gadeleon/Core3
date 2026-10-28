@@ -25,6 +25,9 @@ SpaceDestroyScreenplay = SpaceQuestLogic:new {
 	-- Screenplay Specific Variables
 	killsRequired = 0,
 
+	-- false: leaving the quest zone neither fails the quest nor counts kills made outside it; the kill count is kept and counting resumes on re-entry
+	failOnLeaveZone = true,
+
 	shipLocations = {},
 	shipTypes = {},
 }
@@ -252,6 +255,15 @@ function SpaceDestroyScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 
 		-- Player effect for player
 		CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_waypoint_target.cef", "")
+	elseif (self.failOnLeaveZone == false and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then
+		-- Progress is kept: the kill observer is armed on every entry of the quest zone and dropped on every other zone
+		if (zoneNameHash == spaceQuestHash) then
+			if (not hasObserver(DESTROYEDSHIP, self.className, "notifyDestroyedShip", pPlayer)) then
+				createObserver(DESTROYEDSHIP, self.className, "notifyDestroyedShip", pPlayer, true)
+			end
+		else
+			dropObserver(DESTROYEDSHIP, self.className, "notifyDestroyedShip", pPlayer)
+		end
 	elseif (zoneNameHash ~= spaceQuestHash and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0) and SpaceHelpers:isSpaceQuestTaskActive(pPlayer, self.questType, self.questName, 1)) then
 		-- Fail the quest for the player
 		createEvent(2000, self.className, "failQuest", pPlayer, "true")
@@ -267,6 +279,11 @@ function SpaceDestroyScreenplay:notifyDestroyedShip(pPlayer, pShipAgent)
 
 	if (pPlayer == nil or not SceneObject(pPlayer):isPlayerCreature()) then
 		return 1
+	end
+
+	-- Opt-out quests count kills only inside the quest zone
+	if (self.failOnLeaveZone == false and getHashCode(SceneObject(pPlayer):getZoneName()) ~= getHashCode(self.questZone)) then
+		return 0
 	end
 
 	if (self.DEBUG_SPACE_DESTROY) then

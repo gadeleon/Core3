@@ -221,7 +221,7 @@ function turoldineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 			responseString = "final_"
 		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_3_SIDE2A.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_3_SIDE2A.name) or
 					SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_3_SIDE2B.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_3_SIDE2B.name)) then
-			responseString = "mission4_"
+			responseString = "final_"
 		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_2_SIDE1.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_2_SIDE1.name)) then
 			responseString = "mission3_"
 		elseif (SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_1_SIDE2.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_1_SIDE2.name)) then
@@ -274,7 +274,7 @@ function turoldineConvoHandler:runScreenHandlers(pConvTemplate, pPlayer, pNpc, s
 
 		-- Either the player is ready to train again or they have all of the missions finished, so send them back to the main screen
 		if (SpaceHelpers:hasExperienceForTraining(pPlayer, 4) or SpaceHelpers:isSpaceQuestComplete(pPlayer, CorsecSquadronScreenplay.TIER4_QUEST_STRING_4_SIDE3.type, CorsecSquadronScreenplay.TIER4_QUEST_STRING_4_SIDE3.name)) then
-			return self:getInitialScreen(pPlayer, pNpc, pConvTemplate)
+			return self:runScreenHandlers(pConvTemplate, pPlayer, pNpc, selectedOption, self:getInitialScreen(pPlayer, pNpc, pConvTemplate))
 		end
 
 	-- Duty Missions

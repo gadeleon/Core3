@@ -156,6 +156,11 @@ function H.pendingEvents() return Engine.pendingEvents() end
 -- hasObserver(type, screenplay, method, pObject) as production sees it.
 function H.hasObserver(eventType, screenplay, method, pObject) return hasObserver(eventType, screenplay, method, pObject) end
 
+-- A server restart (space-master-mission-quest-type): see Engine.simulateRestart. Observers created with
+-- anything but a non-zero integer persistence argument (`true` included, lua_tointeger turns it into 0) are
+-- gone, shared memory and pending events are cleared, players/ghosts (journal, screenplay data) stay.
+function H.simulateRestart() return Engine.simulateRestart() end
+
 -- Fires the observers of `eventType` registered on pObject: handler(screenplay, pObject, ...).
 function H.fireObservers(eventType, pObject, ...) return Engine.fireObservers(eventType, pObject, ...) end
 
@@ -374,7 +379,7 @@ end
 -- Quest-type base screenplays, in the same order as screenplays/space/screenplays.lua.
 local SPACE_QUEST_TYPES = {
 	"SpaceQuestLogic", "SpaceAttackWaves", "SpaceAssassinateScreenplay", "SpaceBattleScreenplay", "SpaceDeliveryScreenplay",
-	"SpaceDeliveryNoPickupScreenplay", "SpaceDestroyScreenplay", "SpaceEscortScreenplay", "SpaceInspectScreenplay",
+	"SpaceDeliveryNoPickupScreenplay", "SpaceDestroyScreenplay", "SpaceMasterDestroyScreenplay", "SpaceEscortScreenplay", "SpaceInspectScreenplay",
 	"SpacePatrolScreenplay", "SpaceRecoveryScreenplay", "SpaceRescueScreenplay", "SpaceSurpriseAttackScreenplay",
 	"SpaceSurvivalScreenplay", "SpaceDutyDestroyScreenplay", "SpaceDutyEscortScreenplay", "SpaceDutyPatrolScreenplay",
 	"SpaceDutyRecoveryScreenplay", "SpaceDutyRescueScreenplay",
@@ -394,7 +399,9 @@ function H.loadSpaceQuestTypes()
 		-- mirrors screenplays/space/screenplays.lua); test_space_attack_waves.lua asserts that it exists
 		-- and that screenplays.lua includes it, so the red phase of that feature stays readable instead of
 		-- breaking every test that loads the quest types.
-		if name ~= "SpaceAttackWaves" or fileExists(H.SCRIPTS .. "screenplays/space/SpaceAttackWaves.lua") then
+		-- Same for SpaceMasterDestroyScreenplay (space-master-mission-quest-type): test_master_mission_quest_type_type.lua
+		-- asserts the file exists and that screenplays.lua includes it, so the red phase stays readable.
+		if (name ~= "SpaceAttackWaves" and name ~= "SpaceMasterDestroyScreenplay") or fileExists(H.SCRIPTS .. "screenplays/space/" .. name .. ".lua") then
 			H.loadScreenplay("space/" .. name .. ".lua")
 		end
 	end

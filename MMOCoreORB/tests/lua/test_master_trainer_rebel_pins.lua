@@ -399,12 +399,8 @@ function TestMasterTrainerRebelPins:test_the_fixtures_are_byte_copies_of_the_res
 	lu.assertEquals(rc3, 0, "skills.pilot_rebel_navy_master.tab is not rows 1, 2 and 604 of skills.tab: " .. out3)
 end
 
--- A-1: SpaceDestroyScreenplay still declares the opt-in field, default true (it is not edited by this feature)
-function TestMasterTrainerRebelPins:test_space_destroy_screenplay_declares_the_field_with_default_true()
-	local text = readSource("bin/scripts/screenplays/space/SpaceDestroyScreenplay.lua")
-
-	lu.assertNotNil(text:find("failOnLeaveZone%s*=%s*true"), "SpaceDestroyScreenplay.lua: failOnLeaveZone = true default")
-end
+-- space-master-mission-quest-type: the A-1 pin (SDS declares failOnLeaveZone = true) is deleted; test_master_mission_quest_type_type.lua
+-- (AC-2) asserts the opposite: SDS is stock and no file under bin/ contains failOnLeaveZone.
 
 -- Hygiene: no bytecode cache and no stray backup file in the tests tree
 function TestMasterTrainerRebelPins:test_the_tests_tree_has_no_pycache_or_backup_files()

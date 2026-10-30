@@ -107,7 +107,9 @@ function TestMasterTrainerImperialFixtures:test_each_table_keeps_its_identity_zo
 		lu.assertEquals(rawget(q, "questType"), want.type, global .. ": questType")
 		lu.assertEquals(rawget(q, "questName"), want.name, global .. ": questName")
 		lu.assertEquals(rawget(q, "questZone"), "space_light1", global .. ": questZone")
-		lu.assertTrue(inherits(q, SpaceDestroyScreenplay), global .. ": is a SpaceDestroyScreenplay")
+		-- space-master-mission-quest-type: the tables moved from SpaceDestroyScreenplay to the persistent SpaceMasterDestroyScreenplay
+		lu.assertTrue(inherits(q, H.expectGlobal("SpaceMasterDestroyScreenplay", "screenplays/space/SpaceMasterDestroyScreenplay.lua must define SpaceMasterDestroyScreenplay")), global .. ": is a SpaceMasterDestroyScreenplay")
+		lu.assertFalse(inherits(q, SpaceDestroyScreenplay), global .. ": is no longer a SpaceDestroyScreenplay")
 	end
 end
 

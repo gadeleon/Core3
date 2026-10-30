@@ -573,7 +573,110 @@ function createObserver(eventType, screenplay, method, pObject, persistent)
 		return
 	end
 
-	Engine.observers[#Engine.observers + 1] = { type = eventType, sp = screenplay, method = method, obj = pObject }
+	Engine.observers[#Engine.observers + 1] = { type = eventType, sp = screenplay, method = method, obj = pObject, persistent = persistent }
+end
+
+-- lua_tointeger, as DirectorManager.cpp:3294 applies it to the persistence argument of createObserver:
+-- an integer or a float with an integer value converts, a string that reads as such a number converts,
+-- everything else (true, false, nil, tables) is 0. Only a non-zero result makes the observer persistent.
+local function luaToInteger(v)
+	if type(v) == "string" then
+		v = tonumber(v)
+	end
+
+	if type(v) == "number" then
+		return math.tointeger(v) or 0
+	end
+
+	return 0
+end
+
+Engine.luaToInteger = luaToInteger
+
+-- The persistence argument the first matching observer was created with (nil if none matches or the
+-- argument was omitted). Compare with `math.type(arg) == "integer" and arg == 1` for a persistent one:
+-- `true` is transient on the server because lua_tointeger turns it into 0.
+function Engine.observerPersistence(eventType, screenplay, method, pObject)
+	for _, o in ipairs(Engine.observers) do
+		if o.type == eventType and o.sp == screenplay and o.method == method and o.obj == pObject then
+			return o.persistent
+		end
+	end
+
+	return nil
+end
+
+-- A server restart (space-master-mission-quest-type): observers whose persistence argument converts to 0
+-- are not in the database and vanish; the in-memory shared data and the pending events are gone. Players,
+-- ghosts (journal, screenplay data), datapads and zones stay, as they are saved.
+function Engine.simulateRestart()
+	for i = #Engine.observers, 1, -1 do
+		if luaToInteger(Engine.observers[i].persistent) == 0 then
+			table.remove(Engine.observers, i)
+		end
+	end
+
+	Engine.sharedMemory = {}
+	Engine.clock.queue = {}
+end
+
+---------------------------------------------------------------------------------------------
+-- Screenplay data (DirectorManager.cpp:949, 1217, 1256): strings saved on the PlayerObject, so they
+-- survive Engine.simulateRestart. writeScreenPlayData stores tostring(value); readScreenPlayData
+-- returns "" when absent. A non-player (no ghost) writes nothing and reads "", as the server logs and
+-- returns.
+---------------------------------------------------------------------------------------------
+
+local function screenPlayBucket(pPlayer, screenplay, create)
+	local ghost = type(pPlayer) == "table" and rawget(pPlayer, "ghost") or nil
+
+	if ghost == nil then
+		return nil
+	end
+
+	ghost.screenPlayData = ghost.screenPlayData or {}
+
+	if create and ghost.screenPlayData[screenplay] == nil then
+		ghost.screenPlayData[screenplay] = {}
+	end
+
+	return ghost.screenPlayData[screenplay]
+end
+
+function writeScreenPlayData(pPlayer, screenplay, variable, value)
+	record("writeScreenPlayData", pPlayer, screenplay, variable, value)
+
+	local bucket = screenPlayBucket(pPlayer, screenplay, true)
+
+	if bucket ~= nil then
+		bucket[variable] = tostring(value)
+	end
+end
+
+function readScreenPlayData(pPlayer, screenplay, variable)
+	local bucket = screenPlayBucket(pPlayer, screenplay, false)
+
+	return bucket and bucket[variable] or ""
+end
+
+function deleteScreenPlayData(pPlayer, screenplay, variable)
+	record("deleteScreenPlayData", pPlayer, screenplay, variable)
+
+	local bucket = screenPlayBucket(pPlayer, screenplay, false)
+
+	if bucket ~= nil then
+		bucket[variable] = nil
+	end
+end
+
+function clearScreenPlayData(pPlayer, screenplay)
+	record("clearScreenPlayData", pPlayer, screenplay)
+
+	local ghost = type(pPlayer) == "table" and rawget(pPlayer, "ghost") or nil
+
+	if ghost ~= nil and ghost.screenPlayData ~= nil then
+		ghost.screenPlayData[screenplay] = nil
+	end
 end
 
 local function matches(o, eventType, screenplay, method, pObject)

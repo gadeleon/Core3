@@ -523,8 +523,9 @@ end
 
 -- AC-9, Content contract: no quest type or helper changes
 for _, name in ipairs(listLua("bin/scripts/screenplays/space")) do
-	-- space-master-trainer-imperial Amendment A-1: SpaceDestroyScreenplay gains the opt-in failOnLeaveZone field (its own tests pin it)
-	if name:match("^Space.*Screenplay%.lua$") and name ~= "SpaceDestroyScreenplay.lua" then
+	-- space-master-mission-quest-type: SpaceDestroyScreenplay is identical to 97a8c4aed7 again (the A-1 hunks are reverted), so no exclusion.
+	-- SpaceMasterDestroyScreenplay.lua is new: base() has no such file, so its pin test skips.
+	if name:match("^Space.*Screenplay%.lua$") then
 		TestCorsecWaypointsFilePins["test_" .. name:gsub("%.lua$", "") .. "_is_byte_identical_to_the_base"] = function()
 			local path = W.SPACE_DIR .. name
 			local text = W.readFile(path)

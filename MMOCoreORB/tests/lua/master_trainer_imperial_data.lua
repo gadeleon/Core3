@@ -188,7 +188,7 @@ function M.expected()
 		out[global] = {
 			className = global, questType = q.type, questName = q.name, questZone = M.ZONE,
 			creditReward = q.credits, itemReward = { { species = { -1 }, item = q.item } },
-			sideQuest = false, sideQuestType = "", failOnLeaveZone = false,
+			sideQuest = false, sideQuestType = "", -- space-master-mission-quest-type: failOnLeaveZone is gone (SpaceMasterDestroyScreenplay never fails)
 			killsRequired = q.kills, shipLocations = {},
 			shipTypes = M.shipList(global),
 		}

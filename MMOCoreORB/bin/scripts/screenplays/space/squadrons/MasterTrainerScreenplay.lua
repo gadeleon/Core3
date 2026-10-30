@@ -5,6 +5,7 @@
 	Grand Admiral Declann's quests, ported from SWG-Source destroy/master_imperial_1 and master_imperial_2
 	(feature space-master-trainer-imperial). The Rebel master trainer adds its quests to this file.
 	Admiral Burke's quests, ported from SWG-Source destroy/master_rebel_1 and master_rebel_2 (feature space-master-trainer-rebel).
+	The four master missions use SpaceMasterDestroyScreenplay (feature space-master-mission-quest-type), so their progress persists.
 
 ]]
 
@@ -29,7 +30,7 @@ MasterTrainerScreenplay = ScreenPlay:new {
 registerScreenPlay("MasterTrainerScreenplay", false)
 
 -- Mission 1: destroy 30 Rebel ships over Kessel
-destroy_master_imperial_1 = SpaceDestroyScreenplay:new {
+destroy_master_imperial_1 = SpaceMasterDestroyScreenplay:new {
 	className = "destroy_master_imperial_1",
 
 	questName = "master_imperial_1",
@@ -47,9 +48,6 @@ destroy_master_imperial_1 = SpaceDestroyScreenplay:new {
 
 	killsRequired = 30,
 
-	-- Pre-NGE: leaving Kessel keeps the progress
-	failOnLeaveZone = false,
-
 	shipLocations = {},
 
 	shipTypes = {
@@ -61,7 +59,7 @@ destroy_master_imperial_1 = SpaceDestroyScreenplay:new {
 registerScreenPlay("destroy_master_imperial_1", true)
 
 -- Mission 2: destroy the Rebel corvette over Kessel
-destroy_master_imperial_2 = SpaceDestroyScreenplay:new {
+destroy_master_imperial_2 = SpaceMasterDestroyScreenplay:new {
 	className = "destroy_master_imperial_2",
 
 	questName = "master_imperial_2",
@@ -79,9 +77,6 @@ destroy_master_imperial_2 = SpaceDestroyScreenplay:new {
 
 	killsRequired = 1,
 
-	-- Pre-NGE: leaving Kessel keeps the progress
-	failOnLeaveZone = false,
-
 	shipLocations = {},
 
 	shipTypes = {
@@ -92,7 +87,7 @@ destroy_master_imperial_2 = SpaceDestroyScreenplay:new {
 registerScreenPlay("destroy_master_imperial_2", true)
 
 -- Mission 1: destroy 30 Imperial ships over Kessel
-destroy_master_rebel_1 = SpaceDestroyScreenplay:new {
+destroy_master_rebel_1 = SpaceMasterDestroyScreenplay:new {
 	className = "destroy_master_rebel_1",
 
 	questName = "master_rebel_1",
@@ -110,9 +105,6 @@ destroy_master_rebel_1 = SpaceDestroyScreenplay:new {
 
 	killsRequired = 30,
 
-	-- Pre-NGE: leaving Kessel keeps the progress
-	failOnLeaveZone = false,
-
 	shipLocations = {},
 
 	shipTypes = {
@@ -125,7 +117,7 @@ destroy_master_rebel_1 = SpaceDestroyScreenplay:new {
 registerScreenPlay("destroy_master_rebel_1", true)
 
 -- Mission 2: destroy the Imperial corvette over Kessel
-destroy_master_rebel_2 = SpaceDestroyScreenplay:new {
+destroy_master_rebel_2 = SpaceMasterDestroyScreenplay:new {
 	className = "destroy_master_rebel_2",
 
 	questName = "master_rebel_2",
@@ -142,9 +134,6 @@ destroy_master_rebel_2 = SpaceDestroyScreenplay:new {
 	sideQuestType = "",
 
 	killsRequired = 1,
-
-	-- Pre-NGE: leaving Kessel keeps the progress
-	failOnLeaveZone = false,
 
 	shipLocations = {},
 

@@ -362,7 +362,7 @@ function TestRsfTier3Identity:setUp() H.reset() end
 
 -- I-1 (rsf-tier3-renames): 163 minus the three deleted tables plus four new ones; rsf-tier2-kaydine-duties: minus three deleted duties, plus two new ones.
 function TestRsfTier3Identity:test_the_set_of_space_quest_globals_has_the_f2_count()
-	lu.assertEquals(#H.questGlobals(), 164, "number of space quest globals (CorSec, Havoc and RSF loaded; 164 since space-master-trainer-rebel removed destroy_corellia_rebel_master)")
+	lu.assertEquals(#H.questGlobals(), 165, "number of space quest globals (CorSec, Havoc and RSF loaded; 164 since space-master-trainer-rebel removed destroy_corellia_rebel_master; 165 since space-master-mission-quest-type added the base type SpaceMasterDestroyScreenplay, which H.questGlobals counts like the other base types)")
 end
 
 -- I-1

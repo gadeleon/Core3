@@ -627,3 +627,25 @@ tests/lua/
   vendor/luaunit.lua        LuaUnit 3.4 (BSD, see vendor/LICENSE.luaunit.txt)
   test_*.lua                tests
 ```
+
+### Master missions: persistent type (space-master-mission-quest-type)
+
+The four master missions (`destroy_master_imperial_1/2`, `destroy_master_rebel_1/2`) run on `SpaceMasterDestroyScreenplay`, a quest type that keeps its kill
+count on the player and uses persistent observers. The harness gained what it takes to test that:
+
+- **Screenplay data:** `writeScreenPlayData(pPlayer, sp, var, value)` stores `tostring(value)` on the fake ghost, `readScreenPlayData` returns it or `""`,
+  `deleteScreenPlayData(pPlayer, sp, var)` and `clearScreenPlayData(pPlayer, sp)`. A non-player (no ghost) stores nothing and reads `""`. The data lives on the
+  ghost, so it survives `H.simulateRestart()`; `H.reset()` clears it with the players.
+- **Observer persistence:** `createObserver` keeps its 5th argument as given. `H.Engine.observerPersistence(type, sp, method, obj)` returns it (`nil` when the
+  observer is absent or the argument was omitted). The server reads it with `lua_tointeger` (`DirectorManager.cpp:3294`): the integer `1` is saved in the
+  `observers` table, `true`, `false` and nil are 0 (transient). Test it with `math.type(arg) == "integer" and arg == 1`.
+- **`H.simulateRestart()`** (`Engine.simulateRestart`): removes every observer whose persistence argument converts to 0 the way `lua_tointeger` does, clears
+  `Engine.sharedMemory` and the pending event queue, and keeps players, ghosts (journal, screenplay data), datapads and zones. `H.Engine.luaToInteger(v)` is the
+  conversion. `test_master_mission_quest_type_restart.lua` holds the negative control: an observer created with `true` (as `SpaceDestroyScreenplay` does) is gone
+  after the simulated restart, the master quest's three are not.
+- **Quest-type list:** `SPACE_QUEST_TYPES` in `harness/init.lua` lists `SpaceMasterDestroyScreenplay` directly after `SpaceDestroyScreenplay`, like `screenplays.lua`. It
+  is loaded once the file exists (same rule as `SpaceAttackWaves`), and `test_master_mission_quest_type_type.lua` asserts that it exists.
+- `master_mission_scenario.lua` (not a test file) holds the shared builders for the four missions: `S.CASES` (Imperial and Rebel), `S.started`, `S.enter`
+  (a launch into Kessel plus the 5 s reminder), `S.kill` / `S.fire`, `S.count`, `S.updates` (the `Kills: N of K` texts), `S.observerProblems` (one observer each,
+  persistence the integer `1`) and `S.countCompletions`. Group credit is driven the way `ShipManager::notifyDestruction` does: `DESTROYEDSHIP` fired once on each
+  member (`test_master_mission_quest_type_group.lua`).

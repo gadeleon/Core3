@@ -324,9 +324,5 @@ function TestMasterTrainerImperialPins:test_the_fixtures_are_byte_copies_of_the_
 	lu.assertEquals(rc3, 0, "skills.pilot_imperial_navy_master.tab is not rows 1, 2 and 623 of skills.tab: " .. out3)
 end
 
--- A-1: SpaceDestroyScreenplay declares the opt-in field, default true
-function TestMasterTrainerImperialPins:test_space_destroy_screenplay_declares_the_field_with_default_true()
-	local text = readSource("bin/scripts/screenplays/space/SpaceDestroyScreenplay.lua")
-
-	lu.assertNotNil(text:find("failOnLeaveZone%s*=%s*true"), "SpaceDestroyScreenplay.lua: failOnLeaveZone = true default")
-end
+-- space-master-mission-quest-type: the A-1 pin (SDS declares failOnLeaveZone = true) is deleted; test_master_mission_quest_type_type.lua
+-- (AC-2) asserts the opposite: SDS is stock and no file under bin/ contains failOnLeaveZone.

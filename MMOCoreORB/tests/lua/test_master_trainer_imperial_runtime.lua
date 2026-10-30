@@ -4,6 +4,9 @@
 -- Quests are driven by the event clock: pump(ms) runs H.advance inside pcall so a Lua error in an event reads as "no Lua error".
 -- (Amendment A-1: the master quests never fail on leaving Kessel; see the A-1 tests.) A destroy quest only fails on leaving its zone once task 1 is active, which the first counted kill activates (SpaceDestroyScreenplay:enteredZone).
 
+-- space-master-mission-quest-type: the four master missions now run on SpaceMasterDestroyScreenplay (progress kept in screenplay data, no failOnLeaveZone);
+-- the kill count is read with the `count` helper below. The new type's own behavior is tested in test_master_mission_quest_type_*.lua.
+
 local lu = require("luaunit")
 local H = require("harness")
 local DRS = require("duty_rules_scenario")
@@ -22,6 +25,9 @@ end
 
 local function isComplete(player, q) return SpaceHelpers:isSpaceQuestComplete(player, q.questType, q.questName) end
 local function isActive(player, q) return SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName) end
+
+-- space-master-mission-quest-type: the kill count is screenplay data on the PlayerObject (it survives a restart), no longer shared memory
+local function count(player, global) return tonumber(readScreenPlayData(player, global, "killCount")) or 0 end
 
 -- An Imperial pilot in a ship in Kessel who starts `global` (the quest's own startQuest, as the trainer does)
 local function started(global)
@@ -101,7 +107,7 @@ function TestMasterTrainerImperialRuntime:test_each_of_the_eight_listed_ship_nam
 
 	for i, name in ipairs(ships) do
 		kill(player, name)
-		lu.assertEquals(readData(player.objectID .. ":" .. ONE .. ":killCount"), i, ONE .. ": kill count after " .. name)
+		lu.assertEquals(count(player, ONE), i, ONE .. ": kill count after " .. name)
 	end
 
 	lu.assertTrue(isActive(player, q), ONE .. ": still active after 8 kills")
@@ -116,7 +122,7 @@ function TestMasterTrainerImperialRuntime:test_a_kill_of_an_unlisted_ship_does_n
 	kill(player, "reb_corellian_corvette_tier4")
 	kill(player, "reb_xwing_cadet_tier1")
 
-	lu.assertEquals(readData(player.objectID .. ":" .. ONE .. ":killCount"), 0, ONE .. ": kill count after three unlisted kills")
+	lu.assertEquals(count(player, ONE), 0, ONE .. ": kill count after three unlisted kills")
 	lu.assertTrue(isActive(player, q), ONE .. ": still active")
 end
 
@@ -152,7 +158,7 @@ function TestMasterTrainerImperialRuntime:test_leaving_kessel_does_not_fail_miss
 
 		lu.assertTrue(isActive(player, q), ONE .. ": still active after leaving with " .. kills .. " kills")
 		lu.assertFalse(isComplete(player, q), ONE .. ": not complete")
-		lu.assertEquals(readData(player.objectID .. ":" .. ONE .. ":killCount"), kills, ONE .. ": kill count kept after leaving (" .. kills .. " kills)")
+		lu.assertEquals(count(player, ONE), kills, ONE .. ": kill count kept after leaving (" .. kills .. " kills)")
 		lu.assertEquals(M.state(player, ONE), "active", ONE .. ": journal entry stays active")
 		H.reset()
 	end
@@ -191,7 +197,7 @@ function TestMasterTrainerImperialRuntime:test_returning_to_kessel_resumes_the_c
 	H.zoneSwitch(player, ZONE)
 	pump(500, ONE .. " returning")
 	lu.assertTrue(isActive(player, q), ONE .. ": active after returning")
-	lu.assertEquals(readData(player.objectID .. ":" .. ONE .. ":killCount"), 10, ONE .. ": count kept")
+	lu.assertEquals(count(player, ONE), 10, ONE .. ": count kept")
 
 	for i = 1, 19 do
 		kill(player, ships[i % #ships + 1])
@@ -214,7 +220,7 @@ function TestMasterTrainerImperialRuntime:test_a_kill_made_outside_kessel_does_n
 	player.zone = "space_corellia"
 	H.fireObservers(DESTROYEDSHIP, player, H.worldAgent({ shipName = "reb_xwing_tier5", zone = "space_corellia" }))
 	pump(1500, ONE .. " kill outside")
-	lu.assertEquals(readData(player.objectID .. ":" .. ONE .. ":killCount"), 1, ONE .. ": a kill outside space_light1 is not counted")
+	lu.assertEquals(count(player, ONE), 1, ONE .. ": a kill outside space_light1 is not counted")
 end
 
 -- A-1 (c3): the same for mission 2
@@ -254,14 +260,8 @@ function TestMasterTrainerImperialRuntime:test_an_existing_destroy_quest_still_f
 	lu.assertNil(rawget(q, "failOnLeaveZone"), "the existing table does not set the field")
 end
 
--- A-1: the master tables opt out, the base type defaults to failing
-function TestMasterTrainerImperialRuntime:test_the_field_defaults_to_true_on_the_base_type_and_is_false_on_both_master_tables()
-	lu.assertEquals(SpaceDestroyScreenplay.failOnLeaveZone, true, "SpaceDestroyScreenplay.failOnLeaveZone")
-
-	for _, g in ipairs(M.GLOBALS) do
-		lu.assertEquals(rawget(M.quest(g), "failOnLeaveZone"), false, g .. ": failOnLeaveZone")
-	end
-end
+-- space-master-mission-quest-type: the A-1 field tests (failOnLeaveZone default true / false on the tables) are superseded by
+-- test_master_mission_quest_type_type.lua (AC-1, AC-2): SDS is stock again and the tables sit on SpaceMasterDestroyScreenplay.
 
 -- AC-3 (d): one corvette kill completes mission 2
 function TestMasterTrainerImperialRuntime:test_one_corvette_kill_completes_mission_2()
@@ -298,7 +298,7 @@ function TestMasterTrainerImperialRuntime:test_mission_1_kills_do_not_touch_the_
 
 	H.zoneSwitch(player, ZONE)
 	kill(player, "reb_xwing_tier5")
-	lu.assertEquals(readData(player.objectID .. ":" .. TWO .. ":killCount"), 0, TWO .. ": kill count is untouched by mission 1's kills")
+	lu.assertEquals(count(player, TWO), 0, TWO .. ": kill count is untouched by mission 1's kills")
 	lu.assertFalse(isActive(player, q2), TWO .. ": not started by mission 1")
 	lu.assertTrue(isActive(player, q1), ONE .. ": still active")
 end
@@ -312,8 +312,6 @@ local function goTo(player, zone, label)
 	pump(5000, label)
 	player.zone = zone
 end
-
-local function count(player, global) return readData(player.objectID .. ":" .. global .. ":killCount") end
 
 -- R-2 (a): a corvette killed in space_heavy1 does not complete mission 2; the one killed in Kessel does
 function TestMasterTrainerImperialRuntime:test_a_corvette_killed_in_space_heavy1_does_not_complete_mission_2_but_one_killed_in_kessel_does()

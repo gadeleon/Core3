@@ -6,6 +6,7 @@
 	(feature space-master-trainer-imperial). The Rebel master trainer adds its quests to this file.
 	Admiral Burke's quests, ported from SWG-Source destroy/master_rebel_1 and master_rebel_2 (feature space-master-trainer-rebel).
 	The four master missions use SpaceMasterDestroyScreenplay (feature space-master-mission-quest-type), so their progress persists.
+	Privateers (CorSec, RSF, Smugglers) fly the same four missions for SWG's privateer rewards (feature space-master-trainer-privateer).
 
 ]]
 
@@ -25,6 +26,13 @@ MasterTrainerScreenplay = ScreenPlay:new {
 	-- SWG space flags shared by the two master trainers (privateers choose one side)
 	MASTER_MISSION_IMPERIAL_KEY = "MasterTrainerScreenplay:master_mission_imperial",
 	MASTER_MISSION_REBEL_KEY = "MasterTrainerScreenplay:master_mission_rebel",
+
+	-- Privateer rewards and master skill (giveRewardOnePriv / giveRewardTwoPriv, grantMasterSkillBoxNeutral in both admirals' scripts)
+	PRIVATEER_ITEM_REWARD = {
+		"object/tangible/wearables/jacket/jacket_ace_privateer.iff",
+		"object/tangible/wearables/helmet/helmet_fighter_privateer_ace.iff",
+	},
+	PRIVATEER_MASTER_SKILL = "pilot_neutral_master",
 }
 
 registerScreenPlay("MasterTrainerScreenplay", false)
@@ -186,4 +194,21 @@ function MasterTrainerScreenplay:resetBurkeQuests(pPlayer)
 	end
 
 	removeQuestStatus(playerID .. self.MASTER_MISSION_REBEL_KEY)
+end
+
+-- Pays a privateer the credits of mission n's quest table and the privateer item instead of the table's item (SWG giveReward*Priv)
+function MasterTrainerScreenplay:rewardPrivateer(pPlayer, headGlobal, n)
+	if (pPlayer == nil or _G[headGlobal] == nil) then
+		return
+	end
+
+	local q = _G[headGlobal]
+
+	SpaceHelpers:sendQuestReward(pPlayer, "@spacequest/" .. q.questType .. "/" .. q.questName .. ":title")
+
+	if (q.creditReward > 0) then
+		SpaceHelpers:spaceCreditReward(pPlayer, q.creditReward)
+	end
+
+	SpaceHelpers:spaceItemReward(pPlayer, self.PRIVATEER_ITEM_REWARD[n])
 end

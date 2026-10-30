@@ -1,4 +1,4 @@
--- Admiral Willham Burke (Rebel master trainer) conversation; ported from SWG-Source rebel_master_trainer.java with the pre-NGE client lines (feature space-master-trainer-rebel). Handler: willhamBurkeConvoHandler.
+-- Admiral Willham Burke (Rebel master trainer) conversation; ported from SWG-Source rebel_master_trainer.java with the pre-NGE client lines (feature space-master-trainer-rebel). Also the CorSec/Smuggler privateer branch (priv_* screens, pilot_neutral_master; RSF is refused), ported from the same script's isPrivateer arms (feature space-master-trainer-privateer). Handler: willhamBurkeConvoHandler.
 willham_burke_convo_template = ConvoTemplate:new {
 	initialScreen = "",
 	templateType = "Lua",
@@ -643,5 +643,301 @@ willham_burke_convo_m1_accept = ConvoScreen:new {
 	options = {}
 }
 willham_burke_convo_template:addScreen(willham_burke_convo_m1_accept)
+
+willham_burke_convo_privateer_ready_smuggler = ConvoScreen:new {
+	id = "privateer_ready_smuggler",
+	leftDialog = "@conversation/rebel_master_trainer:s_41910783", -- Greetings, %NU. I am sure you are plenty confused as to why an Alliance Admiral asked to speak with you. To put it bluntly, we are in need of your help.
+	stopConversation = "false",
+	animation = "greet",
+	options = {
+		{"@conversation/rebel_master_trainer:s_2acaca5d", "priv_smuggler_intro"}, -- I am just a simple smuggler. What could I possibly do for the Alliance?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_privateer_ready_smuggler)
+
+willham_burke_convo_privateer_ready_corsec = ConvoScreen:new {
+	id = "privateer_ready_corsec",
+	leftDialog = "@conversation/rebel_master_trainer:s_41910783", -- Greetings, %NU. I am sure you are plenty confused as to why an Alliance Admiral asked to speak with you. To put it bluntly, we are in need of your help.
+	stopConversation = "false",
+	animation = "greet",
+	options = {
+		{"@conversation/rebel_master_trainer:s_dc2fa6d8", "priv_corsec_intro"}, -- The members of CorSec have always answered the call of the Alliance.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_privateer_ready_corsec)
+
+willham_burke_convo_priv_smuggler_intro = ConvoScreen:new {
+	id = "priv_smuggler_intro",
+	leftDialog = "@conversation/rebel_master_trainer:s_133c89f7", -- From what I understand, you are anything but a simple smuggler. The way I hear it you are one of the finest pilots this side of Coruscant. I am desperately in need of a fearless and skilled pilot. And I think that you are just such a pilot.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_26bd9f23", "priv_smuggler_kessel"}, -- I am willing to hear you out.
+		{"@conversation/rebel_master_trainer:s_24a07bd4", "priv_smuggler_cheap"}, -- I don't work cheap.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_intro)
+
+willham_burke_convo_priv_smuggler_kessel = ConvoScreen:new {
+	id = "priv_smuggler_kessel",
+	leftDialog = "@conversation/rebel_master_trainer:s_3f7dd52e", -- I will assume you are familiar with the Kessel system?
+	stopConversation = "false",
+	options = {
+		{"@conversation/rebel_master_trainer:s_52917b0d", "priv_smuggler_strategic"}, -- Of course.
+		{"@conversation/rebel_master_trainer:s_e7f9b26f", "priv_smuggler_never_been"}, -- 'Fraid I have never been there.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_kessel)
+
+willham_burke_convo_priv_smuggler_cheap = ConvoScreen:new {
+	id = "priv_smuggler_cheap",
+	leftDialog = "@conversation/rebel_master_trainer:s_a7be18a9", -- The Alliance will compensate you for your time and effort if you choose to assist us in this mission.
+	stopConversation = "false",
+	animation = "snap_finger2",
+	options = {
+		{"@conversation/rebel_master_trainer:s_78ce5241", "priv_smuggler_kessel"}, -- Okay, what is it you want me to do?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_cheap)
+
+willham_burke_convo_priv_smuggler_strategic = ConvoScreen:new {
+	id = "priv_smuggler_strategic",
+	leftDialog = "@conversation/rebel_master_trainer:s_da2cf079", -- Then you would know of its strategic value for the Outer Rim. With the three other systems' shipping lanes running through it, the Alliance could defend a large portion of Outer Rim worlds by controlling that system.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_8f3f7918", "priv_smuggler_imperials"}, -- So, what does this have to do with me?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_strategic)
+
+willham_burke_convo_priv_smuggler_never_been = ConvoScreen:new {
+	id = "priv_smuggler_never_been",
+	leftDialog = "@conversation/rebel_master_trainer:s_ecd272f1", -- The Kessel system is located deep in the Outer Rim. It has important strategic value to the Alliance, since there are three other systems with important shipping lanes running through it. With control of that system, the Alliance can defend a huge portion of the Outer Rim worlds.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_8f3f7918", "priv_smuggler_imperials"}, -- So, what does this have to do with me?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_never_been)
+
+willham_burke_convo_priv_smuggler_imperials = ConvoScreen:new {
+	id = "priv_smuggler_imperials",
+	leftDialog = "@conversation/rebel_master_trainer:s_16531693", -- The Alliance has begun moving ships into the system in order to defend it. Unfortunately, it seems that the Empire has also determined the value of the Kessel system and has begun moving their own support craft in. We need to get those Imperial vessels out of the system.
+	stopConversation = "false",
+	animation = "pound_fist_palm",
+	options = {
+		{"@conversation/rebel_master_trainer:s_8964c03a", "priv_smuggler_raids"}, -- So you are asking me to hunt Imperials?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_imperials)
+
+willham_burke_convo_priv_smuggler_raids = ConvoScreen:new {
+	id = "priv_smuggler_raids",
+	leftDialog = "@conversation/rebel_master_trainer:s_c5b25047", -- In a nutshell... yes. We are too evenly matched to launch an assault on their positions without being weakened to the point where we could not hold the system. The only solution that I could come up with was a series of raids on the Imperial positions.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_174c76a5", "priv_smuggler_volunteer"}, -- You have pilots. Why not use one of them?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_raids)
+
+willham_burke_convo_priv_smuggler_volunteer = ConvoScreen:new {
+	id = "priv_smuggler_volunteer",
+	leftDialog = "@conversation/rebel_master_trainer:s_65a12a87", -- We have a number of skilled pilots, but no one that I feel is up to this assignment. I asked around and your name came up again and again. I believe that you are the only pilot around that can pull off this mission. I am not going to force anyone to attempt this but I am asking you to volunteer.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_c10e0254", "priv_m1_accept_smuggler"}, -- I have no love for the Empire. You have your pilot.
+		{"@conversation/rebel_master_trainer:s_35c0388d", "priv_decline"}, -- I do not see the profit in getting in the middle of a fight between you and the Empire. I have to decline.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_smuggler_volunteer)
+
+willham_burke_convo_priv_m1_accept_smuggler = ConvoScreen:new {
+	id = "priv_m1_accept_smuggler",
+	leftDialog = "@conversation/rebel_master_trainer:s_4bdfa49b", -- I am glad that you agreed. You will need to assemble a team of pilots who you feel are up to the challenge. The Imperial pilots in the Kessel system are some of the best in their entire fleet and they are all flying state of the art craft, so this will be no walk in the park.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_76d5f218", "priv_m1_accept_smuggler_end"}, -- Don't worry much about that. I have a knack for finding what I need to.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_m1_accept_smuggler)
+
+willham_burke_convo_priv_m1_accept_smuggler_end = ConvoScreen:new {
+	id = "priv_m1_accept_smuggler_end",
+	leftDialog = "@conversation/rebel_master_trainer:s_6daab4e1", -- Thank you, pilot. May the Force be with you.
+	stopConversation = "true",
+	animation = "nod_head_once",
+	options = {}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_m1_accept_smuggler_end)
+
+willham_burke_convo_priv_decline = ConvoScreen:new {
+	id = "priv_decline",
+	leftDialog = "@conversation/rebel_master_trainer:s_4ebc69dd", -- I completely understand. If you change your mind come back and talk to me again. Good luck to you, %NU.
+	stopConversation = "true",
+	options = {}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_decline)
+
+willham_burke_convo_priv_corsec_intro = ConvoScreen:new {
+	id = "priv_corsec_intro",
+	leftDialog = "@conversation/rebel_master_trainer:s_d7e71a00", -- The CorSec are important allies in our struggle against tyranny. I thank you for arriving as quickly as you did. I have a situation here that I think you can assist me with.
+	stopConversation = "false",
+	animation = "nod_head_once",
+	options = {
+		{"@conversation/rebel_master_trainer:s_e8d6a9e7", "priv_corsec_mission"}, -- I am afraid that I do not understand. How can I assist you?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_intro)
+
+willham_burke_convo_priv_corsec_mission = ConvoScreen:new {
+	id = "priv_corsec_mission",
+	leftDialog = "@conversation/rebel_master_trainer:s_d8da45e7", -- I have an important and very dangerous mission that I need a highly skilled pilot to achieve. Unfortunately I do not think any of my pilots are up the task, so I've turned to our allies for support. Your name came up over and over again. It is my understanding you are one of the finest pilots anyone has ever seen.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_aa01a084", "priv_corsec_modesty"}, -- I don't know if I would go that far.
+		{"@conversation/rebel_master_trainer:s_ee795f66", "priv_corsec_confidence"}, -- I am not one of the finest. I am the finest.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_mission)
+
+willham_burke_convo_priv_corsec_modesty = ConvoScreen:new {
+	id = "priv_corsec_modesty",
+	leftDialog = "@conversation/rebel_master_trainer:s_684ff0a", -- There is no need for false modesty, but it is appreciated. I am in need of someone with your skills to perform a highly dangerous mission in the Kessel system. I cannot force you to take the mission, but I ask that you hear me out before deciding.
+	stopConversation = "false",
+	options = {
+		{"@conversation/rebel_master_trainer:s_3d93239d", "priv_corsec_kessel"}, -- What is this mission?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_modesty)
+
+willham_burke_convo_priv_corsec_confidence = ConvoScreen:new {
+	id = "priv_corsec_confidence",
+	leftDialog = "@conversation/rebel_master_trainer:s_84b47be3", -- You certainly have confidence. That is a good thing, because I am in need of someone who is confident in their abilities for a very dangerous mission in the Kessel system. I cannot force you to take the mission, but I ask that you at least hear me out before making your decision.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_3d93239d", "priv_corsec_kessel"}, -- What is this mission?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_confidence)
+
+willham_burke_convo_priv_corsec_kessel = ConvoScreen:new {
+	id = "priv_corsec_kessel",
+	leftDialog = "@conversation/rebel_master_trainer:s_6be5ab4e", -- The Kessel system is located deep in the Outer Rim. It has important strategic value to the Alliance, since three other systems have important shipping lanes running through Kessel. With control of that system, the Alliance can defend a huge portion of the Outer Rim worlds.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_92ad6ffe", "priv_corsec_imperials"}, -- Where do I fit into this?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_kessel)
+
+willham_burke_convo_priv_corsec_imperials = ConvoScreen:new {
+	id = "priv_corsec_imperials",
+	leftDialog = "@conversation/rebel_master_trainer:s_cd70bed3", -- The Alliance has begun moving ships into the system. Unfortunately, it seems that the Empire has also determined the value of Kessel and has begun moving their own support craft in. We need to get those Imperial vessels out of the system.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_8964c03a", "priv_corsec_raids"}, -- So you are asking me to hunt Imperials?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_imperials)
+
+willham_burke_convo_priv_corsec_raids = ConvoScreen:new {
+	id = "priv_corsec_raids",
+	leftDialog = "@conversation/rebel_master_trainer:s_77cd7306", -- In a nutshell... yes. We are too evenly matched to launch an assault on their positions without being weakened to the point where we could not hold it. The only solution that I could come up with was a series of raids on the Imperial positions.
+	stopConversation = "false",
+	animation = "nod_head_once",
+	options = {
+		{"@conversation/rebel_master_trainer:s_174c76a5", "priv_corsec_volunteer"}, -- You have pilots. Why not use one of them?
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_raids)
+
+willham_burke_convo_priv_corsec_volunteer = ConvoScreen:new {
+	id = "priv_corsec_volunteer",
+	leftDialog = "@conversation/rebel_master_trainer:s_efc8c4f5", -- We have a number of skilled pilots, but no one that I feel is up to this assignment. I asked around and your name came up again and again. I believe that you are the only pilot around that can pull off this mission. I am not going to force anyone to attempt this, but I am asking you to volunteer.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_647683fc", "priv_m1_accept_corsec"}, -- You have use of me and my vessel for as long as you need them.
+		{"@conversation/rebel_master_trainer:s_d646c11", "priv_corsec_decline"}, -- I am sorry but I cannot take this risk.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_volunteer)
+
+willham_burke_convo_priv_m1_accept_corsec = ConvoScreen:new {
+	id = "priv_m1_accept_corsec",
+	leftDialog = "@conversation/rebel_master_trainer:s_4bdfa49b", -- I am glad that you agreed. You will need to assemble a team of pilots who you feel are up to the challenge. The Imperial pilots in the Kessel system are some of the best in their entire fleet and they are all flying state of the art craft, so this will be no walk in the park.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_d1111dc8", "priv_m1_accept_corsec_end"}, -- I will hunt them down. They are no match for me.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_m1_accept_corsec)
+
+willham_burke_convo_priv_m1_accept_corsec_end = ConvoScreen:new {
+	id = "priv_m1_accept_corsec_end",
+	leftDialog = "@conversation/rebel_master_trainer:s_d41a131", -- Thank you, pilot. May the force be with you.
+	stopConversation = "true",
+	animation = "dismiss",
+	options = {}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_m1_accept_corsec_end)
+
+willham_burke_convo_priv_corsec_decline = ConvoScreen:new {
+	id = "priv_corsec_decline",
+	leftDialog = "@conversation/rebel_master_trainer:s_4ebc69dd", -- I completely understand. If you change your mind come back and talk to me again. Good luck to you, %NU.
+	stopConversation = "true",
+	animation = "nod_head_once",
+	options = {}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_corsec_decline)
+
+willham_burke_convo_priv_m1_reward = ConvoScreen:new {
+	id = "priv_m1_reward",
+	leftDialog = "@conversation/rebel_master_trainer:s_6ff4c6e1", -- It is at that. And it is only possible because of your victory. The Alliance thanks you and I have been authorized to issue a credit reward to your account. I also have granted you a token of our appreciation for what you have accomplished. I still have some more planning to work on, but after you take some well deserved rest come and see me again. I am sure I will have a place for you in the attack plan.
+	stopConversation = "true",
+	options = {}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_m1_reward)
+
+willham_burke_convo_priv_m2_disappointed = ConvoScreen:new {
+	id = "priv_m2_disappointed",
+	leftDialog = "@conversation/rebel_master_trainer:s_583fa6fb", -- As am I. I still believe that we can take the area but Alliance Command believes that the Empire will be able to mount a Star Destroyer attack. We cannot risk a direct confrontation with one of those. Regardless, you have more than done your duty. I have been authorized on behalf of the Alliance to issue you a reward for your noble actions. You willl always have friends in the Alliance.
+	stopConversation = "false",
+	options = {
+		{"@conversation/rebel_master_trainer:s_5869e64b", "priv_master_grant"}, -- Thank you, sir. I appreciate it.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_m2_disappointed)
+
+willham_burke_convo_priv_master_grant = ConvoScreen:new {
+	id = "priv_master_grant",
+	leftDialog = "@conversation/rebel_master_trainer:s_6c42736d", -- Even though you are not officially a member of the Alliance, you have proven yourself a hero for what is right. I believe that you have achieved the highest level of piloting skill that anyone can hope to accomplish. The Alliance is in your debt.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/rebel_master_trainer:s_377d1a96", "priv_master_end"}, -- Thank you, sir. It has been an honor to be allowed to serve under you.
+	}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_master_grant)
+
+willham_burke_convo_priv_master_end = ConvoScreen:new {
+	id = "priv_master_end",
+	leftDialog = "@conversation/rebel_master_trainer:s_be631237", -- I assure you that the honor is all mine. Leading men such as yourself is a privilege. You are dismissed, %NU.
+	stopConversation = "true",
+	animation = "salute2",
+	options = {}
+}
+willham_burke_convo_template:addScreen(willham_burke_convo_priv_master_end)
 
 addConversationTemplate("willham_burke_convo_template", willham_burke_convo_template)

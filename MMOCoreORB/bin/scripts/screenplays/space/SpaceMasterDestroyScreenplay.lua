@@ -6,6 +6,9 @@
 	completion, journal abort or surrendering the profession. The kill count is saved on the
 	PlayerObject and the observers are persistent.
 
+	An earned but uncompleted mission (for example after a restart inside the 200 ms completion window) is
+	completed on the next login or zone switch, in any zone.
+
 	Used by the four master missions in squadrons/MasterTrainerScreenplay.lua (Declann: master_imperial_1/2,
 	Burke: master_rebel_1/2; SWG-Source datatables/spacequest/destroy). Deliberately differs from SWG-Source
 	(NGE) destroy.java, which fails the quest on leaving the zone: this is the pre-NGE rule. Kills count only in
@@ -50,6 +53,15 @@ end
 
 function SpaceMasterDestroyScreenplay:getKillCount(pPlayer)
 	return tonumber(readScreenPlayData(pPlayer, self.className, "killCount")) or 0
+end
+
+-- The mission is earned once task 1 is complete or the saved count has reached the goal
+function SpaceMasterDestroyScreenplay:isEarned(pPlayer)
+	if (SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 1)) then
+		return true
+	end
+
+	return self.killsRequired > 0 and self:getKillCount(pPlayer) >= self.killsRequired
 end
 
 function SpaceMasterDestroyScreenplay:ensureObservers(pPlayer)
@@ -117,6 +129,12 @@ function SpaceMasterDestroyScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 
 	self:ensureObservers(pPlayer)
 
+	if (self:isEarned(pPlayer)) then
+		createEvent(self.REMINDER_DELAY * 1000, self.className, "completeQuest", pPlayer, "true")
+
+		return 0
+	end
+
 	if (zoneNameHash == getHashCode(self.questZone)) then
 		self:arrive(pPlayer)
 		createEvent(self.REMINDER_DELAY * 1000, self.className, "remindProgress", pPlayer, "")
@@ -137,6 +155,12 @@ function SpaceMasterDestroyScreenplay:onLoggedIn(pPlayer)
 
 	self:ensureObservers(pPlayer)
 
+	if (self:isEarned(pPlayer)) then
+		createEvent(self.REMINDER_DELAY * 1000, self.className, "completeQuest", pPlayer, "true")
+
+		return 0
+	end
+
 	if (getHashCode(SceneObject(pPlayer):getZoneName()) == getHashCode(self.questZone)) then
 		self:arrive(pPlayer)
 		createEvent(self.REMINDER_DELAY * 1000, self.className, "remindProgress", pPlayer, "")
@@ -154,7 +178,7 @@ function SpaceMasterDestroyScreenplay:remindProgress(pPlayer)
 		return
 	end
 
-	if (SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 1)) then
+	if (self:isEarned(pPlayer)) then
 		return
 	end
 

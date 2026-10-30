@@ -163,12 +163,13 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_runs_before_t
 	lu.assertFalse(CreatureObject(player):hasSkill(M.MASTER), "and gone afterwards")
 end
 
--- AC-10: CorSec, RSF and Havoc pilots do not call it; their surrender is as before
-function TestMasterTrainerImperialSurrender:test_corsec_rsf_havoc_and_smuggler_pilots_do_not_call_the_declann_reset()
+-- AC-10: Havoc pilots do not call it; their surrender is as before
+-- Superseded by space-master-trainer-privateer: CorSec, RSF and Smuggler pilots now call it (test_master_trainer_privateer_surrender.lua).
+function TestMasterTrainerImperialSurrender:test_havoc_pilots_do_not_call_the_declann_reset()
 	local reset = H.spyOn(M.mts(), "resetDeclannQuests")
 
 	for _, o in ipairs({
-		{ kind = "neutral", squadron = "corsec" }, { kind = "neutral", squadron = "rsf" }, { kind = "rebel", squadron = "havoc" }, { kind = "neutral", squadron = "smuggler" },
+		{ kind = "rebel", squadron = "havoc" },
 	}) do
 		local player = M.pilot(o)
 

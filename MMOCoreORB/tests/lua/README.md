@@ -568,6 +568,21 @@ and `privateer_ready`. `fixtures/skill/skills.pilot_rebel_navy_master.tab` is ro
 non-SWG orphan `destroy_corellia_rebel_master` from the Havoc file (Q-1 option A; the HSP pin in `test_havoc_tier3_name_case_data.lua` removes its 31 lines by content).
 `test_master_trainer_rebel_pins.lua` compares the working tree with `git show 2fb246df23` (skips once HEAD moves); edited files come from `git diff --diff-filter=M`.
 
+### Master trainers: privateers (space-master-trainer-privateer)
+
+CorSec, RSF and Smuggler pilots fly the same four master missions for the privateer rewards and the free `pilot_neutral_master`. The admirals gain 44 (Declann) and 28 (Burke)
+privateer screens (Appendix P-D / P-B of the spec; templates 113 / 90 screens), `MasterTrainerScreenplay` gains `PRIVATEER_ITEM_REWARD`, `PRIVATEER_MASTER_SKILL` and `rewardPrivateer`, the
+handlers gain the privateer tables (`PRIVATEER_START_SCREENS`, `PRIVATEER_REWARD_SCREENS`, `SIDE_KEY_SCREENS`, `PRIVATEER_MASTER_SCREEN`, `PRIVATEER_SWAPS`, `RSF_SWAPS`) and
+`getNextConversationScreen` (SWG's `isPrivateer` successors become screen swaps), and `SpaceHelpers:surrenderPilot` calls both resets for every neutral squadron.
+`master_trainer_privateer_screens_data.lua` (not a test file) is Appendices P-D and P-B (`.declann`, `.burke`, generated from the spec tables, same row format as the Imperial/Rebel
+Appendix A). `master_trainer_privateer_data.lua` builds on `master_trainer_imperial_data` / `master_trainer_rebel_data`: `P.ADMIRALS.declann|burke` (module, side keys, gate screens,
+squadrons served), `P.pilot(adm, o)` (`M.pilot` with `kind = "neutral"` by default, which is a CorSec pilot; `squadron = "rsf" | "corsec" | "smuggler" | false`),
+`P.talk` / `P.drive` / `P.firstScreen`, `P.rows(adm)` (Appendix A plus the privateer rows), `P.swaps(adm, squadron)` and `P.paths(adm, from, swaps)` (every option path from a screen
+to an ending, with the swaps a privateer gets), `P.PATHS` (Appendix D), `P.recordChains` / `P.spyAllStarts` / `P.restore`. Route tests drive each computed path through
+`H.converse`, so the handler's swaps are exercised (the static template graph differs from what a privateer sees). The surrender keeps the squadron type (only the tier is
+reset), so after a surrender an RSF pilot still hears `rsf_pilot` at Burke and a Smuggler `smuggler` at Declann. `fixtures/skill/skills.pilot_neutral_master.tab` is rows 1, 2 and 642
+of SWG `skills.tab`. `test_master_trainer_privateer_pins.lua` compares the working tree with `git show c9f84039c6` (skips once HEAD moves).
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

@@ -1,4 +1,4 @@
--- Grand Admiral Nial Declann (Imperial master trainer) conversation; ported from SWG-Source imperial_master_trainer.java with the pre-NGE client lines (feature space-master-trainer-imperial). Handler: nialDeclannConvoHandler.
+-- Grand Admiral Nial Declann (Imperial master trainer) conversation; ported from SWG-Source imperial_master_trainer.java with the pre-NGE client lines (feature space-master-trainer-imperial). Also the CorSec/RSF privateer branch (priv_* screens, pilot_neutral_master; Smugglers are refused), ported from the same script's isPrivateer arms (feature space-master-trainer-privateer). Handler: nialDeclannConvoHandler.
 nial_declann_convo_template = ConvoTemplate:new {
 	initialScreen = "",
 	templateType = "Lua",
@@ -729,5 +729,483 @@ nial_declann_convo_m1_accept_end = ConvoScreen:new {
 	options = {}
 }
 nial_declann_convo_template:addScreen(nial_declann_convo_m1_accept_end)
+
+nial_declann_convo_privateer_ready_rsf = ConvoScreen:new {
+	id = "privateer_ready_rsf",
+	leftDialog = "@conversation/imperial_master_trainer:s_10009b23", -- Yes, what is it? Speak up, I don't have all day to chat with you.
+	stopConversation = "false",
+	animation = "beckon",
+	options = {
+		{"@conversation/imperial_master_trainer:s_308a9ab1", "priv_rsf_intro"}, -- I was told by RSF Command to report to you.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_privateer_ready_rsf)
+
+nial_declann_convo_privateer_ready_corsec = ConvoScreen:new {
+	id = "privateer_ready_corsec",
+	leftDialog = "@conversation/imperial_master_trainer:s_10009b23", -- Yes, what is it? Speak up, I don't have all day to chat with you.
+	stopConversation = "false",
+	animation = "beckon",
+	options = {
+		{"@conversation/imperial_master_trainer:s_8409f60e", "priv_corsec_intro"}, -- I was told by Corellia Security Command to report to you.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_privateer_ready_corsec)
+
+nial_declann_convo_priv_rsf_intro = ConvoScreen:new {
+	id = "priv_rsf_intro",
+	leftDialog = "@conversation/imperial_master_trainer:s_19aeaf5e", -- Ah, so you must be %NU. I have heard a great deal about you from your commanding officers from the RSF. A fine tradition that of the Royal Security Force. Not quite as noble as being a member of the Imperial Navy, but they have been known to make some very fine pilots.
+	stopConversation = "false",
+	animation = "pose_proudly",
+	options = {
+		{"@conversation/imperial_master_trainer:s_7964ad2d", "priv_rsf_treated_well"}, -- Yes, sir. The RSF has treated me very well.
+		{"@conversation/imperial_master_trainer:s_6c92dab", "priv_rsf_best"}, -- I must disagree. The RSF has the best pilots in the galaxy.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rsf_intro)
+
+nial_declann_convo_priv_rsf_treated_well = ConvoScreen:new {
+	id = "priv_rsf_treated_well",
+	leftDialog = "@conversation/imperial_master_trainer:s_63462bcc", -- From what I have heard you are among their best and brightest. Which is good since I have a very important honor to bestow on you. The time has come for you to prove yourself to your Imperial allies. I have an important mission that I believe you are well suited for.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_e9aec8d7", "priv_rsf_question"}, -- A mission? Shouldn't that be handled by the Imperial Navy?
+		{"@conversation/imperial_master_trainer:s_bc9b4055", "priv_skilled_pilot"}, -- Yes, sir. It would be an honor, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rsf_treated_well)
+
+nial_declann_convo_priv_rsf_question = ConvoScreen:new {
+	id = "priv_rsf_question",
+	leftDialog = "@conversation/imperial_master_trainer:s_5fca12da", -- Are you questioning my judgment on this matter? I understand that things are a little less rigid in the RSF, but I would have still expected lesser flight officers not to question their superiors. Perhaps I need to have a word with the Queen about discipline among her troops. I made my decision based off of what is good for the Empire and that is all you need to know about that subject.
+	stopConversation = "false",
+	animation = "point_accusingly",
+	options = {
+		{"@conversation/imperial_master_trainer:s_8db79f00", "priv_skilled_pilot"}, -- No, sir. Sorry, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rsf_question)
+
+nial_declann_convo_priv_skilled_pilot = ConvoScreen:new {
+	id = "priv_skilled_pilot",
+	leftDialog = "@conversation/imperial_master_trainer:s_47cf08a2", -- Yes, I am sure. Since I do not have all day I am going to dispense with further pleasantries. I am in need of a skilled pilot to implement a plan I have devised in order to secure the Kessel system.
+	stopConversation = "false",
+	animation = "nod_head_once",
+	options = {
+		{"@conversation/imperial_master_trainer:s_85b8ffbd", "priv_kessel"}, -- The Kessel system?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_skilled_pilot)
+
+nial_declann_convo_priv_rsf_best = ConvoScreen:new {
+	id = "priv_rsf_best",
+	leftDialog = "@conversation/imperial_master_trainer:s_1837e4aa", -- Do not try my patience. The RSF exists at the whim of the Empire. At any time we can take away your vaunted security force and the whole lot of you would be placed into the Imperial Navy. I would be surprised if even a third of you made it out of our training program.
+	stopConversation = "false",
+	animation = "wave_finger_warning",
+	options = {
+		{"@conversation/imperial_master_trainer:s_913ac8c9", "priv_rsf_forget_place"}, -- Sir, I must disagree.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rsf_best)
+
+nial_declann_convo_priv_rsf_forget_place = ConvoScreen:new {
+	id = "priv_rsf_forget_place",
+	leftDialog = "@conversation/imperial_master_trainer:s_c38038fe", -- You forget your place, pilot. I asked for you simply based on the recommendations from your superior officers. They seemed to have a great deal of faith in you and were completely sure of your loyalty. Was their faith misplaced?
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_8db79f00", "priv_rsf_respect"}, -- No, sir. Sorry, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rsf_forget_place)
+
+nial_declann_convo_priv_rsf_respect = ConvoScreen:new {
+	id = "priv_rsf_respect",
+	leftDialog = "@conversation/imperial_master_trainer:s_1be63a5a", -- Just because they might tolerate insolence in the RSF does not mean that I have to listen to it. With this operation I am in command I expect complete respect. Do I make myself clear, pilot?
+	stopConversation = "false",
+	animation = "point_accusingly",
+	options = {
+		{"@conversation/imperial_master_trainer:s_baca5aeb", "priv_skilled_pilot"}, -- Yes, sir. You are absolutely clear.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rsf_respect)
+
+nial_declann_convo_priv_corsec_intro = ConvoScreen:new {
+	id = "priv_corsec_intro",
+	leftDialog = "@conversation/imperial_master_trainer:s_f9df4c83", -- It is good to see that the CorSec are not a breeding ground for the Rebellion like many of my peers seem to believe. Perhaps if you work well for me, you can show your fellow pilots that the only way to truly have peace is to fully support the Empire and it's endeavors.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_c5aa2921", "priv_corsec_my_way"}, -- That is exactly how I feel, sir.
+		{"@conversation/imperial_master_trainer:s_e685629c", "priv_corsec_dissension"}, -- I think you are mistaken about the ideals of CorSec.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_intro)
+
+nial_declann_convo_priv_corsec_my_way = ConvoScreen:new {
+	id = "priv_corsec_my_way",
+	leftDialog = "@conversation/imperial_master_trainer:s_4fb6fb91", -- I knew you would see things my way. I could tell from the moment you walked in that you were unlike the rest of that ilk. Personally I believe that the problems that exist within the CorSec can be fixed. I don't how many times I have saved your group from destruction. 
+	stopConversation = "false",
+	animation = "point_to_self",
+	options = {
+		{"@conversation/imperial_master_trainer:s_87ccb642", "priv_corsec_appreciate"}, -- And many members of the CorSec do appreciate it.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_my_way)
+
+nial_declann_convo_priv_corsec_appreciate = ConvoScreen:new {
+	id = "priv_corsec_appreciate",
+	leftDialog = "@conversation/imperial_master_trainer:s_c92b41e9", -- As well you should. I am hardly required to spend my valuable time trying to protect an agency that isn't under Imperial control. But I think that you and I shall change the perception that other members of Imperial Command might have of CorSec. Wouldn't you agree?
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_7b3a873", "priv_corsec_presence"}, -- Perhaps if I had a better idea what you wanted from me.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_appreciate)
+
+nial_declann_convo_priv_corsec_presence = ConvoScreen:new {
+	id = "priv_corsec_presence",
+	leftDialog = "@conversation/imperial_master_trainer:s_8c202f75", -- Ah, yes. You are interested in finding out why I have ordered your presence. I am in need of a skilled pilot to implement a plan I have devised in order to secure the Kessel system. 
+	stopConversation = "false",
+	animation = "point_to_self",
+	options = {
+		{"@conversation/imperial_master_trainer:s_85b8ffbd", "priv_kessel"}, -- The Kessel system?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_presence)
+
+nial_declann_convo_priv_corsec_dissension = ConvoScreen:new {
+	id = "priv_corsec_dissension",
+	leftDialog = "@conversation/imperial_master_trainer:s_3d30040d", -- It has been well known for years that CorSec is nothing more then a breeding ground for dissension. Do not question my judgment in this matter. If it wasn't for me there wouldn't be a CorSec. I don't know how many times I fought against having your entire corps eliminated. Despite all of it's obvious flaws, I do believe that the corps can be saved.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_24077de7", "priv_corsec_together"}, -- I see, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_dissension)
+
+nial_declann_convo_priv_corsec_together = ConvoScreen:new {
+	id = "priv_corsec_together",
+	leftDialog = "@conversation/imperial_master_trainer:s_22dd5c33", -- You and I shall work together in order to bring respectability back to CorSec.
+	stopConversation = "false",
+	animation = "pound_fist_palm",
+	options = {
+		{"@conversation/imperial_master_trainer:s_4041b73c", "priv_corsec_simple"}, -- How do you propose we do that?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_together)
+
+nial_declann_convo_priv_corsec_simple = ConvoScreen:new {
+	id = "priv_corsec_simple",
+	leftDialog = "@conversation/imperial_master_trainer:s_cf1c32cf", -- Very simple. You will offer support to a plan I have devised in order to gain control of the Kessel system. With my brilliant strategy, even a pilot such as yourself, should have no trouble bringing victory in the name of the Empire.
+	stopConversation = "false",
+	options = {
+		{"@conversation/imperial_master_trainer:s_85b8ffbd", "priv_kessel"}, -- The Kessel system?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_corsec_simple)
+
+nial_declann_convo_priv_kessel = ConvoScreen:new {
+	id = "priv_kessel",
+	leftDialog = "@conversation/imperial_master_trainer:s_a622496d", -- Of course, why would I assume that you know anything of the Kessel system? The Kessel system is located deep in the Outer Rim. The Empire has had plans to take full control of the system for some time now, but we have never quite been able to succeed in it's ultimate control.
+	stopConversation = "false",
+	animation = "dismiss",
+	options = {
+		{"@conversation/imperial_master_trainer:s_fd661a34", "priv_kessel_why"}, -- Why would the Empire want control of the Kessel system?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_kessel)
+
+nial_declann_convo_priv_kessel_why = ConvoScreen:new {
+	id = "priv_kessel_why",
+	leftDialog = "@conversation/imperial_master_trainer:s_1aff8b69", -- The Kessel system is strategically connected to three other systems along the Outer Rim. With control of that one system, the Empire can exert it's influence on the entire region. From there it is only a small step in order to control the entire Outer Rim.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_15f15e84", "priv_overestimate"}, -- I think you might over estimate the value of the Kessel system.
+		{"@conversation/imperial_master_trainer:s_78dfc859", "priv_battlegroup"}, -- Sounds like a very sound plan, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_kessel_why)
+
+nial_declann_convo_priv_overestimate = ConvoScreen:new {
+	id = "priv_overestimate",
+	leftDialog = "@conversation/imperial_master_trainer:s_ca9b9b68", -- This is why you are but a lowly pilot in a local planet security force and I am a Grand Admiral. Do not ever make the mistake of questioning my judgment. I am willing to let that remark go unpunished this time, but I am not accustomed to being questioned by mere pilots... and I do not plan on making a habit out of it.
+	stopConversation = "false",
+	animation = "point_to_self",
+	options = {
+		{"@conversation/imperial_master_trainer:s_af2fc12f", "priv_battlegroup"}, -- Sorry, sir. I spoke out of turn.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_overestimate)
+
+nial_declann_convo_priv_battlegroup = ConvoScreen:new {
+	id = "priv_battlegroup",
+	leftDialog = "@conversation/imperial_master_trainer:s_ba2453bc", -- Yes, yes. The Rebellion has moved portions of their fourth battle group into the region and before we can take control of the Kessel system, it is imperative that they be eliminated. In order to do this we will need to perform a duel stage attack on their power bases in the system.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_92172df0", "priv_rebel_control"}, -- The Rebellion has control of the Kessel system right now?
+		{"@conversation/imperial_master_trainer:s_33d1d488", "priv_why_not_navy"}, -- Why isn't the Imperial Navy taking care of the Rebels in the region?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_battlegroup)
+
+nial_declann_convo_priv_rebel_control = ConvoScreen:new {
+	id = "priv_rebel_control",
+	leftDialog = "@conversation/imperial_master_trainer:s_a340005a", -- The Rebellion controls nothing in the galaxy. But they have a force in the Kessel system that could pose problems to our operations. Before we move into the system in force, we need to eliminate the Rebel threat. That will be your mission.
+	stopConversation = "false",
+	animation = "pound_fist_palm",
+	options = {
+		{"@conversation/imperial_master_trainer:s_60d3f4f8", "priv_orders"}, -- What is it that you want me to do?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_rebel_control)
+
+nial_declann_convo_priv_why_not_navy = ConvoScreen:new {
+	id = "priv_why_not_navy",
+	leftDialog = "@conversation/imperial_master_trainer:s_732a67f3", -- The Rebel battlegroup moved into the system sooner then we anticipated. Unfortunately, the main portion of our battle fleets are engaged elsewhere. The Rebels want Kessel for it's strategic location in order to spread their chaos and dissension across the entire Outer Rim. In the same way, we want use Kessel to help bring order to the Outer Rim.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_bcb643d", "priv_allies"}, -- So you are turning to local security forces to assist you in this matter?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_why_not_navy)
+
+nial_declann_convo_priv_allies = ConvoScreen:new {
+	id = "priv_allies",
+	leftDialog = "@conversation/imperial_master_trainer:s_794642f2", -- I would rather keep this matter completely in the Imperial Navy's hands but the situation dictates that we occasionally need to rely on our allies. This is a great opportunity for the planetary security forces to prove that the Empire was correct in not disbanding them.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_63f7aad9", "priv_orders"}, -- What is it you want me to do?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_allies)
+
+nial_declann_convo_priv_orders = ConvoScreen:new {
+	id = "priv_orders",
+	leftDialog = "@conversation/imperial_master_trainer:s_ecdec8ad", -- As I said, you are to eliminate the Rebel threat in the region. The first stage of the attack is to destroy a number of their smaller vessels that patrol throughout the region. These vessels would include fighters as well as gunboats.
+	stopConversation = "false",
+	animation = "wave_finger_warning",
+	options = {
+		{"@conversation/imperial_master_trainer:s_2bd3a43c", "priv_m1_accept"}, -- You said smaller vessels. Does that mean there are larger capital class ships in the region?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_orders)
+
+nial_declann_convo_priv_m1_accept = ConvoScreen:new {
+	id = "priv_m1_accept",
+	leftDialog = "@conversation/imperial_master_trainer:s_58a058a9", -- That is not your concern at this time. My plan is to first weaken the fighter capability of the Rebels in the region and then we can initiate stage two. You are to focus all your energies on the destruction of the Rebel fighter craft in the region. Is that understood, Pilot?
+	stopConversation = "false",
+	animation = "dismiss",
+	options = {
+		{"@conversation/imperial_master_trainer:s_bb9e4a63", "priv_m1_dismissed_corsec"}, -- Understood, sir.
+		{"@conversation/imperial_master_trainer:s_65031818", "priv_positions"}, -- Where are the Rebel positions in the sector?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m1_accept)
+
+nial_declann_convo_priv_positions = ConvoScreen:new {
+	id = "priv_positions",
+	leftDialog = "@conversation/imperial_master_trainer:s_1df5b492", -- Due to the interference from the Maw, long range scans are virtually useless in the Kessel system. You are going to have to hunt them down. Our system intelligence reports that they patrol throughout the system. You will just have to find them. Is that understood?
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_bb9e4a63", "priv_m1_dismissed_corsec"}, -- Understood, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_positions)
+
+nial_declann_convo_priv_m1_dismissed_corsec = ConvoScreen:new {
+	id = "priv_m1_dismissed_corsec",
+	leftDialog = "@conversation/imperial_master_trainer:s_7eeb4f8c", -- Good. Now get on with my operation. I am placing a great deal of faith in a pilot who does not even belong to the Imperial Navy. I expect that you will prove that the CorSec is not the breeding ground for Rebels that many of my peers seem to believe. Pilot, you are dismissed.
+	stopConversation = "true",
+	options = {}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m1_dismissed_corsec)
+
+nial_declann_convo_priv_m1_dismissed_rsf = ConvoScreen:new {
+	id = "priv_m1_dismissed_rsf",
+	leftDialog = "@conversation/imperial_master_trainer:s_eb171ae9", -- Good. Now get on with my operation. I am placing a great deal of faith in a pilot who does not even belong to the Imperial Navy. I expect that you will prove the RSF is completely loyal to the Empire. Pilot, you are dismissed.
+	stopConversation = "true",
+	options = {}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m1_dismissed_rsf)
+
+nial_declann_convo_priv_m1_reward = ConvoScreen:new {
+	id = "priv_m1_reward",
+	leftDialog = "@conversation/imperial_master_trainer:s_fbe23895", -- I have decided that you deserve a small token of my appreciation as a reward for your successful flight. I am going to have some credits transferred to your account so you can take a little rest and relaxation. A rested pilot is a better pilot.
+	stopConversation = "false",
+	options = {
+		{"@conversation/imperial_master_trainer:s_1affba73", "m1_kind"}, -- The Grand Admiral is too kind.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m1_reward)
+
+nial_declann_convo_priv_m2_brief = ConvoScreen:new {
+	id = "priv_m2_brief",
+	leftDialog = "@conversation/imperial_master_trainer:s_52c03f61", -- I hope that you are well rested because the time has come for me to unleash the second part of my plan. As you know, we have managed to partially cripple the Rebel battlegroup in the Kessel system and I feel the time to strike at their heart is now.
+	stopConversation = "false",
+	animation = "pound_fist_palm",
+	options = {
+		{"@conversation/imperial_master_trainer:s_a2bd8a18", "priv_m2_crippled"}, -- I am not sure if I would call the Rebel battlegroup crippled.
+		{"@conversation/imperial_master_trainer:s_8f760eed", "priv_m2_corvette"}, -- Yes, sir. The Rebels are poised to crumble.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_brief)
+
+nial_declann_convo_priv_m2_crippled = ConvoScreen:new {
+	id = "priv_m2_crippled",
+	leftDialog = "@conversation/imperial_master_trainer:s_88eb64f3", -- Again you speak without thinking. You accomplished the tasks that comprised the first part of my plan. There is no way that the Rebels could have recovered from such a devastating strike this quickly.
+	stopConversation = "false",
+	animation = "shake_head_no",
+	options = {
+		{"@conversation/imperial_master_trainer:s_6844241f", "priv_m2_tone"}, -- If you say so, sir.
+		{"@conversation/imperial_master_trainer:s_8efde2ae", "priv_m2_corvette"}, -- Yes, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_crippled)
+
+nial_declann_convo_priv_m2_tone = ConvoScreen:new {
+	id = "priv_m2_tone",
+	leftDialog = "@conversation/imperial_master_trainer:s_26e02f1d", -- I don't care much for the tone in your voice. If you wish to continue to fly for your organization I suggest that you find a way to control your tongue. I will not suffer any rudeness from a local security pilot.
+	stopConversation = "false",
+	animation = "wave_finger_warning",
+	options = {
+		{"@conversation/imperial_master_trainer:s_af2fc12f", "priv_m2_corvette_again"}, -- Sorry, sir. I spoke out of turn.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_tone)
+
+nial_declann_convo_priv_m2_corvette_again = ConvoScreen:new {
+	id = "priv_m2_corvette_again",
+	leftDialog = "@conversation/imperial_master_trainer:s_36e64ebe", -- As I said, the Rebellion's fighter squads are greatly diminished and the time to unleash the second stage of my plan has come. The Rebels have moved a Corellian corvette into the Kessel system as part of their battlegroup. This ship is the Rebel command vessel for the entire system.
+	stopConversation = "false",
+	animation = "shush",
+	options = {
+		{"@conversation/imperial_master_trainer:s_9e28d2b0", "priv_m2_capital"}, -- A Corellian corvette? Isn't that a capital ship?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_corvette_again)
+
+nial_declann_convo_priv_m2_corvette = ConvoScreen:new {
+	id = "priv_m2_corvette",
+	leftDialog = "@conversation/imperial_master_trainer:s_16374fa8", -- As I said, the Rebellion's fighter squads are greatly diminished and the time to unleash the second stage of my plan has come. The Rebels have moved a Corellian corvette into the Kessel system as part of their battlegroup. This ship is the Rebel command vessel for the entire sector.
+	stopConversation = "false",
+	options = {
+		{"@conversation/imperial_master_trainer:s_9e28d2b0", "priv_m2_capital"}, -- A Corellian corvette? Isn't that a capital ship?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_corvette)
+
+nial_declann_convo_priv_m2_capital = ConvoScreen:new {
+	id = "priv_m2_capital",
+	leftDialog = "@conversation/imperial_master_trainer:s_50e3a94f", -- It is what the Rebellion considers to be a capital ship. It lacks the fire power and strength of even the weakest Star Destroyer. Your job should be rather simple. You are to destroy that Corellian corvette as it passes through the system on it's patrol. It apparently patrols several systems, so it is not always in Kessel. You will have to wait for it to enter Kessel on patrol before you will be able to strike.
+	stopConversation = "false",
+	animation = "explain",
+	options = {
+		{"@conversation/imperial_master_trainer:s_ef6b4924", "priv_m2_insolent"}, -- Sir, that is insanity.
+		{"@conversation/imperial_master_trainer:s_7cc631fe", "priv_m2_support"}, -- Will I have support?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_capital)
+
+nial_declann_convo_priv_m2_insolent = ConvoScreen:new {
+	id = "priv_m2_insolent",
+	leftDialog = "@conversation/imperial_master_trainer:s_5d0b4f6b", -- You insolent pup. You dare insinuate that I do not know exactly what I have ordered you to do. If I felt that there were any other pilots available to perform this task I would have you executed and be done with you. Unfortunately, I am still in need of your skills.
+	stopConversation = "false",
+	animation = "point_accusingly",
+	options = {
+		{"@conversation/imperial_master_trainer:s_5ac61a82", "priv_m2_delegate"}, -- I didn't mean any disrespect, sir. It is just that, attacking a corvette in a fighter is not an effective combat technique.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_insolent)
+
+nial_declann_convo_priv_m2_delegate = ConvoScreen:new {
+	id = "priv_m2_delegate",
+	leftDialog = "@conversation/imperial_master_trainer:s_bd095033", -- I do not recall telling you to attack that ship alone. I am giving you this assignment but I am delegating you the authority to put together your own flight in order to accomplish this assignment. I know that a local security force is not expected to be a crack combat unit but I would expect that even there people show initiative.
+	stopConversation = "false",
+	animation = "slit_throat",
+	options = {
+		{"@conversation/imperial_master_trainer:s_fd386cda", "priv_m2_accept_a"}, -- Again I apologize for my hasty words, sir.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_delegate)
+
+nial_declann_convo_priv_m2_accept_a = ConvoScreen:new {
+	id = "priv_m2_accept_a",
+	leftDialog = "@conversation/imperial_master_trainer:s_a15a9037", -- My continued support for your organization is waning. I feel that your success in the destruction of the Rebel flag ship is just about the only thing that will convince me to change my mind.
+	stopConversation = "false",
+	animation = "point_accusingly",
+	options = {
+		{"@conversation/imperial_master_trainer:s_f352e00f", "priv_m2_accept_a_end"}, -- I will not fail you or the Empire.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_accept_a)
+
+nial_declann_convo_priv_m2_accept_a_end = ConvoScreen:new {
+	id = "priv_m2_accept_a_end",
+	leftDialog = "@conversation/imperial_master_trainer:s_ace4b0c3", -- See that you don't. I would hate to see you be the cause for me to decide that the time has come to do away with local security forces and replace them all with members of the Imperial Navy. You are dismissed.
+	stopConversation = "true",
+	animation = "pound_fist_palm",
+	options = {}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_accept_a_end)
+
+nial_declann_convo_priv_m2_support = ConvoScreen:new {
+	id = "priv_m2_support",
+	leftDialog = "@conversation/imperial_master_trainer:s_f85f5c9d", -- I would hardly expect you to attack a capital vessel by yourself. I may expect a lot out of the men that serve under me, but you going out alone to attack that vessel would not accomplish anything... other than your death.
+	stopConversation = "false",
+	animation = "cover_eyes",
+	options = {
+		{"@conversation/imperial_master_trainer:s_9bbd1090", "priv_m2_accept_b"}, -- So I will have support?
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_support)
+
+nial_declann_convo_priv_m2_accept_b = ConvoScreen:new {
+	id = "priv_m2_accept_b",
+	leftDialog = "@conversation/imperial_master_trainer:s_30f24d", -- Show some initiative. I have given you orders and the plan, everything else I delegate to you. It is time to prove that you are a capable leader as well as a pilot. Assemble a team that will assist you on your assault on the Rebel corvette.
+	stopConversation = "false",
+	animation = "pound_fist_palm",
+	options = {
+		{"@conversation/imperial_master_trainer:s_65d9bf6c", "priv_m2_accept_b_end"}, -- Yes, sir. I shall not fail you.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_accept_b)
+
+nial_declann_convo_priv_m2_accept_b_end = ConvoScreen:new {
+	id = "priv_m2_accept_b_end",
+	leftDialog = "@conversation/imperial_master_trainer:s_1ae97099", -- See that you don't. Once the Empire has Kessel under it's control the rest of the Outer Rim will fall into line without much of a struggle. With my great victory, I will personally hand the Emperor a prize that he has longed for, the Outer Rim.
+	stopConversation = "true",
+	animation = "applause_polite",
+	options = {}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_m2_accept_b_end)
+
+nial_declann_convo_priv_master_grant = ConvoScreen:new {
+	id = "priv_master_grant",
+	leftDialog = "@conversation/imperial_master_trainer:s_110667a0", -- You may not be a member of the Imperial Navy but you have shown yourself to be a loyal member and valuable asset to the Empire. I believe that you have achieved the highest level of piloting skill that anyone can hope to accomplish. And as a token of my personal appreciation I have authorized a transfer of payment to your account.
+	stopConversation = "false",
+	animation = "nod_head_once",
+	options = {
+		{"@conversation/imperial_master_trainer:s_377d1a96", "priv_master_end"}, -- Thank you, sir. It has been an honor to be allowed to serve under you.
+	}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_master_grant)
+
+nial_declann_convo_priv_master_end = ConvoScreen:new {
+	id = "priv_master_end",
+	leftDialog = "@conversation/imperial_master_trainer:s_ebd84e91", -- Yes, I am sure it was. You are dismissed, pilot.
+	stopConversation = "true",
+	animation = "wave_on_dismissing",
+	options = {}
+}
+nial_declann_convo_template:addScreen(nial_declann_convo_priv_master_end)
 
 addConversationTemplate("nial_declann_convo_template", nial_declann_convo_template)

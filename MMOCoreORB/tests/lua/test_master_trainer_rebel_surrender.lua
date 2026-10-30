@@ -170,13 +170,13 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_runs_before_the_sk
 	lu.assertFalse(CreatureObject(player):hasSkill(M.MASTER), "and gone afterwards")
 end
 
--- AC-10: Imperial, CorSec, RSF and Smuggler pilots do not call it; their surrender is as before
-function TestMasterTrainerRebelSurrender:test_imperial_corsec_rsf_and_smuggler_pilots_do_not_call_the_burke_reset()
+-- AC-10: Imperial pilots do not call it; their surrender is as before
+-- Superseded by space-master-trainer-privateer: CorSec, RSF and Smuggler pilots now call it (test_master_trainer_privateer_surrender.lua).
+function TestMasterTrainerRebelSurrender:test_imperial_pilots_do_not_call_the_burke_reset()
 	local reset = H.spyOn(M.mts(), "resetBurkeQuests")
 
 	for _, o in ipairs({
 		{ kind = "imperial", squadron = "black_epsilon" }, { kind = "imperial", squadron = "storm" }, { kind = "imperial", squadron = "inquisition" },
-		{ kind = "neutral", squadron = "corsec" }, { kind = "neutral", squadron = "rsf" }, { kind = "neutral", squadron = "smuggler" },
 	}) do
 		local player = M.pilot(o)
 

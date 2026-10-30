@@ -235,21 +235,23 @@ end
 
 -- P17, D-4
 -- AC-5
+-- Superseded by space-master-trainer-privateer (D-13): CorSec and Smuggler pilots now open privateer_ready_corsec / _smuggler (test_master_trainer_privateer_gates.lua);
+-- only a ready neutral pilot with no squadron still opens the curt privateer_ready.
 function TestMasterTrainerRebelGates:test_a_ready_corsec_or_smuggler_pilot_opens_privateer_ready_which_ends_with_no_reply()
-	local t = M.talk(M.pilot({ kind = "neutral" }), { 0 })
+	local t = M.talk(M.pilot({ kind = "neutral", squadron = false }), { 0 })
 
-	lu.assertEquals(M.ids(t), { "privateer_ready" }, "a CorSec pilot with four neutral tier 4 skills sees the curt greeting and nothing more")
+	lu.assertEquals(M.ids(t), { "privateer_ready" }, "a no-squadron neutral pilot with four neutral tier 4 skills sees the curt greeting and nothing more")
 	lu.assertTrue(t[1].stop, "privateer_ready ends the conversation")
-	lu.assertEquals(#t[1].options, 0, "privateer_ready offers no reply (the privateer branch is a later feature)")
-	lu.assertEquals(opens(M.pilot({ kind = "neutral", squadron = "smuggler" })), "privateer_ready", "Smuggler pilot with four neutral tier 4 skills")
+	lu.assertEquals(#t[1].options, 0, "privateer_ready offers no reply")
 	lu.assertEquals(CS.transcriptUnresolved(t), {}, "client strings")
 end
 
 -- P17: a ready privateer is not offered a mission or a reward
 -- AC-5
+-- (space-master-trainer-privateer: the pilot has no squadron, as in the test above)
 function TestMasterTrainerRebelGates:test_a_ready_privateer_gets_nothing_started_or_paid()
 	local spies = M.spyStarts()
-	local player = M.pilot({ kind = "neutral" })
+	local player = M.pilot({ kind = "neutral", squadron = false })
 
 	M.talk(player)
 	lu.assertEquals(M.started(spies), {}, "quests started")
@@ -285,7 +287,7 @@ function TestMasterTrainerRebelGates:test_each_gate_screen_shows_its_appendix_a_
 		{ "m1_won", M.pilot({ mission = { [1] = "won" } }) },
 		{ "m2_brief", M.pilot({ paid = { 1 } }) },
 		{ "intro", M.pilot({}) },
-		{ "privateer_ready", M.pilot({ kind = "neutral" }) },
+		{ "privateer_ready", M.pilot({ kind = "neutral", squadron = false }) }, -- space-master-trainer-privateer: CorSec/Smuggler open their own gate screens now
 	}
 
 	for _, c in ipairs(cases) do

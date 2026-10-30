@@ -157,7 +157,13 @@ function TestMasterTrainerImperialPins:test_the_declann_reset_sits_between_the_s
 	lu.assertNotNil(inquisition, "space_helpers.lua: the Inquisition TODO")
 	lu.assertNotNil(skills, "space_helpers.lua: the skill loop")
 	lu.assertTrue(at > inquisition and at < skills, "space_helpers.lua: the call is after the squadron chain and before the skill loop")
-	lu.assertNil(text:find("resetDeclannQuests", at + #call, true), "space_helpers.lua: the Declann reset is called once")
+	-- space-master-trainer-privateer adds the neutral-pilot block, which calls the reset a second time (after Burke's block, before the skill loop)
+	local second = text:find("resetDeclannQuests", at + #call, true)
+
+	lu.assertNotNil(second, "space_helpers.lua: the privateer block calls the Declann reset too")
+	lu.assertTrue(second < skills, "space_helpers.lua: the privateer block is before the skill loop")
+	lu.assertNotNil(text:sub(at, second):find('pilotProfession == "neutralPilot"', 1, true), "space_helpers.lua: the second call is in the neutralPilot block")
+	lu.assertNil(text:find("resetDeclannQuests", second + 18, true), "space_helpers.lua: the Declann reset is called twice (Imperial pilots, privateers)")
 	lu.assertNotNil(text:sub(inquisition, at):find("\n\tend\n", 1), "space_helpers.lua: the call follows the end of the squadron chain")
 end
 

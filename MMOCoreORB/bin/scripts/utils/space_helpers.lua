@@ -547,6 +547,12 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 		MasterTrainerScreenplay:resetBurkeQuests(pPlayer)
 	end
 
+	-- Master trainers (privateers fly for Grand Admiral Declann or Admiral Burke)
+	if (pilotProfession == "neutralPilot" and MasterTrainerScreenplay ~= nil) then
+		MasterTrainerScreenplay:resetDeclannQuests(pPlayer)
+		MasterTrainerScreenplay:resetBurkeQuests(pPlayer)
+	end
+
 	local pilotSkills = self.pilotSkills[pilotProfession]
 
 	for i = 1, #pilotSkills, 1 do

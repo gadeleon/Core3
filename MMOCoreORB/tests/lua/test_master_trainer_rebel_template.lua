@@ -162,7 +162,16 @@ function TestMasterTrainerRebelTemplate:test_the_template_has_exactly_the_screen
 	end
 
 	table.sort(got)
-	lu.assertEquals(got, M.screenIds(), M.TEMPLATE .. ": screen ids (62, no duplicates)")
+
+	-- space-master-trainer-privateer: Appendix A plus Appendix P-B (28 screens)
+	local want = M.screenIds()
+
+	for _, row in ipairs(require("master_trainer_privateer_screens_data").burke) do
+		want[#want + 1] = row.id
+	end
+
+	table.sort(want)
+	lu.assertEquals(got, want, M.TEMPLATE .. ": screen ids (90, no duplicates)")
 end
 
 -- AC-4, I-6: dialog, end flag, animation per screen
@@ -230,7 +239,8 @@ function TestMasterTrainerRebelTemplate:test_every_dialog_line_carries_the_clien
 		end
 	end
 
-	lu.assertEquals(checked, 62, "leftDialog lines with a comment")
+	-- space-master-trainer-privateer: Appendix A (62) plus Appendix P-B (28)
+	lu.assertEquals(checked, 62 + #require("master_trainer_privateer_screens_data").burke, "leftDialog lines with a comment")
 end
 
 -- Content contract 2: option ids are complete literals, one per static link
@@ -245,6 +255,11 @@ function TestMasterTrainerRebelTemplate:test_every_option_id_is_a_complete_strin
 	local want = 0
 
 	for _, row in ipairs(M.SCREENS) do
+		want = want + 1 + #row.options
+	end
+
+	-- space-master-trainer-privateer: and the rows of Appendix P-B
+	for _, row in ipairs(require("master_trainer_privateer_screens_data").burke) do
 		want = want + 1 + #row.options
 	end
 
@@ -275,8 +290,9 @@ function TestMasterTrainerRebelClientStrings:test_template_and_handler_use_only_
 	lu.assertEquals(CS.unresolved(PATHS), {}, "string ids of the template and handler the pre-NGE client cannot resolve")
 end
 
--- AC-4, I-6: the sources use exactly the 108 lines of Appendix A; the rest is Appendix B
-function TestMasterTrainerRebelClientStrings:test_the_two_sources_use_108_client_lines_and_leave_exactly_appendix_b()
+-- AC-4, I-6
+-- Superseded by space-master-trainer-privateer: with the privateer screens the sources use all 154 client lines and Appendix B is empty.
+function TestMasterTrainerRebelClientStrings:test_the_two_sources_use_all_154_client_lines_and_leave_none_unused()
 	local ids = CS.sids(M.STF)
 	local used = {}
 
@@ -295,7 +311,7 @@ function TestMasterTrainerRebelClientStrings:test_the_two_sources_use_108_client
 	end
 
 	table.sort(unused)
-	lu.assertEquals(unused, M.UNUSED, "client lines of rebel_master_trainer the template and handler never show (Appendix B)")
+	lu.assertEquals(unused, {}, "client lines of rebel_master_trainer the template and handler never show")
 
 	local n = 0
 
@@ -303,7 +319,7 @@ function TestMasterTrainerRebelClientStrings:test_the_two_sources_use_108_client
 		n = n + 1
 	end
 
-	lu.assertEquals(n, 108, "distinct ids used")
+	lu.assertEquals(n, 154, "distinct ids used")
 end
 
 -- AC-4: complete literals only

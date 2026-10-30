@@ -175,7 +175,13 @@ function TestMasterTrainerRebelPins:test_the_burke_reset_sits_after_the_declann_
 	lu.assertNotNil(at, "space_helpers.lua: the Burke reset call")
 	lu.assertNotNil(skills, "space_helpers.lua: the skill loop")
 	lu.assertTrue(at > d and at < skills, "space_helpers.lua: Burke's call is after Declann's and before the skill loop")
-	lu.assertNil(text:find("resetBurkeQuests", at + #call, true), "space_helpers.lua: the Burke reset is called once")
+	-- space-master-trainer-privateer adds the neutral-pilot block, which calls the reset a second time (after Burke's block, before the skill loop)
+	local second = text:find("resetBurkeQuests", at + #call, true)
+
+	lu.assertNotNil(second, "space_helpers.lua: the privateer block calls the Burke reset too")
+	lu.assertTrue(second < skills, "space_helpers.lua: the privateer block is before the skill loop")
+	lu.assertNotNil(text:sub(at, second):find('pilotProfession == "neutralPilot"', 1, true), "space_helpers.lua: the second call is in the neutralPilot block")
+	lu.assertNil(text:find("resetBurkeQuests", second + 16, true), "space_helpers.lua: the Burke reset is called twice (Rebel pilots, privateers)")
 	lu.assertNotNil(text:sub(d, at):find("\n\tend\n", 1, true), "space_helpers.lua: Burke's block follows the end of Declann's block")
 end
 

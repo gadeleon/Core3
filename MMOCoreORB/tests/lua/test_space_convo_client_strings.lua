@@ -82,10 +82,11 @@ TestClientStringFixtures = {}
 -- space-master-trainer-imperial: Declann's conversation/imperial_master_trainer is the 48th file
 -- space-master-trainer-rebel: Burke's conversation/rebel_master_trainer is the 49th file (red until his template and handler exist)
 -- smuggler-tier1-dravis: Dravis' conversation/tatooine_privateer_trainer_1 is the 50th file (red until his template and handler exist)
-function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_50_files_of_appendix_a()
+-- smuggler-transition-karrde: Talon Karrde's conversation/tatooine_privateer_trainer_2 is the 51st file (red until his template and handler exist)
+function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_51_files_of_appendix_a()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 50, "FIXTURE_COUNTS entries")
+	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 51, "FIXTURE_COUNTS entries")
 	lu.assertNil(D.FIXTURE_COUNTS["skl_n"], "FIXTURE_COUNTS entry of skl_n")
 	lu.assertNil(io.open(CS.FIXTURE_DIR .. "skl_n.sids", "r"), "fixture skl_n.sids must be deleted")
 	lu.assertEquals(referenced, sortedKeys(D.FIXTURE_COUNTS), "string files referenced by the space conversation sources")

@@ -525,7 +525,8 @@ end
 for _, name in ipairs(listLua("bin/scripts/screenplays/space")) do
 	-- space-master-mission-quest-type: SpaceDestroyScreenplay is identical to 97a8c4aed7 again (the A-1 hunks are reverted), so no exclusion.
 	-- SpaceMasterDestroyScreenplay.lua is new: base() has no such file, so its pin test skips.
-	if name:match("^Space.*Screenplay%.lua$") then
+	-- smuggler-transition-karrde SC-1: SpacePatrolScreenplay completes a non-PATROL_POINT patrol at its last point (test_smuggler_transition_pins.lua pins that hunk).
+	if name:match("^Space.*Screenplay%.lua$") and name ~= "SpacePatrolScreenplay.lua" then
 		TestCorsecWaypointsFilePins["test_" .. name:gsub("%.lua$", "") .. "_is_byte_identical_to_the_base"] = function()
 			local path = W.SPACE_DIR .. name
 			local text = W.readFile(path)

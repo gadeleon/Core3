@@ -610,6 +610,26 @@ recovery types wait `arrivalDelay` twice (the arrival message, then the ship), w
 `readData` answers 0 for an absent key; use `S.met(player)`.
 Shared edits: `master_trainer_privateer_data.lua` `P.load` also loads `SmugglerSquadronScreenplay`; `FIXTURE_COUNTS` has 50 entries (the `49` pins of five older ratchet tests became `50`).
 
+### Smuggler transition (smuggler-transition-karrde)
+
+Talon Karrde (Mos Eisley) gets his conversation (21 screens, 35 of the 53 lines of `conversation/tatooine_privateer_trainer_2`; the hub branches for tier 2/3/4
+completion are deferred), two quest tables (`patrol_tat_priv_quest_trans`: one point in `space_lok`, splits on completion; `assassinate_tat_priv_quest_trans`: a Corsair
+Behemoth and 3 Man O'Wars) and `SmugglerSquadronScreenplay:hasWonTransQuest` / `resetKarrdeQuests` (called by `SpaceHelpers:surrenderPilot`). Shared change SC-1:
+`SpacePatrolScreenplay` completes a patrol at its last point when its split type is not `PATROL_POINT`.
+`smuggler_transition_data.lua` (not a test file) is the data and player builder: `T.expected()` derives the whole table of each quest from the SWG fixtures (the two
+`tat_priv_quest_trans.tab` copies, the buildout excerpt and the 5000 of the Shamdon script), `T.load()` (collects load errors in `T.loadErrors`), `T.pilot{...}` (every
+`S.pilot` option, a tier-1-complete Smuggler by default; `trans` = `none | attempted | active | child_active | patrol_only | won` sets the journal and the `:attempted` key,
+`rewarded` the `:reward` key Shamdon will write), `T.talk` / `T.drive` / `T.firstScreen`, `T.ROUTES` (the 8 walks from `summons` to `job_details`), `T.state` / `T.setState`.
+`smuggler_transition_screens_data.lua` is Appendix A (21 rows); `smuggler_transition_client_text.lua` the client text of the 55 STF entries (read from `/tre`, read-only).
+`fixtures/script/conversation/tatooine_privateer_trainer_2.java` (Karrde) and `..._shamdon.java` (the 5000; next feature's fixture) are byte copies. Karrde's script uses
+objvar branches (`if (branchId == B && response.equals("R"))`), not the `handleBranch` shape `harness/swgjava.lua` links, and calls `doAnimationAction(self, ...)`:
+`test_smuggler_transition_template.lua` scans both itself (`linksOfScript`, `animationsOf`) and uses `Swgjava` only for the lines, replies and end flags.
+`fixtures/space_zones/buildout/space_lok.smuggler_transition_points.tab` is the two header rows plus the 5 `nav_name` rows (SWG lines 79, 92, 117, 118, 230), CRLF kept.
+`test_smuggler_transition_runtime.lua` counts completions with a wrapper that still runs the original (`countCalls`; `H.spyOn` would not), runs the new patrol, a synthetic
+no-split patrol, and one scenario per existing patrol (all points back to back, exactly one completion through the split), then the whole chain from `job_details`.
+`..._pins.lua` compares with `git show 736ee36a22` and skips once HEAD moves. Shared edits: `FIXTURE_COUNTS` has 51 entries (the `50` pins of five ratchet tests became `51`);
+`test_space_corsec_waypoints_data.lua` excludes `SpacePatrolScreenplay.lua` from its byte-identity pin (SC-1; the transition pins test that hunk).
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

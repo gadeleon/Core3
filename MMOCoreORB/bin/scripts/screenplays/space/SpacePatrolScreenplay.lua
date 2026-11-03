@@ -361,6 +361,12 @@ function SpacePatrolScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)
 	-- Check to see if its the final patrol point
 	if (pointNumber == #self.patrolPoints) then
 		deleteData(playerID .. ":" .. self.className)
+
+		-- A patrol that does not split at a point (PATROL_POINT) completes at its last point
+		if (self.sideQuestSplitType ~= self.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT) then
+			self:completeQuest(pPilot, self.sideQuest and "false" or "true")
+		end
+
 		return 0
 	-- Arrived at first waypoint, send them the initial progress message
 	elseif (playerPointCount == 0) then

@@ -5,7 +5,8 @@ local SpaceHelpers = require("utils.space_helpers")
 	Smuggler Squadron Quests
 
 	Tier 1 (trainer Dravis, Mos Eisley) is ported from SWG-Source datatables/spacequest tatooine_privateer_1..8
-	and tatooine_privateer_tier1_4a (feature smuggler-tier1-dravis). Tiers 2-4 are not ported yet.
+	and tatooine_privateer_tier1_4a (feature smuggler-tier1-dravis). The transition quest tat_priv_quest_trans
+	(trainer Talon Karrde, tatooine_privateer_trainer_2) is ported by feature smuggler-transition-karrde. Tiers 2-4 are not ported yet.
 
 ]]
 
@@ -369,6 +370,71 @@ escort_duty_tatooine_privateer_7 = SpaceDutyEscortScreenplay:new {
 registerScreenPlay("escort_duty_tatooine_privateer_7", true)
 
 --[[
+	Transition -- Talon Karrde (Lok)
+]]
+
+patrol_tat_priv_quest_trans = SpacePatrolScreenplay:new {
+	className = "patrol_tat_priv_quest_trans",
+
+	questName = "tat_priv_quest_trans",
+	questType = "patrol",
+
+	questZone = "space_lok",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "tat_priv_quest_trans",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 2,
+
+	-- Screenplay Specific Variables
+	patrolPoints = {
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_5", x = 4692, z = -604, y = 3823, patrolNumber = 1, radius = 150},
+	},
+}
+
+registerScreenPlay("patrol_tat_priv_quest_trans", true)
+
+assassinate_tat_priv_quest_trans = SpaceAssassinateScreenplay:new {
+	className = "assassinate_tat_priv_quest_trans",
+
+	questType = "assassinate",
+	questName = "tat_priv_quest_trans",
+
+	questZone = "space_lok",
+
+	-- Paid by Shamdon Kree on delivery (SWG tatooine_privateer_trainer_shamdon.java:237), not by Karrde
+	creditReward = 5000,
+
+	parentQuest = "patrol_tat_priv_quest_trans",
+	parentQuestType = "patrol",
+	parentQuestName = "tat_priv_quest_trans",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 5,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "corsair_behemoth_tier2",
+		escorts = {"corsair_manowar_tier1", "corsair_manowar_tier1", "corsair_manowar_tier1"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "corellia_privateer_tier3_recovery_point_7", x = 5133, z = -1919, y = 2853},
+		{patrolPointName = "hostage_recovery_4", x = -6637, z = 2449, y = -2060},
+		{patrolPointName = "lok_imp_escort_duty_7", x = 4763, z = -1727, y = 3174},
+		{patrolPointName = "lok_imp_recovery_4", x = 1411, z = -1579, y = 134},
+	},
+}
+
+registerScreenPlay("assassinate_tat_priv_quest_trans", true)
+
+--[[
 	Smuggler Squadron Screenplay
 ]]
 
@@ -388,6 +454,10 @@ SmugglerSquadronScreenplay = ScreenPlay:new {
 	QUEST_STRING_DUTY_2 = {type = "recovery_duty", name = "tatooine_privateer_5"},
 	QUEST_STRING_DUTY_3 = {type = "destroy_duty", name = "tatooine_privateer_8"},
 	QUEST_STRING_DUTY_4 = {type = "escort_duty", name = "tatooine_privateer_7"},
+
+	-- Transition (Talon Karrde) Quest Strings
+	QUEST_STRING_TRANS = {type = "patrol", name = "tat_priv_quest_trans"},
+	QUEST_STRING_TRANS_SIDE = {type = "assassinate", name = "tat_priv_quest_trans"},
 
 	-- Dravis has told the player to come back with a ship (server memory, as SWG's scriptVar)
 	MET_DRAVIS_KEY = "SmugglerSquadronScreenplay:metDravis",
@@ -449,4 +519,34 @@ function SmugglerSquadronScreenplay:resetDravisQuests(pPlayer)
 	removeQuestStatus(playerID .. self.QUEST_STRING_4.name .. ":reward")
 
 	deleteData(playerID .. self.MET_DRAVIS_KEY)
+end
+
+--[[
+	Transition -- Talon Karrde
+]]
+
+-- SWG hasWonQuestRecursive: both halves of the split quest are complete
+function SmugglerSquadronScreenplay:hasWonTransQuest(pPlayer)
+	if (pPlayer == nil) then
+		return false
+	end
+
+	return SpaceHelpers:isSpaceQuestComplete(pPlayer, self.QUEST_STRING_TRANS.type, self.QUEST_STRING_TRANS.name)
+		and SpaceHelpers:isSpaceQuestComplete(pPlayer, self.QUEST_STRING_TRANS_SIDE.type, self.QUEST_STRING_TRANS_SIDE.name)
+end
+
+function SmugglerSquadronScreenplay:resetKarrdeQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	patrol_tat_priv_quest_trans:resetQuest(pPlayer)
+	assassinate_tat_priv_quest_trans:resetQuest(pPlayer)
+	SpaceHelpers:clearSpaceQuest(pPlayer, self.QUEST_STRING_TRANS.type, self.QUEST_STRING_TRANS.name, false)
+	SpaceHelpers:clearSpaceQuest(pPlayer, self.QUEST_STRING_TRANS_SIDE.type, self.QUEST_STRING_TRANS_SIDE.name, false)
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
+
+	removeQuestStatus(playerID .. self.QUEST_STRING_TRANS.name .. ":attempted")
+	removeQuestStatus(playerID .. self.QUEST_STRING_TRANS.name .. ":reward")
 end

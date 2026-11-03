@@ -20,6 +20,10 @@ SpaceDeliveryScreenplay = SpaceQuestLogic:new {
 
 	questZone = "",
 
+	-- Zone of each leg; "" = questZone. The pickup and the delivery of a quest may be in different zones (delivery.java:77-121)
+	pickupZone = "",
+	deliveryZone = "",
+
 	creditReward = 0,
 	itemReward = {
 		--{species = {}, item = ""},
@@ -113,6 +117,37 @@ function SpaceDeliveryScreenplay:isPickupLeg(playerID)
 	return self.hasPickup and readData(self:dataKey(playerID, "leg")) == 1
 end
 
+-- Zone of leg 1 (pickup) or leg 2 (delivery)
+function SpaceDeliveryScreenplay:getLegZone(leg)
+	if (leg == 1 and self.pickupZone ~= "") then
+		return self.pickupZone
+	end
+
+	if (leg ~= 1 and self.deliveryZone ~= "") then
+		return self.deliveryZone
+	end
+
+	return self.questZone
+end
+
+-- Zone of the first leg: the pickup when the quest has one, else the delivery
+function SpaceDeliveryScreenplay:getFirstLegZone()
+	if (self.hasPickup) then
+		return self:getLegZone(1)
+	end
+
+	return self:getLegZone(2)
+end
+
+-- Zone of the leg the player is on (the delivery leg while no run is set up and for quests without a pickup)
+function SpaceDeliveryScreenplay:getCurrentLegZone(playerID)
+	if (self:isPickupLeg(playerID)) then
+		return self:getLegZone(1)
+	end
+
+	return self:getLegZone(2)
+end
+
 function SpaceDeliveryScreenplay:startQuest(pPlayer, pNpc)
 	if (pPlayer == nil) then
 		Logger:log("Quest: " .. self.questName .. " Type: " .. self.questType .. " -- Failed to startQuest due to pPlayer being nil.", LT_ERROR)
@@ -138,13 +173,13 @@ function SpaceDeliveryScreenplay:startQuest(pPlayer, pNpc)
 	end
 
 	-- Check if the player is in the proper zone already
-	if (getHashCode(SceneObject(pPlayer):getZoneName()) == getHashCode(self.questZone) and not SpaceHelpers:isInYacht(pPlayer)) then
+	if (getHashCode(SceneObject(pPlayer):getZoneName()) == getHashCode(self:getFirstLegZone()) and not SpaceHelpers:isInYacht(pPlayer)) then
 		self:setupRun(pPlayer)
 	end
 end
 
 -- Creates the arrival area and waypoint of a leg. Returns the area, or nil.
-function SpaceDeliveryScreenplay:setupLeg(pPlayer, point, waypointName, detailsKey)
+function SpaceDeliveryScreenplay:setupLeg(pPlayer, point, waypointName, detailsKey, leg)
 	local pGhost = CreatureObject(pPlayer):getPlayerObject()
 
 	if (pGhost == nil) then
@@ -152,7 +187,8 @@ function SpaceDeliveryScreenplay:setupLeg(pPlayer, point, waypointName, detailsK
 	end
 
 	local playerID = SceneObject(pPlayer):getObjectID()
-	local pArea = spawnSpaceActiveArea(self.questZone, "object/space_active_area.iff", point.x, point.z, point.y, self.arrivalRadius)
+	local legZone = self:getLegZone(leg)
+	local pArea = spawnSpaceActiveArea(legZone, "object/space_active_area.iff", point.x, point.z, point.y, self.arrivalRadius)
 
 	if (pArea == nil) then
 		Logger:log(self.className .. ":setupLeg -- pArea is nil.", LT_ERROR)
@@ -163,7 +199,7 @@ function SpaceDeliveryScreenplay:setupLeg(pPlayer, point, waypointName, detailsK
 	writeData(self:dataKey(playerID, "legArrived"), 0)
 	createObserver(ENTEREDAREA, self.className, "notifyEnteredQuestArea", pArea)
 
-	local waypointID = PlayerObject(pGhost):addWaypoint(self.questZone, waypointName, "", point.x, point.z, point.y, WAYPOINT_SPACE, true, true, WAYPOINTQUESTTASK)
+	local waypointID = PlayerObject(pGhost):addWaypoint(legZone, waypointName, "", point.x, point.z, point.y, WAYPOINT_SPACE, true, true, WAYPOINTQUESTTASK)
 	local pWaypoint = getSceneObject(waypointID)
 
 	if (pWaypoint ~= nil) then
@@ -193,9 +229,9 @@ function SpaceDeliveryScreenplay:setupRun(pPlayer)
 	local pArea
 
 	if (self.hasPickup) then
-		pArea = self:setupLeg(pPlayer, self.pickupPoint, "Pickup Rendezvous", "quest_rendezvous1_d")
+		pArea = self:setupLeg(pPlayer, self.pickupPoint, "Pickup Rendezvous", "quest_rendezvous1_d", 1)
 	else
-		pArea = self:setupLeg(pPlayer, self.deliveryPoint, "Delivery Rendezvous", "quest_rendezvous2_d")
+		pArea = self:setupLeg(pPlayer, self.deliveryPoint, "Delivery Rendezvous", "quest_rendezvous2_d", 2)
 	end
 
 	if (pArea == nil) then
@@ -398,17 +434,47 @@ function SpaceDeliveryScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 
 	-- Any zone change once the run is set up (leaving, or the respawn after a ship is destroyed) fails the quest
 	if (readData(self:dataKey(playerID, "runID")) ~= 0) then
+		-- Except the jump from the pickup zone to a different delivery zone on the delivery leg
+		if (self:isZoneCrossing(pPlayer, playerID, zoneNameHash)) then
+			self:clearCrossedWaves(pPlayer, playerID)
+			return 0
+		end
+
 		SpaceHelpers:sendQuestUpdate(pPlayer, "@space/quest:mission_abandoned")
 		self:failQuest(pPlayer, "false")
 		return 0
 	end
 
 	-- ZONESWITCHED fires before the player is moved, so the zone and ship are checked a moment later
-	if (zoneNameHash == getHashCode(self.questZone)) then
+	if (zoneNameHash == getHashCode(self:getFirstLegZone())) then
 		createEvent(1000, self.className, "checkSetup", pPlayer, "")
 	end
 
 	return 0
+end
+
+-- ZONESWITCHED fires before the player moves, so the player's zone is still the one being left
+function SpaceDeliveryScreenplay:isZoneCrossing(pPlayer, playerID, zoneNameHash)
+	local pickupZone = self:getLegZone(1)
+	local deliveryZone = self:getLegZone(2)
+
+	return self.hasPickup and readData(self:dataKey(playerID, "leg")) == 2 and getHashCode(pickupZone) ~= getHashCode(deliveryZone)
+		and zoneNameHash == getHashCode(deliveryZone) and getHashCode(SceneObject(pPlayer):getZoneName()) == getHashCode(pickupZone)
+end
+
+-- The attack ships stay behind in the zone that was left; the next wave comes in the new one
+function SpaceDeliveryScreenplay:clearCrossedWaves(pPlayer, playerID)
+	self:removeAttackShips(pPlayer)
+
+	for i = 1, readData(self:dataKey(playerID, "waveCount")), 1 do
+		deleteData(self:dataKey(playerID, "waveLive:" .. i))
+	end
+
+	-- A wave that was waiting for room has nothing to wait for any more
+	if (readData(self:dataKey(playerID, "wavePending")) == 1) then
+		deleteData(self:dataKey(playerID, "wavePending"))
+		createEvent(self.attackPeriod * 1000, self.className, "launchWave", pPlayer, self:getRunToken(playerID))
+	end
 end
 
 function SpaceDeliveryScreenplay:checkSetup(pPlayer)
@@ -422,7 +488,7 @@ function SpaceDeliveryScreenplay:checkSetup(pPlayer)
 		return
 	end
 
-	if (getHashCode(SceneObject(pPlayer):getZoneName()) == getHashCode(self.questZone) and not SpaceHelpers:isInYacht(pPlayer)) then
+	if (getHashCode(SceneObject(pPlayer):getZoneName()) == getHashCode(self:getFirstLegZone()) and not SpaceHelpers:isInYacht(pPlayer)) then
 		self:setupRun(pPlayer)
 	end
 end
@@ -525,7 +591,7 @@ function SpaceDeliveryScreenplay:warpTransport(pPlayer, args)
 	end
 
 	local pPlayerShip = SceneObject(pPlayer):getRootParent()
-	local pTransport = spawnShipAgent(shipName, self.questZone, x, z, y, pPlayerShip)
+	local pTransport = spawnShipAgent(shipName, self:getCurrentLegZone(playerID), x, z, y, pPlayerShip)
 
 	if (pTransport == nil) then
 		Logger:log(self.className .. ":warpTransport -- failed to spawn " .. shipName .. ".", LT_ERROR)
@@ -662,7 +728,7 @@ function SpaceDeliveryScreenplay:deliveryLegSetup(pPlayer, args)
 		return
 	end
 
-	if (self:setupLeg(pPlayer, self.deliveryPoint, "Delivery Rendezvous", "quest_rendezvous2_d") == nil) then
+	if (self:setupLeg(pPlayer, self.deliveryPoint, "Delivery Rendezvous", "quest_rendezvous2_d", 2) == nil) then
 		return
 	end
 
@@ -753,4 +819,19 @@ function SpaceDeliveryScreenplay:notifyTargetsRemaining(pPlayer, remaining)
 	message:setDI(remaining)
 
 	CreatureObject(pPlayer):sendSystemMessage(message:_getObject())
+end
+
+-- Wave hook: attack ships spawn in the zone the pilot's ship is in, as SWG delivery.java (defined after the mixin, which would replace it)
+function SpaceDeliveryScreenplay:getWaveZone(pPlayer)
+	local pShip = SceneObject(pPlayer):getRootParent()
+
+	if (pShip ~= nil) then
+		local zoneName = SceneObject(pShip):getZoneName()
+
+		if (zoneName ~= nil and zoneName ~= "") then
+			return zoneName
+		end
+	end
+
+	return self.questZone
 end

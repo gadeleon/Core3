@@ -98,6 +98,11 @@ function SpaceAttackWaves:pickList(playerID)
 	return self.attackShipLists[index]
 end
 
+-- Hook: the zone the waves spawn in. Default is the quest zone. Hosts may override it.
+function SpaceAttackWaves:getWaveZone(pPlayer)
+	return self.questZone
+end
+
 function SpaceAttackWaves:spawnWave(pPlayer, pAnchorShip, shipList)
 	local playerID = SceneObject(pPlayer):getObjectID()
 	local waveNumber = readData(self:dataKey(playerID, "waveCount")) + 1
@@ -112,7 +117,7 @@ function SpaceAttackWaves:spawnWave(pPlayer, pAnchorShip, shipList)
 	for i = 1, #shipList, 1 do
 		local x = spawnPoint[1] + getRandomNumber(-self.spawnSpread, self.spawnSpread)
 		local y = spawnPoint[3] + getRandomNumber(-self.spawnSpread, self.spawnSpread)
-		local pShipAgent = spawnShipAgent(shipList[i], self.questZone, x, spawnPoint[2], y, pAnchorShip)
+		local pShipAgent = spawnShipAgent(shipList[i], self:getWaveZone(pPlayer), x, spawnPoint[2], y, pAnchorShip)
 
 		if (pShipAgent ~= nil) then
 			local agentID = SceneObject(pShipAgent):getObjectID()

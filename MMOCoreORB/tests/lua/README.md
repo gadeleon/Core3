@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -582,6 +582,33 @@ to an ending, with the swaps a privateer gets), `P.PATHS` (Appendix D), `P.recor
 `H.converse`, so the handler's swaps are exercised (the static template graph differs from what a privateer sees). The surrender keeps the squadron type (only the tier is
 reset), so after a surrender an RSF pilot still hears `rsf_pilot` at Burke and a Smuggler `smuggler` at Declann. `fixtures/skill/skills.pilot_neutral_master.tab` is rows 1, 2 and 642
 of SWG `skills.tab`. `test_master_trainer_privateer_pins.lua` compares the working tree with `git show c9f84039c6` (skips once HEAD moves).
+
+### Smuggler tier 1 (smuggler-tier1-dravis)
+
+Dravis (Mos Eisley cantina) gets his conversation, 10 quest tables (patrol 1 + surprise attack 1, destroy 2, patrol 3 + escort 3, assassinate 4, destroy duties 6 and 8,
+recovery duty 5, escort duty 7), the Smuggler sign-up (`pilot_neutral_novice`, `SMUGGLER_SQUADRON`, a neutral starter ship), the one-click free-choice tier 1 training
+and the hand-off to Talon Karrde. `SmugglerSquadronScreenplay:resetDravisQuests` is called by `SpaceHelpers:surrenderPilot`.
+`smuggler_tier1_data.lua` (not a test file) is the data and player builder: `S.GLOBALS` / `S.IDENTITY`, `S.expected()` (Appendix B, the whole table of each global, every key),
+`S.POINTS` (19 nav points) / `S.SPAWNERS` (4), `S.TRAIN` (`TRAIN_CHOICES`: skill, topic reply sid, `trained_<x>` screen and its closing sid), `S.load()` (the server's load; load
+errors are collected in `S.loadErrors`, a missing production file is a readable red), `S.pilot{...}` (options listed at the function: `pilot` neutral by default or `false`
+for a non-pilot, `faction`, `squadron`, `ship`, `paid` k missions won and paid, `state` of mission k+1 `won | failed | active | attempted`, `tier` / `skills`, `xp`, `datapad`,
+`duty`, `species`, `pilotTier`, `met` for the Q1 key, `inShip` + `zone` to run a real quest) and `S.talk` / `S.drive` / `S.firstScreen` / `S.met`.
+`smuggler_tier1_screens_data.lua` is Appendix A (81 rows, generated from the spec table: id, dialog sid, animation, ends, static options, `cond` = the handler-set link
+`C-1 .. C-4` or `train`, `tag` = `P` pre-NGE training / `Q1`). `smuggler_tier1_client_text.lua` is the client text of the 152 entries of
+`string/en/conversation/tatooine_privateer_trainer_1.stf` (read from `/tre`, used for the trailing-comment and `%TU` checks).
+The SWG answer key is `fixtures/script/conversation/tatooine_privateer_trainer_1.java` (11,215 lines, byte copy) read with `harness/swgjava.lua`, plus the spec's twin/rejoin
+table: `TestSmugglerT1Oracle2` proves Appendix A against the java and the client (89 original replies agree with the java, every twin/rejoin reply is a client line, the
+81 screens use all 150 client lines). `TestSmugglerT1Oracle` (in `test_smuggler_tier1_data.lua`) derives every mapped table field from the ten `fixtures/spacequest/<type>/`
+copies and requires the spec literals to equal it; both oracle classes need no production code. `fixtures/space_zones/buildout/space_tatooine.smuggler_tier1_points.tab` holds
+the two header rows plus the 19 `nav_name` and 4 `strSpawnerName` rows of the tables (the spec says 18 nav points; its own point table lists 19). Made with
+`{ head -n 2 $B; tail -n +3 $B | grep -F -f patterns.txt; } > ...` as the other extracts.
+Behavior is driven through `H.converse` (choices by reply sid): `test_smuggler_tier1_gates.lua` (gate table G, C-1, helpers, pure gates I-10), `..._signup_missions.lua`
+(sign-up routes, C-2, Q1 `MET_DRAVIS_KEY`, every static link of Appendix A, starts, retries, duties, Declann/Burke downstream), `..._rewards.lua` (pay once, C-3 links),
+`..._training.lua` (one click, hooks, tier 2, tier done), `..._runtime.lua` (the four missions and four duties on the event clock), `..._surrender.lua`, `..._pins.lua`
+(compares with `git show 9e9c50566f`, skips once HEAD moves). The recovery duty test starts its own run: `DR.startRecoveryRun` waits `arrivalDelay + 20` seconds, but Core3's
+recovery types wait `arrivalDelay` twice (the arrival message, then the ship), which is 70 s for this duty.
+`readData` answers 0 for an absent key; use `S.met(player)`.
+Shared edits: `master_trainer_privateer_data.lua` `P.load` also loads `SmugglerSquadronScreenplay`; `FIXTURE_COUNTS` has 50 entries (the `49` pins of five older ratchet tests became `50`).
 
 ### SWG-Source fixtures
 

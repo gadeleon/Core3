@@ -87,6 +87,7 @@ function TestMasterTrainerPrivateerSurrender:test_both_resets_run_after_the_squa
 	local owners = {
 		corsec = { global = "CorsecSquadronScreenplay", method = "resetTuroldineQuests" },
 		rsf = { global = "RsfSquadronScreenplay", method = "resetImlerQuests" },
+		smuggler = { global = "SmugglerSquadronScreenplay", method = "resetDravisQuests" }, -- smuggler-tier1-dravis
 	}
 
 	for _, squadron in ipairs(NEUTRAL_SQUADRONS) do

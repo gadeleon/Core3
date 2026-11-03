@@ -9,6 +9,7 @@
 -- black-epsilon-tier4-nin-gursawe: Nin Gursawe's conversation/corellia_imperial_tier4 (307 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- space-master-trainer-imperial: Grand Admiral Declann's conversation/imperial_master_trainer (204 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- space-master-trainer-rebel: Admiral Burke's conversation/rebel_master_trainer (156 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- smuggler-tier1-dravis: Dravis' conversation/tatooine_privateer_trainer_1 (152 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -63,6 +64,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/station_talus"] = 84,
 	["conversation/station_tatooine"] = 79,
 	["conversation/station_yavin4"] = 177,
+	["conversation/tatooine_privateer_trainer_1"] = 152,
 	["space/space_loot"] = 20,
 }
 

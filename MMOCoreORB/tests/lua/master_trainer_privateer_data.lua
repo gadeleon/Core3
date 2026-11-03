@@ -116,12 +116,24 @@ for _, a in pairs(P.ADMIRALS) do
 	end
 end
 
+local loadErrors = {}
+
+local function try(label, fn)
+	local ok, err = pcall(fn)
+
+	if not ok then
+		loadErrors[#loadErrors + 1] = label .. ": " .. tostring(err)
+	end
+end
+
+-- smuggler-tier1-dravis: surrenderPilot calls SmugglerSquadronScreenplay:resetDravisQuests for a Smuggler, so the server's load must include it
 function P.load()
 	I.load()
 	R.load()
+	try("SmugglerSquadronScreenplay", function() H.loadSquadron("SmugglerSquadronScreenplay") end)
 end
 
-function P.problems() return I.problems() .. R.problems() end
+function P.problems() return I.problems() .. R.problems() .. table.concat(loadErrors, " | ") end
 
 function P.requireConversations(lu)
 	I.requireConversation(lu)

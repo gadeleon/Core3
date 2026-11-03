@@ -823,7 +823,7 @@ function SpaceRecoveryScreenplay:spawnAttackWave(pRecoveryShip)
 		table.insert(newShipIDs, shipIDs[i])
 	end
 
-	local playerFactionHash = SpaceHelpers:getPlayerSpaceFactionHash(pPlayer)
+	local playerFactionHash = SpaceHelpers:getPlayerShipFactionHash(pPlayer)
 
 	if (self.DEBUG_SPACE_RECOVERY) then
 		print(self.className .. ":spawnAttackWave -- Spawn Table Size: " .. #spawnTable .. " Spawn Zone: " .. spawnZone .. " Player Faction Hash: " .. playerFactionHash .. " Active Wave Assignement: " .. totalActiveWaves .. " Attack Ships Group Selection: " .. attackShipsGroup)

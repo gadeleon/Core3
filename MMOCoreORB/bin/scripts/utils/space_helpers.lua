@@ -482,6 +482,8 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 		SmugglerSquadronScreenplay:resetDravisQuests(pPlayer)
 		-- Transition
 		SmugglerSquadronScreenplay:resetKarrdeQuests(pPlayer)
+		-- Tier 2
+		SmugglerSquadronScreenplay:resetShamdonQuests(pPlayer)
 	elseif (pilotSquadron == RSF_SQUADRON) then
 		pilotProfession = "neutralPilot"
 

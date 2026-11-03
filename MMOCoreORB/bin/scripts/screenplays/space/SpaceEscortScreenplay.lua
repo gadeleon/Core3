@@ -600,7 +600,7 @@ function SpaceEscortScreenplay:spawnAttackWave(pEscortAgent)
 	local shipIDs = readStringVectorSharedMemory(playerID .. self.className .. ":attackShips:")
 	deleteStringVectorSharedMemory(playerID .. self.className .. ":attackShips:")
 
-	local playerFactionHash = SpaceHelpers:getPlayerSpaceFactionHash(pPlayer)
+	local playerFactionHash = SpaceHelpers:getPlayerShipFactionHash(pPlayer)
 
 	if (self.DEBUG_SPACE_ESCORT) then
 		print(self.className .. ":spawnAttackWave -- Spawn Table Size: " .. #spawnTable .. " Spawn Zone: " .. spawnZone .. " Player Faction Hash: " .. playerFactionHash)

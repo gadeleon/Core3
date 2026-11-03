@@ -22,6 +22,7 @@ dath_witchblood_clan_punisher_tier3 = ShipAgent:new {
 	color2 = 59,
 	texture = 6,
 	questLoot = "witchblood_baseinfo",
+	cargoString = "hidden_base_info", -- SWG space_mobile cargo witchblood_baseinfo; inspect quest tatooine_privateer_tier3_2_a (feature smuggler-tier3-beissa)
 	appearance = "witchblood_pirate",
 
 	tauntType = "generic",

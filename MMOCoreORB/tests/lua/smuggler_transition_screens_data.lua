@@ -1,6 +1,7 @@
 -- Appendix A of the spec (.claude/work/smuggler-transition-karrde/01-spec.md), one row per screen, copied from the spec table (not read from production).
 -- row = { id, sid (dialog), animation ("" = none), stop (ends), options = { { sid, link, kind } ... } (static template links in order), cond = "", tag = "" }
 -- Every option is static (no conditional links, Conversation flow 2); kind is always "" (an original reply of the client script).
+-- smuggler-tier2-shamdon (Appendix C of its spec): the last four rows are Karrde's K3 hub (21 -> 25 screens), series_done .. see_beissa.
 -- test_smuggler_transition_template.lua proves each row against the SWG script (fixtures/script/conversation/tatooine_privateer_trainer_2.java).
 return {
 	{ id = "not_member", sid = "s_b50f6fd1", animation = "wave_on_dismissing", stop = false, options = { { "s_dc9e436d", "not_member_what", "" }, { "s_ba77b53a", "not_member_work", "" } }, cond = "", tag = "" },
@@ -24,4 +25,8 @@ return {
 	{ id = "nym_hates", sid = "s_9a287fb8", animation = "point_accusingly", stop = false, options = { { "s_db4bd0fd", "job_details", "" } }, cond = "", tag = "" },
 	{ id = "job_details", sid = "s_bb6309e6", animation = "explain", stop = true, options = {  }, cond = "", tag = "" },
 	{ id = "low_profile", sid = "s_1169dea4", animation = "wave_finger_warning", stop = true, options = {  }, cond = "", tag = "" },
+	{ id = "series_done", sid = "s_697e04cf", animation = "tap_foot", stop = false, options = { { "s_98893f74", "jabba_wants_you", "" } }, cond = "", tag = "" },
+	{ id = "jabba_wants_you", sid = "s_fa31c92f", animation = "applause_polite", stop = false, options = { { "s_de9b68cd", "jabba_respects", "" } }, cond = "", tag = "" },
+	{ id = "jabba_respects", sid = "s_7642f4a4", animation = "point_accusingly", stop = false, options = { { "s_805cb6f3", "see_beissa", "" } }, cond = "", tag = "" },
+	{ id = "see_beissa", sid = "s_9504aca1", animation = "nod_head_once", stop = true, options = {  }, cond = "", tag = "" },
 }

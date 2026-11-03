@@ -431,11 +431,11 @@ function TestF6bStaticUnresolved:test_no_space_conversation_source_shows_an_id_t
 	lu.assertEquals(CS.unresolvedByFile(CS.spaceConversationSources()), {}, "unresolvedByFile")
 end
 
--- AC-1: FIXTURE_COUNTS keeps its entries (44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 49 since space-master-trainer-rebel, 50 since smuggler-tier1-dravis, 51 since smuggler-transition-karrde), equal to the string files the sources reference
-function TestF6bStaticUnresolved:test_fixture_counts_still_hold_the_51_referenced_files()
+-- AC-1: FIXTURE_COUNTS keeps its entries (44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 49 since space-master-trainer-rebel, 50 since smuggler-tier1-dravis, 51 since smuggler-transition-karrde, 52 since smuggler-tier2-shamdon), equal to the string files the sources reference
+function TestF6bStaticUnresolved:test_fixture_counts_still_hold_the_52_referenced_files()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 51, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 52, "FIXTURE_COUNTS entries")
 	lu.assertEquals(referenced, sortedKeys(KD.FIXTURE_COUNTS), "string files referenced by the space conversation sources")
 end
 

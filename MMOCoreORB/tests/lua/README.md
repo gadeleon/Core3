@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -629,6 +629,28 @@ objvar branches (`if (branchId == B && response.equals("R"))`), not the `handleB
 no-split patrol, and one scenario per existing patrol (all points back to back, exactly one completion through the split), then the whole chain from `job_details`.
 `..._pins.lua` compares with `git show 736ee36a22` and skips once HEAD moves. Shared edits: `FIXTURE_COUNTS` has 51 entries (the `50` pins of five ratchet tests became `51`);
 `test_space_corsec_waypoints_data.lua` excludes `SpacePatrolScreenplay.lua` from its byte-identity pin (SC-1; the transition pins test that hunk).
+
+### Smuggler tier 2 (smuggler-tier2-shamdon)
+
+Shamdon Kree (Lucky Despot, Mos Eisley) gets his conversation (59 screens, all 100 lines of `conversation/tatooine_privateer_trainer_shamdon`), seven quest tables
+(the assassinates `tatooine_privateer_tier2_1a/2a/3a`, the escort `4a`, and the escort, recovery and destroy duties `tatooine_privateer_tier2_1`), the delivery of Karrde's package
+(5000 credits, `tat_priv_quest_trans:reward`), free-choice one-click training of the four `pilot_neutral_*_02` skills (each skill leads to its own mission: starships 1, droid 2,
+weapons 3, procedures 4), the "bad news" with pilot tier 3 (Q1 = A) and Karrde's K3 hub (4 screens, 21 -> 25). Shared changes: SC-1/SC-2 (the escort and recovery attack waves
+read the ship's faction, `getPlayerShipFactionHash`) and SC-3 (`surrenderPilot` calls `resetShamdonQuests`).
+`smuggler_tier2_data.lua` (not a test file) is the data and player builder: `M.expected()` derives the whole table of each quest from the seven `.tab` copies, the four buildout
+excerpts (`fixtures/space_zones/buildout/space_<zone>.smuggler_tier2_points.tab`: the two header rows plus the `nav_name` rows, CRLF kept, 30 rows) and the Shamdon script
+(`M.shamdonRewards()` parses `giveReward(player, type, name, credits, item)`); `M.load()` (load errors in `M.loadErrors`), `M.pilot{...}` (every `T.pilot` / `S.pilot` option; a
+Smuggler with the transition won and paid by default; `skills2 = {"starships", ...}` or `tier2 = n` the tier 2 skills, `missions = { [n] = "fresh" | "attempted" | "active" | "won" |
+"paid" }` the state of mission n, `all4 = true` a graduate, `duty2` a Shamdon duty running, `gender`, `xp`), `M.talk` / `M.drive` / `M.firstScreen` (Shamdon) and `M.karrdeTalk`,
+`M.setMission` / `M.setState` / `M.state`, `M.useSkillCosts()` (the 60000 XP price from `fixtures/skill/skills.pilot_neutral_02.tab`), `M.snapshot(player)` (the state a pure gate
+must not change), `M.TRAIN` (skill, topic reply, trained screen, mission). `smuggler_tier2_screens_data.lua` is Appendix A (59 rows, generated from the spec table);
+`smuggler_tier2_client_text.lua` the client text of the 102 STF entries (read from `/tre`, read-only, with the same reader as `gen_client_sids.py`).
+`test_smuggler_tier2_faction.lua` parses `FactionManager::getSpaceFactionBySquadron` out of the C++ (`src/server/zone/managers/faction/FactionManager.cpp`, skipped without it) into a
+squadron x tier table, gives the fake ship of each run that faction hash and runs one wave of each escort and recovery quest type; `removedFactionAllies` and `factionEnemies` of every
+attacker must hold it. `test_smuggler_tier2_pins.lua` compares with `git show 4c734ecb54` and skips once HEAD moves; its last class (no remaining caller of
+`getPlayerSpaceFaction*`) is not git-gated. Shared edits: `FIXTURE_COUNTS` has 52 entries; Karrde's oracle (`smuggler_transition_screens_data.lua`, `T.DEFERRED_IDS`) moved from 21/18 to
+25/11; `test_smuggler_tier1_runtime.lua` builds its tier 1 Smuggler's ship with `factionHash = getHashCode("smuggler")` (what C++ `resetShipFaction` gives tier 1);
+`test_space_corsec_waypoints_data.lua` excludes `SpaceEscortScreenplay.lua` and `SpaceRecoveryScreenplay.lua` from its byte-identity pin (SC-1/SC-2).
 
 ### SWG-Source fixtures
 

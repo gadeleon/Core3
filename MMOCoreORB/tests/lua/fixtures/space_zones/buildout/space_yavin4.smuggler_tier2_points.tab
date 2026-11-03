@@ -1,0 +1,6 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.876363	0.369934	0.308442	-0.446805	0.385251	0.807433	3593.11	-1050.03	-3060.99	nav_name|4|imperial_scout_flight_path_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.069379	-0.819456	0.568927	-0.876688	0.222053	0.426744	-3815.02	4509.85	310.97	nav_name|4|naboo_privateer_tier4_leg_3_patrol_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.610280	0.566539	-0.553707	-0.573510	0.166203	0.802161	528.00	5393.30	-6464.00	nav_name|4|naboo_privateer_tier4_rescue_duty_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.439123	-0.350671	0.827165	0.567963	-0.821720	-0.046844	-2365.30	-3545.52	-3776.98	nav_name|4|naboo_privateer_tier4_recovery_duty_egress_4|$|	script.space.quest_logic.quest_nav_point

@@ -1,0 +1,8 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.025251	0.825953	-0.563173	0.268527	-0.537044	-0.799673	1163.17	-2422.94	1950.20	nav_name|4|anchorhead_escort_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.180583	0.983220	0.025864	-0.651145	-0.099801	-0.752363	2634.51	-5262.82	1718.80	nav_name|4|anchorhead_supply_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.150613	0.986655	-0.061870	-0.909002	-0.162818	-0.383674	3931.84	-4960.03	1438.72	nav_name|4|anchorhead_supply_patrol_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.397369	0.913249	0.089855	0.350748	0.060670	0.934503	5843.96	-4271.03	-94.60	nav_name|4|anchorhead_supply_patrol_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.485352	0.824657	-0.290473	0.699454	0.166889	-0.694919	2217.24	-4387.42	2967.98	nav_name|4|bestine_commerce_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.042794	0.908804	0.415023	-0.718753	-0.260528	0.644608	1500.09	-3750.70	4460.28	nav_name|4|bestine_commerce_patrol_2|$|	script.space.quest_logic.quest_nav_point

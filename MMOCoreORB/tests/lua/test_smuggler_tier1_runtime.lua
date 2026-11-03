@@ -48,7 +48,8 @@ local function isComplete(player, q) return SpaceHelpers:isSpaceQuestComplete(pl
 local function isActive(player, q) return SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName) end
 
 local function newPlayer(q)
-	return S.pilot({ zone = q.questZone, inShip = { x = DR.CORNER.x, z = DR.CORNER.z, y = DR.CORNER.y } })
+	-- smuggler-tier2-shamdon SC-1/SC-2: the attack waves read the ship's faction; a tier 1 Smuggler's launched ship carries "smuggler" (C++ resetShipFaction)
+	return S.pilot({ zone = q.questZone, inShip = { x = DR.CORNER.x, z = DR.CORNER.z, y = DR.CORNER.y, factionHash = getHashCode("smuggler") } })
 end
 
 -- A Smuggler in a ship in the quest zone who starts `global` (the quest's own startQuest, as a trainer does)

@@ -36,6 +36,48 @@ not_member_work = ConvoScreen:new {
 }
 talon_karrde_convo_template:addScreen(not_member_work);
 
+series_done = ConvoScreen:new {
+	id = "series_done",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_697e04cf", -- So Shamdon got cold feet and decided to call off the operation. Nothing unusual about that though, you have to have an iron will to mess with Jabba. No matter, we always have work lined up for our pilots.
+	animation = "tap_foot",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_98893f74", "jabba_wants_you"}, -- So what is going to be my next assignment?
+	}
+}
+talon_karrde_convo_template:addScreen(series_done);
+
+jabba_wants_you = ConvoScreen:new {
+	id = "jabba_wants_you",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_fa31c92f", -- Believe it or not, Jabba was so impressed by your work against him that he has asked for your services specifically. You are to speak with Beissa in Jabba's Palace.
+	animation = "applause_polite",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_de9b68cd", "jabba_respects"}, -- Jabba wants me to work for him after what I did?
+	}
+}
+talon_karrde_convo_template:addScreen(jabba_wants_you);
+
+jabba_respects = ConvoScreen:new {
+	id = "jabba_respects",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_7642f4a4", -- What did you do? Kill a bunch of fodder that Jabba really doesn't care about? Jabba respects only one thing and that is strength. You showed backbone and Jabba is more then willing to forgive and forget as long as you do a good job for him.
+	animation = "point_accusingly",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_805cb6f3", "see_beissa"}, -- Alright I will report to Jabba.
+	}
+}
+talon_karrde_convo_template:addScreen(jabba_respects);
+
+see_beissa = ConvoScreen:new {
+	id = "see_beissa",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_9504aca1", -- So you are smarter than you look. I would have really hated to train a new pilot after Jabba's men got through with you, had you refused. Go talk to Beissa in Jabba's Palace. Good luck to you and welcome to the big time.
+	animation = "nod_head_once",
+	stopConversation = "true",
+	options = {}
+}
+talon_karrde_convo_template:addScreen(see_beissa);
+
 trans_failed = ConvoScreen:new {
 	id = "trans_failed",
 	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_983a902c", -- What are you doing here? Didn't I tell you to go to Lok?

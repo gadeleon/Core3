@@ -3,7 +3,7 @@
 --
 -- One test per gate row: a pilot built to satisfy that row and none above it opens on the listed screen. The builder is
 -- smuggler_transition_data.lua T.pilot (a Smuggler with all four tier 1 skills unless told otherwise; trans = the transition state; rewarded = the
--- :reward key Shamdon will write). The rows K2, K3 and K9 are deferred (hub branches) and have no test.
+-- :reward key Shamdon will write). The rows K2 and K9 are deferred (hub branches) and have no test; K3 (tier 2 series done) is tested by test_smuggler_tier2_karrde.lua (smuggler-tier2-shamdon).
 
 local lu = require("luaunit")
 local H = require("harness")

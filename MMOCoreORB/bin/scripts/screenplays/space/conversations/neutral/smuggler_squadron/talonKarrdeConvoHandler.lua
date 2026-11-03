@@ -36,6 +36,11 @@ function talonKarrdeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("not_member")
 	end
 
+	-- Tier 2 series complete (Shamdon's missions and the four tier 2 skills)
+	if (SmugglerSquadronScreenplay:hasCompletedTier2Series(pPlayer)) then
+		return convoTemplate:getScreen("series_done")
+	end
+
 	-- Failed or aborted the transition quest
 	if (self:hasFailedTransQuest(pPlayer)) then
 		return convoTemplate:getScreen("trans_failed")

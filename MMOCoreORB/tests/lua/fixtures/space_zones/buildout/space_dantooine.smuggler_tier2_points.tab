@@ -1,0 +1,15 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.153440	-0.839633	0.521030	-0.549399	0.510754	0.661279	4170.87	-4074.72	-4613.11	nav_name|4|corellia_privateer_tier3_pickup|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.975604	0.143786	0.165897	0.093012	0.955214	-0.280917	-1286.25	-5145.98	130.27	nav_name|4|corellia_imperial_tier4_recoveryduty1_6|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.073119	0.188034	0.979437	0.852147	0.498464	-0.159312	3501.43	-3467.32	-122.21	nav_name|4|tier3_privateer_patrol_02|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.001928	0.055705	-0.998446	-0.524587	-0.849978	-0.048435	3576.94	-3193.21	-232.51	nav_name|4|tier3_privateer_patrol_01|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.326431	0.687886	0.648271	0.927934	-0.363783	-0.081240	4681.08	-250.80	1515.67	nav_name|4|bh_path_bravo_05|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.530081	0.844812	-0.072856	0.833879	0.503772	-0.225520	7512.20	-5651.57	1803.72	nav_name|4|corellia_privateer_tier4_leg_3_space_battle_two|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.966930	0.220027	0.128976	-0.086902	0.191209	-0.977695	3913.46	343.34	1818.42	nav_name|4|bh_path_alpha_01|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.018699	0.624509	-0.780794	0.015194	0.781018	0.624324	-136.74	1280.57	2628.80	nav_name|4|corellia_imperial_tier3_leg_4_assassinate_three_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.003861	0.796077	0.605183	0.999088	-0.022669	0.036194	338.79	682.44	954.87	nav_name|4|bh_path_bravo_03|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.229770	0.816862	0.529096	0.915972	-0.002240	0.401237	2228.31	596.42	1534.36	nav_name|4|bh_path_bravo_04|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.027359	0.939330	0.341921	0.025932	-0.341267	0.939609	-1309.66	-2202.20	2220.66	nav_name|4|corellia_imperial_tier3_leg_4_assassinate_three_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.677302	0.415603	0.607072	-0.735234	-0.352841	-0.578735	2232.43	-500.39	-100.89	nav_name|4|bh_path_alpha_02|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.244827	-0.079076	0.966337	-0.493739	0.847591	0.194451	2615.16	-1486.21	-77.56	nav_name|4|tier3_privateer_patrol_03|$|	script.space.quest_logic.quest_nav_point

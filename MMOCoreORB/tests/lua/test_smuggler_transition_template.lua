@@ -132,9 +132,9 @@ TestSmugglerTransOracle2 = {}
 
 function TestSmugglerTransOracle2:setUp() H.reset() end
 
--- AC-5 (the oracle itself): 21 screens, ids unique, 35 ids used + 18 deferred = the 53 client lines of the file, disjoint (FK-1)
-function TestSmugglerTransOracle2:test_appendix_a_has_21_screens_and_35_used_ids_and_the_18_deferred_ones_complete_the_client_file()
-	lu.assertEquals(#T.SCREENS, 21, "Appendix A rows")
+-- AC-5 (the oracle itself): 25 screens, ids unique, 42 ids used + 11 deferred = the 53 client lines of the file, disjoint (FK-1; 21/35/18 before smuggler-tier2-shamdon ported the K3 hub)
+function TestSmugglerTransOracle2:test_appendix_a_has_25_screens_and_42_used_ids_and_the_11_deferred_ones_complete_the_client_file()
+	lu.assertEquals(#T.SCREENS, 25, "Appendix A rows")
 
 	local seen = {}
 
@@ -145,8 +145,8 @@ function TestSmugglerTransOracle2:test_appendix_a_has_21_screens_and_35_used_ids
 
 	local used = T.usedIds()
 
-	lu.assertEquals(#used, 35, "ids Appendix A uses (21 dialog + 14 reply)")
-	lu.assertEquals(#T.DEFERRED_IDS, 18, "deferred ids")
+	lu.assertEquals(#used, 42, "ids Appendix A uses (25 dialog + 17 reply)")
+	lu.assertEquals(#T.DEFERRED_IDS, 11, "deferred ids")
 
 	local ids = CS.sids(T.STF)
 
@@ -238,7 +238,7 @@ function TestSmugglerTransOracle2:test_every_screen_of_appendix_a_agrees_with_th
 		end
 	end
 
-	lu.assertEquals(replies, 18, "replies checked against the script")
+	lu.assertEquals(replies, 21, "replies checked against the script")
 end
 
 -- AC-5, D-10 (the oracle itself): the NPC animation of every line is the script's doAnimationAction(self, ...) (none for nym_say_no_more, branch 25)
@@ -267,7 +267,7 @@ function TestSmugglerTransOracle2:test_the_deferred_lines_are_the_script_lines_n
 		lu.assertTrue(dialogs[sid] == true or deferred[sid] == true, "script NPC line " .. sid .. " is neither an Appendix A screen nor deferred")
 	end
 
-	for _, sid in ipairs({ "s_74bf2381", "s_697e04cf", "s_2d0c7400" }) do
+	for _, sid in ipairs({ "s_74bf2381", "s_2d0c7400" }) do
 		lu.assertNotNil(GRAPH.nodes[sid], "script entry of the hub line " .. sid)
 		lu.assertNil(dialogs[sid], sid .. " is a hub line and must not be a screen of this feature")
 	end
@@ -305,7 +305,7 @@ function TestSmugglerTransTemplate:test_the_template_has_exactly_the_screens_of_
 	end
 
 	table.sort(got)
-	lu.assertEquals(got, T.screenIds(), T.TEMPLATE .. ": screen ids (21, no duplicates)")
+	lu.assertEquals(got, T.screenIds(), T.TEMPLATE .. ": screen ids (25, no duplicates)")
 end
 
 -- AC-5, I-8: dialog, end flag, animation per screen
@@ -382,8 +382,8 @@ function TestSmugglerTransTemplate:test_every_dialog_line_and_reply_carries_the_
 		end
 	end
 
-	lu.assertEquals(dialogs, 21, "leftDialog lines with a comment")
-	lu.assertEquals(replies, 18, "option lines with a comment")
+	lu.assertEquals(dialogs, 25, "leftDialog lines with a comment")
+	lu.assertEquals(replies, 21, "option lines with a comment")
 end
 
 -- Content contract 3: the first line is a header comment, the file registers the template
@@ -412,8 +412,8 @@ function TestSmugglerTransClientStrings:test_template_and_handler_use_only_ids_t
 	lu.assertEquals(CS.unresolved(PATHS), {}, "string ids of the template and handler the pre-NGE client cannot resolve")
 end
 
--- AC-5, I-8: exactly the 35 used ids, none of the 18 deferred ones
-function TestSmugglerTransClientStrings:test_the_sources_use_exactly_the_35_ids_of_appendix_a_and_none_of_the_deferred_ones()
+-- AC-5, I-8: exactly the 42 used ids, none of the 11 deferred ones
+function TestSmugglerTransClientStrings:test_the_sources_use_exactly_the_42_ids_of_appendix_a_and_none_of_the_deferred_ones()
 	local used = {}
 
 	for _, lit in ipairs(CS.literals(PATHS)) do

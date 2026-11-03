@@ -1,0 +1,9 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.915968	0.313360	0.250615	0.393658	-0.580860	-0.712486	4692.62	-604.47	3823.40	nav_name|4|corellia_privateer_tier3_recovery_point_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.874516	-0.478735	-0.077681	-0.123457	-0.064844	-0.990229	-5082.65	2428.98	-476.42	nav_name|4|hostage_recovery_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.117993	-0.469256	0.875144	-0.817101	-0.454927	-0.354101	4763.30	-1727.55	3174.94	nav_name|4|lok_imp_escort_duty_7|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.516073	0.782726	0.347864	0.657067	0.622301	-0.425445	7109.88	1499.16	1556.27	nav_name|4|imp_ss_3_navpoint_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.604881	0.787415	0.118727	0.780881	0.615740	-0.105308	-5951.41	1295.73	1027.79	nav_name|4|hostage_escort_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.701088	-0.639548	-0.315364	0.229637	-0.216203	0.948959	1779.89	289.89	-1042.65	nav_name|4|lok_imp_recovery_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.174543	-0.970859	0.164217	0.762728	-0.238785	-0.601022	-1493.41	-978.48	1680.01	nav_name|4|lok_imp_pirate_3|$|	script.space.quest_logic.quest_nav_point

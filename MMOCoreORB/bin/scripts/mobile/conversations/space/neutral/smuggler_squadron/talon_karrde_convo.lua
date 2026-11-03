@@ -36,6 +36,69 @@ not_member_work = ConvoScreen:new {
 }
 talon_karrde_convo_template:addScreen(not_member_work);
 
+tier3_done = ConvoScreen:new {
+	id = "tier3_done",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_74bf2381", -- So, Jabba's happy with your performance, I guess, or else he'd have fed you to his rancor, right? Well that's excellent news, and I've got some even better.
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_1c8bddbb", "dathomir_contact"}, -- What is it?
+	}
+}
+talon_karrde_convo_template:addScreen(tier3_done);
+
+dathomir_contact = ConvoScreen:new {
+	id = "dathomir_contact",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_9fcfc09a", -- Ever heard of a place called Dathomir? Sure you have. Well it's a nasty little place with lots of opportunity for us to expand our operations. I've got a contact there you should meet.
+	animation = "point_accusingly",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_800d8ca1", "nirame_who"}, -- Who is it?
+	}
+}
+talon_karrde_convo_template:addScreen(dathomir_contact);
+
+nirame_who = ConvoScreen:new {
+	id = "nirame_who",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_de0bf763", -- He goes by the name of Nirame Sakute, and he's trying to make a name for himself in Nym's organization.
+	animation = "snap_finger2",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_a89cdefd", "nym_hyperspace"}, -- But Nym is on Lok!
+	}
+}
+talon_karrde_convo_template:addScreen(nirame_who);
+
+nym_hyperspace = ConvoScreen:new {
+	id = "nym_hyperspace",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_238f162d", -- Yeah, so? Never heard of hyperspace? Nym's boys go wherever there's an opportunity for profit. Especially at the Empire's expense.
+	animation = "pound_fist_palm",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_415dfb0e", "branching_out"}, -- So what do I do?
+	}
+}
+talon_karrde_convo_template:addScreen(nym_hyperspace);
+
+branching_out = ConvoScreen:new {
+	id = "branching_out",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_a134e447", -- Like I said, we're branching out. Nirame gives us a cut of his profits. He helps Nym's operation in the Dathomir system, and everyone is happy.
+	animation = "shrug_shoulders",
+	stopConversation = "false",
+	options = {
+		{"@conversation/tatooine_privateer_trainer_2:s_e8ed6f9a", "see_nirame"}, -- Ok, I'll go.
+	}
+}
+talon_karrde_convo_template:addScreen(branching_out);
+
+see_nirame = ConvoScreen:new {
+	id = "see_nirame",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_aa257bf2", -- Of course you'll go. Don't think all that work you did for Jabba changed who your boss is. You work for me! Now get to the Trade Outpost on Dathomir and start earning us some credits!
+	animation = "point_to_self",
+	stopConversation = "true",
+	options = {}
+}
+talon_karrde_convo_template:addScreen(see_nirame);
+
 series_done = ConvoScreen:new {
 	id = "series_done",
 	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_697e04cf", -- So Shamdon got cold feet and decided to call off the operation. Nothing unusual about that though, you have to have an iron will to mess with Jabba. No matter, we always have work lined up for our pilots.

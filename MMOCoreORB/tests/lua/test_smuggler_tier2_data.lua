@@ -352,12 +352,14 @@ function TestSmugglerT2Wiring:test_the_seven_globals_sit_after_the_transition_ta
 end
 
 -- AC-1: Content contract 1: the header comment
-function TestSmugglerT2Wiring:test_the_header_comment_names_tier_2_and_leaves_tiers_3_and_4_unported()
+function TestSmugglerT2Wiring:test_the_header_comment_names_tier_2_and_leaves_tier_4_unported()
 	local text = readFile(H.SCRIPTS .. M.SQUADRON_FILE)
 
 	lu.assertNotNil(text:find("smuggler-tier2-shamdon", 1, true), M.SQUADRON_FILE .. ": the header names the feature smuggler-tier2-shamdon")
 	lu.assertNotNil(text:find("tatooine_privateer_trainer_shamdon", 1, true), M.SQUADRON_FILE .. ": the header names tatooine_privateer_trainer_shamdon")
-	lu.assertNotNil(text:find("Tiers 3-4 are not ported yet.", 1, true), M.SQUADRON_FILE .. ": 'Tiers 3-4 are not ported yet.'")
+	-- smuggler-tier3-beissa: the sentence "Tiers 3-4 are not ported yet." became "Tier 4 is not ported yet." (tier 3 is ported)
+	lu.assertNotNil(text:find("Tier 4 is not ported yet.", 1, true), M.SQUADRON_FILE .. ": 'Tier 4 is not ported yet.'")
+	lu.assertNil(text:find("Tiers 3-4 are not ported yet.", 1, true), M.SQUADRON_FILE .. ": the old 'Tiers 3-4 are not ported yet.'")
 	lu.assertNil(text:find("Tiers 2-4 are not ported yet.", 1, true), M.SQUADRON_FILE .. ": the old 'Tiers 2-4 are not ported yet.'")
 end
 
@@ -720,9 +722,9 @@ TestSmugglerT2Coverage = {}
 
 function TestSmugglerT2Coverage:setUp() H.reset() end
 
--- AC-2: the spec's method (§7): the distinct `questName = "..."` strings under bin/scripts (211 before this feature, 216 after), intersected with
--- the distinct names of swgsource_quests.txt. After this feature 200 of the 925 SWG names are in Core3 and 13 of the 44 tatooine_privateer ones (195 and 8 before).
-function TestSmugglerT2Coverage:test_the_five_new_names_raise_the_swg_coverage_to_200_of_925_and_tatooine_privateer_to_13_of_44()
+-- AC-2: the spec's method (§7): the distinct `questName = "..."` strings under bin/scripts (211 before smuggler-tier2-shamdon, 216 after it, 233 after smuggler-tier3-beissa), intersected with
+-- the distinct names of swgsource_quests.txt. After smuggler-tier3-beissa 217 of the 925 SWG names are in Core3 and 30 of the 44 tatooine_privateer ones (200 and 13 after tier 2, 195 and 8 before).
+function TestSmugglerT2Coverage:test_the_swg_coverage_is_217_of_925_and_tatooine_privateer_30_of_44_after_the_tier_3_names()
 	local swg = readFile("/home/swgemu/swg-source-research/swgsource_quests.txt")
 
 	if swg == nil then
@@ -766,7 +768,7 @@ function TestSmugglerT2Coverage:test_the_five_new_names_raise_the_swg_coverage_t
 		end
 	end
 
-	lu.assertEquals(count, 216, "distinct questName strings under bin/scripts (211 before the 5 new names)")
-	lu.assertEquals(matched, 200, "SWG quest names Core3 has a table for")
-	lu.assertEquals(ourTatooine, 13, "tatooine_privateer names Core3 has a table for")
+	lu.assertEquals(count, 233, "distinct questName strings under bin/scripts (216 before the 17 tier 3 names)")
+	lu.assertEquals(matched, 217, "SWG quest names Core3 has a table for")
+	lu.assertEquals(ourTatooine, 30, "tatooine_privateer names Core3 has a table for")
 end

@@ -163,7 +163,7 @@ TestSmugglerT2KarrdeTemplate = {}
 
 TestSmugglerT2KarrdeTemplate.setUp = setUp
 
--- AC-10: Karrde's four new screens match Appendix C, in order after not_member_work
+-- AC-10: Karrde's four new screens match Appendix C, in order (after not_member_work and the six K2 screens of smuggler-tier3-beissa)
 function TestSmugglerT2KarrdeTemplate:test_the_four_k3_screens_match_appendix_c()
 	local byId = {}
 
@@ -198,11 +198,14 @@ function TestSmugglerT2KarrdeTemplate:test_the_four_k3_screens_match_appendix_c(
 		order[s.id] = i
 	end
 
-	lu.assertEquals(order.series_done, order.not_member_work + 1, "series_done follows not_member_work")
+	lu.assertNotNil(order.see_nirame, T.TEMPLATE .. ": missing screen 'see_nirame' (smuggler-tier3-beissa K2 hub)")
+
+	-- smuggler-tier3-beissa put Karrde's six K2 screens (tier3_done .. see_nirame) between not_member_work and series_done
+	lu.assertEquals(order.series_done, order.see_nirame + 1, "series_done follows see_nirame (the six K2 screens sit between not_member_work and series_done)")
 	lu.assertEquals(order.jabba_wants_you, order.series_done + 1, "jabba_wants_you follows series_done")
 	lu.assertEquals(order.jabba_respects, order.jabba_wants_you + 1, "jabba_respects follows jabba_wants_you")
 	lu.assertEquals(order.see_beissa, order.jabba_respects + 1, "see_beissa follows jabba_respects")
-	lu.assertEquals(#template().screens, 25, T.TEMPLATE .. ": screens (21 + 4)")
+	lu.assertEquals(#template().screens, 31, T.TEMPLATE .. ": screens (21 + 4 + 6)")
 	lu.assertEquals(H.conversationProblems(T.TEMPLATE), {}, T.TEMPLATE .. ": dead links, duplicate or missing ids")
 end
 

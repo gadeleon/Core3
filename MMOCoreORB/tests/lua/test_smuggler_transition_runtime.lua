@@ -237,9 +237,9 @@ for _, name in ipairs(H.questGlobals()) do
 	end
 end
 
--- AC-3: the guard itself: 21 existing patrols, all split at an earlier point than the last
-function TestSmugglerTransExistingPatrols:test_there_are_21_existing_patrols_all_splitting_at_a_point_before_the_last()
-	lu.assertEquals(#EXISTING, 21, "patrol quests loaded besides " .. T.PATROL)
+-- AC-3: the guard itself: 23 existing patrols (21 + the two of smuggler-tier3-beissa, tatooine_privateer_tier3_4 and _4_c), all split at an earlier point than the last
+function TestSmugglerTransExistingPatrols:test_there_are_23_existing_patrols_all_splitting_at_a_point_before_the_last()
+	lu.assertEquals(#EXISTING, 23, "patrol quests loaded besides " .. T.PATROL)
 
 	for _, name in ipairs(EXISTING) do
 		local q = rawget(_G, name)

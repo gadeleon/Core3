@@ -652,6 +652,25 @@ attacker must hold it. `test_smuggler_tier2_pins.lua` compares with `git show 4c
 25/11; `test_smuggler_tier1_runtime.lua` builds its tier 1 Smuggler's ship with `factionHash = getHashCode("smuggler")` (what C++ `resetShipFaction` gives tier 1);
 `test_space_corsec_waypoints_data.lua` excludes `SpaceEscortScreenplay.lua` and `SpaceRecoveryScreenplay.lua` from its byte-identity pin (SC-1/SC-2).
 
+### Smuggler tier 3 (smuggler-tier3-beissa)
+
+Beissa's tier 3 (Jabba's Palace; Yavin 4 and Dathomir): 17 quest tables in `SmugglerSquadronScreenplay.lua` for four missions (M1 recovery > 3 assassinates > surprise attack, M2 inspect >
+inspect > survival, M3 delivery_no_pickup x3 > escort, M4 patrol > 2 space battles > patrol > rescue), her conversation `beissa_convo_template` (142 screens, all 247 lines of
+`conversation/tatooine_privateer_tier3`) with the handler `beissaConvoHandler`, one-click free-choice training on the reward screens (the four "Teach me about ..." topics, the answer line
+keyed to the mission), `resetBeissaQuests` (called by the surrender after Shamdon's reset), `cargoString` on the two Witchblood ship templates, and Karrde's K2 hub (6 screens, 25 -> 31).
+`smuggler_tier3_data.lua` (not a test file) is the data and player builder: `B.expected()` derives the whole table of each of the 17 globals from the 17 `.tab` copies
+(`fixtures/spacequest/<type>/tatooine_privateer_tier3_*.tab`), the two buildout excerpts (`fixtures/space_zones/buildout/space_{yavin4,dathomir}.smuggler_tier3_points.tab`: the two header rows
+plus the 12 / 22 `nav_name` and `strSpawnerName` rows, CRLF kept) and Beissa's script (`fixtures/script/conversation/tatooine_privateer_tier3.java`, `B.rewards()` parses `giveReward`);
+`B.pilot{...}` (every `M.pilot` option plus `t2 = false | n`, `missions2`, `t3 = { TRAIN indexes }`, `mission = { [n] = state }`, `paid = { n... }`; states `fresh | attempted | active | won |
+paid | endonly | partial`), `B.talk` / `B.drive` / `B.firstScreen` / `B.karrdeTalk`, `B.TRAIN`, `B.MISSIONS`, `B.START_SCREENS` and the three Data mapping 3 maps (`B.TWIN_REPLY`, `B.TWIN_NPC`,
+`B.REJOIN`) as literal tables. `smuggler_tier3_screens_data.lua` is Appendix A (142 rows, generated from the spec table); `smuggler_tier3_client_text.lua` the client text of the 249 STF entries
+(read from `/tre`, read-only). `test_smuggler_tier3_template.lua` proves Appendix A against the SWG script with the three maps applied (every original reply, end flag and animation), checks that
+every client id is the CRC-32 (MSB first, 0x04C11DB7) of its text (the rule the twin ids rest on), and that template plus handler use exactly the 247 client lines. The runtime tests use the
+cargo of the REAL ship template files and a Hutt-faction ship (`factionHash = getHashCode("hutt")`, a tier 3 Smuggler). `test_smuggler_tier3_pins.lua` compares with `git show ccd4e22433` (skips once
+HEAD moves). Shared edits to existing tests: `FIXTURE_COUNTS` has 53 entries (five asserts 52 -> 53); Karrde's oracle (`smuggler_transition_screens_data.lua`, `T.DEFERRED_IDS`) moved from 25/11
+to 31/1 (template, walks, gates comment); `test_smuggler_tier2_karrde.lua` expects `series_done` after `see_nirame` and 31 screens; `test_smuggler_tier2_data.lua` expects the new header sentence
+and 233 / 217 / 30 in its coverage count; `test_smuggler_transition_runtime.lua` expects 23 existing patrols.
+
 ### SWG-Source fixtures
 
 Conformance tests compare ported Lua against the original SWG-Source data. Copy each file

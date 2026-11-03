@@ -103,6 +103,7 @@ includeFile("space/squadrons/SmugglerSquadronScreenplay.lua")
 includeFile("space/conversations/neutral/smuggler_squadron/dravisConvoHandler.lua")
 includeFile("space/conversations/neutral/smuggler_squadron/talonKarrdeConvoHandler.lua")
 includeFile("space/conversations/neutral/smuggler_squadron/shamdonKreeConvoHandler.lua")
+includeFile("space/conversations/neutral/smuggler_squadron/beissaConvoHandler.lua")
 
 -- RSF Squadron
 includeFile("space/squadrons/RsfSquadronScreenplay.lua")

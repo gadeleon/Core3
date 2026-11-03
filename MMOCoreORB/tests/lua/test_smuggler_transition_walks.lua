@@ -121,7 +121,7 @@ function TestSmugglerTransEdges:test_every_static_reply_leads_to_the_screen_of_a
 		end
 	end
 
-	lu.assertEquals(checked, 21, "static replies walked (18 + the 3 of the K3 hub that smuggler-tier2-shamdon added)")
+	lu.assertEquals(checked, 26, "static replies walked (18 + the 3 of the K3 hub that smuggler-tier2-shamdon added + the 5 of the K2 hub that smuggler-tier3-beissa added)")
 end
 
 -- AC-7: the brush-offs at the top end on their Appendix A screens (not_member and dravis_employee replies)

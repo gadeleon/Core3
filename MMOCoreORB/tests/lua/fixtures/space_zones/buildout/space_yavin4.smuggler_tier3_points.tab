@@ -1,0 +1,14 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.197996	-0.942971	0.267587	-0.299474	0.201744	0.932531	3658.70	-1769.16	-657.17	nav_name|4|tier3_privateer_target_path_01|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.333307	0.418198	0.844995	-0.162968	0.908308	-0.385250	2101.16	2448.33	-2498.10	nav_name|4|vortex_mission_3_recovery_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.682037	-0.384590	-0.622026	0.529102	-0.846664	-0.056668	-2993.32	-3011.27	-3000.36	nav_name|4|tier3_privateer_recover_01|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.294699	-0.901487	0.316976	0.731352	0.000719	0.681999	3754.15	-2923.68	-2325.73	nav_name|4|tier3_privateer_recover_06|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.323659	-0.898135	0.297654	0.936557	-0.348843	-0.034212	2058.46	-2629.23	-3194.60	nav_name|4|tier3_privateer_recover_05|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.175017	-0.939406	0.294765	-0.721738	0.081222	0.687384	2328.36	-1146.38	2498.49	nav_name|4|tier3_privateer_target_path_03|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.197996	-0.942971	0.267587	-0.299474	0.201744	0.932531	3261.22	-1501.43	580.49	nav_name|4|tier3_privateer_target_path_02|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.179631	-0.939939	0.290253	-0.889603	-0.029262	0.455796	570.66	-1145.21	3582.97	nav_name|4|tier3_privateer_target_path_04|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.184376	-0.940162	0.286533	0.951688	-0.243608	-0.186934	178.63	-2047.12	-3034.98	nav_name|4|tier3_privateer_recover_04|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.511228	-0.803845	-0.304104	-0.697348	-0.594790	0.399914	-268.10	-1795.76	-3050.56	nav_name|4|tier3_privateer_recover_02|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.517375	-0.843565	0.143951	0.750390	-0.528071	-0.397563	1481.52	-1414.71	-2051.97	nav_name|4|tier3_privateer_recover_03|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.784057	-0.509269	-0.354825	-0.373472	0.069514	-0.925033	-382.42	1165.78	-674.82	nav_name|4|yavin_imp_recovery_5|$|	script.space.quest_logic.quest_nav_point

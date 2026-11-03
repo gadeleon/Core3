@@ -36,6 +36,11 @@ function talonKarrdeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 		return convoTemplate:getScreen("not_member")
 	end
 
+	-- Tier 3 complete (the four tier 3 skills; SWG doneWithTier3)
+	if (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3)) then
+		return convoTemplate:getScreen("tier3_done")
+	end
+
 	-- Tier 2 series complete (Shamdon's missions and the four tier 2 skills)
 	if (SmugglerSquadronScreenplay:hasCompletedTier2Series(pPlayer)) then
 		return convoTemplate:getScreen("series_done")

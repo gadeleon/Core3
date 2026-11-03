@@ -12,6 +12,7 @@
 -- smuggler-tier1-dravis: Dravis' conversation/tatooine_privateer_trainer_1 (152 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- smuggler-transition-karrde: Talon Karrde's conversation/tatooine_privateer_trainer_2 (55 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- smuggler-tier2-shamdon: Shamdon Kree's conversation/tatooine_privateer_trainer_shamdon (102 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- smuggler-tier3-beissa: Beissa's conversation/tatooine_privateer_tier3 (249 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -66,6 +67,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/station_talus"] = 84,
 	["conversation/station_tatooine"] = 79,
 	["conversation/station_yavin4"] = 177,
+	["conversation/tatooine_privateer_tier3"] = 249,
 	["conversation/tatooine_privateer_trainer_1"] = 152,
 	["conversation/tatooine_privateer_trainer_2"] = 55,
 	["conversation/tatooine_privateer_trainer_shamdon"] = 102,

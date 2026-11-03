@@ -63,6 +63,7 @@ includeFile("conversations/space/neutral/corsec_squadron/turoldine_convo.lua")
 includeFile("conversations/space/neutral/smuggler_squadron/dravis_convo.lua")
 includeFile("conversations/space/neutral/smuggler_squadron/talon_karrde_convo.lua")
 includeFile("conversations/space/neutral/smuggler_squadron/shamdon_kree_convo.lua")
+includeFile("conversations/space/neutral/smuggler_squadron/beissa_convo.lua")
 
 -- RSF Squadron
 includeFile("conversations/space/neutral/rsf_squadron/dinge_convo.lua")

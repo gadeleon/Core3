@@ -78,9 +78,8 @@ function T.screenIds()
 end
 
 -- Appendix A, "Deferred ids (18)": the hub branches no pilot can reach yet; none may appear in this feature's files
--- smuggler-tier2-shamdon ported the 7 K3 ids (s_697e04cf, s_98893f74, s_fa31c92f, s_de9b68cd, s_7642f4a4, s_805cb6f3, s_9504aca1): 11 stay deferred (K2: 10, K9: 1)
+-- smuggler-tier2-shamdon ported the 7 K3 ids; smuggler-tier3-beissa ported the 10 K2 ids (s_74bf2381 .. s_aa257bf2): 1 stays deferred (K9: s_2d0c7400, tier 4)
 T.DEFERRED_IDS = {
-	"s_74bf2381", "s_9fcfc09a", "s_800d8ca1", "s_de0bf763", "s_a89cdefd", "s_238f162d", "s_415dfb0e", "s_a134e447", "s_e8ed6f9a", "s_aa257bf2",
 	"s_2d0c7400",
 }
 

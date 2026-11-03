@@ -2,7 +2,7 @@
 -- Spec: .claude/work/smuggler-tier3-beissa/01-spec.md (AC-10 Karrde half; Content contract 5; Conversation flow 6; Appendix C; D-14; KS F-2).
 --
 -- Karrde's gate order (smuggler-transition-karrde K) gains K2: the four tier 3 skills (SWG doneWithTier3, `SpaceHelpers:hasCompletedPilotTier(p, "neutral", 3)`)
--- sit directly after the not-member gate (K1) and before the tier 2 series gate (K3). No action, no option editing. K9 (tier 4 done) stays deferred.
+-- sit directly after the not-member gate (K1) and before the tier 2 series gate (K3). No action, no option editing. K9 (tier 4 done) was deferred here and is ported by smuggler-tier4-nirame (test_smuggler_tier4_graduation.lua).
 -- The builder is smuggler_tier3_data.lua B.pilot (t3 = the tier 3 skills held, as TRAIN indexes).
 
 local lu = require("luaunit")
@@ -167,14 +167,16 @@ function TestSmugglerT3KarrdeTemplate:test_the_six_k2_screens_match_appendix_c()
 		lu.assertEquals(got, want, "screen '" .. row.id .. "': options")
 	end
 
-	lu.assertEquals(order.tier3_done, order.not_member_work + 1, "tier3_done follows not_member_work")
+	-- smuggler-tier4-nirame put Karrde's K9 screen tier4_done directly before tier3_done
+	lu.assertEquals(order.tier4_done, order.not_member_work + 1, "tier4_done follows not_member_work")
+	lu.assertEquals(order.tier3_done, order.tier4_done + 1, "tier3_done follows tier4_done")
 	lu.assertEquals(order.dathomir_contact, order.tier3_done + 1, "dathomir_contact follows tier3_done")
 	lu.assertEquals(order.nirame_who, order.dathomir_contact + 1, "nirame_who follows dathomir_contact")
 	lu.assertEquals(order.nym_hyperspace, order.nirame_who + 1, "nym_hyperspace follows nirame_who")
 	lu.assertEquals(order.branching_out, order.nym_hyperspace + 1, "branching_out follows nym_hyperspace")
 	lu.assertEquals(order.see_nirame, order.branching_out + 1, "see_nirame follows branching_out")
 	lu.assertTrue(order.series_done > order.see_nirame, "series_done comes after the K2 screens")
-	lu.assertEquals(#template().screens, 31, T.TEMPLATE .. ": screens (25 + 6)")
+	lu.assertEquals(#template().screens, 32, T.TEMPLATE .. ": screens (25 + 6 + tier4_done of smuggler-tier4-nirame)")
 	lu.assertEquals(H.conversationProblems(T.TEMPLATE), {}, T.TEMPLATE .. ": dead links, duplicate or missing ids")
 end
 
@@ -246,8 +248,12 @@ function TestSmugglerT3KarrdeTemplate:test_the_gate_sits_between_the_not_member_
 	lu.assertNotNil(text:find("-- Tier 3 complete (the four tier 3 skills; SWG doneWithTier3)", 1, true), "the gate comment")
 end
 
--- AC-10: K9 stays deferred: Karrde's sources do not use s_2d0c7400 (tier 4)
-function TestSmugglerT3KarrdeTemplate:test_the_tier_4_line_stays_deferred()
-	lu.assertNil(readFile(T.TEMPLATE_FILE):find("s_2d0c7400", 1, true), "talon_karrde_convo.lua must not use s_2d0c7400 (K9)")
-	lu.assertNil(readFile(T.HANDLER_FILE):find("s_2d0c7400", 1, true), "talonKarrdeConvoHandler.lua must not use s_2d0c7400 (K9)")
+-- smuggler-tier4-nirame D-17: K9 (tier 4 done, s_2d0c7400) is ported by that feature; the template uses the line once, in tier4_done, and the K2 gate stays below K9
+-- (the tests of K9 itself are test_smuggler_tier4_graduation.lua)
+function TestSmugglerT3KarrdeTemplate:test_the_tier_4_line_is_the_k9_screen_of_smuggler_tier4_nirame()
+	local source = readFile(T.TEMPLATE_FILE)
+	local _, uses = source:gsub('"@conversation/tatooine_privateer_trainer_2:s_2d0c7400"', "")
+
+	lu.assertEquals(uses, 1, "talon_karrde_convo.lua uses s_2d0c7400 once (the leftDialog of tier4_done)")
+	lu.assertNil(readFile(T.HANDLER_FILE):find("s_2d0c7400", 1, true), "the handler names screens, not string ids")
 end

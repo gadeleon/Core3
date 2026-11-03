@@ -1,4 +1,4 @@
--- Talon Karrde (Smuggler transition, tier 1 -> 2) conversation screens; ported from SWG-Source tatooine_privateer_trainer_2 (STF conversation/tatooine_privateer_trainer_2). Handler: talonKarrdeConvoHandler.lua (feature smuggler-transition-karrde).
+-- Talon Karrde (Smuggler transition quest, tier 1 -> 2, and the tier 2/3/4 done hub) conversation screens; ported from SWG-Source tatooine_privateer_trainer_2 (STF conversation/tatooine_privateer_trainer_2). Handler: talonKarrdeConvoHandler.lua (features smuggler-transition-karrde, smuggler-tier2-shamdon, smuggler-tier3-beissa, smuggler-tier4-nirame).
 talon_karrde_convo_template = ConvoTemplate:new {
 	initialScreen = "",
 	templateType = "Lua",
@@ -35,6 +35,15 @@ not_member_work = ConvoScreen:new {
 	options = {}
 }
 talon_karrde_convo_template:addScreen(not_member_work);
+
+tier4_done = ConvoScreen:new {
+	id = "tier4_done",
+	leftDialog = "@conversation/tatooine_privateer_trainer_2:s_2d0c7400", -- I don't have any work for you here, %NU. But you have enough contacts by now to stay busy. Why don't you see if you can squeeze some coin out Shamdon or Nirame?
+	animation = "slow_down",
+	stopConversation = "true",
+	options = {}
+}
+talon_karrde_convo_template:addScreen(tier4_done);
 
 tier3_done = ConvoScreen:new {
 	id = "tier3_done",

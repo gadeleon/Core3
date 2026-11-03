@@ -22,6 +22,7 @@ valarian_gunship_inspect = ShipAgent:new {
 	color2 = 35,
 	texture = 3,
 	questLoot = "valarian_freight_plans",
+	cargoString = "freight_plans", -- SWG space_mobile cargo valarian_freight_plans; inspect quest tatooine_privateer_tier4_3a (feature smuggler-tier4-nirame)
 	appearance = "valarian",
 
 	tauntType = "generic_low",

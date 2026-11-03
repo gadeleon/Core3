@@ -78,9 +78,9 @@ function T.screenIds()
 end
 
 -- Appendix A, "Deferred ids (18)": the hub branches no pilot can reach yet; none may appear in this feature's files
--- smuggler-tier2-shamdon ported the 7 K3 ids; smuggler-tier3-beissa ported the 10 K2 ids (s_74bf2381 .. s_aa257bf2): 1 stays deferred (K9: s_2d0c7400, tier 4)
+-- smuggler-tier2-shamdon ported the 7 K3 ids; smuggler-tier3-beissa ported the 10 K2 ids (s_74bf2381 .. s_aa257bf2); smuggler-tier4-nirame ported the last one
+-- (K9: s_2d0c7400, tier 4 done): nothing is deferred any more
 T.DEFERRED_IDS = {
-	"s_2d0c7400",
 }
 
 -- the ids this feature uses: the dialog of every screen and every reply of Appendix A (42 since smuggler-tier2-shamdon)

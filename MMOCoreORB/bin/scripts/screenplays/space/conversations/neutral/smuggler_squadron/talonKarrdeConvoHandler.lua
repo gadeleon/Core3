@@ -1,4 +1,4 @@
--- Talon Karrde (Smuggler transition, tier 1 -> 2) conversation handler; ported from SWG-Source tatooine_privateer_trainer_2.java (feature smuggler-transition-karrde).
+-- Talon Karrde (Smuggler transition quest, tier 1 -> 2, and the tier 2/3/4 done hub) conversation handler; ported from SWG-Source tatooine_privateer_trainer_2.java (features smuggler-transition-karrde, smuggler-tier2-shamdon, smuggler-tier3-beissa, smuggler-tier4-nirame).
 local SpaceHelpers = require("utils.space_helpers")
 
 talonKarrdeConvoHandler = conv_handler:new {}
@@ -21,7 +21,7 @@ function talonKarrdeConvoHandler:hasFailedTransQuest(pPlayer)
 	return getQuestStatus(playerID .. "tat_priv_quest_trans:attempted") == "1" and not SmugglerSquadronScreenplay:hasWonTransQuest(pPlayer) and not self:isOnTransQuest(pPlayer)
 end
 
--- Side-effect free; gates in SWG order (the tier 2, 3 and 4 hub branches are ported with their tiers)
+-- Side-effect free; gates in SWG order, except tier 4 done, which sits above tier 3 done so that it can show (feature smuggler-tier4-nirame)
 function talonKarrdeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (pPlayer == nil or pNpc == nil or pConvTemplate == nil) then
 		return nil
@@ -35,6 +35,9 @@ function talonKarrdeConvoHandler:getInitialScreen(pPlayer, pNpc, pConvTemplate)
 	if (not isJtlEnabled() or not SpaceHelpers:isSmugglerSquadron(pPlayer)) then
 		return convoTemplate:getScreen("not_member")
 	end
+
+	-- Tier 4 complete (the four tier 4 skills; SWG doneWithTier4, K:379)
+	if (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 4)) then return convoTemplate:getScreen("tier4_done") end
 
 	-- Tier 3 complete (the four tier 3 skills; SWG doneWithTier3)
 	if (SpaceHelpers:hasCompletedPilotTier(pPlayer, "neutral", 3)) then

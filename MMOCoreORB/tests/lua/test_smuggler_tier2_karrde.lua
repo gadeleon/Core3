@@ -205,7 +205,7 @@ function TestSmugglerT2KarrdeTemplate:test_the_four_k3_screens_match_appendix_c(
 	lu.assertEquals(order.jabba_wants_you, order.series_done + 1, "jabba_wants_you follows series_done")
 	lu.assertEquals(order.jabba_respects, order.jabba_wants_you + 1, "jabba_respects follows jabba_wants_you")
 	lu.assertEquals(order.see_beissa, order.jabba_respects + 1, "see_beissa follows jabba_respects")
-	lu.assertEquals(#template().screens, 31, T.TEMPLATE .. ": screens (21 + 4 + 6)")
+	lu.assertEquals(#template().screens, 32, T.TEMPLATE .. ": screens (21 + 4 + 6 + tier4_done of smuggler-tier4-nirame)")
 	lu.assertEquals(H.conversationProblems(T.TEMPLATE), {}, T.TEMPLATE .. ": dead links, duplicate or missing ids")
 end
 

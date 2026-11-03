@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -752,3 +752,25 @@ count on the player and uses persistent observers. The harness gained what it ta
   (a launch into Kessel plus the 5 s reminder), `S.kill` / `S.fire`, `S.count`, `S.updates` (the `Kills: N of K` texts), `S.observerProblems` (one observer each,
   persistence the integer `1`) and `S.countCompletions`. Group credit is driven the way `ShipManager::notifyDestruction` does: `DESTROYEDSHIP` fired once on each
   member (`test_master_mission_quest_type_group.lua`).
+
+### Smuggler tier 4: Nirame Sakute (smuggler-tier4-nirame)
+
+`smuggler_tier4_data.lua` (not a test file) builds on the Smuggler tier 3 data module and holds the spec's literals and builders for Nirame Sakute (Dathomir Trade
+Outpost, `tatooine_privateer_tier4`). The quest values are derived from the 16 SWG `.tab` copies in `fixtures/spacequest/` (`N.expected()`), the four buildout excerpts
+`fixtures/space_zones/buildout/space_{lok,dantooine,tatooine,endor}.smuggler_tier4_points.tab`, the `space_mobile.valarian_gunship_inspect.tab` and
+`skills.pilot_neutral_04.tab` excerpts, `inspect_cargo/valarian_freight_plans.tab` and the byte copy of `tatooine_privateer_tier4.java` (rewards). `N.pilot{...}` is the
+pilot builder (`t3`, `t4`, `mission = { [n] = state }`, `paid`, `met`, `master`, `duty4`, plus every tier 1 to 3 option); `N.talk` / `N.drive` / `N.karrdeTalk` drive the
+conversation; `N.useSkillCosts()` / `N.recordGrants()` model the 1,000,000 XP purchases.
+
+- `smuggler_tier4_screens_data.lua` is Appendix A (135 screens, generated from the spec table), `smuggler_tier4_client_text.lua` the 247 client entries (read-only
+  `/tre` dump), `fixtures/string/en/conversation/tatooine_privateer_tier4.sids` the id list (`gen_client_sids.py`).
+- `test_smuggler_tier4_delivery.lua` is the first **cross-zone delivery** test: the pilot's zone changes the way the server does it (`H.zoneSwitch` fires
+  `ZONESWITCHED` while `player.zone` is still the old zone, then moves the player); it also proves, delivery by delivery, that the 13 other Core3 deliveries are
+  unaffected by `SpaceDeliveryScreenplay`'s per-leg zones and `SpaceAttackWaves:getWaveZone`. The ghost fake keeps every waypoint (`waypoints` and
+  `removedWaypoints`), which is how the tests read the waypoint planets.
+- `test_smuggler_tier4_graduation.lua` drives the real Burke and Declann handlers (`master_trainer_privateer_data.lua`) with a Nirame graduate, plus Karrde's K9.
+- `test_smuggler_tier4_pins.lua` pins the shared edits against commit `ca59e4bb24` and skips once HEAD moves.
+- Existing tests this feature edited: the 54th `FIXTURE_COUNTS` entry (five files), Karrde's oracle (`smuggler_transition_screens_data.lua`, `smuggler_transition_data.lua`,
+  `test_smuggler_transition_template.lua`, `test_smuggler_transition_gates.lua`, `test_smuggler_tier2_karrde.lua`, `test_smuggler_tier3_karrde.lua`), the header-sentence and
+  registration-count asserts of `test_smuggler_tier2_data.lua` and `test_smuggler_tier3_data.lua`, the coverage count (230 of 925; 43 of 44) and the
+  `SpaceDeliveryScreenplay` exclusion of `test_space_corsec_waypoints_data.lua`.

@@ -1,0 +1,10 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.615952	-0.435638	0.656371	0.609296	0.264697	0.747458	3250.02	5631.97	6980.33	nav_name|4|corellia_privateer_tier3_endor_survival_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.346814	0.590843	0.728440	0.828997	-0.556382	0.056596	2767.94	-2375.52	1667.18	nav_name|4|naboo_privateer_tier4_escortduty_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.862589	0.213383	-0.458703	-0.000152	0.906587	0.422020	2892.55	-1093.92	2859.16	nav_name|4|corellia_rebel_tier3_3_a_spyship_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.290350	0.938457	-0.187070	-0.332523	-0.282257	-0.899866	4748.65	-5538.26	-2685.79	nav_name|4|naboo_privateer_tier4_escortduty_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.057699	0.847240	-0.528067	-0.406542	0.463164	0.787529	-1237.30	-4971.13	-7380.58	nav_name|4|naboo_privateer_tier4_escortduty_7|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.346814	0.590843	0.728440	0.828997	-0.556382	0.056596	6198.42	-4677.94	1901.35	nav_name|4|naboo_privateer_tier4_escortduty_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.122212	-0.991898	0.034678	-0.902629	-0.125606	-0.411684	-5905.57	486.80	-2508.06	nav_name|4|corellia_privateer_tier3_assassin_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.235933	-0.966709	0.099046	-0.802113	-0.251267	-0.541737	1503.16	856.57	-4460.98	nav_name|4|corellia_privateer_tier3_assassin_2|$|	script.space.quest_logic.quest_nav_point

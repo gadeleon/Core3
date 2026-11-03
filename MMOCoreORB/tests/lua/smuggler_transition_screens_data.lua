@@ -3,6 +3,7 @@
 -- Every option is static (no conditional links, Conversation flow 2); kind is always "" (an original reply of the client script).
 -- smuggler-tier2-shamdon (Appendix C of its spec): the last four rows are Karrde's K3 hub (21 -> 25 screens), series_done .. see_beissa.
 -- smuggler-tier3-beissa (Appendix C of its spec): six rows tier3_done .. see_nirame (before series_done) are Karrde's K2 hub (25 -> 31 screens).
+-- smuggler-tier4-nirame (Appendix C of its spec): the row tier4_done (K9, s_2d0c7400) sits directly before tier3_done (31 -> 32 screens); it ends and has no reply.
 -- test_smuggler_transition_template.lua proves each row against the SWG script (fixtures/script/conversation/tatooine_privateer_trainer_2.java).
 return {
 	{ id = "not_member", sid = "s_b50f6fd1", animation = "wave_on_dismissing", stop = false, options = { { "s_dc9e436d", "not_member_what", "" }, { "s_ba77b53a", "not_member_work", "" } }, cond = "", tag = "" },
@@ -26,6 +27,7 @@ return {
 	{ id = "nym_hates", sid = "s_9a287fb8", animation = "point_accusingly", stop = false, options = { { "s_db4bd0fd", "job_details", "" } }, cond = "", tag = "" },
 	{ id = "job_details", sid = "s_bb6309e6", animation = "explain", stop = true, options = {  }, cond = "", tag = "" },
 	{ id = "low_profile", sid = "s_1169dea4", animation = "wave_finger_warning", stop = true, options = {  }, cond = "", tag = "" },
+	{ id = "tier4_done", sid = "s_2d0c7400", animation = "slow_down", stop = true, options = {  }, cond = "", tag = "" },
 	{ id = "tier3_done", sid = "s_74bf2381", animation = "", stop = false, options = { { "s_1c8bddbb", "dathomir_contact", "" } }, cond = "", tag = "" },
 	{ id = "dathomir_contact", sid = "s_9fcfc09a", animation = "point_accusingly", stop = false, options = { { "s_800d8ca1", "nirame_who", "" } }, cond = "", tag = "" },
 	{ id = "nirame_who", sid = "s_de0bf763", animation = "snap_finger2", stop = false, options = { { "s_a89cdefd", "nym_hyperspace", "" } }, cond = "", tag = "" },

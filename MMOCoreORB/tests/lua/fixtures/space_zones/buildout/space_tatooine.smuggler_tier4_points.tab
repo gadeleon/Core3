@@ -1,0 +1,4 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.089702	0.993143	-0.074970	-0.489150	-0.021639	-0.871931	-1065.99	822.31	418.04	nav_name|4|privateer_security_escort_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.180412	0.708723	-0.682029	-0.221200	-0.704880	-0.673955	-2096.48	-1446.66	-2635.92	nav_name|4|privateer_security_escort_4|$|	script.space.quest_logic.quest_nav_point

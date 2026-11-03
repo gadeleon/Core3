@@ -345,7 +345,7 @@ function TestSmugglerT3Wiring:test_the_squadron_file_registers_the_17_quests_wit
 
 	local text = readFile(H.SCRIPTS .. B.SQUADRON_FILE)
 
-	lu.assertEquals(countMatches(text, 'registerScreenPlay%('), 37, B.SQUADRON_FILE .. ": registerScreenPlay calls (20 before: 19 quests and the squadron object; + 17)")
+	lu.assertEquals(countMatches(text, 'registerScreenPlay%('), 53, B.SQUADRON_FILE .. ": registerScreenPlay calls (20 before: 19 quests and the squadron object; + 17 tier 3; + 16 tier 4 by smuggler-tier4-nirame)")
 	lu.assertNotNil(H.registered("SmugglerSquadronScreenplay"), "SmugglerSquadronScreenplay is still registered")
 	lu.assertNotNil(H.registered("assassinate_tatooine_privateer_tier2_1a"), "a tier 2 table is still registered")
 	lu.assertNotNil(H.registered("patrol_tat_priv_quest_trans"), "a transition table is still registered")
@@ -383,12 +383,14 @@ function TestSmugglerT3Wiring:test_the_17_globals_sit_after_the_tier_2_tables_an
 end
 
 -- AC-1: Content contract 1: the header comment
-function TestSmugglerT3Wiring:test_the_header_comment_names_tier_3_and_leaves_tier_4_unported()
+function TestSmugglerT3Wiring:test_the_header_comment_names_tier_3_and_tier_4_as_ported()
 	local text = readFile(H.SCRIPTS .. B.SQUADRON_FILE)
 
 	lu.assertNotNil(text:find("smuggler-tier3-beissa", 1, true), B.SQUADRON_FILE .. ": the header names the feature smuggler-tier3-beissa")
 	lu.assertNotNil(text:find("tatooine_privateer_tier3", 1, true), B.SQUADRON_FILE .. ": the header names tatooine_privateer_tier3")
-	lu.assertNotNil(text:find("Tier 4 is not ported yet.", 1, true), B.SQUADRON_FILE .. ": 'Tier 4 is not ported yet.'")
+	-- smuggler-tier4-nirame: the sentence "Tier 4 is not ported yet." became "Tier 4 (trainer Nirame Sakute, tatooine_privateer_tier4) is ported by feature smuggler-tier4-nirame."
+	lu.assertNil(text:find("Tier 4 is not ported yet.", 1, true), B.SQUADRON_FILE .. ": the old 'Tier 4 is not ported yet.'")
+	lu.assertNotNil(text:find("Tier 4 (trainer Nirame Sakute, tatooine_privateer_tier4) is ported by feature smuggler-tier4-nirame.", 1, true), B.SQUADRON_FILE .. ": the tier 4 header sentence")
 	lu.assertNil(text:find("Tiers 3-4 are not ported yet.", 1, true), B.SQUADRON_FILE .. ": the old 'Tiers 3-4 are not ported yet.'")
 end
 
@@ -853,7 +855,7 @@ function TestSmugglerT3Cargo:test_the_loaded_templates_have_the_cargo_strings()
 end
 
 ---------------------------------------------------------------------------------------------
--- Coverage of the SWG-Source quest names (spec "Coverage"): asserted by test_smuggler_tier2_data.lua (217 of 925; tatooine_privateer 30 of 44)
+-- Coverage of the SWG-Source quest names (spec "Coverage"): asserted by test_smuggler_tier2_data.lua (230 of 925; tatooine_privateer 43 of 44 since smuggler-tier4-nirame)
 ---------------------------------------------------------------------------------------------
 
 TestSmugglerT3Coverage = {}

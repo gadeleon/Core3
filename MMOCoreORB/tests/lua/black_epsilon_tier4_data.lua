@@ -608,7 +608,7 @@ function T.load()
 		rawset(_G, "FACTIONREBEL", getHashCode("rebel"))
 	end
 
-	for _, name in ipairs({ "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay", "BlackEpsilonSquadronScreenplay" }) do
+	for _, name in ipairs({ "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay", "BlackEpsilonSquadronScreenplay", "InquisitionSquadronScreenplay" }) do
 		try(name, function() H.loadSquadron(name) end)
 	end
 

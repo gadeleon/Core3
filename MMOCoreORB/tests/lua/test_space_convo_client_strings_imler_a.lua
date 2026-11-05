@@ -327,11 +327,11 @@ function TestF6aImlerStaticUnresolved:test_the_unresolved_ids_of_all_space_conve
 	lu.assertEquals(CS.unresolvedByFile(CS.spaceConversationSources()), KD.KNOWN_GAPS, "unresolvedByFile versus KNOWN_GAPS")
 end
 
--- AC-1: FIXTURE_COUNTS keeps its entries (44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 49 since space-master-trainer-rebel, 50 since smuggler-tier1-dravis, 51 since smuggler-transition-karrde, 52 since smuggler-tier2-shamdon, 53 since smuggler-tier3-beissa, 54 since smuggler-tier4-nirame) (corellia_privateer_tier4 stays: Turoldine still references it)
-function TestF6aImlerStaticUnresolved:test_fixture_counts_still_hold_the_54_referenced_files_including_corellia_privateer_tier4()
+-- AC-1: FIXTURE_COUNTS keeps its entries (44 since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 49 since space-master-trainer-rebel, 50 since smuggler-tier1-dravis, 51 since smuggler-transition-karrde, 52 since smuggler-tier2-shamdon, 53 since smuggler-tier3-beissa, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko) (corellia_privateer_tier4 stays: Turoldine still references it)
+function TestF6aImlerStaticUnresolved:test_fixture_counts_still_hold_the_55_referenced_files_including_corellia_privateer_tier4()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 54, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 55, "FIXTURE_COUNTS entries")
 	lu.assertEquals(referenced, sortedKeys(KD.FIXTURE_COUNTS), "string files referenced by the space conversation sources")
 	lu.assertNotNil(KD.FIXTURE_COUNTS["conversation/corellia_privateer_tier4"], "FIXTURE_COUNTS entry of Turoldine's file")
 end

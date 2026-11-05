@@ -855,7 +855,7 @@ function TestSmugglerT3Cargo:test_the_loaded_templates_have_the_cargo_strings()
 end
 
 ---------------------------------------------------------------------------------------------
--- Coverage of the SWG-Source quest names (spec "Coverage"): asserted by test_smuggler_tier2_data.lua (230 of 925; tatooine_privateer 43 of 44 since smuggler-tier4-nirame)
+-- Coverage of the SWG-Source quest names (spec "Coverage"): asserted by test_smuggler_tier2_data.lua (236 of 925 since inquisition-tier1-barn-sinkko; tatooine_privateer 43 of 44 since smuggler-tier4-nirame)
 ---------------------------------------------------------------------------------------------
 
 TestSmugglerT3Coverage = {}

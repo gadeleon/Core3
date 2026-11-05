@@ -150,11 +150,11 @@ function TestMasterTrainerImperialPins:test_the_declann_reset_sits_between_the_s
 	local text = readSource("bin/scripts/utils/space_helpers.lua")
 	local call = "MasterTrainerScreenplay:resetDeclannQuests(pPlayer)"
 	local at = text:find(call, 1, true)
-	local inquisition = text:find("-- TODO: Add InquisitionSquadronScreenplay reset functions", 1, true)
+	local inquisition = text:find("InquisitionSquadronScreenplay:resetBarnQuests(pPlayer)", 1, true)
 	local skills = text:find("local pilotSkills = self.pilotSkills[pilotProfession]", 1, true)
 
 	lu.assertNotNil(at, "space_helpers.lua: the Declann reset call")
-	lu.assertNotNil(inquisition, "space_helpers.lua: the Inquisition TODO")
+	lu.assertNotNil(inquisition, "space_helpers.lua: the Inquisition reset call (inquisition-tier1-barn-sinkko; it replaced the TODO)")
 	lu.assertNotNil(skills, "space_helpers.lua: the skill loop")
 	lu.assertTrue(at > inquisition and at < skills, "space_helpers.lua: the call is after the squadron chain and before the skill loop")
 	-- space-master-trainer-privateer adds the neutral-pilot block, which calls the reset a second time (after Burke's block, before the skill loop)

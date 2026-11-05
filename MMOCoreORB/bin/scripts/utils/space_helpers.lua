@@ -543,7 +543,8 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 	elseif (pilotSquadron == INQUISITION_SQUADRON) then
 		pilotProfession = "imperialPilot"
 
-		-- TODO: Add InquisitionSquadronScreenplay reset functions
+		-- Tier 1
+		InquisitionSquadronScreenplay:resetBarnQuests(pPlayer)
 	end
 
 	-- Master trainer (Grand Admiral Declann serves every Imperial squadron)

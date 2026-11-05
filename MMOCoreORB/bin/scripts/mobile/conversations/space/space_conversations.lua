@@ -103,4 +103,5 @@ includeFile("conversations/space/imperial/black_epsilon_squadron/prisk_convo.lua
 includeFile("conversations/space/imperial/black_epsilon_squadron/haymir_convo.lua")
 includeFile("conversations/space/imperial/black_epsilon_squadron/nin_gursawe_convo.lua")
 -- Imperial Inquisition Squadron
+includeFile("conversations/space/imperial/inquisition_squadron/barn_sinkko_convo.lua")
 -- Storm Squadron

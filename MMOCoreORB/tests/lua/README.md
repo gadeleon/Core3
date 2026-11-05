@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -774,3 +774,17 @@ conversation; `N.useSkillCosts()` / `N.recordGrants()` model the 1,000,000 XP pu
   `test_smuggler_transition_template.lua`, `test_smuggler_transition_gates.lua`, `test_smuggler_tier2_karrde.lua`, `test_smuggler_tier3_karrde.lua`), the header-sentence and
   registration-count asserts of `test_smuggler_tier2_data.lua` and `test_smuggler_tier3_data.lua`, the coverage count (230 of 925; 43 of 44) and the
   `SpaceDeliveryScreenplay` exclusion of `test_space_corsec_waypoints_data.lua`.
+
+### Inquisition tier 1: Lt. Barn Sinkko (inquisition-tier1-barn-sinkko)
+
+Answer key: SWG `naboo_imperial_trainer_1.java` (`fixtures/script/conversation/`, byte copy) plus the spec's Data mapping 3 (twins, rejoins, drops, pre-NGE-only lines) and the
+eight `fixtures/spacequest/<type>/naboo_imperial_*.tab` byte copies. Barn's template is `barn_sinkko_convo_template`, his handler the global `barnSinkkoConvoHandler`.
+
+- `inquisition_tier1_data.lua` (not a test file): the 8 globals, `I.expected()` (Appendix B, every key), the 15 points and 5 spawners, `I.TRAIN`, the squadron constants
+  (`SERIES_COMPLETE_KEY`, `INQUISITORIAL_AGENT_KEY`, the `naboo_imperial_2:aborted` marker), the load helper (`I.load()` skips a squadron another loader already ran) and the
+  player builder `I.pilot{pilot, faction, squadron, standing, ship, paid = k, state = "won" | "failed" | "active" | "aborted", tier, xp, series, agent, aborted, datapad, duty, species, inShip}`.
+  `I.talk` / `I.drive` / `I.firstScreen` drive `H.converse` from the first screen or from a given screen.
+- `inquisition_tier1_screens_data.lua`: Appendix A (190 rows) generated from the spec table by a scratch script; `inquisition_tier1_client_text.lua`: id -> English text of the 325-id client table (read-only from `/tre`), used for the trailing comments.
+- `fixtures/string/en/conversation/naboo_imperial_trainer_1.sids` (325 ids, generated) and `fixtures/space_zones/buildout/space_naboo.inquisition_tier1_points.tab` (the two header rows plus the 15 nav points and 5 spawners, `head -n 2` and `grep -F`).
+- Mission 3 is a patrol that splits into the escort; both are "won" only together (`I.CHAINS`), the patrol head pays. Mission 2's abort marker is a per-table `abortQuest` override (the data test allows exactly that one function).
+- The shared surrender tests load the Inquisition squadron (`black_epsilon_tier4_data.lua`), and the imperial surrender test spies `resetBarnQuests`.

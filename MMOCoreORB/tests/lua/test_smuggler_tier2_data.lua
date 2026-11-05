@@ -724,10 +724,10 @@ TestSmugglerT2Coverage = {}
 
 function TestSmugglerT2Coverage:setUp() H.reset() end
 
--- AC-2: the spec's method (§7): the distinct `questName = "..."` strings under bin/scripts (211 before smuggler-tier2-shamdon, 216 after it, 233 after smuggler-tier3-beissa, 246 after smuggler-tier4-nirame), intersected with
--- the distinct names of swgsource_quests.txt. After smuggler-tier4-nirame 230 of the 925 SWG names are in Core3 and 43 of the 44 tatooine_privateer ones (217 and 30 after tier 3,
+-- AC-2: the spec's method (§7): the distinct `questName = "..."` strings under bin/scripts (211 before smuggler-tier2-shamdon, 216 after it, 233 after smuggler-tier3-beissa, 246 after smuggler-tier4-nirame, 252 after inquisition-tier1-barn-sinkko), intersected with
+-- the distinct names of swgsource_quests.txt. After inquisition-tier1-barn-sinkko 236 of the 925 SWG names are in Core3 (the 6 naboo_imperial names) and 43 of the 44 tatooine_privateer ones (230 after smuggler-tier4-nirame; 217 and 30 after tier 3,
 -- 200 and 13 after tier 2, 195 and 8 before); the one left is tatooine_privateer_tier3_3b (unported by smuggler-tier3-beissa D-16).
-function TestSmugglerT2Coverage:test_the_swg_coverage_is_230_of_925_and_tatooine_privateer_43_of_44_after_the_tier_4_names()
+function TestSmugglerT2Coverage:test_the_swg_coverage_is_236_of_925_and_tatooine_privateer_43_of_44_after_the_inquisition_tier_1_names()
 	local swg = readFile("/home/swgemu/swg-source-research/swgsource_quests.txt")
 
 	if swg == nil then
@@ -771,7 +771,7 @@ function TestSmugglerT2Coverage:test_the_swg_coverage_is_230_of_925_and_tatooine
 		end
 	end
 
-	lu.assertEquals(count, 246, "distinct questName strings under bin/scripts (233 before the 13 tier 4 names)")
-	lu.assertEquals(matched, 230, "SWG quest names Core3 has a table for")
+	lu.assertEquals(count, 252, "distinct questName strings under bin/scripts (246 before the 6 naboo_imperial names of inquisition-tier1-barn-sinkko)")
+	lu.assertEquals(matched, 236, "SWG quest names Core3 has a table for")
 	lu.assertEquals(ourTatooine, 43, "tatooine_privateer names Core3 has a table for")
 end

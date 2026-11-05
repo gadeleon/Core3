@@ -128,6 +128,9 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 		H.spyOn(BlackEpsilonSquadronScreenplay, name, function() order[#order + 1] = name end)
 	end
 
+	-- inquisition-tier1-barn-sinkko: Inquisition pilots now run Barn's reset before Declann's
+	H.spyOn(InquisitionSquadronScreenplay, "resetBarnQuests", function() order[#order + 1] = "resetBarnQuests" end)
+
 	local reset = H.spyOn(M.mts(), "resetDeclannQuests", function() order[#order + 1] = "declann" end)
 
 	local player = M.pilot({ squadron = "black_epsilon" })
@@ -146,7 +149,12 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 		SpaceHelpers:surrenderPilot(p)
 		lu.assertEquals(#reset, before + 1, squadron .. ": resetDeclannQuests calls")
 		lu.assertEquals(reset[#reset].args[1], p, squadron .. ": the reset gets the pilot")
-		lu.assertEquals(order, { "declann" }, squadron .. ": no other reset runs (Storm and Inquisition have none yet)")
+
+		if squadron == "inquisition" then
+			lu.assertEquals(order, { "resetBarnQuests", "declann" }, squadron .. ": Barn's reset runs first, then Declann's (Storm has none yet)")
+		else
+			lu.assertEquals(order, { "declann" }, squadron .. ": no other reset runs (Storm has none yet)")
+		end
 	end
 end
 

@@ -14,6 +14,7 @@
 -- smuggler-tier2-shamdon: Shamdon Kree's conversation/tatooine_privateer_trainer_shamdon (102 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- smuggler-tier3-beissa: Beissa's conversation/tatooine_privateer_tier3 (249 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- smuggler-tier4-nirame: Nirame Sakute's conversation/tatooine_privateer_tier4 (247 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- inquisition-tier1-barn-sinkko: Lt. Barn Sinkko's conversation/naboo_imperial_trainer_1 (325 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -48,6 +49,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/imperial_master_trainer"] = 204,
 	["conversation/lok_rebel_trainer_2"] = 329,
 	["conversation/lok_rebel_trainer_2_smuggler"] = 40,
+	["conversation/naboo_imperial_trainer_1"] = 325,
 	["conversation/naboo_privateer_tier3"] = 216,
 	["conversation/naboo_privateer_tier4"] = 260,
 	["conversation/naboo_privateer_trainer_1"] = 103,

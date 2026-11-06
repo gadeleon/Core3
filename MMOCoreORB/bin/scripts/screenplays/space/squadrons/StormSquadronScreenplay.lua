@@ -500,6 +500,233 @@ escort_duty_lok_imperial_ss_1c = SpaceDutyEscortScreenplay:new {
 registerScreenPlay("escort_duty_lok_imperial_ss_1c", true)
 
 --[[
+	Tier 2 -- Field Commander Alozen (Yavin 4, Imperial outpost; Yavin system)
+	Ported from SWG-Source imperial_ss_4..6 (inspect, escort, recovery) and lok_imperial_ss_2a..2c (destroy_duty, recovery_duty, escort_duty); feature storm-tier2-alozen
+]]
+
+-- Mission 1: Inspect (the Rebel agent; SWG rolls one of three cargo rows per spawn, Core3 always carries the activity log)
+inspect_imperial_ss_4 = SpaceInspectScreenplay:new {
+	className = "inspect_imperial_ss_4",
+
+	questName = "imperial_ss_4",
+	questType = "inspect",
+
+	questZone = "space_yavin4",
+
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_imperial_rendili_dual_projector.iff"},
+	},
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	shipList = {"rebel_agent_tier3"},
+	validSpawns = {
+		{spawnName = "tatooine_imperial_tier2_inspect_rebagent", x = -3200, z = -3000, y = 6000},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "yavin_activity_log",
+}
+
+registerScreenPlay("inspect_imperial_ss_4", true)
+
+-- Mission 2: Escort (the scan freighter)
+escort_imperial_ss_5 = SpaceEscortScreenplay:new {
+	className = "escort_imperial_ss_5",
+
+	questName = "imperial_ss_5",
+	questType = "escort",
+
+	questZone = "space_yavin4",
+
+	creditReward = 5000,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	escortShips = {"imperial_scan_freighter_tier2"},
+
+	escortPoints = {
+		{patrolPointName = "yavin_rebel_region_scan_1", zoneName = "space_yavin4", x = 5000, z = -1220, y = 4300, escortNumber = 1, radius = 250},
+		{patrolPointName = "yavin_rebel_region_scan_2", zoneName = "space_yavin4", x = 6563, z = -605, y = 4839, escortNumber = 2, radius = 250},
+		{patrolPointName = "yavin_rebel_region_scan_3", zoneName = "space_yavin4", x = 5498, z = -1466, y = 2835, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"reb_xwing_tier2", "reb_xwing_tier2", "reb_xwing_tier3"},
+		{"reb_ywing_tier3", "reb_z95_tier2", "reb_z95_tier2"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_imperial_ss_5", true)
+
+-- Mission 3: Recovery (the Twilight Sun)
+recovery_imperial_ss_6 = SpaceRecoveryScreenplay:new {
+	className = "recovery_imperial_ss_6",
+
+	questName = "imperial_ss_6",
+	questType = "recovery",
+
+	questZone = "space_yavin4",
+
+	creditReward = 5000,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	arrivalDelay = 20,
+	recoveryDelay = 30,
+
+	recoverShip = "twilight_sun_tier1",
+	recoveryConversationMobile = "object/mobile/shared_space_comm_imperial_ace_01.iff",
+
+	escortShips = {"reb_z95_tier2", "reb_z95_tier2", "reb_z95_tier2", "reb_z95_tier2"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "tatooine_imperial_twilight_1", x = -5464, z = 3200, y = -6088, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_twilight_2", x = -1316, z = 2300, y = -5012, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_twilight_3", x = 4784, z = 1400, y = -5136, escortNumber = 3, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "tatooine_imperial_twilight_4", x = 3876, z = 900, y = -4400, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_twilight_5", x = 4608, z = 200, y = -2712, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_twilight_6", x = 5568, z = -800, y = -148, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"reb_xwing_tier2", "reb_xwing_tier2", "reb_xwing_tier2"},
+		{"reb_xwing_tier2", "reb_xwing_tier2", "reb_ywing_tier2"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_imperial_ss_6", true)
+
+-- Alozen Duty Missions (SWG names carry the lok_ prefix; all three fly in Yavin)
+destroy_duty_lok_imperial_ss_2a = SpaceDutyDestroyScreenplay:new {
+	className = "destroy_duty_lok_imperial_ss_2a",
+
+	questName = "lok_imperial_ss_2a",
+	questType = "destroy_duty",
+
+	questZone = "space_yavin4",
+
+	creditReward = 200,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	totalLevels = 5,
+	totalRounds = 2,
+	totalWaves = 3,
+
+	bossShip = "deathstar_debris_priest_tier3",
+	shipTypes = {
+		{"deathstar_debris_guardian_tier2", "deathstar_debris_guardian_tier2"},
+		{"deathstar_debris_fanatic_tier2", "deathstar_debris_fanatic_tier2"},
+	},
+}
+
+registerScreenPlay("destroy_duty_lok_imperial_ss_2a", true)
+
+recovery_duty_lok_imperial_ss_2b = SpaceDutyRecoveryScreenplay:new {
+	className = "recovery_duty_lok_imperial_ss_2b",
+
+	questName = "lok_imperial_ss_2b",
+	questType = "recovery_duty",
+
+	questZone = "space_yavin4",
+
+	creditReward = 2500,
+	creditKillBonus = 200,
+	numResponses = 5,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	arrivalDelay = 30,
+	recoveryDelay = 60,
+	recoverShip = "deathstar_debris_freighter_tier2",
+
+	escortShips = {"deathstar_debris_guardian_tier2", "deathstar_debris_guardian_tier2", "deathstar_debris_guardian_tier2", "deathstar_debris_guardian_tier2"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "yavin_imp_scavenger_1", x = -2200, z = 600, y = -2800, escortNumber = 1, radius = 250},
+		{patrolPointName = "yavin_imp_scavenger_2", x = -1907, z = 827, y = -2147, escortNumber = 2, radius = 250},
+		{patrolPointName = "yavin_imp_scavenger_3", x = -1688, z = 632, y = -1695, escortNumber = 3, radius = 250},
+		{patrolPointName = "yavin_imp_scavenger_4", x = -1460, z = 635, y = -1050, escortNumber = 4, radius = 250},
+		{patrolPointName = "yavin_imp_scavenger_5", x = -1026, z = 738, y = -552, escortNumber = 5, radius = 250},
+		{patrolPointName = "yavin_imp_scavenger_6", x = 1877, z = 501, y = -1617, escortNumber = 6, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "yavin_imp_recovery_1", x = 2223, z = 898, y = -1548, escortNumber = 1, radius = 250},
+		{patrolPointName = "yavin_imp_recovery_2", x = 1474, z = 1207, y = -883, escortNumber = 2, radius = 250},
+		{patrolPointName = "yavin_imp_recovery_3", x = 1261, z = 935, y = 2, escortNumber = 3, radius = 250},
+		{patrolPointName = "yavin_imp_recovery_4", x = 514, z = 1018, y = 1163, escortNumber = 4, radius = 250},
+		{patrolPointName = "yavin_imp_recovery_5", x = -382, z = 1165, y = -674, escortNumber = 5, radius = 250},
+		{patrolPointName = "yavin_imp_recovery_6", x = -791, z = 1241, y = -1688, escortNumber = 6, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"deathstar_debris_scavenger_tier2", "deathstar_debris_scavenger_tier2"},
+		{"deathstar_debris_fanatic_tier2", "deathstar_debris_fanatic_tier2"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_duty_lok_imperial_ss_2b", true)
+
+escort_duty_lok_imperial_ss_2c = SpaceDutyEscortScreenplay:new {
+	className = "escort_duty_lok_imperial_ss_2c",
+
+	questName = "lok_imperial_ss_2c",
+	questType = "escort_duty",
+
+	questZone = "space_yavin4",
+
+	creditReward = 2500,
+	creditKillBonus = 200,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	escortShips = {"imp_freightermedium_tier2", "imp_freighterlight_tier2", "imp_freighterheavy_tier2"},
+
+	escortPoints = {
+		{patrolPointName = "yavin_imp_escort_duty_1", zoneName = "space_yavin4", x = -4792, z = 1000, y = -1048, escortNumber = 1, radius = 250},
+		{patrolPointName = "yavin_imp_escort_duty_2", zoneName = "space_yavin4", x = -2820, z = 1500, y = 1340, escortNumber = 2, radius = 250},
+		{patrolPointName = "yavin_imp_escort_duty_3", zoneName = "space_yavin4", x = -2896, z = 2000, y = 3760, escortNumber = 3, radius = 250},
+		{patrolPointName = "yavin_imp_escort_duty_4", zoneName = "space_yavin4", x = 36, z = 2500, y = 5188, escortNumber = 4, radius = 250},
+		{patrolPointName = "yavin_imp_escort_duty_5", zoneName = "space_yavin4", x = 3016, z = 3000, y = 6392, escortNumber = 5, radius = 250},
+		{patrolPointName = "yavin_imp_escort_duty_6", zoneName = "space_yavin4", x = 6476, z = 3500, y = 6428, escortNumber = 6, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"deathstar_debris_fanatic_tier2", "deathstar_debris_fanatic_tier2"},
+		{"deathstar_debris_guardian_tier2", "deathstar_debris_guardian_tier2"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_duty_lok_imperial_ss_2c", true)
+
+--[[
 
 	StormSquadronScreenplay
 
@@ -545,6 +772,14 @@ StormSquadronScreenplay = ScreenPlay:new {
 
 	-- The item key the Read/Sign menu writes on the transfer form (SWG objvar "signature")
 	TRANSFER_FORM_SIGNATURE = "signature",
+
+	-- Tier 2 (Alozen)
+	TIER2_QUEST_STRING_4 = {type = "inspect", name = "imperial_ss_4"},
+	TIER2_QUEST_STRING_5 = {type = "escort", name = "imperial_ss_5"},
+	TIER2_QUEST_STRING_6 = {type = "recovery", name = "imperial_ss_6"},
+	TIER2_QUEST_STRING_DUTY_4 = {type = "destroy_duty", name = "lok_imperial_ss_2a"},
+	TIER2_QUEST_STRING_DUTY_5 = {type = "recovery_duty", name = "lok_imperial_ss_2b"},
+	TIER2_QUEST_STRING_DUTY_6 = {type = "escort_duty", name = "lok_imperial_ss_2c"},
 }
 
 registerScreenPlay("StormSquadronScreenplay", false)
@@ -625,6 +860,39 @@ function StormSquadronScreenplay:resetOberhaurQuests(pPlayer)
 	removeQuestStatus(playerID .. self.TIER2_FINDING_AGENT_KEY)
 	removeQuestStatus(playerID .. self.TIER2_MORV_TIP_KEY)
 	removeQuestStatus(playerID .. self.TIER2_ALOZEN_KEY)
+end
+
+function StormSquadronScreenplay:resetAlozenQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local tables = {
+		inspect_imperial_ss_4, escort_imperial_ss_5, recovery_imperial_ss_6,
+		destroy_duty_lok_imperial_ss_2a, recovery_duty_lok_imperial_ss_2b, escort_duty_lok_imperial_ss_2c
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER2_QUEST_STRING_4, self.TIER2_QUEST_STRING_5, self.TIER2_QUEST_STRING_6,
+		self.TIER2_QUEST_STRING_DUTY_4, self.TIER2_QUEST_STRING_DUTY_5, self.TIER2_QUEST_STRING_DUTY_6
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	for n = 4, 6 do
+		local name = self["TIER2_QUEST_STRING_" .. n].name
+
+		removeQuestStatus(playerID .. name .. ":attempted")
+		removeQuestStatus(playerID .. name .. ":reward")
+	end
 end
 
 -- The Nym fuel technicians on Lok (Morv and two decoys) grant the Kimogila's Claw (feature storm-tier2-nym-technicians)

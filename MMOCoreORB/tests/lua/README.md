@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, 60 since storm-tier1-akal-colzet, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -889,3 +889,26 @@ eight `fixtures/spacequest/<type>/tatooine_imperial_*.tab` byte copies. Colzet's
 - `test_storm_tier1_pins.lua` pins the shared edits against commit `25a16f864d` and skips once HEAD moves.
 - Existing tests this feature edited: the 60th `FIXTURE_COUNTS` entry (seven files plus `space_convo_client_strings_data.lua`), the loader lists of `black_epsilon_tier4_data.lua` and `inquisition_tier{1,2,3,4}_data.lua` (they now load `StormSquadronScreenplay`),
   the include anchor of `test_master_trainer_{imperial,rebel}_wiring.lua` (Colzet's handler include), the surrender order of `test_master_trainer_imperial_surrender.lua` (Colzet, Declann for Storm), and the coverage counts (297 distinct questName strings, 281 of 925 SWG names) of `test_smuggler_tier2_data.lua`.
+
+### Storm tier 2: Commander Oberhaur (storm-tier2-oberhaur)
+
+Answer key: SWG `tatooine_imperial_trainer_2.java` (J2; `fixtures/script/conversation/`, byte copy of the 6,286-line file) plus the spec's Data mapping 3 (51 NGE ids placed on pre-NGE lines), the six
+`fixtures/spacequest/<type>/{imperial_ss_1..3,lok_imperial_ss_1a..1c}.tab` byte copies, `fixtures/spacequest/inspect_cargo/imperial_ss_1.tab` and the item script
+`fixtures/script/space/characters/transfer_auth.java` (TA). Oberhaur's template is `oberhaur_convo_template`, his handler the global `oberhaurConvoHandler`.
+
+- `storm_tier2_data.lua` (not a test file, the tests alias it as `T`): the 6 globals, `T.expected()` (Appendix B, every key), the 28 points, `T.TRAIN`, the squadron constants and flag suffixes, `T.walkTo(from, to)` (reply sids over the
+  static options of Appendix A) and the player builder `T.pilot{pilot, faction, squadron, standing, ship, paid = k (1, 2, 3 = the Kimogila's Claw), state = "won" | "failed" | "active" | "attempted", t1, t2 = {TRAIN indexes}, xp, series,
+  initiate, finding, alozen, datapad, ships = {ship device templates in the datapad}, duty, forms = {true | "<signature>"}, species, pilotTier, inventory, inShip}`. The default pilot is a Storm pilot at tier 2 who has handed in the form
+  (initiate flag and Colzet's promotion flag set). His full name is "Ace Starfire", his first name "Ace" (so `%TU` and the signature check tell the two apart). `T.talk` / `T.drive` / `T.firstScreen` as for the other trainers.
+- `storm_tier2_screens_data.lua`: Appendix A (113 rows) generated from the spec table by a scratch script, with the name token per row; `storm_tier2_client_text.lua`: id -> English text of the 190-entry client table (read-only from `/tre`).
+- `fixtures/string/en/conversation/tatooine_imperial_trainer_2.sids` (190 ids, generated) and `fixtures/space_zones/buildout/space_lok.storm_tier2_points.tab` (the two header rows plus the 28 nav point rows, `sed -n` by line number).
+- **`harness/form_fakes.lua`** (opt-in: `require("harness.form_fakes").install()`, done by `T.load()`; nothing else loads it): the radial menu response (`LuaObjectMenuResponse`, `FF.newMenuResponse()` records `addRadialMenuItem(id, callback, text)`),
+  the real `screenplays/sui/SuiTemplate|SuiMessageBox|SuiInputBox.lua` over a fake `LuaSuiPageData` and `LuaSuiManager():sendSuiPage` (each sent box is one `callsTo("sendSuiPage")` entry; `FF.sent(player)`, `FF.describe(box)` = template, title, prompt,
+  button texts, target; `FF.press(box, eventIndex, args...)` fires the callback like `LuaSuiCallback::run`), items that know their parent (`getParentID`, 0 without one; `destroyObjectFromWorld` leaves the parent container), `getTemplateObjectPath`,
+  `destroyObjectFromDatabase` (recorded), `setLuaStringData` / `getLuaStringData` (`""` when unset), `getContainerObjectByTemplate(container, template, checkChildren)` (exactly 3 arguments, top level unless `checkChildren`) and `getStringId`
+  (`"<en:" .. id .. ">"`). **The sui box a callback gets follows the engine, not the spec text:** a `SuiBoxPage` has no using object, so `LuaSuiBox(pSui):getUsingObject()` is nil; the callback finds the form through
+  `LuaSuiPageData(LuaSuiBoxPage(pSui):getSuiPageData()):getTargetNetworkId()` and `getSceneObject(id)` (as `village_gm_sui.lua:65-72`). `test_harness_form_fakes.lua` checks every fake method name against the C++ binding tables.
+- Existing tests this feature edited (all listed in the test plan): the 61st `FIXTURE_COUNTS` entry (`space_convo_client_strings_data.lua` and seven test files, two of them not in the spec), the include anchor of
+  `test_master_trainer_{imperial,rebel}_wiring.lua` (now Oberhaur's handler include), the surrender order of `test_master_trainer_imperial_surrender.lua` (Colzet, Oberhaur, Declann for Storm), the coverage counts of `test_smuggler_tier2_data.lua`
+  (303 distinct questName strings, 287 SWG names) and the dropped `noSpawns` variant of `test_inspect_setup_and_zone.lua`.
+- `test_storm_tier2_pins.lua` pins the shared edits against commit `85cfb1dc28` and skips once HEAD moves.

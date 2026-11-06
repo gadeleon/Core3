@@ -514,10 +514,10 @@ function TestInspectMissingData:test_an_ad_hoc_quest_with_an_empty_cargo_fails_c
 end
 
 -- AC-7
-function TestInspectMissingData:test_an_ad_hoc_quest_with_an_empty_ship_list_or_no_spawners_fails_cleanly_at_setup()
+function TestInspectMissingData:test_an_ad_hoc_quest_with_an_empty_ship_list_fails_cleanly_at_setup()
+	-- storm-tier2-oberhaur: an empty validSpawns no longer fails (SWG inspect.java: it means "any spawner"); see test_storm_tier2_inspect_shared.lua
 	local variants = {
 		noShips = { shipList = {}, validSpawns = { { spawnName = "a", x = 1, z = 2, y = 3 } } },
-		noSpawns = { shipList = { "huttsmuggler" }, validSpawns = {} },
 	}
 
 	for key, v in pairs(variants) do

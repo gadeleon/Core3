@@ -65,7 +65,7 @@ function TestInquisitionT4Strings:test_fixture_counts_has_ja_ces_file_with_279_i
 	end
 
 	lu.assertEquals(KD.FIXTURE_COUNTS[FILE], 279, "FIXTURE_COUNTS[" .. FILE .. "]")
-	lu.assertEquals(n, 60, "FIXTURE_COUNTS entries") -- 60 since storm-tier1-akal-colzet
+	lu.assertEquals(n, 61, "FIXTURE_COUNTS entries") -- 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur
 end
 
 -- AC-5: nothing is allowed to be unresolved

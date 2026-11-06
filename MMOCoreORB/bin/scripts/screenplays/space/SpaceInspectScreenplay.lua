@@ -93,7 +93,7 @@ function SpaceInspectScreenplay:isInQuestZone(pPlayer)
 end
 
 function SpaceInspectScreenplay:hasQuestData()
-	return #self.shipList > 0 and #self.validSpawns > 0 and self.cargo ~= ""
+	return #self.shipList > 0 and self.cargo ~= ""
 end
 
 function SpaceInspectScreenplay:isQuestCargo(cargoHash)
@@ -117,6 +117,11 @@ function SpaceInspectScreenplay:isQuestTarget(pTargetShip)
 
 	if (not isListed) then
 		return false
+	end
+
+	-- SWG inspect.java: no spawner list means any spawner counts
+	if (#self.validSpawns == 0) then
+		return true
 	end
 
 	local spawnerName = readStringData(SceneObject(pTargetShip):getObjectID() .. ":SpawnerName:")
@@ -249,7 +254,7 @@ function SpaceInspectScreenplay:setupInspection(pPlayer)
 	end
 
 	if (not self:hasQuestData()) then
-		Logger:log(self.className .. " -- Quest has no inspect data (shipList, validSpawns, cargo), failing the quest.", LT_ERROR)
+		Logger:log(self.className .. " -- Quest has no inspect data (shipList, cargo), failing the quest.", LT_ERROR)
 		self:failQuest(pPlayer, "true")
 		return
 	end

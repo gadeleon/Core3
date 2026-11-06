@@ -142,6 +142,9 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 	-- storm-tier1-akal-colzet: Storm pilots now run Colzet's reset before Declann's
 	H.spyOn(StormSquadronScreenplay, "resetColzetQuests", function() order[#order + 1] = "resetColzetQuests" end)
 
+	-- storm-tier2-oberhaur: ... and Oberhaur's reset between Colzet's and Declann's
+	H.spyOn(StormSquadronScreenplay, "resetOberhaurQuests", function() order[#order + 1] = "resetOberhaurQuests" end)
+
 	local reset = H.spyOn(M.mts(), "resetDeclannQuests", function() order[#order + 1] = "declann" end)
 
 	local player = M.pilot({ squadron = "black_epsilon" })
@@ -164,7 +167,7 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 		if squadron == "inquisition" then
 			lu.assertEquals(order, { "resetBarnQuests", "resetFaZollQuests", "resetVrkeQuests", "resetJaceYiasoQuests", "declann" }, squadron .. ": Barn's reset runs first, then Fa'Zoll's, then Vrke's, then Ja'ce's, then Declann's")
 		else
-			lu.assertEquals(order, { "resetColzetQuests", "declann" }, squadron .. ": Colzet's reset runs first, then Declann's (storm-tier1-akal-colzet)")
+			lu.assertEquals(order, { "resetColzetQuests", "resetOberhaurQuests", "declann" }, squadron .. ": Colzet's reset runs first, then Oberhaur's, then Declann's (storm-tier2-oberhaur)")
 		end
 	end
 end

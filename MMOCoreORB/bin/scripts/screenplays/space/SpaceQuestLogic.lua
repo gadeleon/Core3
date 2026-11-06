@@ -20,6 +20,7 @@ SpaceQuestLogic = ScreenPlay:new {
 		FAILURE = 2,
 		BIDIRECTIONAL = 3,
 		PATROL_POINT = 4,
+		ATTACK_WAVE = 5,
 	},
 
 	-- Flags used to tie side quest to parent quest
@@ -53,6 +54,9 @@ SpaceQuestLogic = ScreenPlay:new {
 
 	-- Patrol point to start side quest for PATROL_POINT split type
 	sideQuestPatrolStart = 0,
+
+	-- Attack waves the player must destroy before an ATTACK_WAVE split (SWG escort triggerOn)
+	sideQuestAttackWave = 0,
 }
 
 registerScreenPlay("SpaceQuestLogic", false)

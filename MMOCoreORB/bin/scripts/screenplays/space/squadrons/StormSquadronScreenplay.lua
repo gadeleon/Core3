@@ -727,6 +727,695 @@ escort_duty_lok_imperial_ss_2c = SpaceDutyEscortScreenplay:new {
 registerScreenPlay("escort_duty_lok_imperial_ss_2c", true)
 
 --[[
+	Tier 3 -- Captain Denner (Yavin 4, Imperial outpost; Endor system)
+	Ported from SWG-Source tatooine_imperial_tier3_1..4 and their splits (escort, recovery, inspect, rescue, delivery_no_pickup, destroy_surpriseattack, patrol, space_battle, delivery, destroy, survival, assassinate); feature storm-tier3-denner-missions
+]]
+
+-- Mission 1: Escort > Recovery > Inspect > Rescue > Delivery (no pickup)
+escort_tatooine_imperial_tier3_1 = SpaceEscortScreenplay:new {
+	className = "escort_tatooine_imperial_tier3_1",
+
+	questName = "tatooine_imperial_tier3_1",
+	questType = "escort",
+
+	questZone = "space_endor",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon_capacitor/cap_mission_reward_imperial_rendili_k_class.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "tatooine_imperial_tier3_1_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 20, -- Time in seconds to wait to trigger side quest
+
+	escortShips = {"imp_engineer_shuttle_tier3"},
+
+	escortPoints = {
+		{patrolPointName = "tatooine_imperial_tier3_escort1_1", x = 2340, z = -4531, y = 7123, zoneName = "space_endor", escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_escort1_2", x = -3468, z = -4500, y = 3945, zoneName = "space_endor", escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_escort1_3", x = -3809, z = -1542, y = -558, zoneName = "space_endor", escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_escort1_4", x = 2909, z = 774, y = -4383, zoneName = "space_endor", escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_ywing_tier3"},
+		{"reb_ywing_tier3", "reb_z95_tier3", "reb_z95_tier3"},
+	},
+
+	tauntData = {goodbyeCount = 2, reasonCount = 2, tauntCount = 2, thanksCount = 2},
+}
+
+registerScreenPlay("escort_tatooine_imperial_tier3_1", true)
+
+recovery_tatooine_imperial_tier3_1_a = SpaceRecoveryScreenplay:new {
+	className = "recovery_tatooine_imperial_tier3_1_a",
+
+	questName = "tatooine_imperial_tier3_1_a",
+	questType = "recovery",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "tatooine_imperial_tier3_1_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "escort_tatooine_imperial_tier3_1",
+	parentQuestType = "escort",
+	parentQuestName = "tatooine_imperial_tier3_1",
+
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+
+	recoverShip = "rebel_controlled_shuttle_tier3",
+	recoveryConversationMobile = "object/mobile/shared_dressed_imperial_officer_m.iff",
+
+	escortShips = {"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_bwing_tier3"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier3_recovery1_1", x = -6736, z = 1000, y = 5728, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_recovery1_2", x = -485, z = -3573, y = -4328, escortNumber = 2, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier3_recovery1_3", x = -3234, z = -4013, y = -919, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_recovery1_4", x = -4015, z = -4056, y = -1966, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_recovery1_5", x = -4384, z = -3809, y = -3174, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_tatooine_imperial_tier3_1_a", true)
+
+inspect_tatooine_imperial_tier3_1_b = SpaceInspectScreenplay:new {
+	className = "inspect_tatooine_imperial_tier3_1_b",
+
+	questName = "tatooine_imperial_tier3_1_b",
+	questType = "inspect",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "rescue",
+	sideQuestName = "tatooine_imperial_tier3_1_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_tatooine_imperial_tier3_1_a",
+	parentQuestType = "recovery",
+	parentQuestName = "tatooine_imperial_tier3_1_a",
+
+	-- Screenplay Specific Variables
+	shipList = {"rebel_scout_fighter_tier3"},
+	validSpawns = {
+		{spawnName = "tatooine_imperial_tier3_rebscout_spawner", x = -2450, z = -3052, y = 1234},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "encrypted_rebel_data",
+}
+
+registerScreenPlay("inspect_tatooine_imperial_tier3_1_b", true)
+
+rescue_tatooine_imperial_tier3_1_c = SpaceRescueScreenplay:new {
+	className = "rescue_tatooine_imperial_tier3_1_c",
+
+	questName = "tatooine_imperial_tier3_1_c",
+	questType = "rescue",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "tatooine_imperial_tier3_1_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "inspect_tatooine_imperial_tier3_1_b",
+	parentQuestType = "inspect",
+	parentQuestName = "tatooine_imperial_tier3_1_b",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "tatooine_imperial_tier3_rescue1_1", x = 1000, z = -4000, y = -1500},
+		{patrolPointName = "tatooine_imperial_tier3_rescue1_2", x = 4054, z = -6049, y = -3682},
+		{patrolPointName = "tatooine_imperial_tier3_rescue1_3", x = 3070, z = -6422, y = -6716},
+	},
+
+	targetShipType = "imp_freighterlight_tier3",
+	targetArrivalDelay = 30,
+
+	attackShipLists = {
+		{"reb_bwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_bwing_tier3"},
+	},
+
+	attackPeriod = 120,
+	attackListType = SpaceRescueScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_tatooine_imperial_tier3_1_c", true)
+
+delivery_no_pickup_tatooine_imperial_tier3_1_d = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_tatooine_imperial_tier3_1_d",
+
+	questName = "tatooine_imperial_tier3_1_d",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "rescue_tatooine_imperial_tier3_1_c",
+	parentQuestType = "rescue",
+	parentQuestName = "tatooine_imperial_tier3_1_c",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier3",
+	deliveryPoint = {patrolPointName = "tatooine_imperial_tier3_delivery1_hq_spawner", x = 4300, z = 2948, y = -5400},
+
+	attackShipLists = {
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_tatooine_imperial_tier3_1_d", true)
+
+-- Mission 2: Inspect > Surprise attack > Inspect > Delivery (no pickup) > Patrol > Space battle
+inspect_tatooine_imperial_tier3_2 = SpaceInspectScreenplay:new {
+	className = "inspect_tatooine_imperial_tier3_2",
+
+	questName = "tatooine_imperial_tier3_2",
+	questType = "inspect",
+
+	questZone = "space_endor",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/droid_interface/ddi_mission_reward_imperial_sfs_military_grade.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "tatooine_imperial_tier3_2_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 10, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	shipList = {"rebel_scout_fighter_tier3"},
+	validSpawns = {
+		{spawnName = "tatooine_imperial_tier3_inspect2_spawner", x = -5009, z = 4104, y = 6001},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "encrypted_rebel_data",
+}
+
+registerScreenPlay("inspect_tatooine_imperial_tier3_2", true)
+
+destroy_surpriseattack_tatooine_imperial_tier3_2_a = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_tatooine_imperial_tier3_2_a",
+
+	questName = "tatooine_imperial_tier3_2_a",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "tatooine_imperial_tier3_2_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "inspect_tatooine_imperial_tier3_2",
+	parentQuestType = "inspect",
+	parentQuestName = "tatooine_imperial_tier3_2",
+
+	-- Screenplay Specific Variables
+	surpriseAttackShips = {
+		zone = "space_endor",
+		spawns = {
+			{count = 5, shipName = "reb_awing_tier3"},
+		},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_tatooine_imperial_tier3_2_a", true)
+
+inspect_tatooine_imperial_tier3_2_b = SpaceInspectScreenplay:new {
+	className = "inspect_tatooine_imperial_tier3_2_b",
+
+	questName = "tatooine_imperial_tier3_2_b",
+	questType = "inspect",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "tatooine_imperial_tier3_2_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 10, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "destroy_surpriseattack_tatooine_imperial_tier3_2_a",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "tatooine_imperial_tier3_2_a",
+
+	-- Screenplay Specific Variables
+	shipList = {"rebel_scout_shuttle_tier3"},
+	validSpawns = {
+		{spawnName = "tatooine_imperial_tier3_inspect3_spawner", x = 6009, z = -7001, y = -1095},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "rebel_plans",
+}
+
+registerScreenPlay("inspect_tatooine_imperial_tier3_2_b", true)
+
+delivery_no_pickup_tatooine_imperial_tier3_2_c = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_tatooine_imperial_tier3_2_c",
+
+	questName = "tatooine_imperial_tier3_2_c",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "patrol",
+	sideQuestName = "tatooine_imperial_tier3_2_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "inspect_tatooine_imperial_tier3_2_b",
+	parentQuestType = "inspect",
+	parentQuestName = "tatooine_imperial_tier3_2_b",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier3",
+	deliveryPoint = {patrolPointName = "tatooine_imperial_tier3_delivery2", x = -1000, z = -100, y = -500},
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_tatooine_imperial_tier3_2_c", true)
+
+patrol_tatooine_imperial_tier3_2_d = SpacePatrolScreenplay:new {
+	className = "patrol_tatooine_imperial_tier3_2_d",
+
+	questName = "tatooine_imperial_tier3_2_d",
+	questType = "patrol",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "space_battle",
+	sideQuestName = "tatooine_imperial_tier3_2_e",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT,
+	sideQuestPatrolStart = 3,
+	sideQuestDelay = 20, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "delivery_no_pickup_tatooine_imperial_tier3_2_c",
+	parentQuestType = "delivery_no_pickup",
+	parentQuestName = "tatooine_imperial_tier3_2_c",
+
+	patrolPoints = {
+		{patrolPointName = "tatooine_imperial_tier3_patrol1_1", x = 554, z = -706, y = 2191, patrolNumber = 1, radius = 150},
+		{patrolPointName = "tatooine_imperial_tier3_patrol1_2", x = 659, z = -2035, y = 3506, patrolNumber = 2, radius = 150},
+		{patrolPointName = "tatooine_imperial_tier3_patrol1_3", x = -385, z = -2351, y = 5481, patrolNumber = 3, radius = 150},
+		{patrolPointName = "tatooine_imperial_tier3_patrol1_4", x = -1032, z = -1624, y = 7179, patrolNumber = 4, radius = 150},
+	},
+}
+
+registerScreenPlay("patrol_tatooine_imperial_tier3_2_d", true)
+
+space_battle_tatooine_imperial_tier3_2_e = SpaceBattleScreenplay:new {
+	className = "space_battle_tatooine_imperial_tier3_2_e",
+
+	questName = "tatooine_imperial_tier3_2_e",
+	questType = "space_battle",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "patrol_tatooine_imperial_tier3_2_d",
+	parentQuestType = "patrol",
+	parentQuestName = "tatooine_imperial_tier3_2_d",
+
+	-- Screenplay Specific Variables
+	battlePoint = {patrolPointName = "tatooine_imperial_tier3_battle1_spawner", x = 1477, z = -2315, y = 5545, forward = {x = -0.004857, z = 0.167584, y = 0.985846}},
+	damageMultiplier = 3,
+	allyArrivalDelay = 10,
+	enemyArrivalDelay = 120,
+	allyOriginDist = 400,
+	enemyOriginDist = -400,
+	allyArrivalDist = 200,
+	enemyArrivalDist = 200,
+	allyForce = {"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3"},
+	enemyForce = {"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4", "reb_ykl37r_tier3"},
+}
+
+registerScreenPlay("space_battle_tatooine_imperial_tier3_2_e", true)
+
+-- Mission 3: Delivery > Destroy > Escort (3 attack waves) > Surprise attack > Survival
+delivery_tatooine_imperial_tier3_3 = SpaceDeliveryScreenplay:new {
+	className = "delivery_tatooine_imperial_tier3_3",
+
+	questName = "tatooine_imperial_tier3_3",
+	questType = "delivery",
+
+	questZone = "space_endor",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_imperial_sds_high_output.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "destroy",
+	sideQuestName = "tatooine_imperial_tier3_3_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	pickupPoint = {patrolPointName = "tatooine_imperial_tier3_delivery3_pickup", x = -5657, z = -3287, y = -6482},
+	deliveryPoint = {patrolPointName = "tatooine_imperial_tier3_delivery_dropoff", x = 90, z = -69, y = -1106},
+	pickupShip = "imp_lambda_shuttle_tier3",
+	deliveryShip = "imp_lambda_shuttle_tier3",
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier4"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_tatooine_imperial_tier3_3", true)
+
+destroy_tatooine_imperial_tier3_3_b = SpaceDestroyScreenplay:new {
+	className = "destroy_tatooine_imperial_tier3_3_b",
+
+	questName = "tatooine_imperial_tier3_3_b",
+	questType = "destroy",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "escort",
+	sideQuestName = "tatooine_imperial_tier3_3_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "delivery_tatooine_imperial_tier3_3",
+	parentQuestType = "delivery",
+	parentQuestName = "tatooine_imperial_tier3_3",
+
+	-- Screenplay Specific Variables
+	killsRequired = 5,
+
+	shipLocations = {},
+
+	shipTypes = {
+		"reb_awing_tier3", "reb_awing_tier4", "reb_bwing_tier3", "reb_bwing_tier4", "reb_xwing_tier3",
+		"reb_xwing_tier4", "reb_ywing_tier3", "reb_ywing_tier4", "reb_z95_tier3", "reb_z95_tier4",
+	},
+}
+
+registerScreenPlay("destroy_tatooine_imperial_tier3_3_b", true)
+
+escort_tatooine_imperial_tier3_3_a = SpaceEscortScreenplay:new {
+	className = "escort_tatooine_imperial_tier3_3_a",
+
+	questName = "tatooine_imperial_tier3_3_a",
+	questType = "escort",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "tatooine_imperial_tier3_3_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.ATTACK_WAVE,
+	sideQuestDelay = 10, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "destroy_tatooine_imperial_tier3_3_b",
+	parentQuestType = "destroy",
+	parentQuestName = "tatooine_imperial_tier3_3_b",
+
+	sideQuestAttackWave = 3, -- Attack waves to destroy before the hand-off (SWG triggerOn 3)
+
+	escortShips = {"imp_lambda_decoy_shuttle_tier3"},
+
+	escortPoints = {
+		{patrolPointName = "tatooine_imperial_tier3_escort1_1", x = 2340, z = -4531, y = 7123, zoneName = "space_endor", escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_escort1_2", x = -3468, z = -4500, y = 3945, zoneName = "space_endor", escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_escort1_3", x = -3809, z = -1542, y = -558, zoneName = "space_endor", escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier3_escort1_4", x = 2909, z = 774, y = -4383, zoneName = "space_endor", escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 70,
+
+	attackShips = {
+		{"reb_bwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_tatooine_imperial_tier3_3_a", true)
+
+destroy_surpriseattack_tatooine_imperial_tier3_3_d = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_tatooine_imperial_tier3_3_d",
+
+	questName = "tatooine_imperial_tier3_3_d",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "survival",
+	sideQuestName = "tatooine_imperial_tier3_3_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "escort_tatooine_imperial_tier3_3_a",
+	parentQuestType = "escort",
+	parentQuestName = "tatooine_imperial_tier3_3_a",
+
+	-- Screenplay Specific Variables
+	surpriseAttackShips = {
+		zone = "space_endor",
+		spawns = {
+			{count = 6, shipName = "reb_awing_tier3"},
+		},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_tatooine_imperial_tier3_3_d", true)
+
+survival_tatooine_imperial_tier3_3_c = SpaceSurvivalScreenplay:new {
+	className = "survival_tatooine_imperial_tier3_3_c",
+
+	questName = "tatooine_imperial_tier3_3_c",
+	questType = "survival",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "destroy_surpriseattack_tatooine_imperial_tier3_3_d",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "tatooine_imperial_tier3_3_d",
+
+	-- Screenplay Specific Variables
+	transmissionPoint = {patrolPointName = "tatooine_imperial_tier3_survival1", x = 2090, z = 514, y = 306},
+	totalTransmissionTime = 600,
+	timesToUpdateProgress = 10,
+	transmissionStartDelay = 60,
+	delayToFirstAttack = 5,
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_z95_tier3", "reb_z95_tier3", "reb_z95_tier3", "reb_z95_tier4", "reb_z95_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier4"},
+		{"reb_bwing_tier3", "reb_bwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_ykl37r_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+	},
+
+	attackPeriod = 120,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("survival_tatooine_imperial_tier3_3_c", true)
+
+-- Mission 4: Assassinate > Rescue > Inspect > Assassinate
+assassinate_tatooine_imperial_tier3_4 = SpaceAssassinateScreenplay:new {
+	className = "assassinate_tatooine_imperial_tier3_4",
+
+	questName = "tatooine_imperial_tier3_4",
+	questType = "assassinate",
+
+	questZone = "space_endor",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_imperial_cygnus_megadrive.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "rescue",
+	sideQuestName = "tatooine_imperial_tier3_4_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	arrivalDelay = 15,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "reb_xwing_tier3",
+		escorts = {"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "tatooine_imperial_tier3_assassinate4_01", x = 552, z = 5144, y = -4984},
+		{patrolPointName = "tatooine_imperial_tier3_assassinate4_02", x = 3996, z = 500, y = -1498},
+		{patrolPointName = "tatooine_imperial_tier3_assassinate4_03", x = 3984, z = -3744, y = 4468},
+		{patrolPointName = "tatooine_imperial_tier3_assassinate4_04", x = -2988, z = -4004, y = 6386},
+	},
+}
+
+registerScreenPlay("assassinate_tatooine_imperial_tier3_4", true)
+
+rescue_tatooine_imperial_tier3_4_a = SpaceRescueScreenplay:new {
+	className = "rescue_tatooine_imperial_tier3_4_a",
+
+	questName = "tatooine_imperial_tier3_4_a",
+	questType = "rescue",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "tatooine_imperial_tier3_4_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "assassinate_tatooine_imperial_tier3_4",
+	parentQuestType = "assassinate",
+	parentQuestName = "tatooine_imperial_tier3_4",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "tatooine_imperial_tier3_rescue2_1", x = 4764, z = -4609, y = -104},
+		{patrolPointName = "tatooine_imperial_tier3_rescue2_2", x = 825, z = -3312, y = 2052},
+		{patrolPointName = "tatooine_imperial_tier3_rescue2_3", x = -3703, z = -374, y = 144},
+	},
+
+	targetShipType = "imp_lambda_shuttle_tier3",
+	targetArrivalDelay = 0,
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_bwing_tier3", "reb_z95_tier3", "reb_z95_tier3", "reb_z95_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceRescueScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_tatooine_imperial_tier3_4_a", true)
+
+inspect_tatooine_imperial_tier3_4_b = SpaceInspectScreenplay:new {
+	className = "inspect_tatooine_imperial_tier3_4_b",
+
+	questName = "tatooine_imperial_tier3_4_b",
+	questType = "inspect",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "tatooine_imperial_tier3_4_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "rescue_tatooine_imperial_tier3_4_a",
+	parentQuestType = "rescue",
+	parentQuestName = "tatooine_imperial_tier3_4_a",
+
+	-- Screenplay Specific Variables
+	shipList = {"rebel_command_shuttle_tier4"},
+	validSpawns = {
+		{spawnName = "tatooine_imperial_tier3_inspect4_spawner", x = 2000, z = 6500, y = 1200},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "stolen_data",
+}
+
+registerScreenPlay("inspect_tatooine_imperial_tier3_4_b", true)
+
+assassinate_tatooine_imperial_tier3_4_c = SpaceAssassinateScreenplay:new {
+	className = "assassinate_tatooine_imperial_tier3_4_c",
+
+	questName = "tatooine_imperial_tier3_4_c",
+	questType = "assassinate",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_tatooine_imperial_tier3_4_b",
+	parentQuestType = "inspect",
+	parentQuestName = "tatooine_imperial_tier3_4_b",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "rebel_command_shuttle_tier4",
+		escorts = {"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "tatooine_imperial_tier3_assassinate1_1", x = -2000, z = 4300, y = 3000},
+		{patrolPointName = "tatooine_imperial_tier3_assassinate1_2", x = -2206, z = 2385, y = 3982},
+		{patrolPointName = "tatooine_imperial_tier3_assassinate1_3", x = -2017, z = -532, y = 5368},
+		{patrolPointName = "tatooine_imperial_tier3_assassinate1_4", x = -153, z = -3292, y = 5758},
+	},
+}
+
+registerScreenPlay("assassinate_tatooine_imperial_tier3_4_c", true)
+
+--[[
 
 	StormSquadronScreenplay
 
@@ -780,6 +1469,28 @@ StormSquadronScreenplay = ScreenPlay:new {
 	TIER2_QUEST_STRING_DUTY_4 = {type = "destroy_duty", name = "lok_imperial_ss_2a"},
 	TIER2_QUEST_STRING_DUTY_5 = {type = "recovery_duty", name = "lok_imperial_ss_2b"},
 	TIER2_QUEST_STRING_DUTY_6 = {type = "escort_duty", name = "lok_imperial_ss_2c"},
+
+	-- Tier 3 (Denner)
+	TIER3_QUEST_STRING_1 = {type = "escort", name = "tatooine_imperial_tier3_1"},
+	TIER3_QUEST_STRING_1_SIDE1 = {type = "recovery", name = "tatooine_imperial_tier3_1_a"},
+	TIER3_QUEST_STRING_1_SIDE2 = {type = "inspect", name = "tatooine_imperial_tier3_1_b"},
+	TIER3_QUEST_STRING_1_SIDE3 = {type = "rescue", name = "tatooine_imperial_tier3_1_c"},
+	TIER3_QUEST_STRING_1_SIDE4 = {type = "delivery_no_pickup", name = "tatooine_imperial_tier3_1_d"},
+	TIER3_QUEST_STRING_2 = {type = "inspect", name = "tatooine_imperial_tier3_2"},
+	TIER3_QUEST_STRING_2_SIDE1 = {type = "destroy_surpriseattack", name = "tatooine_imperial_tier3_2_a"},
+	TIER3_QUEST_STRING_2_SIDE2 = {type = "inspect", name = "tatooine_imperial_tier3_2_b"},
+	TIER3_QUEST_STRING_2_SIDE3 = {type = "delivery_no_pickup", name = "tatooine_imperial_tier3_2_c"},
+	TIER3_QUEST_STRING_2_SIDE4 = {type = "patrol", name = "tatooine_imperial_tier3_2_d"},
+	TIER3_QUEST_STRING_2_SIDE5 = {type = "space_battle", name = "tatooine_imperial_tier3_2_e"},
+	TIER3_QUEST_STRING_3 = {type = "delivery", name = "tatooine_imperial_tier3_3"},
+	TIER3_QUEST_STRING_3_SIDE1 = {type = "destroy", name = "tatooine_imperial_tier3_3_b"},
+	TIER3_QUEST_STRING_3_SIDE2 = {type = "escort", name = "tatooine_imperial_tier3_3_a"},
+	TIER3_QUEST_STRING_3_SIDE3 = {type = "destroy_surpriseattack", name = "tatooine_imperial_tier3_3_d"},
+	TIER3_QUEST_STRING_3_SIDE4 = {type = "survival", name = "tatooine_imperial_tier3_3_c"},
+	TIER3_QUEST_STRING_4 = {type = "assassinate", name = "tatooine_imperial_tier3_4"},
+	TIER3_QUEST_STRING_4_SIDE1 = {type = "rescue", name = "tatooine_imperial_tier3_4_a"},
+	TIER3_QUEST_STRING_4_SIDE2 = {type = "inspect", name = "tatooine_imperial_tier3_4_b"},
+	TIER3_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "tatooine_imperial_tier3_4_c"},
 }
 
 registerScreenPlay("StormSquadronScreenplay", false)
@@ -889,6 +1600,47 @@ function StormSquadronScreenplay:resetAlozenQuests(pPlayer)
 
 	for n = 4, 6 do
 		local name = self["TIER2_QUEST_STRING_" .. n].name
+
+		removeQuestStatus(playerID .. name .. ":attempted")
+		removeQuestStatus(playerID .. name .. ":reward")
+	end
+end
+
+function StormSquadronScreenplay:resetDennerQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local tables = {
+		escort_tatooine_imperial_tier3_1, recovery_tatooine_imperial_tier3_1_a, inspect_tatooine_imperial_tier3_1_b,
+		rescue_tatooine_imperial_tier3_1_c, delivery_no_pickup_tatooine_imperial_tier3_1_d,
+		inspect_tatooine_imperial_tier3_2, destroy_surpriseattack_tatooine_imperial_tier3_2_a, inspect_tatooine_imperial_tier3_2_b,
+		delivery_no_pickup_tatooine_imperial_tier3_2_c, patrol_tatooine_imperial_tier3_2_d, space_battle_tatooine_imperial_tier3_2_e,
+		delivery_tatooine_imperial_tier3_3, destroy_tatooine_imperial_tier3_3_b, escort_tatooine_imperial_tier3_3_a,
+		destroy_surpriseattack_tatooine_imperial_tier3_3_d, survival_tatooine_imperial_tier3_3_c,
+		assassinate_tatooine_imperial_tier3_4, rescue_tatooine_imperial_tier3_4_a, inspect_tatooine_imperial_tier3_4_b,
+		assassinate_tatooine_imperial_tier3_4_c
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER3_QUEST_STRING_1, self.TIER3_QUEST_STRING_1_SIDE1, self.TIER3_QUEST_STRING_1_SIDE2, self.TIER3_QUEST_STRING_1_SIDE3, self.TIER3_QUEST_STRING_1_SIDE4,
+		self.TIER3_QUEST_STRING_2, self.TIER3_QUEST_STRING_2_SIDE1, self.TIER3_QUEST_STRING_2_SIDE2, self.TIER3_QUEST_STRING_2_SIDE3, self.TIER3_QUEST_STRING_2_SIDE4, self.TIER3_QUEST_STRING_2_SIDE5,
+		self.TIER3_QUEST_STRING_3, self.TIER3_QUEST_STRING_3_SIDE1, self.TIER3_QUEST_STRING_3_SIDE2, self.TIER3_QUEST_STRING_3_SIDE3, self.TIER3_QUEST_STRING_3_SIDE4,
+		self.TIER3_QUEST_STRING_4, self.TIER3_QUEST_STRING_4_SIDE1, self.TIER3_QUEST_STRING_4_SIDE2, self.TIER3_QUEST_STRING_4_SIDE3
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	for n = 1, 4 do
+		local name = self["TIER3_QUEST_STRING_" .. n].name
 
 		removeQuestStatus(playerID .. name .. ":attempted")
 		removeQuestStatus(playerID .. name .. ":reward")

@@ -17,6 +17,7 @@ rebel_scout_shuttle_tier3 = ShipAgent:new {
 	spaceFaction = "rebel",
 	rebelFactionReward = -30,
 	questLoot = "rebel_plans",
+	cargoString = "rebel_plans", -- SWG space_mobile cargo rebel_plans; inspect quest tatooine_imperial_tier3_2_b (feature storm-tier3-denner-missions)
 	formationLocation = 1,
 	appearance = "rebel_pilot",
 	tauntAttackChance = 0.1,

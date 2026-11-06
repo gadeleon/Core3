@@ -83,11 +83,11 @@ TestClientStringFixtures = {}
 -- space-master-trainer-rebel: Burke's conversation/rebel_master_trainer is the 49th file (red until his template and handler exist)
 -- smuggler-tier1-dravis: Dravis' conversation/tatooine_privateer_trainer_1 is the 50th file (red until his template and handler exist)
 -- smuggler-transition-karrde: Talon Karrde's conversation/tatooine_privateer_trainer_2 is the 51st file (red until his template and handler exist)
--- smuggler-tier2-shamdon: Shamdon Kree's conversation/tatooine_privateer_trainer_shamdon is the 52nd file; smuggler-tier3-beissa: Beissa's conversation/tatooine_privateer_tier3 is the 53rd; smuggler-tier4-nirame: Nirame Sakute's conversation/tatooine_privateer_tier4 is the 54th (red until her template and handler exist); inquisition-tier1-barn-sinkko: Barn Sinkko's conversation/naboo_imperial_trainer_1 is the 55th (red until his template and handler exist); inquisition-tier2-fa-zoll: Fa'Zoll's conversation/naboo_imperial_trainer_2 is the 56th (red until his template and handler exist); inquisition-tier3-vrke: Vrke's conversation/naboo_imperial_tier3 is the 57th (red until his template and handler exist)
-function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_57_files_of_appendix_a()
+-- smuggler-tier2-shamdon: Shamdon Kree's conversation/tatooine_privateer_trainer_shamdon is the 52nd file; smuggler-tier3-beissa: Beissa's conversation/tatooine_privateer_tier3 is the 53rd; smuggler-tier4-nirame: Nirame Sakute's conversation/tatooine_privateer_tier4 is the 54th; inquisition-tier1-barn-sinkko: Barn Sinkko's conversation/naboo_imperial_trainer_1 is the 55th; inquisition-tier2-fa-zoll: Fa'Zoll's conversation/naboo_imperial_trainer_2 is the 56th; inquisition-tier3-vrke: Vrke's conversation/naboo_imperial_tier3 is the 57th; inquisition-tier3-barlow: Barlow's conversation/naboo_imperial_tier3_barlow is the 58th
+function TestClientStringFixtures:test_the_space_conversation_sources_reference_exactly_the_58_files_of_appendix_a()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 57, "FIXTURE_COUNTS entries")
+	lu.assertEquals(#sortedKeys(D.FIXTURE_COUNTS), 58, "FIXTURE_COUNTS entries")
 	lu.assertNil(D.FIXTURE_COUNTS["skl_n"], "FIXTURE_COUNTS entry of skl_n")
 	lu.assertNil(io.open(CS.FIXTURE_DIR .. "skl_n.sids", "r"), "fixture skl_n.sids must be deleted")
 	lu.assertEquals(referenced, sortedKeys(D.FIXTURE_COUNTS), "string files referenced by the space conversation sources")

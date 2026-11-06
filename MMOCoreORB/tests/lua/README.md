@@ -831,3 +831,20 @@ sixteen `fixtures/spacequest/<type>/naboo_imperial_tier3_*.tab` byte copies (not
 - `test_inquisition_tier3_pins.lua` pins the shared edits against commit `4c40d87618` and skips once HEAD moves.
 - Existing tests this feature edited: the 57th `FIXTURE_COUNTS` entry (five files), the coverage count (275 names, 259 of 925) of `test_smuggler_tier2_data.lua`, and the imperial surrender order of
   `test_inquisition_tier2_surrender.lua` and `test_master_trainer_imperial_surrender.lua` (Barn, Fa'Zoll, Vrke, Declann).
+
+### Inquisition tier 3: Lt. Colonel Barlow (inquisition-tier3-barlow)
+
+Answer key: SWG `naboo_imperial_tier3_barlow.java` (J3B; `fixtures/script/conversation/`, byte copy of the 5,010-line file). The template is `barlow_convo_template`, the handler the global `barlowConvoHandler`.
+J3B stores the branch with `setObjVar(..branchId, N)`, so `harness/swgjava.lua` (which matches only `setScriptVar` and keeps a line's first instance) cannot be the key; the conformance test carries its own per-instance parser.
+
+- `inquisition_tier3_barlow_data.lua` (not a test file): `B.SCREENS` (Appendix A, 82 rows), `B.WALKS` (the shortest walks to the five ends, from the spec hints), `B.END_SCREENS`, `B.paths()` (shortest reply path to every
+  screen over Appendix A), `B.load()` (the Vrke data's load plus Barlow's template and handler), `B.pilot` (= `V.pilot`), `B.talk` / `B.firstScreen` / `B.ids` / `B.keys`, and `B.spyWrites()`, which wraps `setQuestStatus` /
+  `removeQuestStatus` and returns the log and a restore function.
+- `inquisition_tier3_barlow_screens_data.lua`: Appendix A generated from the spec table by a scratch script; `inquisition_tier3_barlow_client_text.lua`: id -> English text of the 172-entry client table (read-only from `/tre`,
+  the copy served by `patch_12_00.tre`, which is the first holder in the TreFiles order). `fixtures/string/en/conversation/naboo_imperial_tier3_barlow.sids` (172 ids, generated).
+- `test_inquisition_tier3_barlow_conformance.lua`: the parser (one instance per `string_id message`, keyed by `handleBranch<N>` and reply), partition refinement into 79 interview states (+ the 3 chat gates = 82), and a check that
+  maps screens to states one to one from the four `OnStartNpcConversation` lines. `TestBarlowOracle` holds Appendix A to the same check and needs no production code.
+- `test_inquisition_tier3_barlow_{template,wiring,gates,interview,handshake,strings,pins}.lua`: Appendix A against the template, the includes and Barlow's NPC mask, gate table B, every shortest walk (`B.paths`) with the
+  quest-status write log, Vrke and Barlow end to end (training, interview, `m2_offer`, `tour_complete`, surrender), the ratchet entry and the archive choice (`gen_client_sids.py` via `python3 -I`), and the
+  `431519b2e6` pins (skipped once HEAD moves).
+- Existing tests this feature edited: the 58th `FIXTURE_COUNTS` entry (five files, names and comments) and `space_convo_client_strings_data.lua` (entry and header line).

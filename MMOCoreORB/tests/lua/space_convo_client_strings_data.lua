@@ -17,6 +17,7 @@
 -- inquisition-tier1-barn-sinkko: Lt. Barn Sinkko's conversation/naboo_imperial_trainer_1 (325 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- inquisition-tier2-fa-zoll: Inquisitor Fa'Zoll's conversation/naboo_imperial_trainer_2 (177 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- inquisition-tier3-vrke: Inquisitor Vrke's conversation/naboo_imperial_tier3 (324 ids) is new and fully resolved; KNOWN_GAPS stays {}.
+-- inquisition-tier3-barlow: Lt. Colonel Barlow's conversation/naboo_imperial_tier3_barlow (172 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -53,6 +54,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/lok_rebel_trainer_2_smuggler"] = 40,
 	["conversation/naboo_imperial_trainer_1"] = 325,
 	["conversation/naboo_imperial_tier3"] = 324,
+	["conversation/naboo_imperial_tier3_barlow"] = 172,
 	["conversation/naboo_imperial_trainer_2"] = 177,
 	["conversation/naboo_privateer_tier3"] = 216,
 	["conversation/naboo_privateer_tier4"] = 260,

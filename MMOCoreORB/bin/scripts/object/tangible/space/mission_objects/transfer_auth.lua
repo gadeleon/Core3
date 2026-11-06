@@ -42,7 +42,7 @@
 
 
 object_tangible_space_mission_objects_transfer_auth = object_tangible_space_mission_objects_shared_transfer_auth:new {
-
+	objectMenuComponent = "StormTransferFormMenuComponent",
 }
 
 ObjectTemplates:addTemplate(object_tangible_space_mission_objects_transfer_auth, "object/tangible/space/mission_objects/transfer_auth.iff")

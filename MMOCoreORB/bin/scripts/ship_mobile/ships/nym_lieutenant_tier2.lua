@@ -22,6 +22,7 @@ nym_lieutenant_tier2 = ShipAgent:new {
 	color2 = 31,
 	texture = 4,
 	questLoot = "imperial_ss_1",
+	cargoString = "hostage_orders", -- SWG space_mobile cargo imperial_ss_1; inspect quest imperial_ss_1 (feature storm-tier2-oberhaur)
 	appearance = "nym",
 
 	tauntType = "generic_low",

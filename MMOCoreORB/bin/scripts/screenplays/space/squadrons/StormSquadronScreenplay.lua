@@ -264,6 +264,242 @@ escort_duty_tatooine_imperial_7 = SpaceDutyEscortScreenplay:new {
 registerScreenPlay("escort_duty_tatooine_imperial_7", true)
 
 --[[
+	Tier 2 -- Commander Jhon Oberhaur (Tatooine, Bestine; Lok)
+	Ported from SWG-Source imperial_ss_1..3 (inspect, recovery, assassinate) and lok_imperial_ss_1a..1c (destroy_duty, recovery_duty, escort_duty); feature storm-tier2-oberhaur
+]]
+
+-- Mission 1: Inspect (any Nym Lieutenant: SWG has no spawner list and no waypoint for this quest)
+inspect_imperial_ss_1 = SpaceInspectScreenplay:new {
+	className = "inspect_imperial_ss_1",
+
+	questName = "imperial_ss_1",
+	questType = "inspect",
+
+	questZone = "space_lok",
+
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_imperial_cygnus_starblaster.iff"},
+	},
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	shipList = {"nym_lieutenant_tier2"},
+	validSpawns = {},
+	giveSpawnWaypoint = 0,
+	cargo = "hostage_orders",
+}
+
+registerScreenPlay("inspect_imperial_ss_1", true)
+
+-- Mission 2: Recovery (the hostage transport)
+recovery_imperial_ss_2 = SpaceRecoveryScreenplay:new {
+	className = "recovery_imperial_ss_2",
+
+	questName = "imperial_ss_2",
+	questType = "recovery",
+
+	questZone = "space_lok",
+
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_imperial_sfs_light_military.iff"},
+	},
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	arrivalDelay = 15,
+	recoveryDelay = 30,
+
+	recoverShip = "nym_prison_ship_tier2",
+	recoveryConversationMobile = "object/mobile/shared_space_comm_imperial_officer_01.iff",
+
+	escortShips = {"nym_enforcer_tier2", "nym_enforcer_tier2", "nym_enforcer_tier2"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "hostage_escort_1", x = -5448, z = 800, y = 2992, escortNumber = 1, radius = 250},
+		{patrolPointName = "hostage_escort_2", x = -5951, z = 1295, y = 1027, escortNumber = 2, radius = 250},
+		{patrolPointName = "hostage_escort_3", x = -4948, z = 1612, y = -1763, escortNumber = 3, radius = 250},
+		{patrolPointName = "hostage_escort_4", x = -3993, z = 2074, y = -3667, escortNumber = 4, radius = 250},
+		{patrolPointName = "hostage_escort_5", x = -3467, z = 2588, y = -6633, escortNumber = 5, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "hostage_recovery_1", x = -2930, z = 2690, y = -4742, escortNumber = 1, radius = 250},
+		{patrolPointName = "hostage_recovery_2", x = -5561, z = 2135, y = -4973, escortNumber = 2, radius = 250},
+		{patrolPointName = "hostage_recovery_3", x = -6832, z = 2296, y = -3612, escortNumber = 3, radius = 250},
+		{patrolPointName = "hostage_recovery_4", x = -6637, z = 2449, y = -2060, escortNumber = 4, radius = 250},
+		{patrolPointName = "hostage_recovery_5", x = -5082, z = 2428, y = -476, escortNumber = 5, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"nym_fighter_tier2", "nym_fighter_tier2"},
+		{"nym_bomber_tier2", "nym_enforcer_tier2"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_imperial_ss_2", true)
+
+-- Mission 3: Assassinate the Kimogila's Claw. Not granted by Oberhaur (SWG never grants it): the Nym technicians feature does
+assassinate_imperial_ss_3 = SpaceAssassinateScreenplay:new {
+	className = "assassinate_imperial_ss_3",
+
+	questType = "assassinate",
+	questName = "imperial_ss_3",
+
+	questZone = "space_lok",
+
+	creditReward = 5000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/booster/bst_mission_reward_imperial_rss_ion_booster.iff"},
+	},
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "nym_capo_ship_tier2",
+		escorts = {"nym_enforcer_tier2", "nym_enforcer_tier2", "nym_enforcer_tier2"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "hostage_escort_1", x = -5448, z = 800, y = 2992},
+		{patrolPointName = "hostage_escort_2", x = -5951, z = 1295, y = 1027},
+		{patrolPointName = "hostage_escort_3", x = -4948, z = 1612, y = -1763},
+		{patrolPointName = "hostage_escort_4", x = -3993, z = 2074, y = -3667},
+		{patrolPointName = "hostage_escort_5", x = -3467, z = 2588, y = -6633},
+	},
+}
+
+registerScreenPlay("assassinate_imperial_ss_3", true)
+
+-- Oberhaur Duty Missions
+destroy_duty_lok_imperial_ss_1a = SpaceDutyDestroyScreenplay:new {
+	className = "destroy_duty_lok_imperial_ss_1a",
+
+	questName = "lok_imperial_ss_1a",
+	questType = "destroy_duty",
+
+	questZone = "space_lok",
+
+	creditReward = 200,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	totalLevels = 5,
+	totalRounds = 2,
+	totalWaves = 3,
+
+	bossShip = "nym_fighter_tier3",
+	shipTypes = {
+		{"nym_fighter_tier2", "nym_fighter_tier2"},
+		{"nym_enforcer_tier2", "nym_enforcer_tier2"},
+		{"nym_blastboat_tier2", "nym_blastboat_tier2"},
+	},
+}
+
+registerScreenPlay("destroy_duty_lok_imperial_ss_1a", true)
+
+recovery_duty_lok_imperial_ss_1b = SpaceDutyRecoveryScreenplay:new {
+	className = "recovery_duty_lok_imperial_ss_1b",
+
+	questName = "lok_imperial_ss_1b",
+	questType = "recovery_duty",
+
+	questZone = "space_lok",
+
+	creditReward = 2500,
+	creditKillBonus = 200,
+	numResponses = 5,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+	recoverShips = {"nym_freighterheavy_tier2", "nym_freighterlight_tier2", "nym_freightermedium_tier2"},
+
+	escortShips = {"nym_enforcer_tier2", "nym_enforcer_tier2", "nym_enforcer_tier2"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "lok_imp_pirate_1", x = -3200, z = -400, y = 3000, escortNumber = 1, radius = 250},
+		{patrolPointName = "lok_imp_pirate_2", x = -2167, z = -767, y = 2211, escortNumber = 2, radius = 250},
+		{patrolPointName = "lok_imp_pirate_3", x = -1493, z = -978, y = 1680, escortNumber = 3, radius = 250},
+		{patrolPointName = "lok_imp_pirate_4", x = -759, z = -1583, y = 1233, escortNumber = 4, radius = 250},
+		{patrolPointName = "lok_imp_pirate_5", x = 419, z = -2240, y = 594, escortNumber = 5, radius = 250},
+		{patrolPointName = "lok_imp_pirate_6", x = 738, z = -1579, y = -310, escortNumber = 6, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "lok_imp_recovery_1", x = 1779, z = 289, y = -1042, escortNumber = 1, radius = 250},
+		{patrolPointName = "lok_imp_recovery_2", x = 2371, z = 588, y = -251, escortNumber = 2, radius = 250},
+		{patrolPointName = "lok_imp_recovery_3", x = 2037, z = -71, y = 478, escortNumber = 3, radius = 250},
+		{patrolPointName = "lok_imp_recovery_4", x = 1411, z = -1579, y = 134, escortNumber = 4, radius = 250},
+		{patrolPointName = "lok_imp_recovery_5", x = 385, z = -843, y = 254, escortNumber = 5, radius = 250},
+		{patrolPointName = "lok_imp_recovery_6", x = -477, z = -150, y = 421, escortNumber = 6, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"nym_fighter_tier2", "nym_fighter_tier2"},
+		{"nym_bomber_tier2", "nym_blastboat_tier2"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_duty_lok_imperial_ss_1b", true)
+
+escort_duty_lok_imperial_ss_1c = SpaceDutyEscortScreenplay:new {
+	className = "escort_duty_lok_imperial_ss_1c",
+
+	questName = "lok_imperial_ss_1c",
+	questType = "escort_duty",
+
+	questZone = "space_lok",
+
+	creditReward = 2500,
+	creditKillBonus = 200,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	escortShips = {"imp_freightermedium_tier2", "imp_freighterlight_tier2", "imp_freighterheavy_tier2"},
+
+	escortPoints = {
+		{patrolPointName = "lok_imp_escort_duty_1", zoneName = "space_lok", x = 2700, z = 200, y = 2700, escortNumber = 1, radius = 250},
+		{patrolPointName = "lok_imp_escort_duty_2", zoneName = "space_lok", x = 1927, z = 285, y = 1901, escortNumber = 2, radius = 250},
+		{patrolPointName = "lok_imp_escort_duty_3", zoneName = "space_lok", x = 1564, z = 970, y = 1211, escortNumber = 3, radius = 250},
+		{patrolPointName = "lok_imp_escort_duty_4", zoneName = "space_lok", x = 814, z = 429, y = 1053, escortNumber = 4, radius = 250},
+		{patrolPointName = "lok_imp_escort_duty_5", zoneName = "space_lok", x = 122, z = -365, y = -407, escortNumber = 5, radius = 250},
+		{patrolPointName = "lok_imp_escort_duty_6", zoneName = "space_lok", x = -571, z = -1090, y = -1672, escortNumber = 6, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"nym_fighter_tier2", "nym_fighter_tier2"},
+		{"nym_enforcer_tier2", "nym_enforcer_tier2"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_duty_lok_imperial_ss_1c", true)
+
+--[[
 
 	StormSquadronScreenplay
 
@@ -289,6 +525,24 @@ StormSquadronScreenplay = ScreenPlay:new {
 
 	-- The Authorization of Transfer Colzet gives on the promotion; tier 2 reads it
 	TRANSFER_FORM = "object/tangible/space/mission_objects/transfer_auth.iff",
+
+	-- Tier 2 (Oberhaur)
+	TIER2_QUEST_STRING_1 = {type = "inspect", name = "imperial_ss_1"},
+	TIER2_QUEST_STRING_2 = {type = "recovery", name = "imperial_ss_2"},
+	TIER2_QUEST_STRING_3 = {type = "assassinate", name = "imperial_ss_3"},
+	TIER2_QUEST_STRING_DUTY_1 = {type = "destroy_duty", name = "lok_imperial_ss_1a"},
+	TIER2_QUEST_STRING_DUTY_2 = {type = "recovery_duty", name = "lok_imperial_ss_1b"},
+	TIER2_QUEST_STRING_DUTY_3 = {type = "escort_duty", name = "lok_imperial_ss_1c"},
+
+	-- Set when Oberhaur accepts the signed transfer form (SWG stormSquadronInitiate); read by Oberhaur (O22)
+	TIER2_INITIATE_KEY = "StormSquadronScreenplay:stormSquadronInitiate",
+	-- Set by the Morv briefing (SWG ss.findingAgent), cleared by the Claw reward; read by Oberhaur (O13) and the Nym technicians feature
+	TIER2_FINDING_AGENT_KEY = "StormSquadronScreenplay:findingAgent",
+	-- Set by the Alozen orders (SWG workingWithAlozen); read by Oberhaur (O8) and Alozen (storm-tier2-alozen)
+	TIER2_ALOZEN_KEY = "StormSquadronScreenplay:workingWithAlozen",
+
+	-- The item key the Read/Sign menu writes on the transfer form (SWG objvar "signature")
+	TRANSFER_FORM_SIGNATURE = "signature",
 }
 
 registerScreenPlay("StormSquadronScreenplay", false)
@@ -330,4 +584,175 @@ function StormSquadronScreenplay:resetColzetQuests(pPlayer)
 		removeQuestStatus(playerID .. questString.name .. ":attempted")
 		removeQuestStatus(playerID .. questString.name .. ":reward")
 	end
+end
+
+
+function StormSquadronScreenplay:resetOberhaurQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local tables = {
+		inspect_imperial_ss_1, recovery_imperial_ss_2, assassinate_imperial_ss_3,
+		destroy_duty_lok_imperial_ss_1a, recovery_duty_lok_imperial_ss_1b, escort_duty_lok_imperial_ss_1c
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER2_QUEST_STRING_1, self.TIER2_QUEST_STRING_2, self.TIER2_QUEST_STRING_3,
+		self.TIER2_QUEST_STRING_DUTY_1, self.TIER2_QUEST_STRING_DUTY_2, self.TIER2_QUEST_STRING_DUTY_3
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	for n = 1, 3 do
+		local name = self["TIER2_QUEST_STRING_" .. n].name
+
+		removeQuestStatus(playerID .. name .. ":attempted")
+		removeQuestStatus(playerID .. name .. ":reward")
+	end
+
+	removeQuestStatus(playerID .. self.TIER2_INITIATE_KEY)
+	removeQuestStatus(playerID .. self.TIER2_FINDING_AGENT_KEY)
+	removeQuestStatus(playerID .. self.TIER2_ALOZEN_KEY)
+end
+
+-- The first Authorization of Transfer directly in the inventory (SWG tatooine_imperial_trainer_2.java:16-27), or nil
+function StormSquadronScreenplay:getTransferForm(pPlayer)
+	if (pPlayer == nil) then
+		return nil
+	end
+
+	local pInventory = CreatureObject(pPlayer):getSlottedObject("inventory")
+
+	if (pInventory == nil) then
+		return nil
+	end
+
+	return getContainerObjectByTemplate(pInventory, self.TRANSFER_FORM, false)
+end
+
+-- The signature stored by the Read/Sign menu, "" when unsigned
+function StormSquadronScreenplay:getTransferFormSignature(pForm)
+	if (pForm == nil) then
+		return ""
+	end
+
+	local signature = TangibleObject(pForm):getLuaStringData(self.TRANSFER_FORM_SIGNATURE)
+
+	if (signature == nil) then
+		return ""
+	end
+
+	return signature
+end
+
+-- The Authorization of Transfer's Read / Sign menu (SWG script/space/characters/transfer_auth.java)
+StormTransferFormMenuComponent = {}
+
+function StormTransferFormMenuComponent:fillObjectMenuResponse(pSceneObject, pMenuResponse, pPlayer)
+	local menuResponse = LuaObjectMenuResponse(pMenuResponse)
+
+	menuResponse:addRadialMenuItem(20, 3, "@space/quest:read")
+end
+
+function StormTransferFormMenuComponent:handleObjectMenuSelect(pSceneObject, pPlayer, selectedID)
+	if (pPlayer == nil or pSceneObject == nil) then
+		return 0
+	end
+
+	if (selectedID ~= 20) then
+		return 0
+	end
+
+	local pInventory = CreatureObject(pPlayer):getSlottedObject("inventory")
+
+	if (pInventory == nil or SceneObject(pSceneObject):getParentID() ~= SceneObject(pInventory):getObjectID()) then
+		CreatureObject(pPlayer):sendSystemMessage("@space/quest:not_in_inv")
+		return 0
+	end
+
+	self:showForm(pSceneObject, pPlayer)
+
+	return 0
+end
+
+function StormTransferFormMenuComponent:showForm(pForm, pPlayer)
+	local signature = StormSquadronScreenplay:getTransferFormSignature(pForm)
+	local sui = SuiMessageBox.new("StormTransferFormMenuComponent", "readCallback")
+
+	sui.setTitle("@space/quest:ta_title")
+
+	if (signature == "") then
+		sui.setPrompt("@space/quest:ta_text")
+	else
+		sui.setPrompt(getStringId("@space/quest:ta_text") .. "\n Signed: " .. signature .. "\n")
+	end
+
+	sui.setOkButtonText("@space/quest:close")
+	sui.setCancelButtonText("@space/quest:sign")
+	sui.setTargetNetworkId(SceneObject(pForm):getObjectID())
+	sui.sendTo(pPlayer)
+end
+
+-- The form a box was opened for: the engine gives the callback no using object for page boxes, so it is read from the page target
+function StormTransferFormMenuComponent:getBoxForm(pSui)
+	if (pSui == nil) then
+		return nil
+	end
+
+	local pPage = LuaSuiBoxPage(pSui):getSuiPageData()
+
+	if (pPage == nil) then
+		return nil
+	end
+
+	local id = LuaSuiPageData(pPage):getTargetNetworkId()
+
+	if (id == nil or id == 0) then
+		return nil
+	end
+
+	return getSceneObject(id)
+end
+
+function StormTransferFormMenuComponent:readCallback(pPlayer, pSui, eventIndex)
+	if (pPlayer == nil or eventIndex ~= 1) then
+		return
+	end
+
+	local pForm = self:getBoxForm(pSui)
+
+	if (pForm == nil) then
+		return
+	end
+
+	local sui = SuiInputBox.new("StormTransferFormMenuComponent", "signCallback")
+
+	sui.setTitle("@space/quest:ta_sign_title")
+	sui.setPrompt("@space/quest:ta_sign")
+	sui.setTargetNetworkId(SceneObject(pForm):getObjectID())
+	sui.sendTo(pPlayer)
+end
+
+function StormTransferFormMenuComponent:signCallback(pPlayer, pSui, eventIndex, args)
+	if (pPlayer == nil or eventIndex ~= 0 or args == nil or string.match(args, "^%s*$") ~= nil) then
+		return
+	end
+
+	local pForm = self:getBoxForm(pSui)
+
+	if (pForm == nil) then
+		return
+	end
+
+	TangibleObject(pForm):setLuaStringData(StormSquadronScreenplay.TRANSFER_FORM_SIGNATURE, args)
+	CreatureObject(pPlayer):sendSystemMessage("@space/quest:signed")
 end

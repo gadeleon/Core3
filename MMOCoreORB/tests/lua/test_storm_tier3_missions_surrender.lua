@@ -212,13 +212,13 @@ function TestStormT3Surrender:test_surrendering_twice_is_the_same_as_once()
 	end
 end
 
--- A-6: the five resets run in the order Colzet, Oberhaur, Alozen, Denner, Declann, each once; other squadrons do not run Denner's
+-- A-6: the resets run in the order Colzet, Oberhaur, Alozen, Denner, Kilnstrider (storm-tier4-kilnstrider-missions: six with Declann's), Declann, each once; other squadrons do not run Denner's
 function TestStormT3Surrender:test_a_storm_surrender_runs_the_five_resets_once_each_in_order_and_other_squadrons_do_not_run_denners()
 	local order = {}
 	local mts = M.mts() -- loads Declann's pieces first: a later load would replace the squadron table the spies sit on
 	local sq = D.squadron()
 
-	for _, name in ipairs({ "resetColzetQuests", "resetOberhaurQuests", "resetAlozenQuests", "resetDennerQuests" }) do
+	for _, name in ipairs({ "resetColzetQuests", "resetOberhaurQuests", "resetAlozenQuests", "resetDennerQuests", "resetKilnstriderQuests" }) do
 		H.spyOn(sq, name, function() order[#order + 1] = name end)
 	end
 
@@ -226,7 +226,7 @@ function TestStormT3Surrender:test_a_storm_surrender_runs_the_five_resets_once_e
 	local storm = graduate()
 
 	surrender(storm)
-	lu.assertEquals(order, { "resetColzetQuests", "resetOberhaurQuests", "resetAlozenQuests", "resetDennerQuests", "declann" }, "the Storm surrender: the resets in order, each once")
+	lu.assertEquals(order, { "resetColzetQuests", "resetOberhaurQuests", "resetAlozenQuests", "resetDennerQuests", "resetKilnstriderQuests", "declann" }, "the Storm surrender: the resets in order, each once")
 	lu.assertEquals(#reset, 1, "resetDeclannQuests calls")
 
 	order = {}

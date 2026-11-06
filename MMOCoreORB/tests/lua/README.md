@@ -1001,3 +1001,24 @@ Data files (not test files): `storm_tier3_screens_data.lua` (Appendix A, 146 row
 - Existing tests this feature edited (all listed in the test plan): the 66th `FIXTURE_COUNTS` entry (`space_convo_client_strings_data.lua` and eight test files), the include-adjacency anchors
   of `test_storm_tier2_alozen_data.lua`, `test_storm_tier2_nym_wiring.lua`, `test_storm_tier2_data.lua` and `test_master_trainer_{imperial,rebel}_wiring.lua`, and Barlow's row 33 (now followed by a
   comma) in `test_inquisition_tier3_barlow_wiring.lua` and `test_storm_tier2_alozen_data.lua`.
+
+### Storm tier 4: Admiral Kilnstrider's missions (storm-tier4-kilnstrider-missions)
+
+Part A of Admiral Kilnstrider (Endor research outpost) is the mission content without the conversation: the 20 `tatooine_imperial_tier4_*` quest tables (16 story tables in four chains and four
+duties; M1-M3 and the duties in `space_endor`, M4 in `space_dantooine`), the 20 `TIER4_QUEST_STRING_*` constants, `TIER4_MET_KEY` (Part B sets it, Part A's reset clears it),
+`StormSquadronScreenplay:resetKilnstriderQuests` (called by `SpaceHelpers:surrenderPilot` after Denner's reset) and the `cargoString` of `rebel_endscout_tier4`. **Nothing grants these quests in game
+until Part B (`storm-tier4-kilnstrider`) adds the conversation**; they can only be played through the harness (or an admin grant). Fixtures (byte copies of SWG-Source, `cmp`-verified; excerpts are made
+with `sed -n <row>p`, never edited): the 20 quest `.tab` files under `fixtures/spacequest/<type>/`, `inspect_cargo/rebel_battle_plans.tab`, `space_zones/buildout/space_endor.storm_tier4_points.tab`
+(rows 1-2 plus 52 nav point rows and the endscout spawner row), `space_dantooine.storm_tier4_points.tab` (rows 1-2 plus 19 nav point rows) and `space_mobile/space_mobile.storm_tier4_inspect.tab` (rows
+1-2 and 1442). `test_storm_tier4_missions_data.lua` compares the excerpt rows with the clone's lines when the clone is present. The orphan client-only `recovery/tatooine_imperial_tier4_2_c` is
+deliberately not a fixture. Part A never runs `tools/gen_client_sids.py` (if anyone does: `python3 -B`, and delete any `tools/__pycache__`, which breaks five tests).
+
+`storm_tier4_data.lua` (`local D = require("storm_tier4_data")`, not a test file) builds on `storm_tier3_data.lua`: `D.load()`, `D.GLOBALS` (the 20, contract order) / `D.STORY` (16) / `D.CHAINS` /
+`D.M1` .. `D.M4` / `D.DUTIES`, `D.IDENTITY`, `D.QUEST_STRINGS`, `D.MET_KEY`, `D.statusKeys()` (the 9 keys), `D.POINTS` / `D.SPAWNERS` / `D.POINT_ZONE(name)`, `D.expected()` (Appendix B: every key of the
+20 tables), `D.REWARDS` (spec literals, D-A2: the SWG trainer script `tatooine_imperial_tier4.java` is Part B's fixture), `D.pilot{missions = k, met = true, active = global, attempted = n}` (a Storm
+graduate of tier 3 at pilot tier 4; `missions` = Kilnstrider's missions won and paid; every other option goes to `storm_tier3_data.lua`'s `D.pilot`) and `D.flyer(zone)` (an Imperial pilot at pilot
+tier 4 in an Imperial ship, the runtime tests' player). Part B extends the file.
+`test_storm_tier4_missions_runtime.lua` runs the missions and duties split by split; the three parent -> child pairs that are new to Core3 (battle -> inspect, recovery -> delivery, rescue -> battle)
+are each shown to start nothing before the 5 s delay. `test_storm_tier4_missions_pins.lua` pins "nothing else moves" against `6a5d2977c3` through `git` and skips once HEAD moves.
+- Existing tests this feature edited (all listed in the test plan): the coverage count of `test_smuggler_tier2_data.lua` (349 distinct questName strings, 333 SWG names) and the Storm surrender order of
+  `test_master_trainer_imperial_surrender.lua` and `test_storm_tier3_missions_surrender.lua` (Colzet, Oberhaur, Alozen, Denner, Kilnstrider, Declann).

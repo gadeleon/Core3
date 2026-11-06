@@ -151,6 +151,9 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 	-- storm-tier3-denner-missions: ... and Denner's reset between Alozen's and Declann's
 	H.spyOn(StormSquadronScreenplay, "resetDennerQuests", function() order[#order + 1] = "resetDennerQuests" end)
 
+	-- storm-tier4-kilnstrider-missions: ... and Kilnstrider's reset between Denner's and Declann's
+	H.spyOn(StormSquadronScreenplay, "resetKilnstriderQuests", function() order[#order + 1] = "resetKilnstriderQuests" end)
+
 	local reset = H.spyOn(M.mts(), "resetDeclannQuests", function() order[#order + 1] = "declann" end)
 
 	local player = M.pilot({ squadron = "black_epsilon" })
@@ -173,7 +176,7 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 		if squadron == "inquisition" then
 			lu.assertEquals(order, { "resetBarnQuests", "resetFaZollQuests", "resetVrkeQuests", "resetJaceYiasoQuests", "declann" }, squadron .. ": Barn's reset runs first, then Fa'Zoll's, then Vrke's, then Ja'ce's, then Declann's")
 		else
-			lu.assertEquals(order, { "resetColzetQuests", "resetOberhaurQuests", "resetAlozenQuests", "resetDennerQuests", "declann" }, squadron .. ": Colzet's reset runs first, then Oberhaur's, then Alozen's, then Denner's, then Declann's (storm-tier3-denner-missions)")
+			lu.assertEquals(order, { "resetColzetQuests", "resetOberhaurQuests", "resetAlozenQuests", "resetDennerQuests", "resetKilnstriderQuests", "declann" }, squadron .. ": Colzet's reset runs first, then Oberhaur's, then Alozen's, then Denner's, then Kilnstrider's, then Declann's (storm-tier3-denner-missions, storm-tier4-kilnstrider-missions)")
 		end
 	end
 end

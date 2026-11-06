@@ -154,7 +154,7 @@ end
 function TestBarlowWiring:test_the_spawn_row_at_line_33_is_unchanged()
 	local lines = fileLines(readFile(H.SCRIPTS .. "screenplays/poi/yavin4_imperial_base.lua"))
 
-	lu.assertEquals(lines[33], '\t\t{"barlow", 60, 4028.91, 37, -6201.62, 150, 0, "npc_imperial"}', "yavin4_imperial_base.lua:33")
+	lu.assertEquals(lines[33], '\t\t{"barlow", 60, 4028.91, 37, -6201.62, 150, 0, "npc_imperial"},', "yavin4_imperial_base.lua:33 (Barlow's row, unchanged but for the comma before Denner's row (storm-tier3-denner))")
 end
 
 return nil

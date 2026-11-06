@@ -121,7 +121,8 @@ function TestStormNymWiring:test_the_three_template_includes_follow_oberhaurs_di
 
 	-- storm-tier2-alozen: Alozen's include follows technician 3's and is the last line now
 	lu.assertEquals(trim(lines[at + 4] or ""), 'includeFile("conversations/space/imperial/storm_squadron/alozen_convo.lua")', "space_conversations.lua: Alozen's include directly after technician 3's (storm-tier2-alozen)")
-	lu.assertEquals(last, at + 4, "space_conversations.lua: Alozen's include is the last line of the file (technician 3's was before storm-tier2-alozen)")
+	lu.assertEquals(trim(lines[at + 5] or ""), 'includeFile("conversations/space/imperial/storm_squadron/denner_convo.lua")', "space_conversations.lua: Denner's include directly after Alozen's (storm-tier3-denner)")
+	lu.assertEquals(last, at + 5, "space_conversations.lua: Denner's include is the last line of the file (technician 3's was before storm-tier2-alozen, Alozen's before storm-tier3-denner)")
 end
 
 -- AC-1: screenplays.lua, the three handler lines directly after Oberhaur's, no blank line, then the blank line and the Master Trainers block
@@ -148,8 +149,9 @@ function TestStormNymWiring:test_the_three_handler_includes_follow_oberhaurs_dir
 
 	-- storm-tier2-alozen: Alozen's handler include follows technician 3's, so the blank line and the Master Trainers block move down by one
 	lu.assertEquals(lines[at + 4], 'includeFile("space/conversations/imperial/storm_squadron/alozenConvoHandler.lua")', "screenplays.lua: Alozen's include follows technician 3's (storm-tier2-alozen)")
-	lu.assertEquals(lines[at + 5], "", "screenplays.lua: the blank line follows Alozen's include")
-	lu.assertEquals(lines[at + 6], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
+	lu.assertEquals(lines[at + 5], 'includeFile("space/conversations/imperial/storm_squadron/dennerConvoHandler.lua")', "screenplays.lua: Denner's include follows Alozen's (storm-tier3-denner)")
+	lu.assertEquals(lines[at + 6], "", "screenplays.lua: the blank line follows Denner's include (storm-tier3-denner)")
+	lu.assertEquals(lines[at + 7], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
 end
 
 -- AC-1, D-6, E-1: nym_fuel_tech / _2 / _3 are conversable, invulnerable and attach technician n's template; the rest of the template is as it was

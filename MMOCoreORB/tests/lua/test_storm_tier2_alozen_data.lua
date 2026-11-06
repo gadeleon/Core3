@@ -390,7 +390,7 @@ function TestAlozenWiring:test_the_spawn_row_at_line_32_has_the_imperial_mood()
 	local lines = linesOf(readFile(H.SCRIPTS .. A.SPAWN_FILE))
 
 	lu.assertEquals(lines[32], '\t\t{"alozen", 300, 0.003, 0.125, -5.558, 0, 8735518, "npc_imperial"},', "yavin4_imperial_base.lua:32")
-	lu.assertEquals(lines[33], '\t\t{"barlow", 60, 4028.91, 37, -6201.62, 150, 0, "npc_imperial"}', "yavin4_imperial_base.lua:33 (Barlow's row, unchanged)")
+	lu.assertEquals(lines[33], '\t\t{"barlow", 60, 4028.91, 37, -6201.62, 150, 0, "npc_imperial"},', "yavin4_imperial_base.lua:33 (Barlow's row, unchanged but for the comma before Denner's row (storm-tier3-denner))")
 end
 
 -- AC-1
@@ -413,7 +413,8 @@ function TestAlozenWiring:test_the_template_include_line_is_uncommented_exactly_
 		last = last - 1
 	end
 
-	lu.assertEquals(last, at + 1, "space_conversations.lua: Alozen's include is the last line of the file")
+	lu.assertEquals((tostring(lines[at + 2]):gsub("^%s+", "")), 'includeFile("conversations/space/imperial/storm_squadron/denner_convo.lua")', "space_conversations.lua: Denner's include directly after Alozen's (storm-tier3-denner)")
+	lu.assertEquals(last, at + 2, "space_conversations.lua: Denner's include is the last line of the file (storm-tier3-denner)")
 end
 
 -- AC-1
@@ -429,8 +430,9 @@ function TestAlozenWiring:test_the_handler_include_line_follows_technician_3s_ex
 
 	lu.assertNotNil(at, "screenplays.lua: technician 3's handler include")
 	lu.assertEquals(lines[at + 1], 'includeFile("space/conversations/imperial/storm_squadron/alozenConvoHandler.lua")', "screenplays.lua: Alozen's handler include, directly after technician 3's")
-	lu.assertEquals(lines[at + 2], "", "screenplays.lua: the blank line follows Alozen's include")
-	lu.assertEquals(lines[at + 3], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
+	lu.assertEquals(lines[at + 2], 'includeFile("space/conversations/imperial/storm_squadron/dennerConvoHandler.lua")', "screenplays.lua: Denner's handler include follows Alozen's (storm-tier3-denner)")
+	lu.assertEquals(lines[at + 3], "", "screenplays.lua: the blank line follows Denner's include (storm-tier3-denner)")
+	lu.assertEquals(lines[at + 4], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows (storm-tier3-denner)")
 end
 
 ---------------------------------------------------------------------------------------------

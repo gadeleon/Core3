@@ -1,6 +1,12 @@
 -- Shared test data and builders for Storm Squadron tier 3 (Captain Denner), not a test file.
 -- Spec: .claude/work/storm-tier3-denner-missions/01-spec.md (Part A: Content contract, Data mapping, Appendix B).
--- Part B (storm-tier3-denner: the conversation) extends this file.
+-- Part B (storm-tier3-denner: the conversation, spec .claude/work/storm-tier3-denner/01-spec.md) extends this file, keeping every export above it:
+--   D.TEMPLATE / D.HANDLER / D.PREFIX / D.STF and the file names of Denner's template, handler, NPC and spawn row
+--   D.SCREENS / D.screenRow / D.screenIds / D.walkTo   Appendix A (storm_tier3_screens_data.lua, generated from the spec table by a scratch script)
+--   D.MISSIONS / D.TRAIN / D.TRAINING_SCREENS / D.START_SCREENS / D.REWARD_SCREENS   the handler's tables (Content contract 2, table H)
+--   D.loadConversation() / D.requireConversation(lu)   the server's load of Denner's template and handler (load errors are recorded, not raised)
+--   D.pilot{failed, won, attempted, ...}   extra mission states on top of the Part A options
+--   D.npc / D.talk / D.firstScreen / D.drive   H.converse from the first screen / from a given screen
 --
 -- Everything below is copied from the spec, not read from the production scripts, so a wrong production value fails a test instead of
 -- agreeing with itself:
@@ -570,6 +576,334 @@ function D.flyer(zone)
 		pilot = "imperial",
 		ship = { x = -7000, z = -7000, y = -7000, factionHash = getHashCode("imperial") },
 	})
+end
+
+---------------------------------------------------------------------------------------------
+-- Part B: Captain Denner's conversation (storm-tier3-denner)
+---------------------------------------------------------------------------------------------
+
+D.TEMPLATE = "denner_convo_template"
+D.HANDLER = "dennerConvoHandler"
+D.PREFIX = "@conversation/tatooine_imperial_tier3:"
+D.STF = "conversation/tatooine_imperial_tier3"
+
+D.TEMPLATE_FILE = "mobile/conversations/space/imperial/storm_squadron/denner_convo.lua"
+D.HANDLER_FILE = "screenplays/space/conversations/imperial/storm_squadron/dennerConvoHandler.lua"
+D.NPC_FILE = "mobile/space/denner.lua"
+D.SPAWN_FILE = "screenplays/poi/yavin4_imperial_base.lua"
+D.CONVOS_FILE = "mobile/conversations/space/space_conversations.lua"
+D.SCREENPLAYS_FILE = "screenplays/space/screenplays.lua"
+
+D.TEMPLATE_INCLUDE = 'includeFile("conversations/space/imperial/storm_squadron/denner_convo.lua")'
+D.HANDLER_INCLUDE = 'includeFile("space/conversations/imperial/storm_squadron/dennerConvoHandler.lua")'
+D.SPAWN_ROW = '\t\t{"denner", 300, -4.0, 0.125, -3.683, 90, 8735521, ""}'
+D.BARLOW_ROW = '\t\t{"barlow", 60, 4028.91, 37, -6201.62, 150, 0, "npc_imperial"},'
+
+D.STANDING = 100
+D.TIER2_M3_REWARD = "imperial_ss_6:reward"
+
+-- Content contract 2: MISSIONS (head global, SSP constants of the head and the chain end) and the screens of each mission
+D.MISSIONS = {
+	{ n = 1, head = D.M1[1], questString = "TIER3_QUEST_STRING_1", endString = "TIER3_QUEST_STRING_1_SIDE4", status = D.STATUS[1],
+	  offer = "m1_offer", failed = "m1_failed", reward = "m1_reward", item = D.ITEMS[1] },
+	{ n = 2, head = D.M2[1], questString = "TIER3_QUEST_STRING_2", endString = "TIER3_QUEST_STRING_2_SIDE5", status = D.STATUS[2],
+	  offer = "m2_offer", failed = "m2_failed", reward = "m2_reward", item = D.ITEMS[2] },
+	{ n = 3, head = D.M3[1], questString = "TIER3_QUEST_STRING_3", endString = "TIER3_QUEST_STRING_3_SIDE4", status = D.STATUS[3],
+	  offer = "m3_offer", failed = "m3_failed", reward = "m3_reward", item = D.ITEMS[3] },
+	{ n = 4, head = D.M4[1], questString = "TIER3_QUEST_STRING_4", endString = "TIER3_QUEST_STRING_4_SIDE3", status = D.STATUS[4],
+	  offer = "m4_offer", failed = "m4_failed", reward = "m4_reward", item = D.ITEMS[4] },
+}
+
+-- Content contract 2: TRAIN_CHOICES in menu order; the trained screens are shared by the four missions (D-4); the grant lines are FD-2's
+D.TRAIN = {
+	{ x = "starships", skill = "pilot_imperial_navy_starships_03", reply = "s_40cda759", trained = "trained_starships", trainedSid = "s_5f736ba3" },
+	{ x = "weapons", skill = "pilot_imperial_navy_weapons_03", reply = "s_a9aeb386", trained = "trained_weapons", trainedSid = "s_645af1cb" },
+	{ x = "procedures", skill = "pilot_imperial_navy_procedures_03", reply = "s_ef7a2df5", trained = "trained_procedures", trainedSid = "s_c4f3b92c" },
+	{ x = "droid", skill = "pilot_imperial_navy_droid_03", reply = "s_473d09d8", trained = "trained_droid", trainedSid = "s_3ec1a288" },
+}
+
+-- Content contract 2: TRAINING_SCREENS, screen -> mission
+D.TRAINING_SCREENS = {
+	m1_training_813c7eed = 1, m1_training_cb3f07d5 = 1, m1_training_c198d74c = 1,
+	m2_training_dc98dda7 = 2, m2_training_64617aad = 2, m2_training_a3f5c141 = 2,
+	m3_training_1d7c7ed2 = 3, m3_training_612db735 = 3, m3_training_41ecd1f = 3,
+	m4_training_df0f8037 = 4, m4_training_d837376f = 4, m4_training_30651d99 = 4,
+}
+
+-- Appendix A
+D.SCREENS = require("storm_tier3_screens_data")
+
+-- Conversation flow 3, table H: the screens that start / pay a mission, screen -> mission (derived from Appendix A's H column)
+D.START_SCREENS, D.REWARD_SCREENS = {}, {}
+
+for _, row in ipairs(D.SCREENS) do
+	local start = row.h:match("^start M(%d)$")
+	local pay = row.h:match("^pay M(%d)$")
+
+	if start then
+		D.START_SCREENS[row.id] = tonumber(start)
+	elseif pay then
+		D.REWARD_SCREENS[row.id] = tonumber(pay)
+	end
+end
+
+function D.screenRow(id)
+	for _, row in ipairs(D.SCREENS) do
+		if row.id == id then
+			return row
+		end
+	end
+end
+
+function D.screenIds()
+	local out = {}
+
+	for i, row in ipairs(D.SCREENS) do
+		out[i] = row.id
+	end
+
+	table.sort(out)
+	return out
+end
+
+-- The reply sids from `from` to `to` over the static options of Appendix A (breadth-first, in option order); nil when there is none.
+-- `avoid` (set of screen ids) are never entered. Returns replies, ids (the screens shown, `from` first).
+function D.walkTo(from, to, avoid)
+	local queue, seen = { { id = from, replies = {}, ids = { from } } }, { [from] = true }
+
+	while #queue > 0 do
+		local cur = table.remove(queue, 1)
+
+		if cur.id == to then
+			return cur.replies, cur.ids
+		end
+
+		for _, o in ipairs(D.screenRow(cur.id).options) do
+			if not seen[o[2]] and not (avoid and avoid[o[2]]) then
+				seen[o[2]] = true
+
+				local replies, ids = { table.unpack(cur.replies) }, { table.unpack(cur.ids) }
+
+				replies[#replies + 1] = o[1]
+				ids[#ids + 1] = o[2]
+				queue[#queue + 1] = { id = o[2], replies = replies, ids = ids }
+			end
+		end
+	end
+end
+
+-- The reply path (and the screens shown) from mission n's reward screen to the first training screen of the mission (breadth first over Appendix A)
+function D.walkToTraining(n)
+	local start = D.MISSIONS[n].reward
+	local found = { [start] = { ids = { start }, replies = {} } }
+	local queue = { start }
+
+	while #queue > 0 do
+		local id = table.remove(queue, 1)
+
+		if D.TRAINING_SCREENS[id] == n then
+			return found[id].replies, found[id].ids
+		end
+
+		for _, o in ipairs(D.screenRow(id).options) do
+			if found[o[2]] == nil then
+				local ids, replies = { table.unpack(found[id].ids) }, { table.unpack(found[id].replies) }
+
+				ids[#ids + 1] = o[2]
+				replies[#replies + 1] = o[1]
+				found[o[2]] = { ids = ids, replies = replies }
+				queue[#queue + 1] = o[2]
+			end
+		end
+	end
+
+	error("no walk from " .. start .. " to a training screen of mission " .. n)
+end
+
+-- The set of screens reachable from `from` over the static options of Appendix A (including `from`)
+function D.reachable(from)
+	local seen, queue = { [from] = true }, { from }
+
+	while #queue > 0 do
+		local id = table.remove(queue, 1)
+
+		for _, o in ipairs(D.screenRow(id).options) do
+			if not seen[o[2]] then
+				seen[o[2]] = true
+				queue[#queue + 1] = o[2]
+			end
+		end
+	end
+
+	return seen
+end
+
+D.loadErrors = {}
+
+local convoLoaded = false
+
+local function try(label, fn)
+	local ok, err = pcall(fn)
+
+	if not ok then
+		D.loadErrors[#D.loadErrors + 1] = label .. ": " .. tostring(err)
+	end
+end
+
+-- The server's load of Denner's template and handler (after the squadron files). A missing production file is recorded in D.loadErrors, not raised,
+-- so the tests of a red run fail on an assertion with the reason.
+function D.loadConversation()
+	if convoLoaded then
+		return
+	end
+
+	convoLoaded = true
+	A.load()
+	try("denner_convo.lua", function() H.loadMobile("conversations/space/imperial/storm_squadron/denner_convo.lua") end)
+	try("dennerConvoHandler.lua", function() H.loadScreenplay("space/conversations/imperial/storm_squadron/dennerConvoHandler.lua") end)
+end
+
+function D.conversationProblems()
+	return A.problems() .. " | " .. table.concat(D.loadErrors, " | ")
+end
+
+-- Fails with the load problems when the template or handler could not be loaded
+function D.requireConversation(lu)
+	D.loadConversation()
+	lu.assertNotNil(H.conversationTemplateTable(D.TEMPLATE), D.TEMPLATE .. " is not registered by addConversationTemplate. Load problems: " .. D.conversationProblems())
+	lu.assertNotNil(rawget(_G, D.HANDLER), D.HANDLER .. " is not defined. Load problems: " .. D.conversationProblems())
+end
+
+function D.handler()
+	D.loadConversation()
+
+	return H.expectGlobal(D.HANDLER, "Denner's conversation handler (storm-tier3-denner). Load problems: " .. D.conversationProblems())
+end
+
+-- Extra mission states (on top of the Part A options of D.pilot):
+--   failed     n: mission n attempted, nothing complete, nothing active (the chain was failed or aborted)
+--   won        n: mission n won (every chain member complete) and :attempted set, the reward unpaid
+--   attempted  n: just the :attempted key of mission n
+-- The earlier missions are `missions` (won and paid) and `t3` (the skills held); the player's name is T.FULL_NAME.
+local pilotPartA = D.pilot
+
+function D.pilot(o)
+	o = o or {}
+
+	local base = {}
+
+	for k, v in pairs(o) do
+		base[k] = v
+	end
+
+	base.failed, base.won, base.attempted = nil, nil, nil
+
+	local player = pilotPartA(base)
+
+	if o.failed then
+		H.setQuestStatus(player, D.STATUS[o.failed] .. ":attempted", 1)
+	end
+
+	if o.won then
+		for _, global in ipairs(D.CHAINS[o.won]) do
+			D.setState(player, global, "complete")
+		end
+
+		H.setQuestStatus(player, D.STATUS[o.won] .. ":attempted", 1)
+	end
+
+	if o.attempted then
+		H.setQuestStatus(player, D.STATUS[o.attempted] .. ":attempted", 1)
+	end
+
+	return player
+end
+
+function D.npc() return H.newNpc({ name = "Denner" }) end
+
+local function asDenner(fn, ...)
+	local template, handler, npc = T.TEMPLATE, T.HANDLER, T.npc
+
+	T.TEMPLATE, T.HANDLER, T.npc = D.TEMPLATE, D.HANDLER, D.npc
+
+	local results = table.pack(pcall(fn, ...))
+
+	T.TEMPLATE, T.HANDLER, T.npc = template, handler, npc
+
+	if not results[1] then
+		error(results[2], 0)
+	end
+
+	return table.unpack(results, 2, results.n)
+end
+
+local function requireLoaded()
+	D.loadConversation()
+
+	if H.conversationTemplateTable(D.TEMPLATE) == nil or rawget(_G, D.HANDLER) == nil then
+		error("Denner's conversation is not loaded. Load problems: " .. D.conversationProblems(), 3)
+	end
+end
+
+-- Talks to Denner from the first screen. choices as for H.converse (0-based indexes, option sids, hooks).
+function D.talk(player, choices)
+	requireLoaded()
+
+	return H.converse({ template = D.TEMPLATE, player = player, npc = D.npc(), choices = choices })
+end
+
+function D.firstScreen(player) return D.talk(player)[1].id end
+
+-- Starts a conversation as if the pilot had just chosen a link to screen `startId`, then follows `choices`
+function D.drive(player, startId, choices)
+	requireLoaded()
+
+	return asDenner(T.drive, player, startId, choices)
+end
+
+D.ids = T.ids
+D.optionSids = T.optionSids
+D.linksOf = T.linksOf
+D.items = T.items
+
+-- The tier 3 skills (of the four) the player holds, in D.TRAIN order
+function D.held3(player)
+	local out = {}
+
+	for _, t in ipairs(D.TRAIN) do
+		if CreatureObject(player):hasSkill(t.skill) then
+			out[#out + 1] = t.skill
+		end
+	end
+
+	return out
+end
+
+-- The first k indexes of D.TRAIN (the tier 3 skills a pilot who chose k times holds)
+function D.t3(k)
+	local out = {}
+
+	for i = 1, k do
+		out[i] = i
+	end
+
+	return out
+end
+
+function D.free() return H.Engine.callsTo("awardSkill") end
+function D.bought() return H.Engine.callsTo("skillManagerAwardSkill") end
+
+function D.standing(player) return player.ghost.factionStanding.imperial end
+
+-- "mission n is won and unpaid, missions 1..n-1 are paid with their skills chosen (count n - 1)": the pilot a reward screen opens for
+function D.rewardPilot(n, extra)
+	local o = { missions = n - 1, t3 = D.t3(n - 1), won = n }
+
+	for k, v in pairs(extra or {}) do
+		o[k] = v
+	end
+
+	return D.pilot(o)
 end
 
 return D

@@ -529,8 +529,9 @@ for _, name in ipairs(listLua("bin/scripts/screenplays/space")) do
 	-- smuggler-tier2-shamdon SC-1/SC-2: the escort and recovery attack waves read the player's ship faction (test_smuggler_tier2_pins.lua pins those two hunks).
 	-- smuggler-tier4-nirame SC-1: SpaceDeliveryScreenplay gains per-leg zones (test_smuggler_tier4_pins.lua pins that change).
 	-- storm-tier2-oberhaur: SpaceInspectScreenplay treats an empty validSpawns as "any spawner" (test_storm_tier2_pins.lua pins that change).
+	-- storm-tier3-denner-missions R-2: SpaceDutyEscortScreenplay's resetDutyMission clears the wave counter (one deleteData line; test_storm_tier3_missions_surrender/escort_wave tests cover it, the storm pins only list the changed files).
 	if name:match("^Space.*Screenplay%.lua$") and name ~= "SpacePatrolScreenplay.lua" and name ~= "SpaceEscortScreenplay.lua" and name ~= "SpaceRecoveryScreenplay.lua"
-		and name ~= "SpaceDeliveryScreenplay.lua" and name ~= "SpaceInspectScreenplay.lua" then
+		and name ~= "SpaceDeliveryScreenplay.lua" and name ~= "SpaceInspectScreenplay.lua" and name ~= "SpaceDutyEscortScreenplay.lua" then
 		TestCorsecWaypointsFilePins["test_" .. name:gsub("%.lua$", "") .. "_is_byte_identical_to_the_base"] = function()
 			local path = W.SPACE_DIR .. name
 			local text = W.readFile(path)

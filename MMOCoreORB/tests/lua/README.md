@@ -955,3 +955,28 @@ Alozen's `on_mission` gate sees it through the datapad (`SpaceHelpers:hasSpaceQu
 - Existing tests this feature edited (all listed in the test plan): the 65th `FIXTURE_COUNTS` entry (`space_convo_client_strings_data.lua` and eight test files), the include-adjacency
   anchors of `test_storm_tier2_nym_wiring.lua`, `test_storm_tier2_data.lua`, `test_master_trainer_{imperial,rebel}_wiring.lua`, the surrender order of
   `test_master_trainer_imperial_surrender.lua` (Colzet, Oberhaur, Alozen, Declann for Storm) and the coverage count of `test_smuggler_tier2_data.lua` (309 distinct questName strings, 293 SWG names).
+
+### Storm tier 3: Captain Denner's missions (storm-tier3-denner-missions)
+
+Part A of Captain Denner (Yavin 4 Imperial outpost) is the content without the conversation: the 20 `tatooine_imperial_tier3_*` quest tables (four chains, all `space_endor`; M3 runs
+`delivery_3` -> `destroy_3_b` -> `escort_3_a` -> `surprise_3_d` -> `survival_3_c`), the 20 `TIER3_QUEST_STRING_*` constants and `StormSquadronScreenplay:resetDennerQuests`
+(called by `SpaceHelpers:surrenderPilot` after Alozen's reset), the `cargoString` of the three inspect ships and one shared escort change: the split type `ATTACK_WAVE` (SC-1). Nothing here
+grants these quests in game; Part B (`storm-tier3-denner`) adds the conversation and extends `storm_tier3_data.lua`. The 20 quest `.tab` files (`fixtures/spacequest/<type>/`), the
+`inspect_cargo` tables `encrypted_rebel_data` and `rebel_plans`, the `space_mobile` excerpt (`space_mobile.storm_tier3_inspect.tab`: the two header rows plus SWG rows 1434, 1462, 1464) and the
+buildout excerpt `space_zones/buildout/space_endor.storm_tier3_points.tab` (the two header rows plus the 33 nav point and 4 spawner rows) are byte copies of SWG-Source (regenerate with
+`sed -n <line>p`, never edit); the orphan `destroy/tatooine_imperial_tier3_4` is deliberately not a fixture.
+
+`storm_tier3_data.lua` (`local D = require("storm_tier3_data")`, not a test file) builds on `storm_tier2_alozen_data.lua`: `D.load()`, `D.GLOBALS` / `D.CHAINS` / `D.M1` .. `D.M4` (chain
+order), `D.IDENTITY`, `D.QUEST_STRINGS`, `D.statusKeys()`, `D.POINTS` / `D.SPAWNERS`, `D.expected()` (Appendix B: every key of the 20 tables), the pilot builder
+`D.pilot{missions = k, t3 = {TRAIN indexes}, active = global, ...}` (a Storm pilot who finished tier 2; `missions` = Denner's missions won and paid; every other option goes to
+`A.pilot`) and `D.flyer(zone)` (an Imperial pilot in an Imperial ship, the runtime tests' player). Rewards are spec literals (D-A1): the SWG trainer script is Part B's fixture.
+
+**Escort wave split (SC-1).** `escort_tatooine_imperial_tier3_3_a` hands off 10 s after the pilot has destroyed every ship of the 3rd attack wave; reaching the last point first fails it.
+`test_storm_tier3_missions_escort_wave.lua` flies it: `fly(q)` (startQuest, rendezvous, escort spawn), `nextWave` / `clearWave` (wait for a wave, `H.destroyShip` each ship, so the SHIPDESTROYED
+observers run), `arrive` (one ENTEREDAREA per remaining point of the escort). The counter's shared-memory key `<playerID>:<className>:wavesCleared:` is pinned by the spec (D-A4) and two
+tests seed and read it. The same file runs every other kind of escort (COMPLETION, none, the escort duty) through the same waves and asserts they complete or fail as before (I-9).
+`test_storm_tier3_missions_runtime.lua` runs the four missions split by split (inspects with the REAL ship templates' `cargoString`, the patrol split, kills, assassinate escorts);
+`test_storm_tier3_missions_pins.lua` pins "nothing else moves" against `f605594875` through `git` (the escort type function by function) and skips once HEAD moves.
+- Existing tests this feature edited (all listed in the test plan): the coverage count of `test_smuggler_tier2_data.lua` (329 distinct questName strings, 313 SWG names), the surrender order of
+  `test_master_trainer_imperial_surrender.lua` (Colzet, Oberhaur, Alozen, Denner, Declann for Storm) and `test_space_trainer_rewards_pins.lua` (its SpaceQuestLogic pin now reads the rewards
+  commit, because SC-1 adds lines to the file).

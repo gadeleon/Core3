@@ -24,6 +24,7 @@ rebel_scout_fighter_tier3 = ShipAgent:new {
 	color2 = 59,
 	texture = 5,
 	questLoot = "encrypted_rebel_data",
+	cargoString = "encrypted_rebel_data", -- SWG space_mobile cargo encrypted_rebel_data; inspect quests tatooine_imperial_tier3_1_b and tatooine_imperial_tier3_2 (feature storm-tier3-denner-missions)
 	appearance = "rebel_pilot",
 
 	tauntType = "rebel_low",

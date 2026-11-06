@@ -28,6 +28,7 @@ function SpaceDutyEscortScreenplay:resetDutyMission(pPlayer)
 
 	-- Delete the stored escorted ship ID
 	deleteData(playerID .. ":" .. self.className .. ":escortID:")
+	deleteData(playerID .. ":" .. self.className .. ":wavesCleared:")
 
 	-- Delete player location data
 	deleteData(playerID .. ":" .. self.className .. ":location:")

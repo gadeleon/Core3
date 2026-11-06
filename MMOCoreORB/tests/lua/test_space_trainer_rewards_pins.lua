@@ -194,7 +194,9 @@ end
 -- AC-9: SQL differs only inside rewardPlayer's item loop, +4 lines
 function TestTrainerRewardsFilePins:test_SpaceQuestLogic_differs_from_the_base_only_inside_the_item_loop()
 	local before = D.linesOf(base(D.SQL))
-	local after = D.linesOf(now(D.SQL, true))
+	-- storm-tier3-denner-missions (SC-1) adds the ATTACK_WAVE split type to SpaceQuestLogic.lua after this feature: the "now" side is the rewards
+	-- commit itself, so the claim "the rewards commit changed only the item loop, +4 lines" stays true forever (as the squadron pins above do)
+	local after = D.linesOf(nowAtFeatureCommit(D.SQL))
 
 	local function find(lines, text)
 		local found

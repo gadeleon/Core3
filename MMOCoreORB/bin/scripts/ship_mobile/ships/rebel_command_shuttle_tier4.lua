@@ -24,6 +24,7 @@ rebel_command_shuttle_tier4 = ShipAgent:new {
 	color2 = 10,
 	texture = 1,
 	questLoot = "stolen_data",
+	cargoString = "stolen_data", -- SWG space_mobile cargo stolen_data; inspect quest tatooine_imperial_tier3_4_b (feature storm-tier3-denner-missions)
 	appearance = "rebel_pilot",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

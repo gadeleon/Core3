@@ -213,6 +213,9 @@ function SpaceEscortScreenplay:cleanUpQuestData(playerID)
 
 	-- Kill Count Tracking
 	deleteData(playerID .. ":" .. self.className .. ":" .. ":EscortKillCount:")
+
+	-- Cleared attack waves (ATTACK_WAVE split)
+	deleteData(playerID .. ":" .. self.className .. ":wavesCleared:")
 end
 
 function SpaceEscortScreenplay:setupEscort(pPlayer)
@@ -889,6 +892,13 @@ function SpaceEscortScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)
 
 		-- Escort is complete
 		if (shipProgress <= 0) then
+			local attackWaveSplit = (self.sideQuest and self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.ATTACK_WAVE)
+
+			-- The wave split is already pending: the pilot met the objective, the split ends the run
+			if (attackWaveSplit and readData(playerID .. ":" .. self.className .. ":wavesCleared:") >= self.sideQuestAttackWave) then
+				return 0
+			end
+
 			-- Send Thanks Message to Player
 			ShipAiAgent(pShip):tauntPlayer(pPlayer, "@spacequest/" .. self.questType .. "/" .. self.questName .. ":goodbye_" .. tostring(getRandomNumber(1, self.tauntData.goodbyeCount)))
 
@@ -903,8 +913,13 @@ function SpaceEscortScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)
 
 			CreatureObject(pPlayer):sendSystemMessage(questUpdate:_getObject())
 
-			-- Complete quest
-			createEvent(1000, self.className, "completeQuest", pPlayer, "true")
+			if (attackWaveSplit) then
+				-- Reached the destination before enough attack waves were destroyed (SWG destroyIsSuccess)
+				createEvent(1000, self.className, "failQuest", pPlayer, "true")
+			else
+				-- Complete quest
+				createEvent(1000, self.className, "completeQuest", pPlayer, "true")
+			end
 
 			return 0
 		end
@@ -916,6 +931,33 @@ function SpaceEscortScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)
 	end
 
 	return 0
+end
+
+-- Hand-off after the required attack waves were destroyed (SWG escort triggerOn): the escort leaves, the entry completes quietly and the side quest starts
+function SpaceEscortScreenplay:triggerAttackWaveSplit(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	if (not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	-- A new run started inside the delay has not earned the hand-off
+	if (readData(SceneObject(pPlayer):getObjectID() .. ":" .. self.className .. ":wavesCleared:") < self.sideQuestAttackWave) then
+		return
+	end
+
+	-- Escort and attack ships go first: completing the quest cleans up the escort ID
+	self:despawnShips(pPlayer)
+
+	self:completeQuest(pPlayer, "false")
+
+	-- Split Quest Alert
+	SpaceHelpers:sendQuestAlert(pPlayer, "@spacequest/" .. self.questType .. "/" .. self.questName .. ":split_quest_alert")
+
+	-- Trigger Sidequest
+	createEvent(1000, self.sideQuestType .. "_" .. self.sideQuestName, "startQuest", pPlayer, "")
 end
 
 function SpaceEscortScreenplay:notifyEscortShipDestroyed(pShipAgent, pKillerShip)
@@ -1007,6 +1049,17 @@ function SpaceEscortScreenplay:notifyAttackShipDestroyed(pShipAgent, pKillerShip
 		if (pEscort ~= nil and SceneObject(pEscort):isShipAiAgent()) then
 			-- Send Thanks Message to Player
 			ShipAiAgent(pEscort):tauntPlayer(pPlayer, "@spacequest/" .. self.questType .. "/" .. self.questName .. ":thanks_" .. tostring(getRandomNumber(1, self.tauntData.thanksCount)))
+		end
+	end
+
+	-- Count the cleared wave
+	if (#newIDs == 0) then
+		local wavesCleared = readData(missionOwnerID .. ":" .. self.className .. ":wavesCleared:") + 1
+
+		writeData(missionOwnerID .. ":" .. self.className .. ":wavesCleared:", wavesCleared)
+
+		if (self.sideQuest and self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.ATTACK_WAVE and wavesCleared == self.sideQuestAttackWave) then
+			createEvent(self.sideQuestDelay * 1000, self.className, "triggerAttackWaveSplit", pPlayer, "")
 		end
 	end
 

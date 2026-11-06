@@ -1,0 +1,5 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	s	s
+object/mobile/dressed_nym_technician_2.iff	           0	           1	           0	    0.178781	           0	   -0.983889	    -9.31051	     194.949	     10.5954	$|	script.conversation.nym_technician_2,script.space.characters.technician
+object/mobile/dressed_nym_technician_1.iff	           0	           1	           0	   0.0591655	           0	   -0.998248	    -9.97812	     194.931	     10.5737	$|	script.conversation.nym_technician_1,script.space.characters.technician
+object/mobile/dressed_nym_technician_3.iff	           0	           1	           0	  -0.0919856	           0	    -0.99576	    -8.56589	     194.971	     10.5967	$|	script.conversation.nym_technician_3,script.space.characters.technician

@@ -111,3 +111,6 @@ includeFile("conversations/space/imperial/inquisition_squadron/jace_yiaso_convo.
 -- Storm Squadron
 includeFile("conversations/space/imperial/storm_squadron/akal_colzet_convo.lua")
 includeFile("conversations/space/imperial/storm_squadron/oberhaur_convo.lua")
+includeFile("conversations/space/imperial/storm_squadron/nym_technician_1_convo.lua")
+includeFile("conversations/space/imperial/storm_squadron/nym_technician_2_convo.lua")
+includeFile("conversations/space/imperial/storm_squadron/nym_technician_3_convo.lua")

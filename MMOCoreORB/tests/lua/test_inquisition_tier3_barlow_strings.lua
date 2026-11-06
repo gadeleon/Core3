@@ -45,7 +45,7 @@ TestBarlowStrings = {}
 function TestBarlowStrings:setUp() H.reset() end
 
 -- AC-4: the ratchet entry
-function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and_61_entries_in_all()
+function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and_64_entries_in_all()
 	local n = 0
 
 	for _ in pairs(KD.FIXTURE_COUNTS) do
@@ -53,7 +53,7 @@ function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and
 	end
 
 	lu.assertEquals(KD.FIXTURE_COUNTS[FILE], 172, "FIXTURE_COUNTS[" .. FILE .. "]")
-	lu.assertEquals(n, 61, "FIXTURE_COUNTS entries") -- 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur
+	lu.assertEquals(n, 64, "FIXTURE_COUNTS entries") -- 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians
 end
 
 -- AC-4: nothing is allowed to be unresolved

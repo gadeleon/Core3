@@ -21,12 +21,16 @@
 -- inquisition-tier4-jace-yiaso: Grand Inquisitor Ja'ce Yiaso's conversation/naboo_imperial_tier4 (279 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
 -- storm-tier1-akal-colzet: Lt. Akal Colzet's conversation/tatooine_imperial_trainer_1 (347 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
 -- storm-tier2-oberhaur: Commander Oberhaur's conversation/tatooine_imperial_trainer_2 (190 ids, served from patch_12_00.tre) is new and fully resolved (the 61st file); KNOWN_GAPS stays {}.
+-- storm-tier2-nym-technicians: the three Nym fuel technicians' conversation/nym_technician_1 (38 ids), _2 (16) and _3 (28), all served from patch_12_00.tre, are new and fully resolved (the 62nd to 64th files); KNOWN_GAPS stays {}.
 
 local D = {}
 
 D.KNOWN_GAPS = {}
 
 D.FIXTURE_COUNTS = {
+	["conversation/nym_technician_1"] = 38,
+	["conversation/nym_technician_2"] = 16,
+	["conversation/nym_technician_3"] = 28,
 	["chassis_npc"] = 17,
 	["conversation/chassis_npc"] = 12,
 	["conversation/corellia_imperial_tier3"] = 132,

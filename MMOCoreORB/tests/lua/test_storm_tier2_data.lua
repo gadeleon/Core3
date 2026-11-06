@@ -433,8 +433,13 @@ function TestStormT2Wiring:test_the_handler_include_line_follows_colzets_handler
 
 	lu.assertNotNil(at, "screenplays.lua: Colzet's handler include")
 	lu.assertEquals(lines[at + 1], 'includeFile("space/conversations/imperial/storm_squadron/oberhaurConvoHandler.lua")', "screenplays.lua: Oberhaur's handler include, directly after Colzet's")
-	lu.assertEquals(lines[at + 2], "", "screenplays.lua: the blank line follows Oberhaur's include")
-	lu.assertEquals(lines[at + 3], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
+	-- storm-tier2-nym-technicians: the three technician handler includes now follow Oberhaur's directly (the blank line and the Master Trainers block move down by three)
+	for n = 1, 3 do
+		lu.assertEquals(lines[at + 1 + n], 'includeFile("space/conversations/imperial/storm_squadron/nymTechnician' .. n .. 'ConvoHandler.lua")', "screenplays.lua: technician " .. n .. "'s include, directly after Oberhaur's and the earlier technicians'")
+	end
+
+	lu.assertEquals(lines[at + 5], "", "screenplays.lua: the blank line follows the last technician's include")
+	lu.assertEquals(lines[at + 6], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
 end
 
 -- AC-1: the T1 pin (Colzet's handler include directly after the squadron include and a blank line) holds

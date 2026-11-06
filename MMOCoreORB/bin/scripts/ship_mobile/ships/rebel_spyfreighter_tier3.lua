@@ -24,6 +24,7 @@ rebel_spyfreighter_tier3 = ShipAgent:new {
 	color2 = 10,
 	texture = 1,
 	questLoot = "rebel_plans_impt3",
+	cargoString = "rebel_plans", -- SWG space_mobile cargo rebel_plans_impt3 (inspect_cargo row rebel_plans); inspect quest naboo_imperial_tier3_3_c (feature inquisition-tier3-vrke)
 	appearance = "rebel_pilot",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

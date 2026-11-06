@@ -162,6 +162,7 @@ includeFile("space/conversations/imperial/inquisition_squadron/barnSinkkoConvoHa
 includeFile("space/conversations/imperial/inquisition_squadron/faZollConvoHandler.lua")
 includeFile("space/conversations/imperial/inquisition_squadron/vrkeConvoHandler.lua")
 includeFile("space/conversations/imperial/inquisition_squadron/barlowConvoHandler.lua")
+includeFile("space/conversations/imperial/inquisition_squadron/jaceYiasoConvoHandler.lua")
 
 -- Storm Squadron
 includeFile("space/squadrons/StormSquadronScreenplay.lua")

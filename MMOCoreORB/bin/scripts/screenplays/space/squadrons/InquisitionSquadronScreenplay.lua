@@ -1151,6 +1151,772 @@ assassinate_naboo_imperial_tier3_4_c = SpaceAssassinateScreenplay:new {
 registerScreenPlay("assassinate_naboo_imperial_tier3_4_c", true)
 
 --[[
+	Tier 4 -- Grand Inquisitor Ja'ce Yiaso (Naboo, Emperor's Retreat; Dathomir)
+	Ported from SWG-Source naboo_imperial_tier4_1..4, their splits and the four tier 4 duties; feature inquisition-tier4-jace-yiaso
+]]
+
+-- Mission 1: Patrol > Inspect > Surprise attack > Delivery (no pickup)
+patrol_naboo_imperial_tier4_1 = SpacePatrolScreenplay:new {
+	className = "patrol_naboo_imperial_tier4_1",
+
+	questName = "naboo_imperial_tier4_1",
+	questType = "patrol",
+
+	questZone = "space_dathomir",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_imperial_sds_boltdriver.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "naboo_imperial_tier4_1_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT,
+
+	sideQuestPatrolStart = 2,
+	sideQuestDelay = 25,
+
+	patrolPoints = {
+		{patrolPointName = "naboo_imperial_tier4_patrol1_1", x = 4262, z = 1755, y = -2347, patrolNumber = 1, radius = 150},
+		{patrolPointName = "naboo_imperial_tier4_patrol1_2", x = 5506, z = 2853, y = -2063, patrolNumber = 2, radius = 150},
+		{patrolPointName = "naboo_imperial_tier4_patrol1_3", x = 7049, z = 4215, y = -1712, patrolNumber = 3, radius = 150},
+	},
+}
+
+registerScreenPlay("patrol_naboo_imperial_tier4_1", true)
+
+inspect_naboo_imperial_tier4_1_a = SpaceInspectScreenplay:new {
+	className = "inspect_naboo_imperial_tier4_1_a",
+
+	questName = "naboo_imperial_tier4_1_a",
+	questType = "inspect",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "naboo_imperial_tier4_1_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 15, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "patrol_naboo_imperial_tier4_1",
+	parentQuestType = "patrol",
+	parentQuestName = "naboo_imperial_tier4_1",
+
+	-- Screenplay Specific Variables
+	shipList = {"crystal_smuggler_yt1300_tier4"},
+	validSpawns = {
+		{spawnName = "naboo_imperial_tier4_inspect1_spawner", x = 7606, z = 4673, y = -1681},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "glowing_crystals",
+}
+
+registerScreenPlay("inspect_naboo_imperial_tier4_1_a", true)
+
+destroy_surpriseattack_naboo_imperial_tier4_1_b = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_naboo_imperial_tier4_1_b",
+
+	questName = "naboo_imperial_tier4_1_b",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "naboo_imperial_tier4_1_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "inspect_naboo_imperial_tier4_1_a",
+	parentQuestType = "inspect",
+	parentQuestName = "naboo_imperial_tier4_1_a",
+
+	surpriseAttackShips = {
+		zone = "space_dathomir",
+		spawns = {{count = 6, shipName = "coynite_merc_pulsar_tier4"}},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_naboo_imperial_tier4_1_b", true)
+
+delivery_no_pickup_naboo_imperial_tier4_1_c = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_naboo_imperial_tier4_1_c",
+
+	questName = "naboo_imperial_tier4_1_c",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "destroy_surpriseattack_naboo_imperial_tier4_1_b",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "naboo_imperial_tier4_1_b",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier4",
+	deliveryPoint = {patrolPointName = "naboo_imperial_tier3_delivery3_pickup", x = 4824, z = -1000, y = 264},
+
+	attackShipLists = {
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+		},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_naboo_imperial_tier4_1_c", true)
+
+-- Mission 2: Recovery > Rescue > Surprise attack > Recovery
+recovery_naboo_imperial_tier4_2 = SpaceRecoveryScreenplay:new {
+	className = "recovery_naboo_imperial_tier4_2",
+
+	questName = "naboo_imperial_tier4_2",
+	questType = "recovery",
+
+	questZone = "space_dathomir",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_imperial_cygnus_holoscreen.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "rescue",
+	sideQuestName = "naboo_imperial_tier4_2_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+	recoverShip = "crystal_smuggler_heavy_tier4",
+
+	escortShips = {},
+
+	preRecoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recovery1_1", x = 6480, z = -506, y = -2013, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_2", x = 5932, z = -978, y = 2960, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_3", x = 2864, z = -1390, y = 4050, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_4", x = -2176, z = -1720, y = 5470, escortNumber = 4, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_5", x = -28, z = -1930, y = 6578, escortNumber = 5, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recovery1_6", x = 975, z = 225, y = 3781, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_7", x = -2095, z = 2334, y = 3374, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_8", x = -4455, z = 2935, y = 4075, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+		},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_naboo_imperial_tier4_2", true)
+
+rescue_naboo_imperial_tier4_2_a = SpaceRescueScreenplay:new {
+	className = "rescue_naboo_imperial_tier4_2_a",
+
+	questName = "naboo_imperial_tier4_2_a",
+	questType = "rescue",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "naboo_imperial_tier4_2_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_naboo_imperial_tier4_2",
+	parentQuestType = "recovery",
+	parentQuestName = "naboo_imperial_tier4_2",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "naboo_imperial_tier4_rescue1_1", x = -5889, z = 2454, y = 5119},
+		{patrolPointName = "naboo_imperial_tier4_rescue1_2", x = -6996, z = 1990, y = 1981},
+		{patrolPointName = "naboo_imperial_tier4_rescue1_3", x = -7528, z = 2452, y = -685},
+		{patrolPointName = "naboo_imperial_tier4_rescue1_4", x = -7505, z = 2904, y = -2924},
+	},
+
+	targetShipType = "imp_lambda_recon_tier4",
+	targetArrivalDelay = 30,
+
+	attackShipLists = {
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_neutron_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+		},
+
+	attackPeriod = 120,
+	attackListType = SpaceRescueScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_naboo_imperial_tier4_2_a", true)
+
+destroy_surpriseattack_naboo_imperial_tier4_2_b = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_naboo_imperial_tier4_2_b",
+
+	questName = "naboo_imperial_tier4_2_b",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "naboo_imperial_tier4_2_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "rescue_naboo_imperial_tier4_2_a",
+	parentQuestType = "rescue",
+	parentQuestName = "naboo_imperial_tier4_2_a",
+
+	surpriseAttackShips = {
+		zone = "space_dathomir",
+		spawns = {{count = 6, shipName = "coynite_merc_pulsar_tier4"}},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_naboo_imperial_tier4_2_b", true)
+
+recovery_naboo_imperial_tier4_2_c = SpaceRecoveryScreenplay:new {
+	className = "recovery_naboo_imperial_tier4_2_c",
+
+	questName = "naboo_imperial_tier4_2_c",
+	questType = "recovery",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "destroy_surpriseattack_naboo_imperial_tier4_2_b",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "naboo_imperial_tier4_2_b",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+	recoverShip = "coynite_merc_neutron_tier5",
+
+	escortShips = {"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recovery1_6", x = 975, z = 225, y = 3781, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_7", x = -2095, z = 2334, y = 3374, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery1_8", x = -4455, z = 2935, y = 4075, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery2_1", x = -7238, z = 2332, y = -1848, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recovery2_5", x = -6263, z = 3140, y = 1529, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery2_6", x = -4648, z = 2991, y = 4029, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery2_7", x = -3618, z = 2711, y = 7068, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+		},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_naboo_imperial_tier4_2_c", true)
+
+-- Mission 3: Survival > Delivery (no pickup) > Assassinate
+survival_naboo_imperial_tier4_3 = SpaceSurvivalScreenplay:new {
+	className = "survival_naboo_imperial_tier4_3",
+
+	questName = "naboo_imperial_tier4_3",
+	questType = "survival",
+
+	questZone = "space_dathomir",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_imperial_rss_special_durasteel.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "naboo_imperial_tier4_3_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	transmissionPoint = {patrolPointName = "naboo_imperial_tier4_survival1", x = -5152, z = -498, y = 6589},
+	totalTransmissionTime = 600,
+	timesToUpdateProgress = 20,
+	transmissionStartDelay = 15,
+	delayToFirstAttack = 30,
+
+	attackShipLists = {
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_neutron_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+		},
+
+	attackPeriod = 90,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("survival_naboo_imperial_tier4_3", true)
+
+delivery_no_pickup_naboo_imperial_tier4_3_a = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_naboo_imperial_tier4_3_a",
+
+	questName = "naboo_imperial_tier4_3_a",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "naboo_imperial_tier4_3_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "survival_naboo_imperial_tier4_3",
+	parentQuestType = "survival",
+	parentQuestName = "naboo_imperial_tier4_3",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier4",
+	deliveryPoint = {patrolPointName = "naboo_imperial_tier4_delivery2", x = -2651, z = -334, y = -4012},
+
+	attackShipLists = {
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+		},
+
+	attackPeriod = 60,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_naboo_imperial_tier4_3_a", true)
+
+assassinate_naboo_imperial_tier4_3_b = SpaceAssassinateScreenplay:new {
+	className = "assassinate_naboo_imperial_tier4_3_b",
+
+	questName = "naboo_imperial_tier4_3_b",
+	questType = "assassinate",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "delivery_no_pickup_naboo_imperial_tier4_3_a",
+	parentQuestType = "delivery_no_pickup",
+	parentQuestName = "naboo_imperial_tier4_3_a",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "coynite_mothership_tier4",
+		escorts = {"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "naboo_imperial_tier4_assassinate1_1", x = -141, z = -3283, y = -3310},
+		{patrolPointName = "naboo_imperial_tier4_assassinate1_2", x = 1392, z = -5247, y = -2647},
+		{patrolPointName = "naboo_imperial_tier4_assassinate1_3", x = 2124, z = -6185, y = -2330},
+		{patrolPointName = "naboo_imperial_tier4_assassinate1_4", x = 4735, z = -7420, y = -1572},
+	},
+}
+
+registerScreenPlay("assassinate_naboo_imperial_tier4_3_b", true)
+
+-- Mission 4: Escort > Recovery > Assassinate > Assassinate > Space battle
+escort_naboo_imperial_tier4_4 = SpaceEscortScreenplay:new {
+	className = "escort_naboo_imperial_tier4_4",
+
+	questName = "naboo_imperial_tier4_4",
+	questType = "escort",
+
+	questZone = "space_dathomir",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_imperial_rss_advanced_military.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "naboo_imperial_tier4_4_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	escortShips = {"dathomir_prison_shuttle_tier4"},
+
+	-- SWG numResponses is 0 but the client file has _1.._5 of each key (spec FJ-7)
+	escortPoints = {
+		{patrolPointName = "naboo_imperial_tier4_escort1_1", x = 3787, z = -6425, y = 49, zoneName = "space_dathomir", escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escort1_2", x = 3065, z = -5248, y = 1760, zoneName = "space_dathomir", escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escort1_3", x = 2200, z = -4231, y = 2864, zoneName = "space_dathomir", escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escort1_4", x = 1502, z = -3172, y = 4240, zoneName = "space_dathomir", escortNumber = 4, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escort1_5", x = 336, z = -1027, y = 7007, zoneName = "space_dathomir", escortNumber = 5, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+		},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_naboo_imperial_tier4_4", true)
+
+recovery_naboo_imperial_tier4_4_a = SpaceRecoveryScreenplay:new {
+	className = "recovery_naboo_imperial_tier4_4_a",
+
+	questName = "naboo_imperial_tier4_4_a",
+	questType = "recovery",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "naboo_imperial_tier4_4_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "escort_naboo_imperial_tier4_4",
+	parentQuestType = "escort",
+	parentQuestName = "naboo_imperial_tier4_4",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+	recoverShip = "dathomir_prison_break_shuttle_tier4",
+
+	escortShips = {"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recovery3_1", x = 2520, z = 1785, y = 4899, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery3_2", x = 4471, z = 351, y = -482, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery3_3", x = 1534, z = -2167, y = -3967, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery3_4", x = -5949, z = -3151, y = -4944, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recovery3_5", x = 2072, z = -835, y = 2749, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery3_6", x = 2193, z = -1002, y = 5820, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recovery3_7", x = 2243, z = -944, y = 7076, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+			{"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+		},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_naboo_imperial_tier4_4_a", true)
+
+assassinate_naboo_imperial_tier4_4_b = SpaceAssassinateScreenplay:new {
+	className = "assassinate_naboo_imperial_tier4_4_b",
+
+	questName = "naboo_imperial_tier4_4_b",
+	questType = "assassinate",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "naboo_imperial_tier4_4_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_naboo_imperial_tier4_4_a",
+	parentQuestType = "recovery",
+	parentQuestName = "naboo_imperial_tier4_4_a",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "dathomir_prison_break_shuttle_tier4",
+		escorts = {"coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "naboo_imperial_tier4_assassinate2_1", x = 2795, z = -5791, y = 6336},
+		{patrolPointName = "naboo_imperial_tier4_assassinate2_2", x = 2631, z = -7584, y = 4070},
+		{patrolPointName = "naboo_imperial_tier4_assassinate2_3", x = 3072, z = -6658, y = 5858},
+		{patrolPointName = "naboo_imperial_tier4_assassinate2_4", x = 3613, z = -5613, y = 7149},
+	},
+}
+
+registerScreenPlay("assassinate_naboo_imperial_tier4_4_b", true)
+
+assassinate_naboo_imperial_tier4_4_c = SpaceAssassinateScreenplay:new {
+	className = "assassinate_naboo_imperial_tier4_4_c",
+
+	questName = "naboo_imperial_tier4_4_c",
+	questType = "assassinate",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "space_battle",
+	sideQuestName = "naboo_imperial_tier4_4_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "assassinate_naboo_imperial_tier4_4_b",
+	parentQuestType = "assassinate",
+	parentQuestName = "naboo_imperial_tier4_4_b",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "dathomir_prison_break_shuttle_tier4",
+		escorts = {"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4", "coynite_merc_neutron_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "naboo_imperial_tier4_assassinate3_1", x = 4423, z = -5952, y = 4998},
+		{patrolPointName = "naboo_imperial_tier4_assassinate3_2", x = 4497, z = -4930, y = 2766},
+		{patrolPointName = "naboo_imperial_tier4_assassinate3_3", x = 4424, z = -3818, y = 943},
+		{patrolPointName = "naboo_imperial_tier4_assassinate3_4", x = 4351, z = -2709, y = -874},
+	},
+}
+
+registerScreenPlay("assassinate_naboo_imperial_tier4_4_c", true)
+
+space_battle_naboo_imperial_tier4_4_d = SpaceBattleScreenplay:new {
+	className = "space_battle_naboo_imperial_tier4_4_d",
+
+	questName = "naboo_imperial_tier4_4_d",
+	questType = "space_battle",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "assassinate_naboo_imperial_tier4_4_c",
+	parentQuestType = "assassinate",
+	parentQuestName = "naboo_imperial_tier4_4_c",
+
+	-- Screenplay Specific Variables (spacequest/space_battle/naboo_imperial_tier4_4_d.tab)
+	battlePoint = {patrolPointName = "naboo_imperial_tier4_spacebattle1", x = -160, z = 2428, y = -2525, forward = {x = -0.657288, z = 0.753625, y = 0.004683}},
+
+	damageMultiplier = 2,
+
+	allyArrivalDelay = 30,
+	enemyArrivalDelay = 90,
+	allyOriginDist = 400,
+	enemyOriginDist = -400,
+	allyArrivalDist = 300,
+	enemyArrivalDist = 300,
+
+	allyForce = {"imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_fighter_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
+
+	enemyForce = {"coynite_coynfury_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+}
+
+registerScreenPlay("space_battle_naboo_imperial_tier4_4_d", true)
+
+-- Ja'ce Yiaso Duty Missions (Dathomir)
+destroy_duty_naboo_imperial_tier4_1 = SpaceDutyDestroyScreenplay:new {
+	className = "destroy_duty_naboo_imperial_tier4_1",
+
+	questName = "naboo_imperial_tier4_1",
+	questType = "destroy_duty",
+
+	questZone = "space_dathomir",
+
+	creditReward = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	totalLevels = 8,
+	totalRounds = 5,
+	totalWaves = 3,
+
+	bossShip = "coynite_merc_captain_tier5",
+	shipTypes = {
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+			{"coynite_merc_neutron_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+		},
+}
+
+registerScreenPlay("destroy_duty_naboo_imperial_tier4_1", true)
+
+escort_duty_naboo_imperial_tier4_2 = SpaceDutyEscortScreenplay:new {
+	className = "escort_duty_naboo_imperial_tier4_2",
+
+	questName = "naboo_imperial_tier4_2",
+	questType = "escort_duty",
+
+	questZone = "space_dathomir",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	escortShips = {"dathomir_prison_shuttle_tier4"},
+
+	escortPoints = {
+		{patrolPointName = "naboo_imperial_tier4_escortduty1_1", x = -2579, z = 3780, y = -2522, zoneName = "space_dathomir", escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escortduty1_2", x = -4477, z = 5219, y = -2369, zoneName = "space_dathomir", escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escortduty1_3", x = -5687, z = 6430, y = -2361, zoneName = "space_dathomir", escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_escortduty1_4", x = -7061, z = 7306, y = -2391, zoneName = "space_dathomir", escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+			{"coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4", "coynite_merc_pulsar_tier4"},
+			{"coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4", "coynite_merc_quasar_tier4"},
+		},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_duty_naboo_imperial_tier4_2", true)
+
+recovery_duty_naboo_imperial_tier4_3 = SpaceDutyRecoveryScreenplay:new {
+	className = "recovery_duty_naboo_imperial_tier4_3",
+
+	questName = "naboo_imperial_tier4_3",
+	questType = "recovery_duty",
+
+	questZone = "space_dathomir",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+	numResponses = 5,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+	recoverShips = {"rogue_imperial_shuttle_tier4", "rogue_imperial_tiebomber_tier4"},
+
+	escortShips = {},
+
+	-- SWG skips recoveryduty1_3
+	preRecoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_1", x = 818, z = -81, y = -4097, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_2", x = 1345, z = -437, y = -5196, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_4", x = 3989, z = -1251, y = -6960, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_5", x = 1495, z = -1773, y = -6461, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_6", x = -1458, z = -2983, y = -5981, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_7", x = -3969, z = -4072, y = -3508, escortNumber = 2, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+			{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+			{"reb_bwing_tier4", "reb_bwing_tier4", "reb_bwing_tier4", "reb_bwing_tier4"},
+		},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_duty_naboo_imperial_tier4_3", true)
+
+rescue_duty_naboo_imperial_tier4_4 = SpaceDutyRescueScreenplay:new {
+	className = "rescue_duty_naboo_imperial_tier4_4",
+
+	questName = "naboo_imperial_tier4_4",
+	questType = "rescue_duty",
+
+	questZone = "space_dathomir",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- SWG attackListType sequential = 0
+	recoveryPath = {
+		{patrolPointName = "naboo_imperial_tier4_rescueduty1_1", x = -2387, z = 5980, y = -2544},
+		{patrolPointName = "naboo_imperial_tier4_rescueduty1_2", x = -445, z = 5042, y = -2927},
+		{patrolPointName = "naboo_imperial_tier4_rescueduty1_3", x = 237, z = 2972, y = -2982},
+		{patrolPointName = "naboo_imperial_tier4_rescueduty1_4", x = 19, z = 459, y = -2427},
+	},
+
+	targetShipTypes = {"dathomir_prison_shuttle_tier4", "imp_freightermedium_tier4", "imp_freighterlight_tier4", "imp_freighterheavy_tier4"},
+	targetArrivalDelay = 30,
+
+	attackShipLists = {
+			{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+			{"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+			{"reb_bwing_tier4", "reb_bwing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+		},
+
+	attackPeriod = 120,
+	attackListType = 0,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_duty_naboo_imperial_tier4_4", true)
+
+--[[
 
 	InquisitionSquadronScreenplay
 
@@ -1196,6 +1962,30 @@ InquisitionSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_4_SIDE2 = {type = "space_battle", name = "naboo_imperial_tier3_4_b"},
 	TIER3_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "naboo_imperial_tier3_4_c"},
 
+	-- Tier 4 (Ja'ce Yiaso); SIDEk = the k-th split child
+	TIER4_QUEST_STRING_1 = {type = "patrol", name = "naboo_imperial_tier4_1"},
+	TIER4_QUEST_STRING_1_SIDE1 = {type = "inspect", name = "naboo_imperial_tier4_1_a"},
+	TIER4_QUEST_STRING_1_SIDE2 = {type = "destroy_surpriseattack", name = "naboo_imperial_tier4_1_b"},
+	TIER4_QUEST_STRING_1_SIDE3 = {type = "delivery_no_pickup", name = "naboo_imperial_tier4_1_c"},
+	TIER4_QUEST_STRING_2 = {type = "recovery", name = "naboo_imperial_tier4_2"},
+	TIER4_QUEST_STRING_2_SIDE1 = {type = "rescue", name = "naboo_imperial_tier4_2_a"},
+	TIER4_QUEST_STRING_2_SIDE2 = {type = "destroy_surpriseattack", name = "naboo_imperial_tier4_2_b"},
+	TIER4_QUEST_STRING_2_SIDE3 = {type = "recovery", name = "naboo_imperial_tier4_2_c"},
+	TIER4_QUEST_STRING_3 = {type = "survival", name = "naboo_imperial_tier4_3"},
+	TIER4_QUEST_STRING_3_SIDE1 = {type = "delivery_no_pickup", name = "naboo_imperial_tier4_3_a"},
+	TIER4_QUEST_STRING_3_SIDE2 = {type = "assassinate", name = "naboo_imperial_tier4_3_b"},
+	TIER4_QUEST_STRING_4 = {type = "escort", name = "naboo_imperial_tier4_4"},
+	TIER4_QUEST_STRING_4_SIDE1 = {type = "recovery", name = "naboo_imperial_tier4_4_a"},
+	TIER4_QUEST_STRING_4_SIDE2 = {type = "assassinate", name = "naboo_imperial_tier4_4_b"},
+	TIER4_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "naboo_imperial_tier4_4_c"},
+	TIER4_QUEST_STRING_4_SIDE4 = {type = "space_battle", name = "naboo_imperial_tier4_4_d"},
+
+	-- Tier 4 Duty Quest Strings (SWG grantDutyMission order)
+	TIER4_QUEST_STRING_DUTY_1 = {type = "destroy_duty", name = "naboo_imperial_tier4_1"},
+	TIER4_QUEST_STRING_DUTY_2 = {type = "escort_duty", name = "naboo_imperial_tier4_2"},
+	TIER4_QUEST_STRING_DUTY_3 = {type = "recovery_duty", name = "naboo_imperial_tier4_3"},
+	TIER4_QUEST_STRING_DUTY_4 = {type = "rescue_duty", name = "naboo_imperial_tier4_4"},
+
 	-- Flags (stored as <playerID><suffix>, value "1")
 	-- Set by Barn's promotion; tier 2 (Fa'Zoll) reads it as the SWG series flag naboo_imperial_1
 	SERIES_COMPLETE_KEY = "InquisitionSquadronScreenplay:naboo_imperial_1",
@@ -1205,6 +1995,8 @@ InquisitionSquadronScreenplay = ScreenPlay:new {
 	QUESTION_BARLOW_KEY = "InquisitionSquadronScreenplay:questionBarlow",
 	-- Set by Barlow's interview (SWG spokeToBarlow); cleared by Vrke's tour_complete (SWG removeTalkedToBarlow) and by resetVrkeQuests
 	SPOKE_TO_BARLOW_KEY = "InquisitionSquadronScreenplay:spokeToBarlow",
+	-- Set by Ja'ce's first-meeting briefing (intro_briefing, SWG setMetMe / space flag metTier4); read by Ja'ce (G18); cleared by resetJaceYiasoQuests
+	TIER4_MET_KEY = "InquisitionSquadronScreenplay:metTier4",
 }
 
 registerScreenPlay("InquisitionSquadronScreenplay", false)
@@ -1317,6 +2109,46 @@ function InquisitionSquadronScreenplay:resetVrkeQuests(pPlayer)
 	removeQuestStatus(playerID .. self.SPOKE_TO_BARLOW_KEY)
 
 	for _, questString in ipairs({ self.TIER3_QUEST_STRING_1, self.TIER3_QUEST_STRING_2, self.TIER3_QUEST_STRING_3, self.TIER3_QUEST_STRING_4 }) do
+		removeQuestStatus(playerID .. questString.name .. ":attempted")
+		removeQuestStatus(playerID .. questString.name .. ":reward")
+	end
+end
+
+-- Tier 4 -- Ja'ce Yiaso
+function InquisitionSquadronScreenplay:resetJaceYiasoQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local tables = {
+		patrol_naboo_imperial_tier4_1, inspect_naboo_imperial_tier4_1_a, destroy_surpriseattack_naboo_imperial_tier4_1_b, delivery_no_pickup_naboo_imperial_tier4_1_c,
+		recovery_naboo_imperial_tier4_2, rescue_naboo_imperial_tier4_2_a, destroy_surpriseattack_naboo_imperial_tier4_2_b, recovery_naboo_imperial_tier4_2_c,
+		survival_naboo_imperial_tier4_3, delivery_no_pickup_naboo_imperial_tier4_3_a, assassinate_naboo_imperial_tier4_3_b,
+		escort_naboo_imperial_tier4_4, recovery_naboo_imperial_tier4_4_a, assassinate_naboo_imperial_tier4_4_b, assassinate_naboo_imperial_tier4_4_c, space_battle_naboo_imperial_tier4_4_d,
+		destroy_duty_naboo_imperial_tier4_1, escort_duty_naboo_imperial_tier4_2, recovery_duty_naboo_imperial_tier4_3, rescue_duty_naboo_imperial_tier4_4
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER4_QUEST_STRING_1, self.TIER4_QUEST_STRING_1_SIDE1, self.TIER4_QUEST_STRING_1_SIDE2, self.TIER4_QUEST_STRING_1_SIDE3,
+		self.TIER4_QUEST_STRING_2, self.TIER4_QUEST_STRING_2_SIDE1, self.TIER4_QUEST_STRING_2_SIDE2, self.TIER4_QUEST_STRING_2_SIDE3,
+		self.TIER4_QUEST_STRING_3, self.TIER4_QUEST_STRING_3_SIDE1, self.TIER4_QUEST_STRING_3_SIDE2,
+		self.TIER4_QUEST_STRING_4, self.TIER4_QUEST_STRING_4_SIDE1, self.TIER4_QUEST_STRING_4_SIDE2, self.TIER4_QUEST_STRING_4_SIDE3, self.TIER4_QUEST_STRING_4_SIDE4,
+		self.TIER4_QUEST_STRING_DUTY_1, self.TIER4_QUEST_STRING_DUTY_2, self.TIER4_QUEST_STRING_DUTY_3, self.TIER4_QUEST_STRING_DUTY_4
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	removeQuestStatus(playerID .. self.TIER4_MET_KEY)
+
+	for _, questString in ipairs({ self.TIER4_QUEST_STRING_1, self.TIER4_QUEST_STRING_2, self.TIER4_QUEST_STRING_3, self.TIER4_QUEST_STRING_4 }) do
 		removeQuestStatus(playerID .. questString.name .. ":attempted")
 		removeQuestStatus(playerID .. questString.name .. ":reward")
 	end

@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -807,3 +807,27 @@ Answer key: SWG `naboo_imperial_trainer_2.java` (`fixtures/script/conversation/`
 - `test_inquisition_tier2_pins.lua` pins the shared edits against commit `a59a1568f3` and skips once HEAD moves.
 - Existing tests this feature edited: the 56th `FIXTURE_COUNTS` entry (five files), the coverage count (259 names, 243 of 925) of `test_smuggler_tier2_data.lua`, and the imperial surrender order
   of `test_master_trainer_imperial_surrender.lua` (Barn, Fa'Zoll, Declann).
+
+### Inquisition tier 3: Inquisitor Vrke (inquisition-tier3-vrke)
+
+Answer key: SWG `naboo_imperial_tier3.java` (`fixtures/script/conversation/`, byte copy) plus the spec's Data mapping 3 (the 42 NGE editor ids: 22 dialogue links rejoined onto client lines and 20 training-block ids replaced by the pre-NGE lines) and the
+sixteen `fixtures/spacequest/<type>/naboo_imperial_tier3_*.tab` byte copies (not the orphan `inspect/naboo_imperial_tier3_2_b`). Vrke's template is `vrke_convo_template`, his handler the global
+`vrkeConvoHandler`. Barlow's conversation is the follow-up feature; these tests only set and read the two Barlow keys.
+
+- `inquisition_tier3_data.lua` (not a test file): the 16 globals in four chains (`V.M1` .. `V.M4`, `V.CHAINS`), `V.expected()` (Appendix B, every key), the 8 Naboo, 3 Yavin 4 and 27 Dathomir nav points
+  and the 3 inspect spawners, `V.TRAIN`, `V.MISSIONS`, `V.START_SCREENS`, the reward items, and the player builder
+  `V.pilot{pilot, faction, squadron, standing, ship, tier1, t2 = n, t2paid4, t3 = { TRAIN indexes }, mission = { [n] = "won" | "failed" | "attempted" | "active" | "endonly" | "partial" }, paid = { n... },
+  question, spoke, xp, datapad, duty, species, pilotTier, inShip}`. The default pilot is an Inquisition pilot with the tier 1 and 2 skills and Fa'Zoll's mission 4 paid, pilot tier 3, nothing of tier 3 done.
+  `V.talk` / `V.drive` / `V.firstScreen` drive `H.converse` from the first screen or from a given screen; `V.spyStarts` / `V.started` record which heads were started.
+- `inquisition_tier3_screens_data.lua`: Appendix A (173 rows) generated from the spec table by a scratch script; `inquisition_tier3_client_text.lua`: id -> English text of the 324-id client table
+  (read-only from `/tre`, the copy served by `patch_13_00.tre`), used for the trailing comments.
+- `fixtures/string/en/conversation/naboo_imperial_tier3.sids` (324 ids, generated), `fixtures/spacequest/inspect_cargo/{pirate_data,shinss_personal_logs,rebel_plans_impt3}.tab`,
+  `fixtures/space_mobile/space_mobile.inquisition_tier3_inspect.tab` (SWG rows 1107, 1469, 1646) and the buildout excerpts `space_{naboo,yavin4,dathomir}.inquisition_tier3_points.tab`
+  (8, 3 + 2 and 27 + 1 rows): the two header rows plus the rows of the SWG file, byte-copied by line number.
+- `test_inquisition_tier3_template.lua` checks the SWG java graph reply by reply except for the 14 reply rejoins and 6 answer rejoins (`REPLY_REJOINS`, `LINK_REJOINS`) and the handler-built training links.
+- `test_inquisition_tier3_missions.lua` and `test_inquisition_tier3_rewards.lua` derive their walks from Appendix A (the shortest reply path to each accept, retry or training screen) and drive them through the handler.
+- `test_inquisition_tier3_runtime.lua` reads each inspect ship's cargo from the real ship template (`H.shipTemplate`) and exercises the three in-chain zone changes (recovery -> inspect, recovery 2_c, delivery_no_pickup 3_d)
+  with `H.zoneSwitch`; recovery 1 waits its arrival delay twice, so it pumps 65 s; inspect 2 and escort 4_a split after 15 s.
+- `test_inquisition_tier3_pins.lua` pins the shared edits against commit `4c40d87618` and skips once HEAD moves.
+- Existing tests this feature edited: the 57th `FIXTURE_COUNTS` entry (five files), the coverage count (275 names, 259 of 925) of `test_smuggler_tier2_data.lua`, and the imperial surrender order of
+  `test_inquisition_tier2_surrender.lua` and `test_master_trainer_imperial_surrender.lua` (Barn, Fa'Zoll, Vrke, Declann).

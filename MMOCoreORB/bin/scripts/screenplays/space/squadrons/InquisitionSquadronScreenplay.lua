@@ -540,6 +540,617 @@ destroy_duty_naboo_imperial_tier2_destroyduty = SpaceDutyDestroyScreenplay:new {
 registerScreenPlay("destroy_duty_naboo_imperial_tier2_destroyduty", true)
 
 --[[
+	Tier 3 -- Inquisitor Vrke (Naboo, Emperor's Retreat; Naboo, Yavin 4 and Dathomir)
+	Ported from SWG-Source naboo_imperial_tier3_1..4 and their splits (recovery, inspect, delivery_no_pickup, survival, delivery, destroy_surpriseattack, rescue, escort, space_battle, assassinate); feature inquisition-tier3-vrke
+]]
+
+-- Mission 1: Recovery > Inspect > Delivery (no pickup)
+recovery_naboo_imperial_tier3_1 = SpaceRecoveryScreenplay:new {
+	className = "recovery_naboo_imperial_tier3_1",
+
+	questName = "naboo_imperial_tier3_1",
+	questType = "recovery",
+
+	questZone = "space_naboo",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon_capacitor/cap_mission_reward_imperial_rendili_k_class.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "naboo_imperial_tier3_1_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+
+	recoverShip = "colonel_hend_yacht_tier3",
+
+	recoveryConversationMobile = "object/mobile/shared_space_comm_imperial_officer_01.iff",
+
+	escortShips = {},
+
+	preRecoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier3_recovery1_1", x = 3200, z = -2300, y = 1000, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery1_2", x = 606, z = -1811, y = 2677, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery1_3", x = -1560, z = -4222, y = 2922, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery1_4", x = -2264, z = -4270, y = 4044, escortNumber = 4, radius = 250},
+		{patrolPointName = "corellia_imperial_tier3_leg_4_assassinate_one_1", x = -3939, z = 1474, y = -1521, escortNumber = 5, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier3_recovery1_5", x = -3035, z = -4019, y = 3262, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery1_6", x = -3564, z = -3047, y = -620, escortNumber = 2, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_ywing_tier3", "reb_ywing_tier3"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_naboo_imperial_tier3_1", true)
+
+inspect_naboo_imperial_tier3_1_a = SpaceInspectScreenplay:new {
+	className = "inspect_naboo_imperial_tier3_1_a",
+
+	questName = "naboo_imperial_tier3_1_a",
+	questType = "inspect",
+
+	questZone = "space_yavin4",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "naboo_imperial_tier3_1_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_naboo_imperial_tier3_1",
+	parentQuestType = "recovery",
+	parentQuestName = "naboo_imperial_tier3_1",
+
+	-- Screenplay Specific Variables
+	shipList = {"mercenary_spy_fighter_tier4"},
+	validSpawns = {
+		{spawnName = "naboo_imperial_tier3_inspect1_spawner", x = 5000, z = -2300, y = 1020},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "pirate_data",
+}
+
+registerScreenPlay("inspect_naboo_imperial_tier3_1_a", true)
+
+delivery_no_pickup_naboo_imperial_tier3_1_b = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_naboo_imperial_tier3_1_b",
+
+	questName = "naboo_imperial_tier3_1_b",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_yavin4",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_naboo_imperial_tier3_1_a",
+	parentQuestType = "inspect",
+	parentQuestName = "naboo_imperial_tier3_1_a",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_freightermedium_tier3",
+	deliveryPoint = {patrolPointName = "naboo_imperial_tier3_delivery1_dropoff", x = 1092, z = 842, y = 598},
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_ywing_tier3", "reb_ywing_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_naboo_imperial_tier3_1_b", true)
+
+-- Mission 2: Inspect > Survival > Delivery > Recovery
+inspect_naboo_imperial_tier3_2 = SpaceInspectScreenplay:new {
+	className = "inspect_naboo_imperial_tier3_2",
+
+	questName = "naboo_imperial_tier3_2",
+	questType = "inspect",
+
+	questZone = "space_yavin4",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/droid_interface/ddi_mission_reward_imperial_sfs_military_grade.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "survival",
+	sideQuestName = "naboo_imperial_tier3_2_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 15, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	shipList = {"shinss_yacht_tier3"},
+	validSpawns = {
+		{spawnName = "naboo_imperial_tier3_shinssyacht_spawner", x = 3196, z = -6203, y = -5010},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "shinss_personal_logs",
+}
+
+registerScreenPlay("inspect_naboo_imperial_tier3_2", true)
+
+survival_naboo_imperial_tier3_2_a = SpaceSurvivalScreenplay:new {
+	className = "survival_naboo_imperial_tier3_2_a",
+
+	questName = "naboo_imperial_tier3_2_a",
+	questType = "survival",
+
+	questZone = "space_yavin4",
+
+	sideQuest = true,
+	sideQuestType = "delivery",
+	sideQuestName = "naboo_imperial_tier3_2_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "inspect_naboo_imperial_tier3_2",
+	parentQuestType = "inspect",
+	parentQuestName = "naboo_imperial_tier3_2",
+
+	-- Screenplay Specific Variables
+	transmissionPoint = {patrolPointName = "naboo_imperial_tier3_survival1", x = 2016, z = -4500, y = 6816},
+	totalTransmissionTime = 600,
+	timesToUpdateProgress = 20,
+	transmissionStartDelay = 45,
+	delayToFirstAttack = 45,
+
+	attackShipLists = {
+		{"reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_z95_tier3", "reb_z95_tier3", "reb_z95_tier3", "reb_z95_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+		{"reb_bwing_tier3", "reb_bwing_tier3", "reb_bwing_tier3", "reb_bwing_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceSurvivalScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("survival_naboo_imperial_tier3_2_a", true)
+
+delivery_naboo_imperial_tier3_2_b = SpaceDeliveryScreenplay:new {
+	className = "delivery_naboo_imperial_tier3_2_b",
+
+	questName = "naboo_imperial_tier3_2_b",
+	questType = "delivery",
+
+	questZone = "space_yavin4",
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "naboo_imperial_tier3_2_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "survival_naboo_imperial_tier3_2_a",
+	parentQuestType = "survival",
+	parentQuestName = "naboo_imperial_tier3_2_a",
+
+	-- SWG's own point name for the pickup is corellis_imperial_tier3_leg_2_rescue_3
+	-- Screenplay Specific Variables
+	pickupPoint = {patrolPointName = "corellis_imperial_tier3_leg_2_rescue_3", x = 1463, z = -2058, y = -568},
+	deliveryPoint = {patrolPointName = "naboo_imperial_tier3_delivery1_dropoff", x = 1092, z = 842, y = 598},
+	pickupShip = "imp_lambda_shuttle_tier3",
+	deliveryShip = "imp_lambda_shuttle_tier3",
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+		{"reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3"},
+		{"reb_bwing_tier3", "reb_bwing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+	},
+
+	attackPeriod = 60,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_naboo_imperial_tier3_2_b", true)
+
+recovery_naboo_imperial_tier3_2_c = SpaceRecoveryScreenplay:new {
+	className = "recovery_naboo_imperial_tier3_2_c",
+
+	questName = "naboo_imperial_tier3_2_c",
+	questType = "recovery",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "delivery_naboo_imperial_tier3_2_b",
+	parentQuestType = "delivery",
+	parentQuestName = "naboo_imperial_tier3_2_b",
+
+	arrivalDelay = 15,
+	recoveryDelay = 30,
+
+	recoverShip = "shinss_escape_shuttle_tier3",
+
+	escortShips = {"shinss_escort_fighters_tier3", "shinss_escort_fighters_tier3", "shinss_escort_fighters_tier3", "shinss_escort_fighters_tier3", "shinss_escort_fighters_tier3"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier3_recovery2_1", x = 1936, z = 2300, y = 4704, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery2_2", x = -2361, z = 5226, y = 1662, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery2_3", x = -3357, z = 741, y = -1890, escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery2_4", x = -440, z = -2779, y = -5776, escortNumber = 4, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery2_5", x = 4297, z = -3650, y = -6721, escortNumber = 5, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "naboo_imperial_tier3_recovery2_6", x = -3383, z = -3342, y = -3625, escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery2_7", x = -2154, z = -2127, y = -2311, escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_recovery2_8", x = -459, z = -452, y = -498, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_naboo_imperial_tier3_2_c", true)
+
+-- Mission 3: Delivery > Surprise attack > Rescue > Inspect > Delivery (no pickup)
+delivery_naboo_imperial_tier3_3 = SpaceDeliveryScreenplay:new {
+	className = "delivery_naboo_imperial_tier3_3",
+
+	questName = "naboo_imperial_tier3_3",
+	questType = "delivery",
+
+	questZone = "space_dathomir",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_imperial_sds_high_output.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "naboo_imperial_tier3_3_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	pickupPoint = {patrolPointName = "naboo_imperial_tier3_delivery3_pickup", x = 4824, z = -1000, y = 264},
+	deliveryPoint = {patrolPointName = "naboo_imperial_tier3_delivery3_dropoff", x = -3608, z = 5628, y = 5256},
+	pickupShip = "imp_lambda_shuttle_tier3",
+	deliveryShip = "imp_lambda_shuttle_tier3",
+
+	attackShipLists = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier4"},
+	},
+
+	attackPeriod = 60,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_naboo_imperial_tier3_3", true)
+
+destroy_surpriseattack_naboo_imperial_tier3_3_a = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_naboo_imperial_tier3_3_a",
+
+	questName = "naboo_imperial_tier3_3_a",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "rescue",
+	sideQuestName = "naboo_imperial_tier3_3_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "delivery_naboo_imperial_tier3_3",
+	parentQuestType = "delivery",
+	parentQuestName = "naboo_imperial_tier3_3",
+
+	-- Screenplay Specific Variables
+	surpriseAttackShips = {
+		zone = "space_dathomir",
+		spawns = {
+			{count = 7, shipName = "reb_xwing_tier3"},
+		},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_naboo_imperial_tier3_3_a", true)
+
+rescue_naboo_imperial_tier3_3_b = SpaceRescueScreenplay:new {
+	className = "rescue_naboo_imperial_tier3_3_b",
+
+	questName = "naboo_imperial_tier3_3_b",
+	questType = "rescue",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "naboo_imperial_tier3_3_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "destroy_surpriseattack_naboo_imperial_tier3_3_a",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "naboo_imperial_tier3_3_a",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "naboo_imperial_tier3_rescue1_1", x = 4300, z = 6400, y = -4900},
+		{patrolPointName = "naboo_imperial_tier3_rescue1_2", x = 222, z = 6250, y = -4778},
+		{patrolPointName = "naboo_imperial_tier3_rescue1_3", x = -1638, z = 3789, y = -6552},
+		{patrolPointName = "naboo_imperial_tier3_rescue1_4", x = -3555, z = 3445, y = -6578},
+	},
+
+	targetShipType = "imp_lambda_shuttle_tier3",
+	targetArrivalDelay = 15,
+
+	attackShipLists = {
+		{"reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3", "reb_ywing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_ywing_tier4", "reb_ywing_tier4", "reb_xwing_tier3", "reb_xwing_tier3"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceRescueScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_naboo_imperial_tier3_3_b", true)
+
+inspect_naboo_imperial_tier3_3_c = SpaceInspectScreenplay:new {
+	className = "inspect_naboo_imperial_tier3_3_c",
+
+	questName = "naboo_imperial_tier3_3_c",
+	questType = "inspect",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "naboo_imperial_tier3_3_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "rescue_naboo_imperial_tier3_3_b",
+	parentQuestType = "rescue",
+	parentQuestName = "naboo_imperial_tier3_3_b",
+
+	-- Screenplay Specific Variables
+	shipList = {"rebel_spyfreighter_tier3"},
+	validSpawns = {
+		{spawnName = "naboo_imperial_tier3_inspect3_spawner", x = 2005, z = 4299, y = -3566},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "rebel_plans",
+}
+
+registerScreenPlay("inspect_naboo_imperial_tier3_3_c", true)
+
+delivery_no_pickup_naboo_imperial_tier3_3_d = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_naboo_imperial_tier3_3_d",
+
+	questName = "naboo_imperial_tier3_3_d",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_naboo",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_naboo_imperial_tier3_3_c",
+	parentQuestType = "inspect",
+	parentQuestName = "naboo_imperial_tier3_3_c",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier3",
+	deliveryPoint = {patrolPointName = "naboo_imperial_tier3_delivery4", x = 1069, z = 1110, y = 263},
+
+	attackShipLists = {
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier4"},
+		{"reb_bwing_tier3", "reb_bwing_tier3", "reb_bwing_tier3", "reb_bwing_tier3"},
+	},
+
+	attackPeriod = 60,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_naboo_imperial_tier3_3_d", true)
+
+-- Mission 4: Assassinate > Escort > Space battle > Assassinate
+assassinate_naboo_imperial_tier3_4 = SpaceAssassinateScreenplay:new {
+	className = "assassinate_naboo_imperial_tier3_4",
+
+	questType = "assassinate",
+	questName = "naboo_imperial_tier3_4",
+
+	questZone = "space_dathomir",
+
+	creditReward = 25000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/engine/eng_mission_reward_imperial_cygnus_megadrive.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "escort",
+	sideQuestName = "naboo_imperial_tier3_4_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "general_breckon_shuttle_tier4",
+		escorts = {"breckon_escort_fighter_tier3", "breckon_escort_fighter_tier3", "breckon_escort_fighter_tier3", "breckon_escort_fighter_tier3", "breckon_escort_fighter_tier3"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "naboo_imperial_tier3_assassinate1_1", x = -1879, z = -110, y = -1881},
+		{patrolPointName = "naboo_imperial_tier3_assassinate1_2", x = 19, z = -2029, y = -411},
+		{patrolPointName = "naboo_imperial_tier3_assassinate1_3", x = 2767, z = -3788, y = 1500},
+		{patrolPointName = "naboo_imperial_tier3_assassinate1_4", x = 4998, z = -4963, y = 2982},
+	},
+}
+
+registerScreenPlay("assassinate_naboo_imperial_tier3_4", true)
+
+escort_naboo_imperial_tier3_4_a = SpaceEscortScreenplay:new {
+	className = "escort_naboo_imperial_tier3_4_a",
+
+	questName = "naboo_imperial_tier3_4_a",
+	questType = "escort",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "space_battle",
+	sideQuestName = "naboo_imperial_tier3_4_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 15, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "assassinate_naboo_imperial_tier3_4",
+	parentQuestType = "assassinate",
+	parentQuestName = "naboo_imperial_tier3_4",
+
+	-- Screenplay Specific Variables
+	escortShips = {"dathomir_prison_shuttle_tier4"},
+
+	escortPoints = {
+		{patrolPointName = "naboo_imperial_tier3_escort1_1", x = 7340, z = 2102, y = -3234, zoneName = "space_dathomir", escortNumber = 1, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_escort1_2", x = 5193, z = 2105, y = -998, zoneName = "space_dathomir", escortNumber = 2, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_escort1_3", x = 2192, z = 1097, y = -995, zoneName = "space_dathomir", escortNumber = 3, radius = 250},
+		{patrolPointName = "naboo_imperial_tier3_escort1_4", x = 1019, z = 509, y = -505, zoneName = "space_dathomir", escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_bwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+		{"reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3"},
+		{"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_naboo_imperial_tier3_4_a", true)
+
+space_battle_naboo_imperial_tier3_4_b = SpaceBattleScreenplay:new {
+	className = "space_battle_naboo_imperial_tier3_4_b",
+
+	questName = "naboo_imperial_tier3_4_b",
+	questType = "space_battle",
+
+	questZone = "space_dathomir",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "naboo_imperial_tier3_4_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "escort_naboo_imperial_tier3_4_a",
+	parentQuestType = "escort",
+	parentQuestName = "naboo_imperial_tier3_4_a",
+
+	-- Screenplay Specific Variables
+	battlePoint = {patrolPointName = "naboo_imperial_tier3_spacebattle1", x = 1303, z = 2316, y = 4521, forward = {x = -0.3808, z = -0.866842, y = -0.321834}},
+
+	damageMultiplier = 5,
+
+	allyArrivalDelay = 30,
+	enemyArrivalDelay = 90,
+	allyOriginDist = 400,
+	enemyOriginDist = -400,
+	allyArrivalDist = 300,
+	enemyArrivalDist = 300,
+
+	allyForce = {"imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_interceptor_tier3", "imp_tie_fighter_tier3", "imp_tie_fighter_tier3"},
+
+	enemyForce = {"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_awing_tier3", "reb_ywing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_awing_tier3", "reb_xwing_tier3"},
+}
+
+registerScreenPlay("space_battle_naboo_imperial_tier3_4_b", true)
+
+assassinate_naboo_imperial_tier3_4_c = SpaceAssassinateScreenplay:new {
+	className = "assassinate_naboo_imperial_tier3_4_c",
+
+	questType = "assassinate",
+	questName = "naboo_imperial_tier3_4_c",
+
+	questZone = "space_dathomir",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "space_battle_naboo_imperial_tier3_4_b",
+	parentQuestType = "space_battle",
+	parentQuestName = "naboo_imperial_tier3_4_b",
+
+	-- SWG's own point names are naboo_imperial_tier4_recoveryduty1_4..7
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "reb_priceofliberty_tier3",
+		escorts = {"reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3", "reb_xwing_tier3"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_4", x = 3989, z = -1251, y = -6960},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_5", x = 1495, z = -1773, y = -6461},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_6", x = -1458, z = -2983, y = -5981},
+		{patrolPointName = "naboo_imperial_tier4_recoveryduty1_7", x = -3969, z = -4072, y = -3508},
+	},
+}
+
+registerScreenPlay("assassinate_naboo_imperial_tier3_4_c", true)
+
+--[[
 
 	InquisitionSquadronScreenplay
 
@@ -567,11 +1178,33 @@ InquisitionSquadronScreenplay = ScreenPlay:new {
 	TIER2_QUEST_STRING_DUTY_2 = {type = "escort_duty", name = "naboo_imperial_tier2_escortduty"},
 	TIER2_QUEST_STRING_DUTY_3 = {type = "destroy_duty", name = "naboo_imperial_tier2_destroyduty"},
 
+	-- Tier 3 (Vrke)
+	TIER3_QUEST_STRING_1 = {type = "recovery", name = "naboo_imperial_tier3_1"},
+	TIER3_QUEST_STRING_1_SIDE1 = {type = "inspect", name = "naboo_imperial_tier3_1_a"},
+	TIER3_QUEST_STRING_1_SIDE2 = {type = "delivery_no_pickup", name = "naboo_imperial_tier3_1_b"},
+	TIER3_QUEST_STRING_2 = {type = "inspect", name = "naboo_imperial_tier3_2"},
+	TIER3_QUEST_STRING_2_SIDE1 = {type = "survival", name = "naboo_imperial_tier3_2_a"},
+	TIER3_QUEST_STRING_2_SIDE2 = {type = "delivery", name = "naboo_imperial_tier3_2_b"},
+	TIER3_QUEST_STRING_2_SIDE3 = {type = "recovery", name = "naboo_imperial_tier3_2_c"},
+	TIER3_QUEST_STRING_3 = {type = "delivery", name = "naboo_imperial_tier3_3"},
+	TIER3_QUEST_STRING_3_SIDE1 = {type = "destroy_surpriseattack", name = "naboo_imperial_tier3_3_a"},
+	TIER3_QUEST_STRING_3_SIDE2 = {type = "rescue", name = "naboo_imperial_tier3_3_b"},
+	TIER3_QUEST_STRING_3_SIDE3 = {type = "inspect", name = "naboo_imperial_tier3_3_c"},
+	TIER3_QUEST_STRING_3_SIDE4 = {type = "delivery_no_pickup", name = "naboo_imperial_tier3_3_d"},
+	TIER3_QUEST_STRING_4 = {type = "assassinate", name = "naboo_imperial_tier3_4"},
+	TIER3_QUEST_STRING_4_SIDE1 = {type = "escort", name = "naboo_imperial_tier3_4_a"},
+	TIER3_QUEST_STRING_4_SIDE2 = {type = "space_battle", name = "naboo_imperial_tier3_4_b"},
+	TIER3_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "naboo_imperial_tier3_4_c"},
+
 	-- Flags (stored as <playerID><suffix>, value "1")
 	-- Set by Barn's promotion; tier 2 (Fa'Zoll) reads it as the SWG series flag naboo_imperial_1
 	SERIES_COMPLETE_KEY = "InquisitionSquadronScreenplay:naboo_imperial_1",
 	-- Set by Fa'Zoll's sign-up (sign_up_agent, SWG makeInquisitorialAgent); read by Barn (G9, G11) and Fa'Zoll (F23); cleared by resetFaZollQuests
 	INQUISITORIAL_AGENT_KEY = "InquisitionSquadronScreenplay:inquisitorialAgent",
+	-- Set by Vrke's mission 1 training lines (SWG sentToBarlow); read by Vrke (V17) and Barlow (inquisition-tier3-barlow); cleared by Barlow's interview and by resetVrkeQuests
+	QUESTION_BARLOW_KEY = "InquisitionSquadronScreenplay:questionBarlow",
+	-- Set by Barlow's interview (SWG spokeToBarlow); cleared by Vrke's tour_complete (SWG removeTalkedToBarlow) and by resetVrkeQuests
+	SPOKE_TO_BARLOW_KEY = "InquisitionSquadronScreenplay:spokeToBarlow",
 }
 
 registerScreenPlay("InquisitionSquadronScreenplay", false)
@@ -645,6 +1278,45 @@ function InquisitionSquadronScreenplay:resetFaZollQuests(pPlayer)
 	removeQuestStatus(playerID .. self.INQUISITORIAL_AGENT_KEY)
 
 	for _, questString in ipairs({ self.TIER2_QUEST_STRING_1, self.TIER2_QUEST_STRING_2, self.TIER2_QUEST_STRING_3, self.TIER2_QUEST_STRING_4 }) do
+		removeQuestStatus(playerID .. questString.name .. ":attempted")
+		removeQuestStatus(playerID .. questString.name .. ":reward")
+	end
+end
+
+function InquisitionSquadronScreenplay:resetVrkeQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local tables = {
+		recovery_naboo_imperial_tier3_1, inspect_naboo_imperial_tier3_1_a, delivery_no_pickup_naboo_imperial_tier3_1_b,
+		inspect_naboo_imperial_tier3_2, survival_naboo_imperial_tier3_2_a, delivery_naboo_imperial_tier3_2_b, recovery_naboo_imperial_tier3_2_c,
+		delivery_naboo_imperial_tier3_3, destroy_surpriseattack_naboo_imperial_tier3_3_a, rescue_naboo_imperial_tier3_3_b,
+		inspect_naboo_imperial_tier3_3_c, delivery_no_pickup_naboo_imperial_tier3_3_d,
+		assassinate_naboo_imperial_tier3_4, escort_naboo_imperial_tier3_4_a, space_battle_naboo_imperial_tier3_4_b, assassinate_naboo_imperial_tier3_4_c
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER3_QUEST_STRING_1, self.TIER3_QUEST_STRING_1_SIDE1, self.TIER3_QUEST_STRING_1_SIDE2,
+		self.TIER3_QUEST_STRING_2, self.TIER3_QUEST_STRING_2_SIDE1, self.TIER3_QUEST_STRING_2_SIDE2, self.TIER3_QUEST_STRING_2_SIDE3,
+		self.TIER3_QUEST_STRING_3, self.TIER3_QUEST_STRING_3_SIDE1, self.TIER3_QUEST_STRING_3_SIDE2, self.TIER3_QUEST_STRING_3_SIDE3, self.TIER3_QUEST_STRING_3_SIDE4,
+		self.TIER3_QUEST_STRING_4, self.TIER3_QUEST_STRING_4_SIDE1, self.TIER3_QUEST_STRING_4_SIDE2, self.TIER3_QUEST_STRING_4_SIDE3
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	removeQuestStatus(playerID .. self.QUESTION_BARLOW_KEY)
+	removeQuestStatus(playerID .. self.SPOKE_TO_BARLOW_KEY)
+
+	for _, questString in ipairs({ self.TIER3_QUEST_STRING_1, self.TIER3_QUEST_STRING_2, self.TIER3_QUEST_STRING_3, self.TIER3_QUEST_STRING_4 }) do
 		removeQuestStatus(playerID .. questString.name .. ":attempted")
 		removeQuestStatus(playerID .. questString.name .. ":reward")
 	end

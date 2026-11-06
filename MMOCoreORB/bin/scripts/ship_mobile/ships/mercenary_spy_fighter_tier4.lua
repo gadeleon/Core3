@@ -22,6 +22,7 @@ mercenary_spy_fighter_tier4 = ShipAgent:new {
 	color2 = 60,
 	texture = 4,
 	questLoot = "pirate_data",
+	cargoString = "pirate_data", -- SWG space_mobile cargo pirate_data; inspect quest naboo_imperial_tier3_1_a (feature inquisition-tier3-vrke)
 	appearance = "generic_pirate",
 
 	tauntType = "generic",

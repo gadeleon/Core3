@@ -18,6 +18,7 @@ shinss_yacht_tier3 = ShipAgent:new {
 	alliedFactions = {"civilian", "merchant"},
 	enemyFactions = {"imperial", "rebel", "hutt", "pirate"},
 	questLoot = "shinss_personal_logs",
+	cargoString = "shinss_personal_logs", -- SWG space_mobile cargo shinss_personal_logs; inspect quest naboo_imperial_tier3_2 (feature inquisition-tier3-vrke)
 	appearance = "civilian",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

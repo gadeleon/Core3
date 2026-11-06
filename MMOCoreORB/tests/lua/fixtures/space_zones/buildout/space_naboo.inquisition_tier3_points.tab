@@ -1,0 +1,10 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.115456	0.973035	0.199682	0.224481	0.221385	-0.948998	-3564.25	-3047.79	-620.36	nav_name|4|naboo_imperial_tier3_recovery1_6|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.004454	0.999558	-0.029411	0.149676	0.029746	0.988288	-3939.86	1474.91	-1521.01	nav_name|4|corellia_imperial_tier3_leg_4_assassinate_one_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.156077	0.986684	-0.045767	-0.829470	0.156084	0.536300	3200.00	-2300.00	1000.00	nav_name|4|naboo_imperial_tier3_recovery1_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.055916	0.944776	0.322911	-0.651811	0.210447	-0.728597	-3035.08	-4019.58	3262.02	nav_name|4|naboo_imperial_tier3_recovery1_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.738054	0.603351	0.302068	0.524703	-0.794674	0.305255	-1560.06	-4222.01	2922.43	nav_name|4|naboo_imperial_tier3_recovery1_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.502685	0.784257	0.363661	-0.818767	0.296960	0.491361	-2264.16	-4270.28	4044.17	nav_name|4|naboo_imperial_tier3_recovery1_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.283733	-0.189582	0.939976	0.586817	0.809601	-0.013844	1069.66	1110.55	263.99	nav_name|4|naboo_imperial_tier3_delivery4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.156077	0.986684	-0.045767	-0.829470	0.156084	0.536300	606.40	-1811.98	2677.01	nav_name|4|naboo_imperial_tier3_recovery1_2|$|	script.space.quest_logic.quest_nav_point

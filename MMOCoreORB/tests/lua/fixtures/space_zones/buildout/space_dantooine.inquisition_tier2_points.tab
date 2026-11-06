@@ -1,0 +1,8 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.264775	0.758377	0.595617	-0.105048	-0.591301	0.799580	-1474.81	597.02	5612.06	nav_name|4|naboo_imperial_tier2_assassinate1_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.471450	0.856598	-0.209704	-0.172807	0.322910	0.930520	4000.00	-2500.00	-5600.00	nav_name|4|naboo_imperial_tier2_survival1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.157431	0.923424	-0.350006	0.378801	0.383782	0.842153	-2204.50	3766.49	1598.92	nav_name|4|naboo_imperial_tier2_assassinate1_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.260281	0.772924	0.578655	0.317061	-0.634498	0.704900	-1274.41	2051.35	3666.86	nav_name|4|naboo_imperial_tier2_assassinate1_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.719663	-0.083259	-0.689313	0.691858	0.169587	0.701836	-5000.00	1000.00	-4500.00	nav_name|4|naboo_imperial_tier2_assassinate1_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.157431	0.923424	-0.350006	0.378801	0.383782	0.842153	-3384.55	2570.94	-1024.54	nav_name|4|naboo_imperial_tier2_assassinate1_2|$|	script.space.quest_logic.quest_nav_point

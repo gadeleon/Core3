@@ -788,3 +788,22 @@ eight `fixtures/spacequest/<type>/naboo_imperial_*.tab` byte copies. Barn's temp
 - `fixtures/string/en/conversation/naboo_imperial_trainer_1.sids` (325 ids, generated) and `fixtures/space_zones/buildout/space_naboo.inquisition_tier1_points.tab` (the two header rows plus the 15 nav points and 5 spawners, `head -n 2` and `grep -F`).
 - Mission 3 is a patrol that splits into the escort; both are "won" only together (`I.CHAINS`), the patrol head pays. Mission 2's abort marker is a per-table `abortQuest` override (the data test allows exactly that one function).
 - The shared surrender tests load the Inquisition squadron (`black_epsilon_tier4_data.lua`), and the imperial surrender test spies `resetBarnQuests`.
+
+### Inquisition tier 2: Inquisitor Fa'Zoll (inquisition-tier2-fa-zoll)
+
+Answer key: SWG `naboo_imperial_trainer_2.java` (`fixtures/script/conversation/`, byte copy) plus the spec's Data mapping 3 (rejoins, pre-NGE-only lines) and the seven
+`fixtures/spacequest/<type>/naboo_imperial_tier2_*.tab` byte copies. Fa'Zoll's template is `fa_zoll_convo_template`, his handler the global `faZollConvoHandler`.
+
+- `inquisition_tier2_data.lua` (not a test file): the 7 globals, `I.expected()` (Appendix B, every key), the 21 naboo and 6 dantooine nav points and the inspect spawner, `I.TRAIN`, the
+  reward items, the load helper (Barn's and Fa'Zoll's templates and handlers, so the sign-up can be checked against Barn) and the player builder
+  `I.pilot{pilot, faction, squadron, standing, ship, paid = k, state = "won" | "failed" | "active" | "attempted", t1, t2 = { TRAIN indexes }, xp, series, agent, datapad, duty, species, pilotTier, inShip}`.
+  The default pilot is an Inquisition pilot with the four tier 1 skills, pilot tier 2 (3 with all four tier 2 skills), Barn's series flag and Fa'Zoll's agent flag. `I.talk` / `I.talkToBarn` /
+  `I.drive` / `I.firstScreen` drive `H.converse` from the first screen or from a given screen.
+- `inquisition_tier2_screens_data.lua`: Appendix A (103 rows) generated from the spec table by a scratch script; `inquisition_tier2_client_text.lua`: id -> English text of the 177-id client table (read-only from `/tre`), used for the trailing comments.
+- `fixtures/string/en/conversation/naboo_imperial_trainer_2.sids` (177 ids, generated) and the two buildout excerpts `space_naboo.inquisition_tier2_points.tab` (21 nav points and the inspect spawner) and
+  `space_dantooine.inquisition_tier2_points.tab` (6 nav points): the two header rows plus the rows of the SWG file, byte-copied by line number.
+- The SWG java graph is checked reply by reply except for the 16 documented rejoins and handler-built training links (`NOT_IN_JAVA` in `test_inquisition_tier2_template.lua`).
+- `test_inquisition_tier2_runtime.lua` reads the courier's cargo from the real ship template (`H.shipTemplate`); recovery 3 waits its arrival delay twice, so it pumps 60 s.
+- `test_inquisition_tier2_pins.lua` pins the shared edits against commit `a59a1568f3` and skips once HEAD moves.
+- Existing tests this feature edited: the 56th `FIXTURE_COUNTS` entry (five files), the coverage count (259 names, 243 of 925) of `test_smuggler_tier2_data.lua`, and the imperial surrender order
+  of `test_master_trainer_imperial_surrender.lua` (Barn, Fa'Zoll, Declann).

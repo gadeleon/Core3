@@ -264,11 +264,11 @@ function TestF5ArkonStaticUnresolved:test_the_unresolved_ids_of_all_space_conver
 	lu.assertEquals(CS.unresolvedByFile(CS.spaceConversationSources()), KD.KNOWN_GAPS, "unresolvedByFile versus KNOWN_GAPS")
 end
 
--- AC-1 (D-10): FIXTURE_COUNTS has 55 entries (inquisition-tier1-barn-sinkko added conversation/naboo_imperial_trainer_1; smuggler-tier4-nirame added conversation/tatooine_privateer_tier4; smuggler-tier3-beissa added conversation/tatooine_privateer_tier3; smuggler-tier2-shamdon added conversation/tatooine_privateer_trainer_shamdon; smuggler-transition-karrde added conversation/tatooine_privateer_trainer_2; smuggler-tier1-dravis added conversation/tatooine_privateer_trainer_1; space-master-trainer-rebel added conversation/rebel_master_trainer; space-master-trainer-imperial added conversation/imperial_master_trainer; black-epsilon-tier1-hakassha added conversation/corellia_imperial_trainer_1, black-epsilon-tier2-prisk added conversation/corellia_imperial_trainer_2, black-epsilon-tier3-haymir added conversation/corellia_imperial_tier3, black-epsilon-tier4-nin-gursawe added conversation/corellia_imperial_tier4), equal to the referenced files, without skl_n, and skl_n.sids is deleted
-function TestF5ArkonStaticUnresolved:test_fixture_counts_hold_the_55_referenced_files_without_skl_n_and_its_fixture_is_deleted()
+-- AC-1 (D-10): FIXTURE_COUNTS has 56 entries (inquisition-tier2-fa-zoll added conversation/naboo_imperial_trainer_2; inquisition-tier1-barn-sinkko added conversation/naboo_imperial_trainer_1; smuggler-tier4-nirame added conversation/tatooine_privateer_tier4; smuggler-tier3-beissa added conversation/tatooine_privateer_tier3; smuggler-tier2-shamdon added conversation/tatooine_privateer_trainer_shamdon; smuggler-transition-karrde added conversation/tatooine_privateer_trainer_2; smuggler-tier1-dravis added conversation/tatooine_privateer_trainer_1; space-master-trainer-rebel added conversation/rebel_master_trainer; space-master-trainer-imperial added conversation/imperial_master_trainer; black-epsilon-tier1-hakassha added conversation/corellia_imperial_trainer_1, black-epsilon-tier2-prisk added conversation/corellia_imperial_trainer_2, black-epsilon-tier3-haymir added conversation/corellia_imperial_tier3, black-epsilon-tier4-nin-gursawe added conversation/corellia_imperial_tier4), equal to the referenced files, without skl_n, and skl_n.sids is deleted
+function TestF5ArkonStaticUnresolved:test_fixture_counts_hold_the_56_referenced_files_without_skl_n_and_its_fixture_is_deleted()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 55, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 56, "FIXTURE_COUNTS entries")
 	lu.assertNil(KD.FIXTURE_COUNTS["skl_n"], "FIXTURE_COUNTS entry of skl_n")
 	lu.assertEquals(referenced, sortedKeys(KD.FIXTURE_COUNTS), "string files referenced by the space conversation sources")
 

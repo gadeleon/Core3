@@ -109,3 +109,4 @@ includeFile("conversations/space/imperial/inquisition_squadron/vrke_convo.lua")
 includeFile("conversations/space/imperial/inquisition_squadron/barlow_convo.lua")
 includeFile("conversations/space/imperial/inquisition_squadron/jace_yiaso_convo.lua")
 -- Storm Squadron
+includeFile("conversations/space/imperial/storm_squadron/akal_colzet_convo.lua")

@@ -167,6 +167,8 @@ includeFile("space/conversations/imperial/inquisition_squadron/jaceYiasoConvoHan
 -- Storm Squadron
 includeFile("space/squadrons/StormSquadronScreenplay.lua")
 
+includeFile("space/conversations/imperial/storm_squadron/akalColzetConvoHandler.lua")
+
 -- Master Trainers
 includeFile("space/squadrons/MasterTrainerScreenplay.lua")
 

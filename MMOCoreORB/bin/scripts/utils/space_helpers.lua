@@ -539,7 +539,8 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 	elseif (pilotSquadron == STORM_SQUADRON) then
 		pilotProfession = "imperialPilot"
 
-		-- TODO: Add StormSquadronScreenplay reset functions
+		-- Tier 1
+		StormSquadronScreenplay:resetColzetQuests(pPlayer)
 	elseif (pilotSquadron == INQUISITION_SQUADRON) then
 		pilotProfession = "imperialPilot"
 

@@ -538,6 +538,8 @@ StormSquadronScreenplay = ScreenPlay:new {
 	TIER2_INITIATE_KEY = "StormSquadronScreenplay:stormSquadronInitiate",
 	-- Set by the Morv briefing (SWG ss.findingAgent), cleared by the Claw reward; read by Oberhaur (O13) and the Nym technicians feature
 	TIER2_FINDING_AGENT_KEY = "StormSquadronScreenplay:findingAgent",
+	-- Set when Morv points the pilot to the Zabrak technician (nym_technician_1 s_3b4b03fd); read by the Nym technicians (feature storm-tier2-nym-technicians)
+	TIER2_MORV_TIP_KEY = "StormSquadronScreenplay:spokeToMorv",
 	-- Set by the Alozen orders (SWG workingWithAlozen); read by Oberhaur (O8) and Alozen (storm-tier2-alozen)
 	TIER2_ALOZEN_KEY = "StormSquadronScreenplay:workingWithAlozen",
 
@@ -621,7 +623,65 @@ function StormSquadronScreenplay:resetOberhaurQuests(pPlayer)
 
 	removeQuestStatus(playerID .. self.TIER2_INITIATE_KEY)
 	removeQuestStatus(playerID .. self.TIER2_FINDING_AGENT_KEY)
+	removeQuestStatus(playerID .. self.TIER2_MORV_TIP_KEY)
 	removeQuestStatus(playerID .. self.TIER2_ALOZEN_KEY)
+end
+
+-- The Nym fuel technicians on Lok (Morv and two decoys) grant the Kimogila's Claw (feature storm-tier2-nym-technicians)
+-- Stage of the Claw for a pilot: none, briefed, tipped, active, failed or won (side-effect free)
+function StormSquadronScreenplay:getClawStage(pPlayer)
+	if (pPlayer == nil or not isJtlEnabled()) then
+		return "none"
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost == nil or not SpaceHelpers:isStormSquadron(pPlayer)) then
+		return "none"
+	end
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
+	local questString = self.TIER2_QUEST_STRING_3
+
+	if (getQuestStatus(playerID .. self.TIER2_FINDING_AGENT_KEY) ~= "1" or getQuestStatus(playerID .. questString.name .. ":reward") == "1") then
+		return "none"
+	end
+
+	if (SpaceHelpers:isSpaceQuestComplete(pPlayer, questString.type, questString.name)) then
+		return "won"
+	elseif (SpaceHelpers:isSpaceQuestChainActive(pPlayer, questString.type .. "_" .. questString.name)) then
+		return "active"
+	elseif (getQuestStatus(playerID .. questString.name .. ":attempted") == "1") then
+		return "failed"
+	elseif (getQuestStatus(playerID .. self.TIER2_MORV_TIP_KEY) == "1") then
+		return "tipped"
+	end
+
+	return "briefed"
+end
+
+-- The Claw may be (re)started: tipped or failed, and no other space quest or Oberhaur mission
+function StormSquadronScreenplay:canStartClaw(pPlayer)
+	local stage = self:getClawStage(pPlayer)
+
+	if (stage ~= "tipped" and stage ~= "failed") then
+		return false
+	end
+
+	return not SpaceHelpers:hasSpaceQuest(pPlayer) and not oberhaurConvoHandler:isOnMission(pPlayer)
+end
+
+-- Grants the Claw (guarded by canStartClaw); a retry starts clean
+function StormSquadronScreenplay:startClaw(pPlayer, pNpc)
+	if (not self:canStartClaw(pPlayer)) then
+		return false
+	end
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
+
+	setQuestStatus(playerID .. self.TIER2_QUEST_STRING_3.name .. ":attempted", 1)
+
+	return SpaceHelpers:startSpaceQuestChain(pPlayer, pNpc, "assassinate_imperial_ss_3")
 end
 
 -- The first Authorization of Transfer directly in the inventory (SWG tatooine_imperial_trainer_2.java:16-27), or nil

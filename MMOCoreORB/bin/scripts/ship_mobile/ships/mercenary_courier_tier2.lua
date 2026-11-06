@@ -20,6 +20,7 @@ mercenary_courier_tier2 = ShipAgent:new {
 	color2 = 28,
 	texture = 4,
 	questLoot = "encrypted_documents",
+	cargoString = "encrypted_documents", -- SWG space_mobile cargo encrypted_documents; inspect quest naboo_imperial_tier2_1 (feature inquisition-tier2-fa-zoll)
 	appearance = "generic_pirate",
 
 	tauntType = "generic_low",

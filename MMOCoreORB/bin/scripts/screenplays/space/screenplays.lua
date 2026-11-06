@@ -159,6 +159,7 @@ includeFile("space/conversations/imperial/black_epsilon_squadron/ninGursaweConvo
 includeFile("space/squadrons/InquisitionSquadronScreenplay.lua")
 
 includeFile("space/conversations/imperial/inquisition_squadron/barnSinkkoConvoHandler.lua")
+includeFile("space/conversations/imperial/inquisition_squadron/faZollConvoHandler.lua")
 
 -- Storm Squadron
 includeFile("space/squadrons/StormSquadronScreenplay.lua")

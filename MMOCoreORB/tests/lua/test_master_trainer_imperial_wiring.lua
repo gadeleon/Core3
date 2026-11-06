@@ -145,11 +145,12 @@ function TestMasterTrainerImperialWiring:test_screenplays_lua_includes_the_quest
 		lu.assertFalse(l:find("%-%-%s*includeFile%(\"space/conversations/imperial/nialDeclann") ~= nil, "screenplays.lua: commented nialDeclannConvoHandler include")
 	end
 
-	local storm = indexOf(lines, 'includeFile("space/squadrons/StormSquadronScreenplay.lua")')
+	-- storm-tier1-akal-colzet: Colzet's handler include sits between the Storm squadron include and the Master Trainers block, so the anchor is his include
+	local storm = indexOf(lines, 'includeFile("space/conversations/imperial/storm_squadron/akalColzetConvoHandler.lua")')
 
-	lu.assertNotNil(storm, "screenplays.lua: the StormSquadronScreenplay include")
+	lu.assertNotNil(storm, "screenplays.lua: the akalColzetConvoHandler include (storm-tier1-akal-colzet)")
 	lu.assertEquals({ lines[storm + 1], lines[storm + 2], lines[storm + 3], lines[storm + 4], lines[storm + 5] },
-		{ "", "-- Master Trainers", mts, "", handler }, "screenplays.lua: the five lines directly after the Storm include")
+		{ "", "-- Master Trainers", mts, "", handler }, "screenplays.lua: the five lines directly after Colzet's handler include")
 end
 
 -- AC-1: space_conversations.lua, directly after the Imperial Pilot comment

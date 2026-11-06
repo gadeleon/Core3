@@ -533,7 +533,7 @@ function V.load()
 		rawset(_G, "FACTIONREBEL", getHashCode("rebel"))
 	end
 
-	for _, name in ipairs({ "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay", "BlackEpsilonSquadronScreenplay", "InquisitionSquadronScreenplay" }) do
+	for _, name in ipairs({ "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay", "BlackEpsilonSquadronScreenplay", "InquisitionSquadronScreenplay", "StormSquadronScreenplay" }) do
 		if rawget(_G, name) == nil then
 			try(name, function() H.loadSquadron(name) end)
 		end

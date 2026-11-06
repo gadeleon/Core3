@@ -150,11 +150,12 @@ function TestMasterTrainerRebelWiring:test_screenplays_lua_includes_burkes_handl
 		lu.assertFalse(l:find("%-%-%s*includeFile%(\"space/conversations/rebel/willhamBurke") ~= nil, "screenplays.lua: commented willhamBurkeConvoHandler include")
 	end
 
-	local storm = indexOf(lines, 'includeFile("space/squadrons/StormSquadronScreenplay.lua")')
+	-- storm-tier1-akal-colzet: Colzet's handler include sits between the Storm squadron include and the Master Trainers block, so the anchor is his include
+	local storm = indexOf(lines, 'includeFile("space/conversations/imperial/storm_squadron/akalColzetConvoHandler.lua")')
 
-	lu.assertNotNil(storm, "screenplays.lua: the StormSquadronScreenplay include")
+	lu.assertNotNil(storm, "screenplays.lua: the akalColzetConvoHandler include (storm-tier1-akal-colzet)")
 	lu.assertEquals({ lines[storm + 1], lines[storm + 2], lines[storm + 3], lines[storm + 4], lines[storm + 5] },
-		{ "", "-- Master Trainers", mts, "", declann }, "screenplays.lua: the five Imperial lines directly after the Storm include are unchanged")
+		{ "", "-- Master Trainers", mts, "", declann }, "screenplays.lua: the five Imperial lines directly after Colzet's handler include are unchanged")
 	lu.assertEquals(lines[storm + 6], burke, "screenplays.lua: the Burke include directly after Declann's")
 end
 

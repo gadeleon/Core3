@@ -19,6 +19,7 @@
 -- inquisition-tier3-vrke: Inquisitor Vrke's conversation/naboo_imperial_tier3 (324 ids) is new and fully resolved; KNOWN_GAPS stays {}.
 -- inquisition-tier3-barlow: Lt. Colonel Barlow's conversation/naboo_imperial_tier3_barlow (172 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
 -- inquisition-tier4-jace-yiaso: Grand Inquisitor Ja'ce Yiaso's conversation/naboo_imperial_tier4 (279 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
+-- storm-tier1-akal-colzet: Lt. Akal Colzet's conversation/tatooine_imperial_trainer_1 (347 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -78,6 +79,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/station_talus"] = 84,
 	["conversation/station_tatooine"] = 79,
 	["conversation/station_yavin4"] = 177,
+	["conversation/tatooine_imperial_trainer_1"] = 347,
 	["conversation/tatooine_privateer_tier3"] = 249,
 	["conversation/tatooine_privateer_tier4"] = 247,
 	["conversation/tatooine_privateer_trainer_1"] = 152,

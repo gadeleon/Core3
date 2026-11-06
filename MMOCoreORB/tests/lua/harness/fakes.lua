@@ -755,6 +755,9 @@ end
 
 function FakeContainer:getContainerObjectsSize() return #self.items end
 function FakeContainer:getContainerObject(i) return self.items[i + 1] end
+-- SceneObject::isContainerFullRecursive (storm-tier1-akal-colzet): full once the container holds `limit` items, answering from the same
+-- `limit` / `inventoryFull` options giveItem uses; a container without a limit is never full.
+function FakeContainer:isContainerFullRecursive() return self.limit ~= nil and #self.items >= self.limit end
 
 local FakeMission = { __kind = "MissionObject" }
 FakeMission.__index = FakeMission

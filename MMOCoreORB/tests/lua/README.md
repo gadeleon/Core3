@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, 60 since storm-tier1-akal-colzet, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -869,3 +869,23 @@ Answer key: SWG `naboo_imperial_tier4.java` (J; `fixtures/script/conversation/`,
   `_surrender.lua`, `_runtime.lua` (the four chains split by split; the inspect uses the real ship template cargo) and `_pins.lua` (against commit `2eae193d14`; the file lists accept untracked or staged new files).
 - Existing tests this feature edited: the 59th `FIXTURE_COUNTS` entry (six files, names and comments, plus `space_convo_client_strings_data.lua`), the surrender order (Barn, Fa'Zoll, Vrke, Ja'ce, Declann) of
   `test_inquisition_tier2_surrender.lua`, `test_inquisition_tier3_surrender.lua` and `test_master_trainer_imperial_surrender.lua`, and the coverage counts (291 distinct questName strings, 275 of 925 SWG names) of `test_smuggler_tier2_data.lua`.
+
+### Storm tier 1: Lt. Akal Colzet (storm-tier1-akal-colzet)
+
+Answer key: SWG `tatooine_imperial_trainer_1.java` (J; `fixtures/script/conversation/`, byte copy of the 10,572-line file) plus the spec's Data mapping 3 (twins, rejoins, drops, pre-NGE-only lines) and the
+eight `fixtures/spacequest/<type>/tatooine_imperial_*.tab` byte copies. Colzet's template is `akal_colzet_convo_template`, his handler the global `akalColzetConvoHandler`.
+
+- `storm_tier1_data.lua` (not a test file): the 8 globals, `S.expected()` (Appendix B, every key; no table defines a function), the 18 points and 4 spawners, `S.TRAIN`, the squadron constants (`SERIES_COMPLETE_KEY`,
+  `TRANSFER_FORM`), the load helper (`S.load()` skips a squadron another loader already ran) and the player builder
+  `S.pilot{pilot, faction, squadron, standing, ship, paid = k, state = "won" | "failed" | "active" | "attempted", tier, skills, xp, series, datapad, duty, species, pilotTier, inventory, inventoryFull, inShip}`.
+  `S.talk` / `S.drive` / `S.firstScreen` drive `H.converse` from the first screen or from a given screen; `S.forms(player)` counts the Authorization of Transfer items given to the inventory. (The test files alias the module as `I`, as the other trainers do.)
+- `storm_tier1_screens_data.lua`: Appendix A (199 rows) generated from the spec table by a scratch script (`training_menu` has no static options, its replies are built at run time); `storm_tier1_client_text.lua`: id -> English text of the 347-entry
+  client table (read-only from `/tre`), used for the trailing comments.
+- `fixtures/string/en/conversation/tatooine_imperial_trainer_1.sids` (347 ids, generated) and `fixtures/space_zones/buildout/space_tatooine.storm_tier1_points.tab` (the two header rows plus the 4 spawner rows and the 18 nav point rows, `sed -n` by line number).
+- Mission 3 is a patrol that splits into the escort; both are "won" only together (`S.CHAINS`), the patrol head pays. An abort is a failure (J has no aborted branch), so there is no `:aborted` marker and no `abortQuest` override.
+- `FakeContainer:isContainerFullRecursive()` (harness/fakes.lua) answers from the same `limit` / `inventoryFull` options as `giveItem`: full once the container holds `limit` items, never full without a limit.
+  `S.pilot{inventoryFull = true}` gives a full inventory, `inventory = false` none at all.
+- The Authorization of Transfer is only given (unsigned); its read/sign behavior belongs to tier 2. `test_storm_tier1_training.lua` checks it lands in a full inventory too (J `createObjectOverloaded`), and that the re-issue is refused with `form_inventory_full` when there is no room.
+- `test_storm_tier1_pins.lua` pins the shared edits against commit `25a16f864d` and skips once HEAD moves.
+- Existing tests this feature edited: the 60th `FIXTURE_COUNTS` entry (seven files plus `space_convo_client_strings_data.lua`), the loader lists of `black_epsilon_tier4_data.lua` and `inquisition_tier{1,2,3,4}_data.lua` (they now load `StormSquadronScreenplay`),
+  the include anchor of `test_master_trainer_{imperial,rebel}_wiring.lua` (Colzet's handler include), the surrender order of `test_master_trainer_imperial_surrender.lua` (Colzet, Declann for Storm), and the coverage counts (297 distinct questName strings, 281 of 925 SWG names) of `test_smuggler_tier2_data.lua`.

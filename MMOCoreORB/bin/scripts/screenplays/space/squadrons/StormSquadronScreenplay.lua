@@ -1416,6 +1416,774 @@ assassinate_tatooine_imperial_tier3_4_c = SpaceAssassinateScreenplay:new {
 registerScreenPlay("assassinate_tatooine_imperial_tier3_4_c", true)
 
 --[[
+	Tier 4 -- Admiral Kilnstrider (Endor, research outpost; Endor and Dantooine systems)
+	Ported from SWG-Source tatooine_imperial_tier4_1..4, their splits and the four tier 4 duties (patrol, destroy_surpriseattack, space_battle, inspect, delivery_no_pickup, recovery, delivery, escort, rescue, assassinate, destroy_duty, escort_duty, recovery_duty, rescue_duty); feature storm-tier4-kilnstrider-missions
+]]
+
+-- Mission 1: Patrol > Surprise attack > Space battle > Inspect > Delivery (no pickup)
+patrol_tatooine_imperial_tier4_1 = SpacePatrolScreenplay:new {
+	className = "patrol_tatooine_imperial_tier4_1",
+
+	questName = "tatooine_imperial_tier4_1",
+	questType = "patrol",
+
+	questZone = "space_endor",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/weapon/wpn_mission_reward_imperial_sds_boltdriver.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "destroy_surpriseattack",
+	sideQuestName = "tatooine_imperial_tier4_1_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.PATROL_POINT,
+	sideQuestPatrolStart = 3,
+	sideQuestDelay = 20, -- Time in seconds to wait to trigger side quest
+
+	patrolPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_patrol1_1", x = -5749, z = -224, y = -4615, patrolNumber = 1, radius = 150},
+		{patrolPointName = "tatooine_imperial_tier4_patrol1_2", x = -7378, z = -1977, y = -4819, patrolNumber = 2, radius = 150},
+		{patrolPointName = "tatooine_imperial_tier4_patrol1_3", x = -6853, z = -4068, y = -7641, patrolNumber = 3, radius = 150},
+		{patrolPointName = "tatooine_imperial_tier4_patrol1_4", x = -3362, z = -3184, y = -3464, patrolNumber = 4, radius = 150},
+	},
+}
+
+registerScreenPlay("patrol_tatooine_imperial_tier4_1", true)
+
+destroy_surpriseattack_tatooine_imperial_tier4_1_a = SpaceSurpriseAttackScreenplay:new {
+	className = "destroy_surpriseattack_tatooine_imperial_tier4_1_a",
+
+	questName = "tatooine_imperial_tier4_1_a",
+	questType = "destroy_surpriseattack",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "space_battle",
+	sideQuestName = "tatooine_imperial_tier4_1_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "patrol_tatooine_imperial_tier4_1",
+	parentQuestType = "patrol",
+	parentQuestName = "tatooine_imperial_tier4_1",
+
+	-- Screenplay Specific Variables
+	surpriseAttackShips = {
+		zone = "space_endor",
+		spawns = {
+			{count = 5, shipName = "reb_awing_tier4"},
+		},
+	},
+}
+
+registerScreenPlay("destroy_surpriseattack_tatooine_imperial_tier4_1_a", true)
+
+space_battle_tatooine_imperial_tier4_1_b = SpaceBattleScreenplay:new {
+	className = "space_battle_tatooine_imperial_tier4_1_b",
+
+	questName = "tatooine_imperial_tier4_1_b",
+	questType = "space_battle",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "inspect",
+	sideQuestName = "tatooine_imperial_tier4_1_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "destroy_surpriseattack_tatooine_imperial_tier4_1_a",
+	parentQuestType = "destroy_surpriseattack",
+	parentQuestName = "tatooine_imperial_tier4_1_a",
+
+	-- Screenplay Specific Variables
+	battlePoint = {patrolPointName = "tatooine_imperial_tier4_spacebattle1", x = -3291, z = -3042, y = -3060, forward = {x = -0.162564, z = -0.321512, y = -0.932847}},
+	damageMultiplier = 3,
+	allyArrivalDelay = 15,
+	enemyArrivalDelay = 45,
+	allyOriginDist = 400,
+	enemyOriginDist = -400,
+	allyArrivalDist = 300,
+	enemyArrivalDist = 300,
+	allyForce = {"imp_decimator_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4"},
+	enemyForce = {"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ykl37r_tier4", "reb_ykl37r_tier4", "reb_ywing_tier4", "reb_ywing_tier4", "reb_ywing_tier4", "reb_ywing_tier4"},
+}
+
+registerScreenPlay("space_battle_tatooine_imperial_tier4_1_b", true)
+
+inspect_tatooine_imperial_tier4_1_c = SpaceInspectScreenplay:new {
+	className = "inspect_tatooine_imperial_tier4_1_c",
+
+	questName = "tatooine_imperial_tier4_1_c",
+	questType = "inspect",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "tatooine_imperial_tier4_1_d",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "space_battle_tatooine_imperial_tier4_1_b",
+	parentQuestType = "space_battle",
+	parentQuestName = "tatooine_imperial_tier4_1_b",
+
+	-- Screenplay Specific Variables
+	shipList = {"rebel_endscout_tier4"},
+	validSpawns = {
+		{spawnName = "tatooine_imperial_tier4_endscout1", x = -3606, z = -2695, y = -3771},
+	},
+	giveSpawnWaypoint = 1,
+	cargo = "rebel_battle_plans",
+}
+
+registerScreenPlay("inspect_tatooine_imperial_tier4_1_c", true)
+
+delivery_no_pickup_tatooine_imperial_tier4_1_d = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_tatooine_imperial_tier4_1_d",
+
+	questName = "tatooine_imperial_tier4_1_d",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "inspect_tatooine_imperial_tier4_1_c",
+	parentQuestType = "inspect",
+	parentQuestName = "tatooine_imperial_tier4_1_c",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_lambda_shuttle_tier4",
+	deliveryPoint = {patrolPointName = "tatooine_imperial_tier4_delivery1", x = -5404, z = -2088, y = -5153},
+
+	attackShipLists = {
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+		{"reb_bwing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_tatooine_imperial_tier4_1_d", true)
+
+-- Mission 2: Recovery > Recovery > Delivery > Delivery (no pickup)
+recovery_tatooine_imperial_tier4_2 = SpaceRecoveryScreenplay:new {
+	className = "recovery_tatooine_imperial_tier4_2",
+
+	questName = "tatooine_imperial_tier4_2",
+	questType = "recovery",
+
+	questZone = "space_endor",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/shield_generator/shd_mission_reward_imperial_cygnus_holoscreen.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "tatooine_imperial_tier4_2_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+
+	recoverShip = "bothan_spynet_shuttle_tier4",
+	recoveryConversationMobile = "object/mobile/shared_space_comm_imperial_officer_02.iff",
+
+	escortShips = {"bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_1", x = 4943, z = -2102, y = 5342, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_2", x = -1020, z = -2352, y = 3977, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_3", x = -6409, z = -1895, y = 930, escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_4", x = -6883, z = 2582, y = -4552, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_5", x = -3404, z = -2039, y = -3974, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_6", x = -45, z = -2070, y = -534, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery1_7", x = 3055, z = -2194, y = 3450, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+		{"reb_bwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ywing_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_tatooine_imperial_tier4_2", true)
+
+recovery_tatooine_imperial_tier4_2_a = SpaceRecoveryScreenplay:new {
+	className = "recovery_tatooine_imperial_tier4_2_a",
+
+	questName = "tatooine_imperial_tier4_2_a",
+	questType = "recovery",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "delivery",
+	sideQuestName = "tatooine_imperial_tier4_2_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_tatooine_imperial_tier4_2",
+	parentQuestType = "recovery",
+	parentQuestName = "tatooine_imperial_tier4_2",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+
+	recoverShip = "bothan_spynet_shuttle_tier4",
+	recoveryConversationMobile = "object/mobile/shared_space_comm_imperial_officer_02.iff",
+
+	escortShips = {"bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_1", x = 6484, z = 566, y = -4504, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_2", x = 3570, z = 2552, y = 1242, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_3", x = -480, z = 4414, y = 4424, escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_4", x = -2996, z = 6312, y = -34, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_5", x = -965, z = -20, y = 970, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_6", x = 2498, z = -942, y = 3428, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery2_7", x = 5008, z = -1982, y = 5994, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_bwing_tier4", "reb_bwing_tier4", "reb_awing_tier4"},
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ywing_tier4", "reb_ywing_tier4", "reb_xwing_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_tatooine_imperial_tier4_2_a", true)
+
+delivery_tatooine_imperial_tier4_2_b = SpaceDeliveryScreenplay:new {
+	className = "delivery_tatooine_imperial_tier4_2_b",
+
+	questName = "tatooine_imperial_tier4_2_b",
+	questType = "delivery",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "delivery_no_pickup",
+	sideQuestName = "tatooine_imperial_tier4_2_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "recovery_tatooine_imperial_tier4_2_a",
+	parentQuestType = "recovery",
+	parentQuestName = "tatooine_imperial_tier4_2_a",
+
+	-- Screenplay Specific Variables
+	pickupPoint = {patrolPointName = "tatooine_imperial_tier4_pickup1", x = -5329, z = -1922, y = -5037},
+	deliveryPoint = {patrolPointName = "tatooine_imperial_tier4_deliver1", x = -551, z = -2040, y = -145},
+	pickupShip = "imp_freightermedium_tier4",
+	deliveryShip = "imp_freighterlight_tier4",
+
+	attackShipLists = {
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ywing_tier4", "reb_ywing_tier4"},
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_bwing_tier4", "reb_bwing_tier4"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_tatooine_imperial_tier4_2_b", true)
+
+delivery_no_pickup_tatooine_imperial_tier4_2_c = SpaceDeliveryNoPickupScreenplay:new {
+	className = "delivery_no_pickup_tatooine_imperial_tier4_2_c",
+
+	questName = "tatooine_imperial_tier4_2_c",
+	questType = "delivery_no_pickup",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "delivery_tatooine_imperial_tier4_2_b",
+	parentQuestType = "delivery",
+	parentQuestName = "tatooine_imperial_tier4_2_b",
+
+	-- Screenplay Specific Variables
+	deliveryShip = "imp_freighterlight_tier4",
+	deliveryPoint = {patrolPointName = "tatooine_imperial_tier4_deliver2", x = -884, z = -2120, y = -290},
+
+	attackShipLists = {
+		{"reb_ywing_tier4", "reb_ywing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+		{"reb_bwing_tier4", "reb_bwing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+	},
+
+	attackPeriod = 90,
+	attackListType = SpaceDeliveryScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+}
+
+registerScreenPlay("delivery_no_pickup_tatooine_imperial_tier4_2_c", true)
+
+-- Mission 3: Escort > Rescue > Space battle
+escort_tatooine_imperial_tier4_3 = SpaceEscortScreenplay:new {
+	className = "escort_tatooine_imperial_tier4_3",
+
+	questName = "tatooine_imperial_tier4_3",
+	questType = "escort",
+
+	questZone = "space_endor",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/armor/arm_mission_reward_imperial_rss_special_durasteel.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "rescue",
+	sideQuestName = "tatooine_imperial_tier4_3_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	escortShips = {"imp_lambda_inquisitor_shuttle_tier4"},
+
+	escortPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_escort1_1", x = -5348, z = -1967, y = -5055, zoneName = "space_endor", escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escort1_2", x = -927, z = -1526, y = -5451, zoneName = "space_endor", escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escort1_3", x = 1789, z = -1285, y = -5497, zoneName = "space_endor", escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escort1_4", x = 4366, z = -1130, y = -5212, zoneName = "space_endor", escortNumber = 4, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escort1_5", x = 6356, z = -1088, y = -4928, zoneName = "space_endor", escortNumber = 5, radius = 250},
+	},
+
+	attackDelay = 90,
+
+	attackShips = {
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ywing_tier4", "reb_ywing_tier4"},
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ywing_tier4"},
+		{"reb_bwing_tier4", "reb_bwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_tatooine_imperial_tier4_3", true)
+
+rescue_tatooine_imperial_tier4_3_a = SpaceRescueScreenplay:new {
+	className = "rescue_tatooine_imperial_tier4_3_a",
+
+	questName = "tatooine_imperial_tier4_3_a",
+	questType = "rescue",
+
+	questZone = "space_endor",
+
+	sideQuest = true,
+	sideQuestType = "space_battle",
+	sideQuestName = "tatooine_imperial_tier4_3_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "escort_tatooine_imperial_tier4_3",
+	parentQuestType = "escort",
+	parentQuestName = "tatooine_imperial_tier4_3",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "tatooine_imperial_tier4_rescue1_1", x = 6480, z = -1213, y = -4966},
+		{patrolPointName = "tatooine_imperial_tier4_rescue1_2", x = 379, z = -1769, y = -5254},
+		{patrolPointName = "tatooine_imperial_tier4_rescue1_3", x = -2016, z = -1895, y = -5391},
+	},
+
+	targetShipType = "imp_lambda_shuttle_tier4",
+	targetArrivalDelay = 30,
+
+	attackShipLists = {
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_ywing_tier4"},
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+		{"reb_awing_tier4", "reb_awing_tier4", "reb_bwing_tier4", "reb_bwing_tier4"},
+	},
+
+	attackPeriod = 120,
+	attackListType = SpaceRescueScreenplay.ATTACK_LIST_TYPES.SEQUENTIAL,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_tatooine_imperial_tier4_3_a", true)
+
+space_battle_tatooine_imperial_tier4_3_b = SpaceBattleScreenplay:new {
+	className = "space_battle_tatooine_imperial_tier4_3_b",
+
+	questName = "tatooine_imperial_tier4_3_b",
+	questType = "space_battle",
+
+	questZone = "space_endor",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "rescue_tatooine_imperial_tier4_3_a",
+	parentQuestType = "rescue",
+	parentQuestName = "tatooine_imperial_tier4_3_a",
+
+	-- Screenplay Specific Variables
+	battlePoint = {patrolPointName = "tatooine_imperial_tier4_spacebattle2", x = -1804, z = -578, y = -1659, forward = {x = -0.699074, z = -0.273777, y = -0.660562}},
+	damageMultiplier = 2,
+	allyArrivalDelay = 30,
+	enemyArrivalDelay = 60,
+	allyOriginDist = 400,
+	enemyOriginDist = -400,
+	allyArrivalDist = 200,
+	enemyArrivalDist = 200,
+	allyForce = {"imp_imperial_gunboat_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_interceptor_tier4", "imp_tie_bomber_tier4", "imp_tie_bomber_tier4"},
+	enemyForce = {"reb_awing_tier4", "reb_awing_tier4", "reb_awing_tier4", "reb_bwing_tier4", "reb_bwing_tier4", "reb_bwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_gunboat_tier4", "reb_gunboat_tier4"},
+}
+
+registerScreenPlay("space_battle_tatooine_imperial_tier4_3_b", true)
+
+-- Mission 4: Assassinate > Assassinate > Recovery > Assassinate (Dantooine)
+assassinate_tatooine_imperial_tier4_4 = SpaceAssassinateScreenplay:new {
+	className = "assassinate_tatooine_imperial_tier4_4",
+
+	questName = "tatooine_imperial_tier4_4",
+	questType = "assassinate",
+
+	questZone = "space_dantooine",
+
+	creditReward = 10000,
+	itemReward = {
+		{species = {-1}, item = "object/tangible/ship/components/reactor/rct_mission_reward_imperial_rss_advanced_military.iff"},
+	},
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "tatooine_imperial_tier4_4_a",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "bothan_spynet_shuttle_tier4",
+		escorts = {"bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "tatooine_imperial_tier4_assassinate1_1", x = 2690, z = 2543, y = -2188},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate1_2", x = 3516, z = 3858, y = -2776},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate1_3", x = 3954, z = 5306, y = -3320},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate1_4", x = 4246, z = 7195, y = -4046},
+	},
+}
+
+registerScreenPlay("assassinate_tatooine_imperial_tier4_4", true)
+
+assassinate_tatooine_imperial_tier4_4_a = SpaceAssassinateScreenplay:new {
+	className = "assassinate_tatooine_imperial_tier4_4_a",
+
+	questName = "tatooine_imperial_tier4_4_a",
+	questType = "assassinate",
+
+	questZone = "space_dantooine",
+
+	sideQuest = true,
+	sideQuestType = "recovery",
+	sideQuestName = "tatooine_imperial_tier4_4_b",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "assassinate_tatooine_imperial_tier4_4",
+	parentQuestType = "assassinate",
+	parentQuestName = "tatooine_imperial_tier4_4",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "bothan_spynet_shuttle_tier4",
+		escorts = {"bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "tatooine_imperial_tier4_assassinate2_1", x = 4949, z = 6749, y = -2654},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate2_3", x = 4748, z = 5533, y = -186},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate2_4", x = 2523, z = 5429, y = 764},
+	},
+}
+
+registerScreenPlay("assassinate_tatooine_imperial_tier4_4_a", true)
+
+recovery_tatooine_imperial_tier4_4_b = SpaceRecoveryScreenplay:new {
+	className = "recovery_tatooine_imperial_tier4_4_b",
+
+	questName = "tatooine_imperial_tier4_4_b",
+	questType = "recovery",
+
+	questZone = "space_dantooine",
+
+	sideQuest = true,
+	sideQuestType = "assassinate",
+	sideQuestName = "tatooine_imperial_tier4_4_c",
+	sideQuestSplitType = SpaceQuestLogic.SIDE_QUEST_SPLIT_TYPES.COMPLETION,
+	sideQuestDelay = 5, -- Time in seconds to wait to trigger side quest
+
+	parentQuest = "assassinate_tatooine_imperial_tier4_4_a",
+	parentQuestType = "assassinate",
+	parentQuestName = "tatooine_imperial_tier4_4_a",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+
+	recoverShip = "bothan_spynet_shuttle_tier4",
+
+	escortShips = {"bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4", "bothan_spynet_fighter_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_1", x = 5928, z = 5349, y = -4448, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_2", x = -1856, z = 5251, y = 2377, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_3", x = -6393, z = 4381, y = 4443, escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_4", x = -5678, z = 3471, y = 7284, escortNumber = 4, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_5", x = -3399, z = 2785, y = 7662, escortNumber = 5, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_6", x = -5494, z = 2785, y = 2820, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_7", x = -2758, z = 3137, y = 1630, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recovery3_8", x = -1368, z = 3851, y = -1723, escortNumber = 3, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4"},
+		{"reb_awing_tier4", "reb_bwing_tier4", "reb_bwing_tier4", "reb_awing_tier4", "reb_awing_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_tatooine_imperial_tier4_4_b", true)
+
+assassinate_tatooine_imperial_tier4_4_c = SpaceAssassinateScreenplay:new {
+	className = "assassinate_tatooine_imperial_tier4_4_c",
+
+	questName = "tatooine_imperial_tier4_4_c",
+	questType = "assassinate",
+
+	questZone = "space_dantooine",
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	parentQuest = "recovery_tatooine_imperial_tier4_4_b",
+	parentQuestType = "recovery",
+	parentQuestName = "tatooine_imperial_tier4_4_b",
+
+	arrivalDelay = 30,
+	failTimer = 20,
+	mustDestroyEscort = true,
+
+	assassinateSpawns = {
+		target = "rebel_command_vessel_tier4",
+		escorts = {"reb_xwing_tier4", "reb_xwing_tier4", "reb_xwing_tier4", "reb_bwing_tier3", "reb_bwing_tier3", "reb_bwing_tier3", "reb_ywing_tier4", "reb_ywing_tier4", "reb_ywing_tier4", "rebel_command_vessel_weak_tier2", "rebel_command_vessel_weak_tier2"},
+	},
+
+	targetPatrols = {
+		{patrolPointName = "tatooine_imperial_tier4_assassinate3_1", x = -564, z = 4538, y = -1545},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate3_2", x = 2413, z = 4362, y = -291},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate3_3", x = 4353, z = 4266, y = 525},
+		{patrolPointName = "tatooine_imperial_tier4_assassinate3_4", x = 6500, z = 4160, y = 1429},
+	},
+}
+
+registerScreenPlay("assassinate_tatooine_imperial_tier4_4_c", true)
+
+-- Duties
+destroy_duty_tatooine_imperial_tier4_destroyduty_1 = SpaceDutyDestroyScreenplay:new {
+	className = "destroy_duty_tatooine_imperial_tier4_destroyduty_1",
+
+	questName = "tatooine_imperial_tier4_destroyduty_1",
+	questType = "destroy_duty",
+
+	questZone = "space_endor",
+
+	creditReward = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	totalLevels = 5, -- Amount of levels a player has to complete to finish mission
+	totalRounds = 5, -- Total Rounds for each of the levels
+	totalWaves = 3, -- Total waves at each location that is not the boss ship
+
+	bossShip = "red_skull_pirate_heavy_tier5",
+	shipTypes = {
+		{"red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+		{"red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_medium_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4"},
+		{"red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+	},
+}
+
+registerScreenPlay("destroy_duty_tatooine_imperial_tier4_destroyduty_1", true)
+
+escort_duty_tatooine_imperial_tier4_escortduty_1 = SpaceDutyEscortScreenplay:new {
+	className = "escort_duty_tatooine_imperial_tier4_escortduty_1",
+
+	questName = "tatooine_imperial_tier4_escortduty_1",
+	questType = "escort_duty",
+
+	questZone = "space_endor",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	escortShips = {"imp_lambda_shuttle_tier4", "imp_freightermedium_tier4", "imp_freighterlight_tier4", "imp_freighterheavy_tier4"},
+
+	escortPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_1", x = 6016, z = 6811, y = -6039, zoneName = "space_endor", escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_2", x = 4793, z = 5977, y = -6393, zoneName = "space_endor", escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_3", x = 3202, z = 4875, y = -6867, zoneName = "space_endor", escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_4", x = 1797, z = 3779, y = -6762, zoneName = "space_endor", escortNumber = 4, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_5", x = 131, z = 2466, y = -6593, zoneName = "space_endor", escortNumber = 5, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_6", x = -1611, z = 1162, y = -6352, zoneName = "space_endor", escortNumber = 6, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_7", x = -3268, z = -61, y = -6124, zoneName = "space_endor", escortNumber = 7, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_8", x = -4423, z = -914, y = -5950, zoneName = "space_endor", escortNumber = 8, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_escortduty_9", x = -5380, z = -2054, y = -5157, zoneName = "space_endor", escortNumber = 9, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4"},
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+	},
+
+	tauntData = {goodbyeCount = 5, reasonCount = 5, tauntCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("escort_duty_tatooine_imperial_tier4_escortduty_1", true)
+
+recovery_duty_tatooine_imperial_tier4_recoveryduty_1 = SpaceDutyRecoveryScreenplay:new {
+	className = "recovery_duty_tatooine_imperial_tier4_recoveryduty_1",
+
+	questName = "tatooine_imperial_tier4_recoveryduty_1",
+	questType = "recovery_duty",
+
+	questZone = "space_endor",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+	numResponses = 5,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	arrivalDelay = 30,
+	recoveryDelay = 30,
+
+	recoverShips = {"red_skull_freighter_tier4"},
+
+	escortShips = {"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+
+	preRecoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_1", x = -778, z = 1426, y = -905, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_2", x = -1454, z = 3074, y = -1580, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_3", x = -2232, z = 4616, y = -2283, escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_4", x = -2849, z = 6172, y = -2900, escortNumber = 4, radius = 250},
+	},
+
+	recoveryPoints = {
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_5", x = 70, z = 3633, y = -2133, escortNumber = 1, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_6", x = 2045, z = 4717, y = -3428, escortNumber = 2, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_7", x = 3980, z = 5779, y = -4704, escortNumber = 3, radius = 250},
+		{patrolPointName = "tatooine_imperial_tier4_recoveryduty_8", x = 6111, z = 7006, y = -6049, escortNumber = 4, radius = 250},
+	},
+
+	attackDelay = 120,
+
+	attackShips = {
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+		{"red_skull_pirate_heavy_tier4", "red_skull_pirate_heavy_tier4", "red_skull_pirate_heavy_tier4", "red_skull_pirate_heavy_tier4", "red_skull_pirate_heavy_tier4"},
+	},
+
+	tauntData = {panicCount = 5, thanksCount = 5},
+}
+
+registerScreenPlay("recovery_duty_tatooine_imperial_tier4_recoveryduty_1", true)
+
+rescue_duty_tatooine_imperial_tier4_rescueduty_1 = SpaceDutyRescueScreenplay:new {
+	className = "rescue_duty_tatooine_imperial_tier4_rescueduty_1",
+
+	questName = "tatooine_imperial_tier4_rescueduty_1",
+	questType = "rescue_duty",
+
+	questZone = "space_endor",
+
+	creditReward = 5000,
+	creditKillBonus = 300,
+
+	sideQuest = false,
+	sideQuestType = "",
+
+	-- Screenplay Specific Variables
+	recoveryPath = {
+		{patrolPointName = "tatooine_imperial_tier4_rescueduty_1", x = -631, z = -2331, y = -4019},
+		{patrolPointName = "tatooine_imperial_tier4_rescueduty_2", x = -2251, z = -2058, y = -6515},
+		{patrolPointName = "tatooine_imperial_tier4_rescueduty_3", x = -3195, z = 2390, y = -5645},
+	},
+
+	targetShipTypes = {"imp_freightermedium_tier4", "imp_freighterlight_tier4", "imp_freighterheavy_tier4", "imp_lambda_shuttle_tier4"},
+	targetArrivalDelay = 30,
+
+	attackShipLists = {
+		{"red_skull_pirate_medium_tier4", "red_skull_pirate_medium_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4"},
+		{"red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_light_tier4", "red_skull_pirate_heavy_tier4", "red_skull_pirate_heavy_tier4"},
+	},
+	attackPeriod = 120,
+	attackListType = 0,
+	numResponses = 5,
+}
+
+registerScreenPlay("rescue_duty_tatooine_imperial_tier4_rescueduty_1", true)
+
+--[[
 
 	StormSquadronScreenplay
 
@@ -1491,6 +2259,31 @@ StormSquadronScreenplay = ScreenPlay:new {
 	TIER3_QUEST_STRING_4_SIDE1 = {type = "rescue", name = "tatooine_imperial_tier3_4_a"},
 	TIER3_QUEST_STRING_4_SIDE2 = {type = "inspect", name = "tatooine_imperial_tier3_4_b"},
 	TIER3_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "tatooine_imperial_tier3_4_c"},
+
+	-- Tier 4 (Kilnstrider); SIDEk = the k-th split child
+	TIER4_QUEST_STRING_1 = {type = "patrol", name = "tatooine_imperial_tier4_1"},
+	TIER4_QUEST_STRING_1_SIDE1 = {type = "destroy_surpriseattack", name = "tatooine_imperial_tier4_1_a"},
+	TIER4_QUEST_STRING_1_SIDE2 = {type = "space_battle", name = "tatooine_imperial_tier4_1_b"},
+	TIER4_QUEST_STRING_1_SIDE3 = {type = "inspect", name = "tatooine_imperial_tier4_1_c"},
+	TIER4_QUEST_STRING_1_SIDE4 = {type = "delivery_no_pickup", name = "tatooine_imperial_tier4_1_d"},
+	TIER4_QUEST_STRING_2 = {type = "recovery", name = "tatooine_imperial_tier4_2"},
+	TIER4_QUEST_STRING_2_SIDE1 = {type = "recovery", name = "tatooine_imperial_tier4_2_a"},
+	TIER4_QUEST_STRING_2_SIDE2 = {type = "delivery", name = "tatooine_imperial_tier4_2_b"},
+	TIER4_QUEST_STRING_2_SIDE3 = {type = "delivery_no_pickup", name = "tatooine_imperial_tier4_2_c"},
+	TIER4_QUEST_STRING_3 = {type = "escort", name = "tatooine_imperial_tier4_3"},
+	TIER4_QUEST_STRING_3_SIDE1 = {type = "rescue", name = "tatooine_imperial_tier4_3_a"},
+	TIER4_QUEST_STRING_3_SIDE2 = {type = "space_battle", name = "tatooine_imperial_tier4_3_b"},
+	TIER4_QUEST_STRING_4 = {type = "assassinate", name = "tatooine_imperial_tier4_4"},
+	TIER4_QUEST_STRING_4_SIDE1 = {type = "assassinate", name = "tatooine_imperial_tier4_4_a"},
+	TIER4_QUEST_STRING_4_SIDE2 = {type = "recovery", name = "tatooine_imperial_tier4_4_b"},
+	TIER4_QUEST_STRING_4_SIDE3 = {type = "assassinate", name = "tatooine_imperial_tier4_4_c"},
+	TIER4_QUEST_STRING_DUTY_1 = {type = "destroy_duty", name = "tatooine_imperial_tier4_destroyduty_1"},
+	TIER4_QUEST_STRING_DUTY_2 = {type = "escort_duty", name = "tatooine_imperial_tier4_escortduty_1"},
+	TIER4_QUEST_STRING_DUTY_3 = {type = "recovery_duty", name = "tatooine_imperial_tier4_recoveryduty_1"},
+	TIER4_QUEST_STRING_DUTY_4 = {type = "rescue_duty", name = "tatooine_imperial_tier4_rescueduty_1"},
+
+	-- Set by Kilnstrider's first-meeting briefing (SWG setMetMe / space flag metTier4; storm-tier4-kilnstrider); cleared by resetKilnstriderQuests
+	TIER4_MET_KEY = "StormSquadronScreenplay:metTier4",
 }
 
 registerScreenPlay("StormSquadronScreenplay", false)
@@ -1645,6 +2438,49 @@ function StormSquadronScreenplay:resetDennerQuests(pPlayer)
 		removeQuestStatus(playerID .. name .. ":attempted")
 		removeQuestStatus(playerID .. name .. ":reward")
 	end
+end
+
+function StormSquadronScreenplay:resetKilnstriderQuests(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local tables = {
+		patrol_tatooine_imperial_tier4_1, destroy_surpriseattack_tatooine_imperial_tier4_1_a, space_battle_tatooine_imperial_tier4_1_b,
+		inspect_tatooine_imperial_tier4_1_c, delivery_no_pickup_tatooine_imperial_tier4_1_d, recovery_tatooine_imperial_tier4_2,
+		recovery_tatooine_imperial_tier4_2_a, delivery_tatooine_imperial_tier4_2_b, delivery_no_pickup_tatooine_imperial_tier4_2_c,
+		escort_tatooine_imperial_tier4_3, rescue_tatooine_imperial_tier4_3_a, space_battle_tatooine_imperial_tier4_3_b,
+		assassinate_tatooine_imperial_tier4_4, assassinate_tatooine_imperial_tier4_4_a, recovery_tatooine_imperial_tier4_4_b,
+		assassinate_tatooine_imperial_tier4_4_c, destroy_duty_tatooine_imperial_tier4_destroyduty_1, escort_duty_tatooine_imperial_tier4_escortduty_1,
+		recovery_duty_tatooine_imperial_tier4_recoveryduty_1, rescue_duty_tatooine_imperial_tier4_rescueduty_1
+	}
+
+	for _, questTable in ipairs(tables) do
+		questTable:resetQuest(pPlayer)
+	end
+
+	local questStrings = {
+		self.TIER4_QUEST_STRING_1, self.TIER4_QUEST_STRING_1_SIDE1, self.TIER4_QUEST_STRING_1_SIDE2, self.TIER4_QUEST_STRING_1_SIDE3,
+		self.TIER4_QUEST_STRING_1_SIDE4, self.TIER4_QUEST_STRING_2, self.TIER4_QUEST_STRING_2_SIDE1, self.TIER4_QUEST_STRING_2_SIDE2,
+		self.TIER4_QUEST_STRING_2_SIDE3, self.TIER4_QUEST_STRING_3, self.TIER4_QUEST_STRING_3_SIDE1, self.TIER4_QUEST_STRING_3_SIDE2,
+		self.TIER4_QUEST_STRING_4, self.TIER4_QUEST_STRING_4_SIDE1, self.TIER4_QUEST_STRING_4_SIDE2, self.TIER4_QUEST_STRING_4_SIDE3,
+		self.TIER4_QUEST_STRING_DUTY_1, self.TIER4_QUEST_STRING_DUTY_2, self.TIER4_QUEST_STRING_DUTY_3, self.TIER4_QUEST_STRING_DUTY_4
+	}
+
+	for _, questString in ipairs(questStrings) do
+		SpaceHelpers:clearSpaceQuest(pPlayer, questString.type, questString.name, false)
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	for n = 1, 4 do
+		local name = self["TIER4_QUEST_STRING_" .. n].name
+
+		removeQuestStatus(playerID .. name .. ":attempted")
+		removeQuestStatus(playerID .. name .. ":reward")
+	end
+
+	removeQuestStatus(playerID .. self.TIER4_MET_KEY)
 end
 
 -- The Nym fuel technicians on Lok (Morv and two decoys) grant the Kimogila's Claw (feature storm-tier2-nym-technicians)

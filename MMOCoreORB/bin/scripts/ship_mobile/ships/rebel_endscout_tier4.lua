@@ -24,6 +24,7 @@ rebel_endscout_tier4 = ShipAgent:new {
 	color2 = 59,
 	texture = 5,
 	questLoot = "rebel_battle_plans",
+	cargoString = "rebel_battle_plans", -- SWG space_mobile cargo rebel_battle_plans; inspect quest tatooine_imperial_tier4_1_c (feature storm-tier4-kilnstrider-missions)
 	appearance = "rebel_pilot",
 
 	tauntType = "rebel",

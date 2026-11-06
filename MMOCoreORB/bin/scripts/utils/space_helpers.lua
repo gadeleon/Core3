@@ -551,6 +551,9 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 
 		-- Tier 3
 		InquisitionSquadronScreenplay:resetVrkeQuests(pPlayer)
+
+		-- Tier 4
+		InquisitionSquadronScreenplay:resetJaceYiasoQuests(pPlayer)
 	end
 
 	-- Master trainer (Grand Admiral Declann serves every Imperial squadron)

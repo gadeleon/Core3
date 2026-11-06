@@ -162,20 +162,22 @@ function TestInquisitionT2Surrender:test_surrendering_removes_the_imperial_pilot
 	lu.assertEquals(player.ghost.pilotTier, 0, "pilot tier after the surrender")
 end
 
--- AC-12: the order of the resets (inquisition-tier3-vrke: Vrke's reset runs between Fa'Zoll's and Declann's)
-function TestInquisitionT2Surrender:test_the_resets_run_once_each_in_the_order_barn_fa_zoll_vrke_declann()
+-- AC-12: the order of the resets (inquisition-tier3-vrke: Vrke's reset runs between Fa'Zoll's and Declann's; inquisition-tier4-jace-yiaso: Ja'ce's runs between Vrke's and Declann's)
+function TestInquisitionT2Surrender:test_the_resets_run_once_each_in_the_order_barn_fa_zoll_vrke_jace_declann()
 	requireReset()
 	local order = {}
 
 	H.spyOn(InquisitionSquadronScreenplay, "resetBarnQuests", function() order[#order + 1] = "barn" end)
 	H.spyOn(InquisitionSquadronScreenplay, "resetFaZollQuests", function() order[#order + 1] = "fazoll" end)
 	H.spyOn(InquisitionSquadronScreenplay, "resetVrkeQuests", function() order[#order + 1] = "vrke" end)
+	-- inquisition-tier4-jace-yiaso: Ja'ce's reset runs between Vrke's and Declann's
+	H.spyOn(InquisitionSquadronScreenplay, "resetJaceYiasoQuests", function() order[#order + 1] = "jace" end)
 	H.spyOn(M.mts(), "resetDeclannQuests", function() order[#order + 1] = "declann" end)
 
 	local player = I.pilot({})
 
 	SpaceHelpers:surrenderPilot(player)
-	lu.assertEquals(order, { "barn", "fazoll", "vrke", "declann" }, "the order of the resets")
+	lu.assertEquals(order, { "barn", "fazoll", "vrke", "jace", "declann" }, "the order of the resets")
 end
 
 -- AC-12

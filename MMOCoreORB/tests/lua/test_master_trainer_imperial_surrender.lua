@@ -136,6 +136,9 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 	-- inquisition-tier3-vrke: ... and Vrke's reset between Fa'Zoll's and Declann's
 	H.spyOn(InquisitionSquadronScreenplay, "resetVrkeQuests", function() order[#order + 1] = "resetVrkeQuests" end)
 
+	-- inquisition-tier4-jace-yiaso: ... and Ja'ce's reset between Vrke's and Declann's
+	H.spyOn(InquisitionSquadronScreenplay, "resetJaceYiasoQuests", function() order[#order + 1] = "resetJaceYiasoQuests" end)
+
 	local reset = H.spyOn(M.mts(), "resetDeclannQuests", function() order[#order + 1] = "declann" end)
 
 	local player = M.pilot({ squadron = "black_epsilon" })
@@ -156,7 +159,7 @@ function TestMasterTrainerImperialSurrender:test_the_declann_reset_is_called_onc
 		lu.assertEquals(reset[#reset].args[1], p, squadron .. ": the reset gets the pilot")
 
 		if squadron == "inquisition" then
-			lu.assertEquals(order, { "resetBarnQuests", "resetFaZollQuests", "resetVrkeQuests", "declann" }, squadron .. ": Barn's reset runs first, then Fa'Zoll's, then Vrke's, then Declann's (Storm has none yet)")
+			lu.assertEquals(order, { "resetBarnQuests", "resetFaZollQuests", "resetVrkeQuests", "resetJaceYiasoQuests", "declann" }, squadron .. ": Barn's reset runs first, then Fa'Zoll's, then Vrke's, then Ja'ce's, then Declann's (Storm has none yet)")
 		else
 			lu.assertEquals(order, { "declann" }, squadron .. ": no other reset runs (Storm has none yet)")
 		end

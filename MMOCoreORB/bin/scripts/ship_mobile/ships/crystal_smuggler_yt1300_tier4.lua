@@ -22,6 +22,7 @@ crystal_smuggler_yt1300_tier4 = ShipAgent:new {
 	color2 = 24,
 	texture = 2,
 	questLoot = "glowing_crystals",
+	cargoString = "glowing_crystals", -- SWG space_mobile cargo glowing_crystals; inspect quest naboo_imperial_tier4_1_a (feature inquisition-tier4-jace-yiaso)
 	appearance = "coynite_pilot",
 
 	tauntType = "generic",

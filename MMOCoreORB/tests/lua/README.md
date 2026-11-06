@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -848,3 +848,24 @@ J3B stores the branch with `setObjVar(..branchId, N)`, so `harness/swgjava.lua` 
   quest-status write log, Vrke and Barlow end to end (training, interview, `m2_offer`, `tour_complete`, surrender), the ratchet entry and the archive choice (`gen_client_sids.py` via `python3 -I`), and the
   `431519b2e6` pins (skipped once HEAD moves).
 - Existing tests this feature edited: the 58th `FIXTURE_COUNTS` entry (five files, names and comments) and `space_convo_client_strings_data.lua` (entry and header line).
+
+### Inquisition tier 4: Grand Inquisitor Ja'ce Yiaso (inquisition-tier4-jace-yiaso)
+
+Answer key: SWG `naboo_imperial_tier4.java` (J; `fixtures/script/conversation/`, byte copy of the 7,495-line file), the 20 `fixtures/spacequest/<type>/naboo_imperial_tier4_*.tab` byte copies (16 story tables, 4 duties) and
+`fixtures/spacequest/inspect_cargo/glowing_crystals.tab`. Ja'ce's template is `jace_yiaso_convo_template`, his handler the global `jaceYiasoConvoHandler`. Declann is not edited; the graduation test puts the same pilot in front of both.
+
+- `inquisition_tier4_data.lua` (not a test file): the 20 globals in four chains (`J4.M1` .. `J4.M4`, `J4.DUTIES`), `J4.expected()` (Appendix B, every key; long ship lists are derived from the `.tab` fixtures by the spec's column rules and
+  anchored by `J4.LIST_SIZES`), the 61 spec points and the inspect spawner, `J4.TRAIN`, `J4.MISSIONS`, `J4.DUTY_MENU`, `J4.STARTS` / `J4.PAYS` (derived from the Appendix A action column), `J4.PATHS` (Appendix D, 36 paths) and the player builder
+  `J4.pilot{pilot, faction, squadron = true | false | "black_epsilon" | "storm", standing, ship, tier1, t2, t3 = n, t4 = { TRAIN indexes }, master, mission = { [n] = "won" | "failed" | "attempted" | "active" | "endonly" | "partial" }, paid = { n... },
+  met, xp, datapad, duty, species, pilotTier, older = false, inShip}`. The default pilot is an Inquisition pilot with all of tiers 1 to 3 (Vrke's four missions paid, Barlow's keys set), pilot tier 4, nothing of tier 4 done.
+  `J4.talk` / `J4.drive` / `J4.firstScreen` drive `H.converse`; `J4.spyStarts` / `J4.started` record the heads and duties started; `J4.recordGrants` wraps `SpaceHelpers:grantSpaceSkill` (call `J4.restore()` in `tearDown`);
+  `J4.useSkillCosts` charges the 1,000,000 XP of the `_04` skills from the fixture.
+- `inquisition_tier4_screens_data.lua`: Appendix A (150 rows) generated from the spec table by a scratch script; `inquisition_tier4_client_text.lua`: id -> English text of the 279-id client table
+  (read-only from `/tre`, served by `patch_12_00.tre`, the first holder in the TreFiles order).
+- `fixtures/string/en/conversation/naboo_imperial_tier4.sids` (279 ids, generated with `PYTHONDONTWRITEBYTECODE=1`), `fixtures/space_mobile/space_mobile.inquisition_tier4_inspect.tab` (SWG row 436) and the buildout excerpt
+  `space_dathomir.inquisition_tier4_points.tab` (61 nav point rows and the spawner row, byte-copied by line number).
+- `test_inquisition_tier4_data.lua` (wiring, the whole tables, fixture conformance, cargo), `_template.lua` (Appendix A, client strings, the SWG java graph except 16 listed replies, the route walks), `_gates.lua` (G0 to G21 and the helpers),
+  `_flow.lua` (first meeting, duty menus, off track, ready), `_missions.lua` (the 26 start screens, retries), `_rewards.lua` (pay where J pays), `_training.lua` (one click, all 24 orders), `_graduation.lua` (transfer and Declann),
+  `_surrender.lua`, `_runtime.lua` (the four chains split by split; the inspect uses the real ship template cargo) and `_pins.lua` (against commit `2eae193d14`; the file lists accept untracked or staged new files).
+- Existing tests this feature edited: the 59th `FIXTURE_COUNTS` entry (six files, names and comments, plus `space_convo_client_strings_data.lua`), the surrender order (Barn, Fa'Zoll, Vrke, Ja'ce, Declann) of
+  `test_inquisition_tier2_surrender.lua`, `test_inquisition_tier3_surrender.lua` and `test_master_trainer_imperial_surrender.lua`, and the coverage counts (291 distinct questName strings, 275 of 925 SWG names) of `test_smuggler_tier2_data.lua`.

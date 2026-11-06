@@ -1,7 +1,7 @@
 -- Lt. Colonel Barlow: the client-strings ratchet and the fixture's provenance.
 -- Spec: .claude/work/inquisition-tier3-barlow/01-spec.md (AC-4; Content contract 4; FB-1, FB-2; D-10).
 --
--- The ratchet counts themselves (58 files) are asserted by the five existing ratchet tests; this file pins the new entry, the fixture and the archive choice.
+-- The ratchet counts themselves (59 files since inquisition-tier4-jace-yiaso) are asserted by the five existing ratchet tests; this file pins the new entry, the fixture and the archive choice.
 
 local lu = require("luaunit")
 local H = require("harness")
@@ -45,7 +45,7 @@ TestBarlowStrings = {}
 function TestBarlowStrings:setUp() H.reset() end
 
 -- AC-4: the ratchet entry
-function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and_58_entries_in_all()
+function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and_59_entries_in_all()
 	local n = 0
 
 	for _ in pairs(KD.FIXTURE_COUNTS) do
@@ -53,7 +53,7 @@ function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and
 	end
 
 	lu.assertEquals(KD.FIXTURE_COUNTS[FILE], 172, "FIXTURE_COUNTS[" .. FILE .. "]")
-	lu.assertEquals(n, 58, "FIXTURE_COUNTS entries")
+	lu.assertEquals(n, 59, "FIXTURE_COUNTS entries")
 end
 
 -- AC-4: nothing is allowed to be unresolved

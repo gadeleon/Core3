@@ -22,6 +22,7 @@ rebel_agent_tier3 = ShipAgent:new {
 	color2 = 4,
 	texture = 0,
 	questLoot = "yavin_rebel",
+	cargoString = "yavin_activity_log", -- SWG space_mobile cargo yavin_rebel (inspect_cargo row yavin_activity_log); inspect quest imperial_ss_4 (feature storm-tier2-alozen)
 	appearance = "rebel_pilot",
 
 	tauntType = "rebel",

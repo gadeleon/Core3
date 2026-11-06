@@ -22,6 +22,7 @@
 -- storm-tier1-akal-colzet: Lt. Akal Colzet's conversation/tatooine_imperial_trainer_1 (347 ids, served from patch_12_00.tre) is new and fully resolved; KNOWN_GAPS stays {}.
 -- storm-tier2-oberhaur: Commander Oberhaur's conversation/tatooine_imperial_trainer_2 (190 ids, served from patch_12_00.tre) is new and fully resolved (the 61st file); KNOWN_GAPS stays {}.
 -- storm-tier2-nym-technicians: the three Nym fuel technicians' conversation/nym_technician_1 (38 ids), _2 (16) and _3 (28), all served from patch_12_00.tre, are new and fully resolved (the 62nd to 64th files); KNOWN_GAPS stays {}.
+-- storm-tier2-alozen: Field Commander Alozen's conversation/tatooine_imperial_trainer_2b (124 ids, served from the pre-NGE client tables) is new and fully resolved (the 65th file; red until her template and handler exist); KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -86,6 +87,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/station_yavin4"] = 177,
 	["conversation/tatooine_imperial_trainer_1"] = 347,
 	["conversation/tatooine_imperial_trainer_2"] = 190,
+	["conversation/tatooine_imperial_trainer_2b"] = 124,
 	["conversation/tatooine_privateer_tier3"] = 249,
 	["conversation/tatooine_privateer_tier4"] = 247,
 	["conversation/tatooine_privateer_trainer_1"] = 152,

@@ -172,6 +172,7 @@ includeFile("space/conversations/imperial/storm_squadron/oberhaurConvoHandler.lu
 includeFile("space/conversations/imperial/storm_squadron/nymTechnician1ConvoHandler.lua")
 includeFile("space/conversations/imperial/storm_squadron/nymTechnician2ConvoHandler.lua")
 includeFile("space/conversations/imperial/storm_squadron/nymTechnician3ConvoHandler.lua")
+includeFile("space/conversations/imperial/storm_squadron/alozenConvoHandler.lua")
 
 -- Master Trainers
 includeFile("space/squadrons/MasterTrainerScreenplay.lua")

@@ -351,7 +351,7 @@ Kaydine test is unaffected; `S.pilot` removes the key. `fixtures/string/en/conve
 ### Client string ids (space-convo-client-strings)
 
 The pre-NGE client resolves `"@<file>:<id>"` from its string tables; an id it does not hold shows as a raw id. The tests read committed fixtures
-`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians, the ones the space conversation sources reference), so `run.sh` needs neither
+`fixtures/string/en/<file>.sids` (one id per line, byte-sorted; 44 files since black-epsilon-tier1-hakassha, 45 since black-epsilon-tier2-prisk, 46 since black-epsilon-tier3-haymir, 47 since black-epsilon-tier4-nin-gursawe, 48 since space-master-trainer-imperial, 50 since smuggler-tier1-dravis, 52 since smuggler-tier2-shamdon, 54 since smuggler-tier4-nirame, 55 since inquisition-tier1-barn-sinkko, 57 since inquisition-tier3-vrke, 59 since inquisition-tier4-jace-yiaso, 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, the ones the space conversation sources reference), so `run.sh` needs neither
 `/tre` nor Python. `harness/client_strings.lua` (`local CS = require("harness.client_strings")`) works on them. Paths are relative to `bin/scripts/`; a path
 starting with `/` or `./` is used as is (the helper test scans `fixtures/client_strings/sample_convo.lua`).
 
@@ -931,3 +931,27 @@ conversation n (1 Morv, 2 decoy, 3 Zabrak); `N.snapshot(player)` captures everyt
 and `N.keyDiff(before, after)` names the changed keys; `N.exploreLive(n, build)` follows every option with the live handler. The run tests (`test_storm_tier2_nym_runs.lua`) fly the Claw for
 real in a fake ship in `space_lok`: grant, timeout failure, datapad abort (`H.abortMission`), retry, win, then Oberhaur's payment. `test_storm_tier2_nym_pins.lua` pins "nothing else moves"
 against `7593bc88ad` through `git` and skips once HEAD moves.
+
+### Storm tier 2: Field Commander Alozen (storm-tier2-alozen)
+
+Field Commander Alozen (Yavin 4 Imperial outpost) takes the pilot Oberhaur sent on (`TIER2_ALOZEN_KEY`): the three Yavin story missions (`inspect_imperial_ss_4`, `escort_imperial_ss_5`,
+`recovery_imperial_ss_6`), the three duties (`destroy_duty_lok_imperial_ss_2a`, `recovery_duty_lok_imperial_ss_2b`, `escort_duty_lok_imperial_ss_2c`, all `space_yavin4`), the training of the
+third and fourth tier 2 skill (bought, one click, free choice) with the pilot tier 2 -> 3 on the fourth, and the hand-off line to Captain Denner (`<playerID>imperial_ss_6:reward`).
+The answer key is SWG `tatooine_imperial_trainer_2b.java` (`fixtures/script/conversation/`, byte copy, walked with `harness/swgjava.lua`; 77 NPC lines, 53 static replies of which 7 are
+the rejoins and twins of Data mapping 3) and the spec's Appendix A, copied to data by a scratch script: `storm_tier2_alozen_screens_data.lua` (71 screens) and
+`storm_tier2_alozen_client_text.lua` (the English text of the 124 client entries, a read-only `/tre` dump). `fixtures/string/en/conversation/tatooine_imperial_trainer_2b.sids`
+(124 ids, generated), the six quest `.tab` files, `fixtures/spacequest/inspect_cargo/yavin_rebel.tab` and `fixtures/space_zones/buildout/space_yavin4.storm_tier2_alozen_points.tab` (the two
+header rows plus the 27 nav points and the inspect spawner) are copies of SWG-Source (regenerate, never edit).
+
+`storm_tier2_alozen_data.lua` (`local A = require("storm_tier2_alozen_data")`, not a test file) builds on `storm_tier2_data.lua`: `A.load()` (the Storm files, Oberhaur's pieces, Alozen's
+template and handler; load problems in `A.problems()`), `A.requireConversation(lu)`, `A.expected()` (Appendix B: every key of the six tables), `A.POINTS`, and the pilot builder
+`A.pilot{m = k, state = "won" | "failed" | "active", t2 = {TRAIN indexes}, xp, standing, faction, squadron, datapad, ...}`: a Storm pilot as Oberhaur sends him (Oberhaur's three missions
+paid, two tier 2 skills, the Alozen and initiate keys), `m` Alozen missions won and paid, `state` the state of mission m+1 (a failed and an aborted mission are the same state); every
+other option goes to `T.pilot`. `A.talk` / `A.drive` / `A.firstScreen` drive her conversation like `T.talk` does Oberhaur's. **A first screen runs its display actions** (`m2_start` starts M2,
+`m2_won` pays M2), so gate tests call `getInitialScreen` itself, which must be pure (I-11). A running Oberhaur duty is a journal entry **and** a datapad mission (`datapad = "duty"`);
+Alozen's `on_mission` gate sees it through the datapad (`SpaceHelpers:hasSpaceQuest`), not through the journal. The runtime tests (`test_storm_tier2_alozen_runtime.lua`) use
+`inspect_scenario.lua` (a player opts in: `I.fresh("imperial_ss_4", { player = ... })`), `AC.escortRun`, `RF.*` and the Oberhaur duty patterns. `test_storm_tier2_alozen_pins.lua` pins
+"nothing else moves" against `82dc0d5e6a` through `git` and skips once HEAD moves.
+- Existing tests this feature edited (all listed in the test plan): the 65th `FIXTURE_COUNTS` entry (`space_convo_client_strings_data.lua` and eight test files), the include-adjacency
+  anchors of `test_storm_tier2_nym_wiring.lua`, `test_storm_tier2_data.lua`, `test_master_trainer_{imperial,rebel}_wiring.lua`, the surrender order of
+  `test_master_trainer_imperial_surrender.lua` (Colzet, Oberhaur, Alozen, Declann for Storm) and the coverage count of `test_smuggler_tier2_data.lua` (309 distinct questName strings, 293 SWG names).

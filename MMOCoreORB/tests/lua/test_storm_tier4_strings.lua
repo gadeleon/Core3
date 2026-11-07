@@ -75,7 +75,7 @@ function TestStormT4Strings:test_fixture_counts_has_kilnstriders_file_with_176_i
 	end
 
 	lu.assertEquals(KD.FIXTURE_COUNTS[FILE], 176, "FIXTURE_COUNTS[" .. FILE .. "]")
-	lu.assertEquals(n, 70, "FIXTURE_COUNTS entries") -- 68 since vortex-tier1-kiizete, 69 since vortex-tier2-vrovel, 70 since vortex-tier3-ezkiel
+	lu.assertEquals(n, 71, "FIXTURE_COUNTS entries") -- 68 since vortex-tier1-kiizete, 69 since vortex-tier2-vrovel, 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo
 end
 
 -- B-2: nothing is allowed to be unresolved

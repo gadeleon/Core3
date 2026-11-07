@@ -1,0 +1,3 @@
+strObjId	strComments	sidName	oldStrName_now_in_npc_spawner_n	strTemplate	strScript1	strScript2	strScript3	strScript4	strPrimaryCategory	strSecondaryCategory
+s	c	s	c	s	s	s	s	s	s	s
+2195677	Tier 4 Naboo (Talus) (Rebel) Brother Extok Evin in the greenroom of the Dearic theater.	extok_evin	Brother Extok Evin (Rebel Pilot Trainer)	object/mobile/space_rebel_tier4_extok_evin.iff	conversation.naboo_rebel_tier4

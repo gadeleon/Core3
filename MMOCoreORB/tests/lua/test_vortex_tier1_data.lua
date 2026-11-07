@@ -385,7 +385,7 @@ function TestVortexT1Wiring:test_the_template_include_is_uncommented_at_line_94_
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/vortex_squadron/v3fx_convo%.lua"%)'), 1, "space_conversations.lua: v3fx_convo include occurrences (commented or not)")
 	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 94")
 	lu.assertEquals(lines[91], "-- Vortex Squadron", "space_conversations.lua line 91 (the comment heading)")
-	lu.assertEquals(lines[92], '--includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 92 stays commented")
+	lu.assertEquals(lines[92], 'includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 92: uncommented by vortex-tier4-extok-evin-convo")
 	lu.assertEquals(lines[93], 'includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93: uncommented by vortex-tier3-ezkiel")
 	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95: uncommented by vortex-tier2-vrovel")
 end
@@ -399,7 +399,7 @@ function TestVortexT1Wiring:test_the_handler_include_is_uncommented_at_line_143_
 	lu.assertEquals(lines[143], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 143")
 	lu.assertEquals(lines[138], "-- Vortex Squadron", "screenplays.lua line 138 (the comment heading)")
 	lu.assertEquals(lines[139], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 139 (the squadron include)")
-	lu.assertEquals(lines[141], '--includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 141 stays commented")
+	lu.assertEquals(lines[141], 'includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 141: uncommented by vortex-tier4-extok-evin-convo")
 	lu.assertEquals(lines[142], 'includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142: uncommented by vortex-tier3-ezkiel")
 	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144: uncommented by vortex-tier2-vrovel")
 end

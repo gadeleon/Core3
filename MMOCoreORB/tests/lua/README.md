@@ -1189,3 +1189,32 @@ Answer keys (byte copies of SWG-Source): the 17 `fixtures/spacequest/<type>/nabo
   every split through the fakes, the cross-zone split into `space_dathomir`, the duties and the same-name journal entries), `_surrender` (A-6), `_pins` (I-9, against `e248380bfd` through `git`; skips once HEAD moves).
 - Existing tests this feature edited: `test_smuggler_tier2_data.lua` (the coverage counts 382 -> 395 and 366 -> 379, and the test name) and `test_master_trainer_rebel_surrender.lua` (the Vortex surrender order now
   `resetV3fxQuests`, `resetVrovelQuests`, `resetEzkielQuests`, `resetEvinQuests`, `burke`).
+
+
+### Vortex tier 4: Brother Extok Evin's conversation (vortex-tier4-extok-evin-convo)
+
+Part B of Vortex tier 4: Brother Extok Evin's conversation (130 screens, J4 `naboo_rebel_tier4.java` with pre-NGE client lines only), the handler, the mobile's mask and template, the two include
+lines. It grants Part A's four mission heads (both failure replies of every mission re-grant it, mission 2's second one too: Q-B3 = A) and the four duties, pays each mission once (10000 credits, a
+ship component, +150 Rebel standing), and sells one `_04` skill per mission for 1,000,000 XP in one click (free choice; missions alternate with skills; the fourth raises pilot tier 4 -> 5). "Won" is
+J4's: either first-level child complete (mission 2's 2_c is never read). The ready gate is tier 3 complete + `VORTEX_PILOT_KEY` set (any value) + Ezkiel's `naboo_rebel_tier3_4:reward` (Q-B1 = A); the
+first meeting comes before rewards, offers and training (Q-B2 = A). Evin writes only `TIER4_MET_KEY` (and the 8 Part A status keys), never `VORTEX_PILOT_KEY`; graduates are sent to Admiral Burke, who is
+unchanged.
+
+Answer keys (byte copies of SWG-Source unless noted): `fixtures/script/conversation/naboo_rebel_tier4.java` (J4), `fixtures/string/en/conversation/naboo_rebel_tier4.sids` (222 ids, generated with
+`PYTHONDONTWRITEBYTECODE=1 python3 -B tests/lua/tools/gen_client_sids.py conversation/naboo_rebel_tier4`; never run the generator without `-B`: a stray `tests/lua/tools/__pycache__/` breaks five tests),
+`fixtures/space_content/npc_spawners.vortex_tier4_evin.tab` (NPCS rows 1-2, 82), `fixtures/buildout/talus/talus_5_3_ws.vortex_tier4_evin.tab` (GBT rows 1-2, 201, 210, 212; new directory),
+`fixtures/skill/skills.pilot_rebel_navy_04.tab` (SKT rows 1-2, 608, 612, 616, 620), `vortex_tier4_evin_screens_data.lua` (Appendix A, copied from the spec by a script) and
+`vortex_tier4_evin_client_text.lua` (id -> English text, read from `/tre` with a read-only reader).
+
+- `vortex_tier4_data.lua` (Part B section): `E.TEMPLATE` / `E.HANDLER` / `E.PREFIX` and the file names, `E.SCREENS` / `E.screenRow` / `E.reach` / `E.walkTo` / `E.follow` (the static links), `E.MISSIONS`,
+  `E.TRAIN`, `E.DUTY_SCREENS`, the START/REWARD/NAME/TIER screen tables, `E.NGE_MAP` (the 52 NGE ids of J4 with their class and where each landed), `E.OFFER_PATHS` (Appendix D),
+  `E.javaRewards()` (the J4-derived reward oracle, D-11), `E.loadConversation()` / `E.requireConversation(lu)`, `E.talk` / `E.drive`, `E.snapshot`, `E.useSkillCosts`, `E.recordGrants` /
+  `E.recordChainStarts` / `E.stubChainStarts` / `E.spyDuties` / `E.restore`, `E.startAll()` (register the 17 tables for a real start). `E.pilot{...}` gains `flag`, `ezkielM4Paid`, `t3`, `t4`,
+  `master`, `mission = { [n] = state }` (`won_a`, `won_b`, `failed_head`, `aborted`, `failed_a`, `failed_b`, `active`, `a_active`, `b_active`, `attempted`; mission 2 also `won_b_c_failed`,
+  `won_b_c_won`, `c_active`), `paid`, `squadron` (`vortex` / `havoc` / `none`) and `otherQuest`; `E.nonPilot`, `E.trainee`, `E.rewardPilot`, `E.offerPilot`, `E.graduate` build the usual pilots.
+- Tests: `_template` (AC-2, I-1, I-2: Appendix A, strings, NGE map, java graph, ratchet, fixtures), `_wiring` (AC-1), `_gates` (AC-3, I-3, I-8), `_flow` (AC-4: first meeting, duties, off track),
+  `_offers` (AC-5, AC-6: offers, accept screens, failures and re-grants), `_rewards` (AC-7, I-4: pinned against J4), `_training` (AC-8, I-6), `_graduation` (AC-9, AC-10, I-7: the transfer, Burke,
+  Ezkiel, the keys of every screen, surrender), `_pins` (I-9, against `f8097f7c7d` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: the 12 `FIXTURE_COUNTS` assertions (70 -> 71; the header comment of `test_space_convo_client_strings.lua` too; `space_convo_client_strings_data.lua` gains the entry and its
+  header line) and the 8 Evin include-line assertions in `test_vortex_tier1_data.lua` / `test_vortex_tier1_kiizete_wiring.lua` / `test_vortex_tier2_vrovel_wiring.lua` /
+  `test_vortex_tier3_ezkiel_wiring.lua` (now the uncommented lines).

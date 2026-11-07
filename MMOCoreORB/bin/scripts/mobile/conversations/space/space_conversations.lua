@@ -90,7 +90,7 @@ includeFile("conversations/space/rebel/havoc_squadron/arkon_convo.lua")
 
 -- Vortex Squadron
 --includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")
---includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")
+includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")
 includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")
 includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")
 includeFile("conversations/space/rebel/vortex_squadron/kiizete_convo.lua")

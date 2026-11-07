@@ -523,6 +523,9 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 
 		-- Tier 3
 		VortexSquadronScreenplay:resetEzkielQuests(pPlayer)
+
+		-- Tier 4
+		VortexSquadronScreenplay:resetEvinQuests(pPlayer)
 	elseif (pilotSquadron == CRIMSON_PHOENIX_SQUADRON) then
 		pilotProfession = "rebelPilot"
 

@@ -291,6 +291,10 @@ VortexSquadronScreenplay = ScreenPlay:new {
 
 	-- SWG's vortexPilot space flag ("1" from V3-FX; tier 2 moves it to "2" and "3")
 	VORTEX_PILOT_KEY = "VortexSquadronScreenplay:vortexPilot",
+
+	-- Kiizete (naboo_rebel_tier1_kiizete.java): SWG utils.setScriptVar flags, kept in server memory and cleared at logout (feature vortex-tier1-kiizete)
+	KIIZETE_IMP_ASKING_KEY = "VortexSquadronScreenplay:kiizeteImpIsAsking",
+	KIIZETE_Q1_DISCUSSED_KEY = "VortexSquadronScreenplay:kiizeteQ1Discussed",
 }
 
 registerScreenPlay("VortexSquadronScreenplay", false)
@@ -330,4 +334,38 @@ function VortexSquadronScreenplay:resetV3fxQuests(pPlayer)
 	end
 
 	removeQuestStatus(playerID .. self.VORTEX_PILOT_KEY)
+end
+
+-- Kiizete's session flags (SWG scriptVars imp_isasking and q1_discussed): server memory, dropped at logout (feature vortex-tier1-kiizete)
+function VortexSquadronScreenplay:hasKiizeteFlag(pPlayer, key)
+	if (pPlayer == nil) then
+		return false
+	end
+
+	return readData(CreatureObject(pPlayer):getObjectID() .. key) == 1
+end
+
+function VortexSquadronScreenplay:setKiizeteFlag(pPlayer, key)
+	if (pPlayer == nil) then
+		return
+	end
+
+	writeData(CreatureObject(pPlayer):getObjectID() .. key, 1)
+
+	if (not hasObserver(LOGGEDOUT, "VortexSquadronScreenplay", "onKiizeteLoggedOut", pPlayer)) then
+		createObserver(LOGGEDOUT, "VortexSquadronScreenplay", "onKiizeteLoggedOut", pPlayer)
+	end
+end
+
+function VortexSquadronScreenplay:onKiizeteLoggedOut(pPlayer)
+	if (pPlayer == nil) then
+		return 1
+	end
+
+	local playerID = CreatureObject(pPlayer):getObjectID()
+
+	deleteData(playerID .. self.KIIZETE_IMP_ASKING_KEY)
+	deleteData(playerID .. self.KIIZETE_Q1_DISCUSSED_KEY)
+
+	return 1
 end

@@ -142,6 +142,7 @@ includeFile("space/squadrons/VortexSquadronScreenplay.lua")
 --includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")
 includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")
 --includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")
+includeFile("space/conversations/rebel/vortex_squadron/kiizeteConvoHandler.lua")
 
 
 -- Imperial

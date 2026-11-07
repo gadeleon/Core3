@@ -22,6 +22,7 @@ blacklight_pirate_fighter_quest = ShipAgent:new {
 	color2 = 24,
 	texture = 6,
 	questLoot = "leader_location",
+	cargoString = "leader_location", -- SWG space_mobile cargo leader_location; inspect quest naboo_rebel_tier3_2_d (feature vortex-tier3-ezkiel-missions)
 	appearance = "generic_pirate",
 
 	tauntType = "generic",

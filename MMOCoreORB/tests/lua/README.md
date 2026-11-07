@@ -1133,3 +1133,20 @@ Answer keys: `fixtures/script/conversation/dantooine_rebel_trainer_2.java` (J2, 
 - Tests: `_template` (AC-2: Appendix A, strings, java graph, ratchet, fixtures), `_wiring` (AC-1), `_gates` (AC-3, I-3), `_handin` (AC-4, I-7), `_missions` (AC-5, I-5), `_rewards` (AC-6, I-4),
   `_training` (AC-7, I-6), `_duties` (AC-8), `_gm` (AC-9), `_surrender` (AC-10), `_pins` (I-8, against `ddf7518f24` through `git`; skips once HEAD moves).
 - Existing tests this feature edited: the 10 `FIXTURE_COUNTS` assertions (68 -> 69) and the 4 Vrovel include-line assertions in `test_vortex_tier1_data.lua` / `test_vortex_tier1_kiizete_wiring.lua`.
+
+### Vortex tier 3: Brother Ezkiel's missions (vortex-tier3-ezkiel-missions)
+
+Part A of Vortex tier 3: Brother Ezkiel's 20 quest tables (4 missions of 5, no duties), the two inspect `cargoString`s and `resetEzkielQuests` (surrender order V3-FX, Vrovel, Ezkiel, Burke).
+There is no conversation in Part A (Ezkiel keeps `conversationTemplate = ""`); Part B (`vortex-tier3-ezkiel`) adds it.
+
+Answer keys (byte copies of SWG-Source): the 20 `fixtures/spacequest/<type>/naboo_rebel_tier3_*.tab`, `fixtures/spacequest/inspect_cargo/{experiment_information,leader_location}.tab`,
+`fixtures/space_mobile/space_mobile.vortex_tier3_inspect.tab` (header rows plus SMT rows 98, 1146) and `fixtures/space_zones/buildout/space_{dantooine,endor,dathomir}.vortex_tier3_points.tab`
+(header rows plus the 48 nav point and 2 spawner rows).
+
+- `vortex_tier3_data.lua`: `W.GLOBALS` / `W.IDENTITY` / `W.CHAINS` (`W.M1` .. `W.M4`), `W.QUEST_STRINGS`, `W.POINTS` / `W.SPAWNERS`, `W.expected()` (every key of each table, spec literals),
+  `W.pilot{...}` (extends `vortex_tier2_data.lua`'s `V.pilot`: `missions` = Ezkiel's missions won, `t3` = tier 3 skills held, `active`, `state`, `graduated`), `W.flyer(zone)`. Part B extends it.
+- Tests: `_data` (A-1, A-2, A-3: oracle, wiring, whole tables and key sets, conformance, cargo), `_runtime` (A-3 to A-6: the four chains through the fakes, the two inspects with the real
+  `cargoString`), `_surrender` (A-7), `_pins` (I-9, against `9ba70e4de9` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: `test_smuggler_tier2_data.lua` (the coverage counts 362 -> 382 and 346 -> 366, and the test name) and `test_master_trainer_rebel_surrender.lua` (the Vortex
+  surrender order now `resetV3fxQuests`, `resetVrovelQuests`, `resetEzkielQuests`, `burke`).
+

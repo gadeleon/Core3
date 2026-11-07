@@ -16,6 +16,7 @@ naboo_tier3_imperial_spy = ShipAgent:new {
 
 	spaceFaction = "civilian",
 	questLoot = "experiment_information",
+	cargoString = "experiment_information", -- SWG space_mobile cargo experiment_information; inspect quest naboo_rebel_tier3_1_c (feature vortex-tier3-ezkiel-missions)
 	appearance = "imperial_officer",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

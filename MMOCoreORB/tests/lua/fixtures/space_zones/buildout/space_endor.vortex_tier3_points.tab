@@ -1,0 +1,15 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.805960	-0.528558	0.266563	-0.116421	0.299978	0.946815	4966.09	-2686.99	4562.40	nav_name|4|naboo_rebel_tier3_leader_patrol_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.693649	-0.449101	0.563170	0.616118	-0.035120	-0.786871	5643.09	-2616.47	3102.03	nav_name|4|naboo_rebel_tier3_assassin_path_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.640538	-0.489052	0.592064	-0.614908	0.135193	0.776924	5505.84	-3025.05	2988.11	nav_name|4|naboo_rebel_tier3_leader_patrol_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.069922	0.301708	0.950833	0.900005	-0.430171	0.070313	4402.74	-2116.21	329.86	nav_name|4|naboo_rebel_tier3_patrol3_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.069922	0.301708	0.950833	0.900005	-0.430171	0.070313	5662.26	-2940.00	656.51	nav_name|4|naboo_rebel_tier3_patrol3_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.535215	-0.413546	0.736563	-0.135185	0.818793	0.557945	6712.81	-4486.10	437.65	nav_name|4|naboo_rebel_tier3_blacklight_point|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.720037	-0.451077	0.527330	0.665346	0.232885	-0.709280	6447.26	-2505.57	1042.46	nav_name|4|naboo_rebel_tier3_assassin_path_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.640538	-0.489052	0.592064	-0.614908	0.135193	0.776924	6580.03	-3261.22	1630.91	nav_name|4|naboo_rebel_tier3_leader_patrol_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.069922	0.301708	0.950833	0.900005	-0.430171	0.070313	6031.21	-3567.55	1431.09	nav_name|4|naboo_rebel_tier3_patrol3_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.640538	-0.489052	0.592064	-0.614908	0.135193	0.776924	6497.39	-3437.41	562.42	nav_name|4|naboo_rebel_tier3_leader_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.627171	-0.445652	0.638788	0.708726	-0.013639	-0.705352	3964.45	-2520.53	5227.47	nav_name|4|naboo_rebel_tier3_assassin_path_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.637660	-0.445543	0.628396	0.698085	-0.010660	-0.715935	1437.71	-2473.66	7305.53	nav_name|4|naboo_rebel_tier3_assassin_path_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.069922	0.301708	0.950833	0.900005	-0.430171	0.070313	2432.79	-1174.64	175.96	nav_name|4|naboo_rebel_tier3_patrol3_1|$|	script.space.quest_logic.quest_nav_point

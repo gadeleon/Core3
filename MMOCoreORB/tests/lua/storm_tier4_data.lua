@@ -1,6 +1,6 @@
 -- Shared test data and builders for Storm Squadron tier 4, Part A (Admiral Kilnstrider's missions), not a test file.
 -- Spec: .claude/work/storm-tier4-kilnstrider-missions/01-spec.md (Content contract 1 and 2, Data mapping 1 and 2, Appendix B).
--- Part B (storm-tier4-kilnstrider: the conversation) extends this file and keeps every export below.
+-- Part B (storm-tier4-kilnstrider: the conversation) extends this file (the section at the end) and keeps every export below; D.pilot is wrapped there.
 --
 -- Everything below is copied from the spec, not read from the production scripts, so a wrong production value fails a test instead of agreeing with itself:
 --   D.GLOBALS / D.IDENTITY / D.CLASS   the 20 quest globals in registration order, and their class, type, name and zone (Content contract 1)
@@ -666,5 +666,582 @@ function D.flyer(zone)
 		ship = { x = -7000, z = -7000, y = -7000, factionHash = getHashCode("imperial") },
 	})
 end
+
+---------------------------------------------------------------------------------------------
+-- Part B: Admiral Kilnstrider's conversation (storm-tier4-kilnstrider)
+-- Spec: .claude/work/storm-tier4-kilnstrider/01-spec.md (Content contract 2 to 4, Conversation flow, Appendix A and D).
+--   D.TEMPLATE / D.HANDLER / D.PREFIX / D.STF and the file and include constants
+--   D.MISSIONS / D.TRAIN / D.TRAINED_BRIEFS / D.DUTY_MENU / D.MENUS   the handler tables of Content contract 2
+--   D.SCREENS (storm_tier4_screens_data.lua: Appendix A, generated from the spec table), D.STARTS / D.PAYS, D.PATHS (Appendix D)
+--   D.javaRewards()                    the four rewardForMissionN bodies of the J fixture (credits, item, standing, guard, head)
+--   D.loadConversation() / D.requireConversation(lu)   the server's load of Kilnstrider's template and handler
+--   D.pilot{...}                       wraps Part A's builder with the Part B options (see the list at D.pilot)
+--   D.talk / D.firstScreen / D.drive   H.converse from the first screen / from a given screen
+--   D.spyStarts / D.recordGrants / D.recordChainStarts ...   observers for the table-H actions
+---------------------------------------------------------------------------------------------
+
+D.TEMPLATE = "kilnstrider_convo_template"
+D.HANDLER = "kilnstriderConvoHandler"
+D.PREFIX = "@conversation/tatooine_imperial_tier4:"
+D.STF = "conversation/tatooine_imperial_tier4"
+
+D.TEMPLATE_FILE = "mobile/conversations/space/imperial/storm_squadron/kilnstrider_convo.lua"
+D.HANDLER_FILE = "screenplays/space/conversations/imperial/storm_squadron/kilnstriderConvoHandler.lua"
+D.NPC_FILE = "mobile/space/kilnstrider.lua"
+D.SPAWN_FILE = "screenplays/cities/endor_research_outpost.lua"
+D.CONVOS_FILE = "mobile/conversations/space/space_conversations.lua"
+D.SCREENPLAYS_FILE = "screenplays/space/screenplays.lua"
+D.JAVA = "script/conversation/tatooine_imperial_tier4.java"
+
+D.TEMPLATE_INCLUDE = 'includeFile("conversations/space/imperial/storm_squadron/kilnstrider_convo.lua")'
+D.HANDLER_INCLUDE = 'includeFile("space/conversations/imperial/storm_squadron/kilnstriderConvoHandler.lua")'
+D.SPAWN_LINE = 'pNpc = spawnMobile("endor", "kilnstrider",60,-3.44448,0.624999,-6.82681,331.362,9925367)'
+
+D.STANDING = 150
+D.TRAIN_COST = 1000000
+D.NOVICE = "pilot_imperial_navy_novice"
+D.MASTER = "pilot_imperial_navy_master"
+
+-- Content contract 2: MISSIONS (head, constants of the head and the chain end); brief = the head screen reached from `ready`, trained = the screen after the purchase
+D.MISSIONS = {
+	{ n = 1, head = D.M1[1], questString = "TIER4_QUEST_STRING_1", endString = "TIER4_QUEST_STRING_1_SIDE4", chain = D.M1, status = D.STATUS[1],
+	  failed = "m1_failed", reward = "m1_reward", brief = "m1_brief", trained = "m1_brief" },
+	{ n = 2, head = D.M2[1], questString = "TIER4_QUEST_STRING_2", endString = "TIER4_QUEST_STRING_2_SIDE3", chain = D.M2, status = D.STATUS[2],
+	  failed = "m2_failed", reward = "m2_reward", brief = "m2_brief", trained = "m2_brief_trained" },
+	{ n = 3, head = D.M3[1], questString = "TIER4_QUEST_STRING_3", endString = "TIER4_QUEST_STRING_3_SIDE2", chain = D.M3, status = D.STATUS[3],
+	  failed = "m3_failed", reward = "m3_reward", brief = "m3_brief", trained = "m3_brief" },
+	{ n = 4, head = D.M4[1], questString = "TIER4_QUEST_STRING_4", endString = "TIER4_QUEST_STRING_4_SIDE3", chain = D.M4, status = D.STATUS[4],
+	  failed = "m4_failed", reward = "m4_reward", brief = "m4_brief", trained = "m4_brief" },
+}
+
+D.TRAINED_BRIEFS = { "m1_brief", "m2_brief_trained", "m3_brief", "m4_brief" }
+
+-- Content contract 2: TRAIN_CHOICES in menu order (topic = the reply sid on ready_train)
+D.TRAIN = {
+	{ x = "starships", skill = "pilot_imperial_navy_starships_04", reply = "s_a50d5eb4" },
+	{ x = "weapons", skill = "pilot_imperial_navy_weapons_04", reply = "s_2c2ce09e" },
+	{ x = "procedures", skill = "pilot_imperial_navy_procedures_04", reply = "s_a5d7d28d" },
+	{ x = "droid", skill = "pilot_imperial_navy_droid_04", reply = "s_97682588" },
+}
+
+D.TIER3_SKILLS = {
+	"pilot_imperial_navy_starships_03", "pilot_imperial_navy_weapons_03", "pilot_imperial_navy_procedures_03", "pilot_imperial_navy_droid_03",
+}
+
+-- Content contract 2: DUTY_SCREENS in menu order with the menu reply of Appendix A
+D.DUTY_MENU = {
+	{ screen = "duty_destroy", global = D.DUTIES[1], reply = "s_cec1f447" },
+	{ screen = "duty_escort", global = D.DUTIES[2], reply = "s_7b2d0234" },
+	{ screen = "duty_recovery", global = D.DUTIES[3], reply = "s_d115dd42" },
+	{ screen = "duty_rescue", global = D.DUTIES[4], reply = "s_5208f382" },
+}
+
+D.BRIEFING_AGAIN_REPLY = "s_49805f81"
+D.READY_REPLY = "s_52917b0d"
+D.OFF_TRACK_REPLY = "s_4854758d"
+D.MENUS = { "duty_menu", "tier4_incomplete", "here_for_work" }
+D.MENU_REPLIES = { "s_cec1f447", "s_7b2d0234", "s_d115dd42", "s_5208f382", "s_49805f81" }
+D.MENU_LINKS = { "duty_destroy", "duty_escort", "duty_recovery", "duty_rescue", "duty_briefing" }
+D.NAME_SCREENS = { "wanted", "wanted_c8003afd", "m2_failed", "m1_reward", "m2_reward", "m3_reward", "ready", "duty_recovery", "m2_brief", "m2_brief_trained" }
+
+-- Appendix A
+D.SCREENS = require("storm_tier4_screens_data")
+
+-- Conversation flow 3, table H, derived from the Notes column of Appendix A: screen -> mission
+D.STARTS, D.PAYS = {}, {}
+
+for _, row in ipairs(D.SCREENS) do
+	if row.start then
+		D.STARTS[row.id] = row.start
+	end
+
+	if row.pay then
+		D.PAYS[row.id] = row.pay
+	end
+end
+
+function D.screenRow(id)
+	for _, row in ipairs(D.SCREENS) do
+		if row.id == id then
+			return row
+		end
+	end
+end
+
+-- The Appendix A screen ids (98), sorted
+function D.screenIds()
+	local out = {}
+
+	for i, row in ipairs(D.SCREENS) do
+		out[i] = row.id
+	end
+
+	table.sort(out)
+	return out
+end
+
+-- Appendix D: one reply path per grant screen { grant, kind, from, replies } (the replies after the `from` screen is shown)
+D.PATHS = {
+	{ grant = "m1_accept_busy", mission = 1, from = "ready", replies = { "s_52917b0d", "s_469b88eb", "s_555b7ab7", "s_951d1b06" } },
+	{ grant = "m1_accept_hope", mission = 1, from = "m1_brief", replies = { "s_9cc5ad7c", "s_ebe5a831", "s_e604f53", "s_adfa15d1", "s_4621ec24" } },
+	{ grant = "m2_accept_fire", mission = 2, from = "m2_brief", replies = { "s_c782ced7", "s_c28a04da", "s_52bae760" } },
+	{ grant = "m2_accept_good", mission = 2, from = "m2_brief", replies = { "s_dd2ae025", "s_b7879974", "s_6a85372e", "s_5ec3bab9" } },
+	{ grant = "m2_accept_dismissed", mission = 2, from = "m2_brief_trained", replies = { "s_dd2ae025", "s_b2da1ce2", "s_6a85372e", "s_2c4789b" } },
+	{ grant = "m3_accept_escort", mission = 3, from = "m3_brief", replies = { "s_643d24c8", "s_21b67b7a", "s_ad56e0fd", "s_9b43a7ee" } },
+	{ grant = "m3_accept_bottom", mission = 3, from = "m3_brief", replies = { "s_ad56e0fd", "s_d88c15de" } },
+	{ grant = "m4_accept_prejudice", mission = 4, from = "m4_brief", replies = { "s_a1586753", "s_96443422", "s_b885dd25" } },
+	{ grant = "m4_accept_search", mission = 4, from = "m4_brief", replies = { "s_2f748550", "s_9e02d014", "s_fcc7875e", "s_6a85372e", "s_8eb7d0ee", "s_2c4789b" } },
+	{ grant = "m4_accept_expect", mission = 4, from = "m4_brief", replies = { "s_a1586753", "s_fcc7875e", "s_535d53b3", "s_5ec3bab9" } },
+}
+
+-- The failure walks of the retry screens: mN_failed starts the mission on display, the replies lead to closing lines that start nothing more
+D.FAILED_WALKS = {
+	{ mission = 1, replies = { "s_8f4d001d" }, ends = "m1_failed_898e32ed" },
+	{ mission = 1, replies = { "s_abddb145" }, ends = "m1_failed_9da5d80d" },
+	{ mission = 2, replies = { "s_77e48d5b", "s_49237f95", "s_87d4bfc2" }, ends = "m2_failed_a9fb7454" },
+	{ mission = 2, replies = { "s_b3d150e3", "s_60db9426" }, ends = "m2_failed_661f1464" },
+	{ mission = 3, replies = { "s_c1ce722e", "s_6ebb13d3" }, ends = "m3_failed_8bcb23a1" },
+	{ mission = 3, replies = { "s_e26ff616" }, ends = "m3_failed_ee7cbdbe" },
+	{ mission = 4, replies = { "s_ef420789" }, ends = "m4_failed_ee15b61" },
+	{ mission = 4, replies = { "s_4c695dbd" }, ends = "m4_failed_175d585" },
+}
+
+-- The J fixture: rewardForMissionN bodies -> { type, name, credits, item, standing, guarded } by mission number (oracle for B-6, D-20)
+local function readFile(path)
+	local f = assert(io.open(path, "r"), "cannot open " .. path)
+	local text = f:read("a")
+
+	f:close()
+	return text
+end
+
+D.readFile = readFile
+
+function D.javaRewards()
+	local java = readFile(H.FIXTURES .. D.JAVA)
+	local out = {}
+	local words = { One = 1, Two = 2, Three = 3, Four = 4 }
+
+	for word, body in java:gmatch("tatooine_imperial_tier4_action_rewardForMission(%a+)%(obj_id player, obj_id npc%) throws InterruptedException%s*(%b{})") do
+		local questType, questName, credits, item = body:match('giveReward%(player, "([^"]+)", "([^"]+)", (%d+), "([^"]+)"%)')
+		local standing = body:match("addFactionStanding%(player, factions%.FACTION_IMPERIAL, ([%d%.]+)f%)")
+		local guard = body:match('!space_quest%.hasReceivedReward%(player, "([^"]+)", "([^"]+)"%)')
+
+		out[words[word]] = { type = questType, name = questName, credits = tonumber(credits), item = item, standing = tonumber(standing), guarded = guard ~= nil }
+	end
+
+	return out
+end
+
+---------------------------------------------------------------------------------------------
+-- Loading
+---------------------------------------------------------------------------------------------
+
+D.loadErrors = {}
+
+local convoLoaded = false
+
+local function try(label, fn)
+	local ok, err = pcall(fn)
+
+	if not ok then
+		D.loadErrors[#D.loadErrors + 1] = label .. ": " .. tostring(err)
+	end
+end
+
+-- The server's load of Kilnstrider's template and handler (after the squadron files). A missing production file is recorded in D.loadErrors, not raised,
+-- so the tests of a red run fail on an assertion with the reason.
+function D.loadConversation()
+	if convoLoaded then
+		return
+	end
+
+	convoLoaded = true
+	D.load()
+	try("kilnstrider_convo.lua", function() H.loadMobile("conversations/space/imperial/storm_squadron/kilnstrider_convo.lua") end)
+	try("kilnstriderConvoHandler.lua", function() H.loadScreenplay("space/conversations/imperial/storm_squadron/kilnstriderConvoHandler.lua") end)
+end
+
+function D.conversationProblems()
+	return D.problems() .. " | " .. table.concat(D.loadErrors, " | ")
+end
+
+-- Fails with the load problems when the template or handler could not be loaded
+function D.requireConversation(lu)
+	D.loadConversation()
+	lu.assertNotNil(H.conversationTemplateTable(D.TEMPLATE), D.TEMPLATE .. " is not registered by addConversationTemplate (expected " .. D.TEMPLATE_FILE .. "). Load problems: " .. D.conversationProblems())
+	lu.assertNotNil(rawget(_G, D.HANDLER), D.HANDLER .. " is not defined (expected " .. D.HANDLER_FILE .. "). Load problems: " .. D.conversationProblems())
+end
+
+function D.handler()
+	D.loadConversation()
+
+	return H.expectGlobal(D.HANDLER, "Kilnstrider's conversation handler (storm-tier4-kilnstrider). Load problems: " .. D.conversationProblems())
+end
+
+---------------------------------------------------------------------------------------------
+-- Pilots
+---------------------------------------------------------------------------------------------
+
+local pilotPartA = D.pilot
+
+-- Options on top of Part A's (missions, attempted, met, active) and storm_tier3_data.lua's (every other option reaches storm_tier2_data.lua's T.pilot):
+--   pilot      "imperial" (default) | "neutral" | "rebel" | false (not a pilot: no skills at all)
+--   squadron   true (default: STORM_SQUADRON) | false (none) | "black_epsilon" | "inquisition" | a squadron constant
+--   t3         list of indexes (D.TRAIN order) of the _03 skills held (default all four)
+--   t4         list of D.TRAIN indexes of the _04 skills held
+--   master     the master skill is held
+--   mission    { [n] = state } for n = 1..4. "won": the whole chain is complete and :attempted is set; "failed" / "attempted": :attempted only;
+--              "active": :attempted and the head active; "endonly": only the chain end complete (no :attempted); "partial": the head complete,
+--              the end not (:attempted set)
+--   paid       list of n (1..4) whose reward is paid: the chain is complete, :attempted and :reward are set
+--   duty       global of a quest held active in the journal (alias of Part A's `active`)
+--   pilotTier  ghost pilot tier (default 4 with the four _03 skills and 3 without; 5 when the four _04 skills are held)
+--   xp, standing, faction, datapad, species, inventory, inventoryFull, inShip, zone: as in T.pilot
+function D.pilot(o)
+	o = o or {}
+
+	local base = {}
+
+	for k, v in pairs(o) do
+		base[k] = v
+	end
+
+	base.t4, base.mission, base.paid, base.master, base.duty = nil, nil, nil, nil, nil
+
+	if o.pilot == false then
+		base.t1, base.t2, base.t3 = false, {}, {}
+	end
+
+	if o.squadron == "black_epsilon" then
+		base.squadron = rawget(_G, "BLACK_EPSILON_SQUADRON")
+	elseif o.squadron == "inquisition" then
+		base.squadron = rawget(_G, "INQUISITION_SQUADRON")
+	end
+
+	if o.duty then
+		base.active = o.duty
+	end
+
+	base.skills = {}
+
+	for _, skill in ipairs(o.skills or {}) do
+		base.skills[#base.skills + 1] = skill
+	end
+
+	if o.pilot ~= false then
+		for _, i in ipairs(o.t4 or {}) do
+			base.skills[#base.skills + 1] = D.TRAIN[i].skill
+		end
+
+		if o.master then
+			base.skills[#base.skills + 1] = D.MASTER
+		end
+	end
+
+	base.pilotTier = o.pilotTier or ((#(o.t4 or {}) >= 4) and 5 or nil)
+
+	local player = pilotPartA(base)
+	local states = {}
+
+	for _, n in ipairs(o.paid or {}) do
+		states[n] = "paid"
+	end
+
+	for n, state in pairs(o.mission or {}) do
+		states[n] = state
+	end
+
+	for n, state in pairs(states) do
+		local chain = D.CHAINS[n]
+
+		if state ~= "endonly" then
+			H.setQuestStatus(player, D.STATUS[n] .. ":attempted", 1)
+		end
+
+		if state == "paid" then
+			H.setQuestStatus(player, D.STATUS[n] .. ":reward", 1)
+		end
+
+		if state == "won" or state == "paid" then
+			for _, g in ipairs(chain) do
+				D.setState(player, g, "complete")
+			end
+		elseif state == "endonly" then
+			D.setState(player, chain[#chain], "complete")
+		elseif state == "partial" then
+			D.setState(player, chain[1], "complete")
+		elseif state == "active" then
+			D.setState(player, chain[1], "active")
+		end
+	end
+
+	return player
+end
+
+function D.npc() return H.newNpc({ name = "Admiral Kilnstrider" }) end
+
+-- Charges the XP of the _04 skills from the fixture (1,000,000 each); without it the fake charges nothing
+function D.useSkillCosts()
+	local costs = {}
+
+	for _, rec in ipairs(H.fixture("skill/skills.pilot_imperial_navy_04.tab").records) do
+		local name = rec:get("NAME")
+
+		if name ~= nil and name:match("^pilot_imperial_navy_%a+_04$") then
+			costs[name] = rec:num("XP_COST")
+		end
+	end
+
+	H.Engine.config.skillXpCosts = costs
+
+	return costs
+end
+
+local function requireLoaded()
+	D.loadConversation()
+
+	if H.conversationTemplateTable(D.TEMPLATE) == nil or rawget(_G, D.HANDLER) == nil then
+		error("Kilnstrider's conversation is not loaded. Load problems: " .. D.conversationProblems(), 3)
+	end
+end
+
+-- Talks to Kilnstrider from the first screen. choices as for H.converse (0-based indexes, option sids, hooks).
+function D.talk(player, choices)
+	requireLoaded()
+
+	return H.converse({ template = D.TEMPLATE, player = player, npc = D.npc(), choices = choices })
+end
+
+function D.firstScreen(player) return D.talk(player)[1].id end
+
+-- Starts a conversation as if the pilot had just chosen a link to screen `startId`, then follows `choices` (reply sids, 0-based indexes or hooks).
+-- Reaches screens no first screen leads to; the last screen of the session is the one shown, like the real session.
+function D.drive(player, startId, choices)
+	requireLoaded()
+
+	local tmpl = H.conversationTemplate(D.TEMPLATE)
+	local handler = rawget(_G, D.HANDLER)
+	local npc = D.npc()
+	local session = H.Fakes.newConversationSession(npc)
+	local transcript = {}
+
+	player.conversationSession = session
+
+	local function show(screen)
+		local options = {}
+
+		for i, o in ipairs(screen.options) do
+			options[i] = { text = o.text, link = o.link }
+		end
+
+		transcript[#transcript + 1] = { id = screen.id, text = screen.dialogText, options = options, params = screen.params, stop = screen.stopConversation }
+	end
+
+	local screen = LuaConversationTemplate(tmpl):getScreen(startId)
+
+	if screen == nil then
+		error("screen '" .. startId .. "' is not in " .. D.TEMPLATE, 2)
+	end
+
+	screen = handler:runScreenHandlers(tmpl, player, npc, 0, screen)
+
+	if screen == nil then
+		error("runScreenHandlers returned no screen for '" .. startId .. "'", 2)
+	end
+
+	session.lastScreen = screen
+	show(screen)
+
+	local i = 1
+
+	while i <= #(choices or {}) and not screen.stopConversation do
+		local choice = choices[i]
+
+		i = i + 1
+
+		if type(choice) == "function" then
+			choice(player)
+		else
+			if type(choice) == "string" then
+				local found
+
+				for k, opt in ipairs(screen.options) do
+					if opt.text == choice or opt.text:sub(-#choice - 1) == ":" .. choice then
+						found = k - 1
+						break
+					end
+				end
+
+				if found == nil then
+					local have = {}
+
+					for k, opt in ipairs(screen.options) do
+						have[k] = tostring(opt.text)
+					end
+
+					error("screen '" .. screen.id .. "' has no option '" .. choice .. "'; options are: " .. table.concat(have, ", "), 2)
+				end
+
+				choice = found
+			end
+
+			screen = handler:getNextConversationScreen(tmpl, player, choice, npc)
+
+			if screen ~= nil then
+				screen = handler:runScreenHandlers(tmpl, player, npc, choice, screen)
+			end
+
+			session.lastScreen = screen
+
+			if screen == nil then
+				break
+			end
+
+			show(screen)
+		end
+	end
+
+	return transcript
+end
+
+-- ids of a transcript
+function D.ids(transcript)
+	local out = {}
+
+	for i, step in ipairs(transcript) do
+		out[i] = step.id
+	end
+
+	return out
+end
+
+-- the option sids ("s_xxx") of a transcript step, in order
+function D.optionSids(step)
+	local out = {}
+
+	for i, o in ipairs(step.options) do
+		out[i] = tostring(o.text):match(":(s_[%w_]+)$") or tostring(o.text)
+	end
+
+	return out
+end
+
+function D.linksOf(step)
+	local out = {}
+
+	for i, o in ipairs(step.options) do
+		out[i] = o.link
+	end
+
+	return out
+end
+
+-- _04 skills (of the four) the player holds, in D.TRAIN order
+function D.held4(player)
+	local out = {}
+
+	for _, t in ipairs(D.TRAIN) do
+		if CreatureObject(player):hasSkill(t.skill) then
+			out[#out + 1] = t.skill
+		end
+	end
+
+	return out
+end
+
+-- Spies on the startQuest of the listed globals (default: the 20 Kilnstrider quests); H.spyOn does not call the original
+function D.spyStarts(globals)
+	local spies = {}
+
+	for _, g in ipairs(globals or D.GLOBALS) do
+		spies[g] = H.spyOn(D.quest(g), "startQuest")
+	end
+
+	return spies
+end
+
+-- the sorted list of globals whose startQuest was called, one entry per call
+function D.started(spies)
+	local out = {}
+
+	for g, calls in pairs(spies) do
+		for _ = 1, #calls do
+			out[#out + 1] = g
+		end
+	end
+
+	table.sort(out)
+	return out
+end
+
+local restoreFns = {}
+
+-- Records the calls of SpaceHelpers:grantSpaceSkill and runs the original. Call D.restore() in tearDown.
+function D.recordGrants()
+	local calls = {}
+	local orig = SpaceHelpers.grantSpaceSkill
+
+	SpaceHelpers.grantSpaceSkill = function(self, pPlayer, skill, deduct)
+		calls[#calls + 1] = { skill = skill, deduct = deduct }
+
+		return orig(self, pPlayer, skill, deduct)
+	end
+
+	restoreFns[#restoreFns + 1] = function() SpaceHelpers.grantSpaceSkill = orig end
+
+	return calls
+end
+
+-- Records the calls of SpaceHelpers:startSpaceQuestChain (head global names) and runs the original. Call D.restore() in tearDown.
+function D.recordChainStarts()
+	local calls = {}
+	local orig = SpaceHelpers.startSpaceQuestChain
+
+	SpaceHelpers.startSpaceQuestChain = function(self, pPlayer, pNpc, headGlobal)
+		calls[#calls + 1] = headGlobal
+
+		return orig(self, pPlayer, pNpc, headGlobal)
+	end
+
+	restoreFns[#restoreFns + 1] = function() SpaceHelpers.startSpaceQuestChain = orig end
+
+	return calls
+end
+
+function D.restore()
+	for _, fn in ipairs(restoreFns) do
+		fn()
+	end
+
+	restoreFns = {}
+end
+
+-- The item giveItem calls on the pilot's inventory received
+function D.items(player)
+	local out = {}
+
+	for _, call in ipairs(H.Engine.callsTo("giveItem")) do
+		if call[1] == player.inventory then
+			out[#out + 1] = call[2]
+		end
+	end
+
+	return out
+end
+
+function D.hasKey(player, suffix) return H.getQuestStatus(player, suffix) == "1" end
+
+function D.standingOf(player) return player.ghost.factionStanding.imperial end
+
+-- The shape of a pilot's state a gate must not change (I-9)
+function D.snapshot(player)
+	return {
+		credits = player.bankCredits, standing = player.ghost and player.ghost.factionStanding.imperial, pilotTier = player.ghost and player.ghost.pilotTier,
+		xp = player.ghost and player.ghost.experience.space_combat_general, skills = D.held4(player), inventory = #(player.inventory and player.inventory.items or {}),
+		keys = H.Engine.sharedMemoryKeys(), met = D.hasKey(player, D.MET_KEY), engineCalls = #H.Engine.calls,
+	}
+end
+
 
 return D

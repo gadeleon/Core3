@@ -414,7 +414,8 @@ function TestAlozenWiring:test_the_template_include_line_is_uncommented_exactly_
 	end
 
 	lu.assertEquals((tostring(lines[at + 2]):gsub("^%s+", "")), 'includeFile("conversations/space/imperial/storm_squadron/denner_convo.lua")', "space_conversations.lua: Denner's include directly after Alozen's (storm-tier3-denner)")
-	lu.assertEquals(last, at + 2, "space_conversations.lua: Denner's include is the last line of the file (storm-tier3-denner)")
+	lu.assertEquals((tostring(lines[at + 3]):gsub("^%s+", "")), 'includeFile("conversations/space/imperial/storm_squadron/kilnstrider_convo.lua")', "space_conversations.lua: Kilnstrider's include directly after Denner's (storm-tier4-kilnstrider)")
+	lu.assertEquals(last, at + 3, "space_conversations.lua: Kilnstrider's include is the last line of the file (storm-tier4-kilnstrider; Denner's before storm-tier3-denner)")
 end
 
 -- AC-1
@@ -431,8 +432,9 @@ function TestAlozenWiring:test_the_handler_include_line_follows_technician_3s_ex
 	lu.assertNotNil(at, "screenplays.lua: technician 3's handler include")
 	lu.assertEquals(lines[at + 1], 'includeFile("space/conversations/imperial/storm_squadron/alozenConvoHandler.lua")', "screenplays.lua: Alozen's handler include, directly after technician 3's")
 	lu.assertEquals(lines[at + 2], 'includeFile("space/conversations/imperial/storm_squadron/dennerConvoHandler.lua")', "screenplays.lua: Denner's handler include follows Alozen's (storm-tier3-denner)")
-	lu.assertEquals(lines[at + 3], "", "screenplays.lua: the blank line follows Denner's include (storm-tier3-denner)")
-	lu.assertEquals(lines[at + 4], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows (storm-tier3-denner)")
+	lu.assertEquals(lines[at + 3], 'includeFile("space/conversations/imperial/storm_squadron/kilnstriderConvoHandler.lua")', "screenplays.lua: Kilnstrider's handler include follows Denner's (storm-tier4-kilnstrider)")
+	lu.assertEquals(lines[at + 4], "", "screenplays.lua: the blank line follows Kilnstrider's include (storm-tier4-kilnstrider)")
+	lu.assertEquals(lines[at + 5], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows (storm-tier4-kilnstrider)")
 end
 
 ---------------------------------------------------------------------------------------------

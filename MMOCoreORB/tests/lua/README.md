@@ -1022,3 +1022,25 @@ tier 4 in an Imperial ship, the runtime tests' player). Part B extends the file.
 are each shown to start nothing before the 5 s delay. `test_storm_tier4_missions_pins.lua` pins "nothing else moves" against `6a5d2977c3` through `git` and skips once HEAD moves.
 - Existing tests this feature edited (all listed in the test plan): the coverage count of `test_smuggler_tier2_data.lua` (349 distinct questName strings, 333 SWG names) and the Storm surrender order of
   `test_master_trainer_imperial_surrender.lua` and `test_storm_tier3_missions_surrender.lua` (Colzet, Oberhaur, Alozen, Denner, Kilnstrider, Declann).
+
+### Storm tier 4: Admiral Kilnstrider's conversation (storm-tier4-kilnstrider)
+
+Part B of Admiral Kilnstrider (Endor research outpost, back room of the cantina) is the conversation, the NPC flags and the two include lines on top of Part A: `kilnstrider_convo_template`
+(98 screens, all 174 pre-NGE client lines of `conversation/tatooine_imperial_tier4`; J's 85 NGE-only ids are removed or rejoined and the four briefings are rebuilt from the client lines J never
+uses), `kilnstriderConvoHandler` (Ja'ce's structure: gates G0-G21, one-click free-choice training at 1,000,000 XP, the four missions through Part A's heads, the four duties, the Declann transfer) and
+`mobile/space/kilnstrider.lua` (conversable, invulnerable). The spawn is Core3's and stays as it is. Fixtures (byte copies of SWG-Source, excerpts made with `sed -n <row>p`, never edited):
+`fixtures/script/conversation/tatooine_imperial_tier4.java` (J, 5,021 lines, walked with `harness/swgjava.lua`), `fixtures/space_content/npc_spawners.storm_tier4_kilnstrider.tab` (rows 1-2 and 85, CRLF
+kept), `fixtures/buildout/endor/endor_6_3_ws.storm_tier4_kilnstrider.tab` (rows 1-2, 158, 161, 163) and `fixtures/string/en/conversation/tatooine_imperial_tier4.sids` (176 ids, generated with
+`python3 -B tools/gen_client_sids.py conversation/tatooine_imperial_tier4`; `-B` matters, a stray `tools/__pycache__` breaks five tests), the 67th ratchet file.
+
+Data files (not test files): `storm_tier4_screens_data.lua` (Appendix A, 98 rows, generated from the spec table by a scratch script, with the table H action columns) and `storm_tier4_client_text.lua`
+(the English text of the 176 client entries, a read-only `/tre` dump). `storm_tier4_data.lua` (Part A's file) is extended and keeps every Part A export: `D.TEMPLATE` / `D.HANDLER` / `D.PREFIX`,
+`D.MISSIONS` (head, quest strings, chain, status name and screens), `D.TRAIN` (menu order starships, weapons, procedures, droid; the topic replies), `D.TRAINED_BRIEFS`, `D.DUTY_MENU` / `D.MENUS`,
+`D.STARTS` (14) / `D.PAYS` (4) / `D.PATHS` (Appendix D) / `D.FAILED_WALKS`, `D.javaRewards()` (the four `rewardForMissionN` bodies of the J fixture: B-6 pins credits, items and standing against
+J, and Part A's `D.REWARDS` and the SSP head fields against it, D-20), `D.loadConversation()` / `D.requireConversation(lu)`, `D.talk` / `D.drive` / `D.firstScreen`, observers (`D.spyStarts`,
+`D.recordGrants`, `D.recordChainStarts`, `D.restore()`) and `D.snapshot` (the state a gate must not change). `D.pilot` is wrapped with the Part B options: `t4 = {TRAIN indexes}`,
+`mission = { [n] = "won" | "failed" | "attempted" | "active" | "partial" | "endonly" }`, `paid = {n...}`, `master`, `duty = global`, `squadron = "black_epsilon" | "inquisition" | false`, and the
+non-pilot default (`pilot = false` strips every skill). **A first screen runs its display actions** (`mN_failed` restarts mission N, a reward screen pays), so gate tests call `getInitialScreen`
+itself, which must be pure (I-9). `test_storm_tier4_pins.lua` pins "nothing else moves" against `288da0c8ea` through `git` and skips once HEAD moves.
+- Existing tests this feature edited (all listed in the test plan): the 67th `FIXTURE_COUNTS` entry (`space_convo_client_strings_data.lua` and eight test files) and the include-adjacency anchors
+  of `test_storm_tier3_wiring.lua`, `test_storm_tier2_alozen_data.lua`, `test_storm_tier2_nym_wiring.lua`, `test_storm_tier2_data.lua` and `test_master_trainer_{imperial,rebel}_wiring.lua`.

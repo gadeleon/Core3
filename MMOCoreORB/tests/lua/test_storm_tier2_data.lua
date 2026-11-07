@@ -441,8 +441,9 @@ function TestStormT2Wiring:test_the_handler_include_line_follows_colzets_handler
 	-- storm-tier2-alozen: Alozen's handler include follows technician 3's, so the blank line and the Master Trainers block move down by one
 	lu.assertEquals(lines[at + 5], 'includeFile("space/conversations/imperial/storm_squadron/alozenConvoHandler.lua")', "screenplays.lua: Alozen's include follows the last technician's (storm-tier2-alozen)")
 	lu.assertEquals(lines[at + 6], 'includeFile("space/conversations/imperial/storm_squadron/dennerConvoHandler.lua")', "screenplays.lua: Denner's include follows Alozen's (storm-tier3-denner)")
-	lu.assertEquals(lines[at + 7], "", "screenplays.lua: the blank line follows Denner's include (storm-tier3-denner)")
-	lu.assertEquals(lines[at + 8], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
+	lu.assertEquals(lines[at + 7], 'includeFile("space/conversations/imperial/storm_squadron/kilnstriderConvoHandler.lua")', "screenplays.lua: Kilnstrider's include follows Denner's (storm-tier4-kilnstrider)")
+	lu.assertEquals(lines[at + 8], "", "screenplays.lua: the blank line follows Kilnstrider's include (storm-tier4-kilnstrider)")
+	lu.assertEquals(lines[at + 9], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
 end
 
 -- AC-1: the T1 pin (Colzet's handler include directly after the squadron include and a blank line) holds

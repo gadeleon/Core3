@@ -116,3 +116,4 @@ includeFile("conversations/space/imperial/storm_squadron/nym_technician_2_convo.
 includeFile("conversations/space/imperial/storm_squadron/nym_technician_3_convo.lua")
 includeFile("conversations/space/imperial/storm_squadron/alozen_convo.lua")
 includeFile("conversations/space/imperial/storm_squadron/denner_convo.lua")
+includeFile("conversations/space/imperial/storm_squadron/kilnstrider_convo.lua")

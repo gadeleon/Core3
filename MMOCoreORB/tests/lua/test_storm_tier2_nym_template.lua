@@ -368,7 +368,7 @@ function TestStormNymFixtures:test_the_ratchet_data_counts_the_three_files_and_6
 		lu.assertEquals(KD.FIXTURE_COUNTS[N.CONVOS[n].stf], N.CONVOS[n].ids, "FIXTURE_COUNTS[" .. N.CONVOS[n].stf .. "]")
 	end
 
-	lu.assertEquals(#sortedKeys(KD.FIXTURE_COUNTS), 66, "FIXTURE_COUNTS entries") -- 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner
+	lu.assertEquals(#sortedKeys(KD.FIXTURE_COUNTS), 67, "FIXTURE_COUNTS entries") -- 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider
 	lu.assertEquals(KD.KNOWN_GAPS, {}, "KNOWN_GAPS")
 end
 

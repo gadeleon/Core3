@@ -154,7 +154,9 @@ function TestStormT3Wiring:test_the_template_include_is_uncommented_exactly_once
 		last = last - 1
 	end
 
-	lu.assertEquals(last, at + 1, "space_conversations.lua: Denner's include is the last line of the file")
+	-- storm-tier4-kilnstrider: Kilnstrider's include follows Denner's and is the last line now
+	lu.assertEquals(trim(lines[at + 2] or ""), 'includeFile("conversations/space/imperial/storm_squadron/kilnstrider_convo.lua")', "space_conversations.lua: Kilnstrider's include directly after Denner's (storm-tier4-kilnstrider)")
+	lu.assertEquals(last, at + 2, "space_conversations.lua: Kilnstrider's include follows Denner's and is the last line (storm-tier4-kilnstrider)")
 end
 
 -- B-1: the handler include directly follows Alozen's, then a blank line, then the Master Trainers block
@@ -173,8 +175,10 @@ function TestStormT3Wiring:test_the_handler_include_follows_alozens_exactly_once
 
 	lu.assertNotNil(at, "screenplays.lua: Alozen's handler include")
 	lu.assertEquals(lines[at + 1], D.HANDLER_INCLUDE, "screenplays.lua: Denner's handler include, directly after Alozen's")
-	lu.assertEquals(lines[at + 2], "", "screenplays.lua: the blank line follows Denner's include")
-	lu.assertEquals(lines[at + 3], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
+	-- storm-tier4-kilnstrider: Kilnstrider's handler include follows Denner's, so the blank line and the Master Trainers block move down by one
+	lu.assertEquals(lines[at + 2], 'includeFile("space/conversations/imperial/storm_squadron/kilnstriderConvoHandler.lua")', "screenplays.lua: Kilnstrider's handler include follows Denner's (storm-tier4-kilnstrider)")
+	lu.assertEquals(lines[at + 3], "", "screenplays.lua: the blank line follows Kilnstrider's include (storm-tier4-kilnstrider)")
+	lu.assertEquals(lines[at + 4], "-- Master Trainers", "screenplays.lua: the Master Trainers block follows")
 end
 
 -- B-1: YB:1-33 unchanged but for the comma on :33; :34 is Denner's row; the table closes after it

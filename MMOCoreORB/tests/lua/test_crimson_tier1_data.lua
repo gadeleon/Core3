@@ -378,7 +378,9 @@ function TestCrimsonT1Wiring:test_the_template_include_is_uncommented_at_line_80
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo%.lua"%)'), 1, "space_conversations.lua: socuna_convo include occurrences (commented or not)")
 	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 80")
 
-	for _, n in ipairs({ 79, 81, 82 }) do
+	lu.assertEquals(lines[79], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 79: uncommented by crimson-phoenix-tier2-eker-convo")
+
+	for _, n in ipairs({ 81, 82 }) do
 		lu.assertTrue((lines[n] or ""):match("^%-%-%s*includeFile%(\"conversations/space/rebel/crimson_phoenix_squadron/[a-z_]+%.lua\"%)$") ~= nil, "space_conversations.lua line " .. n .. ": still a commented Crimson Phoenix placeholder" .. " (" .. tostring(lines[n]) .. ")")
 	end
 end
@@ -391,7 +393,9 @@ function TestCrimsonT1Wiring:test_the_handler_include_is_uncommented_at_line_125
 	lu.assertEquals(countMatches(text, 'includeFile%("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler%.lua"%)'), 1, "screenplays.lua: socunaConvoHandler include occurrences (commented or not)")
 	lu.assertEquals(lines[125], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 125")
 
-	for _, n in ipairs({ 124, 126, 127 }) do
+	lu.assertEquals(lines[124], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 124: uncommented by crimson-phoenix-tier2-eker-convo")
+
+	for _, n in ipairs({ 126, 127 }) do
 		lu.assertTrue((lines[n] or ""):match("^%-%-%s*includeFile%(\"space/conversations/rebel/crimson_phoenix_squadron/[A-Za-z]+ConvoHandler%.lua\"%)$") ~= nil, "screenplays.lua line " .. n .. ": still a commented Crimson Phoenix placeholder" .. " (" .. tostring(lines[n]) .. ")")
 	end
 end

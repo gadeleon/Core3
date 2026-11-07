@@ -356,6 +356,11 @@ end
 --   t2         number of tier 2 skills held (default 0)
 --   active     global of a tier 2 member left active in the journal
 --   graduated  EKER_PILOT_KEY value (default "1"); false leaves it unset
+--   t1         number of tier 1 skills held (default 4)  [Part B]
+--   t3         number of tier 3 skills held (default 0; the _03 skills in the tier 1 training order)  [Part B]
+--   state      the state of mission missions+1: "won" (every chain member complete, :attempted, unpaid) | "failed" (:attempted, nothing complete,
+--              nothing active) | "active" (:attempted, the head active) | "attempted" (just :attempted)  [Part B]
+--   privileged ghost:isPrivileged() returns true (the GM branch)  [Part B]
 --   pilotTier  ghost pilot tier (default 2, or 3 with four tier 2 skills)
 --   everything else (inShip, zone, standing, inventory, ...) is passed to crimson_tier1_data.lua's C.pilot
 function E.pilot(o)
@@ -368,9 +373,9 @@ function E.pilot(o)
 		base[k] = v
 	end
 
-	base.missions, base.t2, base.active = nil, nil, nil
+	base.missions, base.t2, base.active, base.t1, base.t3, base.state, base.privileged = nil, nil, nil, nil, nil, nil, nil
 	base.paid = 4
-	base.tier = 4
+	base.tier = o.t1 or 4
 	base.graduated = o.graduated == nil and "1" or (o.graduated or nil)
 	base.pilotTier = o.pilotTier or ((o.t2 or 0) >= 4 and 3 or 2)
 	base.skills = {}
@@ -381,6 +386,10 @@ function E.pilot(o)
 
 	for _, skill in ipairs(E.tier2Skills(o.t2 or 0)) do
 		base.skills[#base.skills + 1] = skill
+	end
+
+	for i = 1, o.t3 or 0 do
+		base.skills[#base.skills + 1] = (C.TRAIN[i].skill:gsub("_01$", "_03"))
 	end
 
 	local player = C.pilot(base)
@@ -394,8 +403,26 @@ function E.pilot(o)
 		H.setQuestStatus(player, E.STATUS[n] .. ":reward", "1")
 	end
 
+	local n = (o.missions or 0) + 1
+
+	if o.state ~= nil and E.CHAINS[n] ~= nil then
+		H.setQuestStatus(player, E.STATUS[n] .. ":attempted", "1")
+
+		if o.state == "won" then
+			for _, global in ipairs(E.CHAINS[n]) do
+				E.setState(player, global, "complete")
+			end
+		elseif o.state == "active" then
+			E.setState(player, E.CHAINS[n][1], "active")
+		end
+	end
+
 	if o.active then
 		E.setState(player, o.active, "active")
+	end
+
+	if player.ghost ~= nil then
+		player.ghost.privileged = o.privileged == true
 	end
 
 	return player
@@ -413,7 +440,301 @@ function E.flyer(zone)
 end
 
 ---------------------------------------------------------------------------------------------
--- Part B: Major Eker's conversation (crimson-phoenix-tier2-eker-convo) extends this file below.
+-- Part B: Major Eker's conversation (crimson-phoenix-tier2-eker-convo)
+-- Spec: .claude/work/crimson-phoenix-tier2-eker-convo/01-spec.md (Content contract 2 and 3, Data mapping 1, Conversation flow 1 to 3.4, Appendix A).
+-- Everything below is copied from the spec, not read from the production scripts.
 ---------------------------------------------------------------------------------------------
+
+E.TEMPLATE = "eker_convo_template"
+E.HANDLER = "ekerConvoHandler"
+E.STF = "conversation/yavin_rebel_trainer_2"
+E.PREFIX = "@conversation/yavin_rebel_trainer_2:"
+
+E.TEMPLATE_FILE = "mobile/conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua"
+E.HANDLER_FILE = "screenplays/space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua"
+E.NPC_FILE = "mobile/space/eker.lua"
+E.SPACE_CONVERSATIONS = "mobile/conversations/space/space_conversations.lua"
+E.SCREENPLAYS = "screenplays/space/screenplays.lua"
+E.JAVA = "script/conversation/yavin_rebel_trainer_2.java"
+
+E.XP_COST = 60000
+E.VIOPA_KEY = "HavocSquadron:viopaSmuggler"
+
+-- Appendix A (crimson_tier2_eker_screens_data.lua, generated from the spec table by a scratch script)
+E.SCREENS = require("crimson_tier2_eker_screens_data")
+
+function E.screenRow(id)
+	for _, row in ipairs(E.SCREENS) do
+		if row.id == id then
+			return row
+		end
+	end
+end
+
+-- Content contract 3: the four story missions. head = the chain head, wonType / wonName = JE's won check
+E.MISSIONS = {
+	{ n = 1, head = E.E13, wonType = "escort", wonName = "yavin_rebel_13", offer = "m1_offer", failed = "m1_failed", won = "m1_won", standing = 75 },
+	{ n = 2, head = E.I14, wonType = "inspect", wonName = "yavin_rebel_14", offer = "m2_offer", failed = "m2_failed", won = "m2_won", standing = 75 },
+	{ n = 3, head = E.I15, wonType = "destroy_surpriseattack", wonName = "yavin_rebel_15", offer = "m3_offer", failed = "m3_failed", won = "m3_won", standing = 75 },
+	{ n = 4, head = E.E16, wonType = "escort", wonName = "yavin_rebel_16", offer = "m4_offer", failed = "m4_failed", won = "m4_won", standing = 75 },
+}
+
+-- screen -> mission (a start screen sets :attempted and starts the head)
+E.START_SCREENS = {
+	m1_accept_dismissed = 1, m1_accept_opinion = 1, m1_accept_right = 1, m1_accept_uploading = 1, m1_accept_priority = 1, m1_accept_immediately = 1,
+	m1_retry_now = 1, m1_retry_knew = 1, gm_mission1 = 1,
+	m2_accept_closing = 2, m2_accept_droid = 2, m2_retry = 2, m2_retry_rules = 2, gm_mission2 = 2,
+	m3_accept = 3, m3_retry = 3, gm_mission3 = 3,
+	m4_accept_trust = 4, m4_accept_go_back = 4, m4_accept_smuggle = 4, m4_retry = 4, gm_mission4 = 4,
+}
+
+-- screen -> mission (pays once; n = 4 also writes flag "3")
+E.REWARD_SCREENS = {
+	m1_won = 1,
+	m2_pay_good_work = 2, m2_pay_come_again = 2,
+	m3_pay_another_post = 3, m3_pay_war_not_over = 3,
+	m4_pay_right_about_you = 4, m4_pay_war_not_over = 4,
+}
+
+E.DUTY_SCREENS = {
+	duty_recovery = E.DUTY12, gm_recovery_duty = E.DUTY12,
+	duty_escort = E.DUTY10, gm_escort_duty = E.DUTY10,
+	duty_destroy = E.DUTY9, gm_destroy_duty = E.DUTY9,
+}
+
+E.HANDIN_SCREENS = { "handin_dismissed", "handin_duty_menu" }
+
+-- every Appendix A screen whose text has %TU or %NU (11)
+E.NAME_SCREENS = {
+	"tier3_handoff", "tier3_teaching", "tier3_honor", "grounded", "tier3_veteran", "m2_offer", "m3_offer", "m3_arrest", "m4_so_long", "m4_offer", "m4_see_you_around",
+}
+
+-- Conversation flow 3.4: TRAIN_CHOICES in table order (the pairing of confirm / yes / no is the spec's inference, R-1). yes / no = { reply sid, link }
+E.TRAIN = {
+	{ x = "starships", skill = "pilot_rebel_navy_starships_02", reply = "s_c6c91897", confirm = "train_starships", trained = "trained_starships",
+	  confirmSid = "s_3f00169", yes = { "s_6bb0cb94", "trained_starships" }, no = { "s_f39da193", "training_menu" } },
+	{ x = "weapons", skill = "pilot_rebel_navy_weapons_02", reply = "s_98d991e7", confirm = "train_weapons", trained = "trained_weapons",
+	  confirmSid = "s_45b2289f", yes = { "s_6bb0cb94", "trained_weapons" }, no = { "s_65c36194", "training_passing_up" } },
+	{ x = "procedures", skill = "pilot_rebel_navy_procedures_02", reply = "s_73ccefde", confirm = "train_procedures", trained = "trained_procedures",
+	  confirmSid = "s_82b46acf", yes = { "s_d9cced1f", "trained_procedures" }, no = { "s_d8fef41", "training_passing_up" } },
+	{ x = "droid", skill = "pilot_rebel_navy_droid_02", reply = "s_3c4ff185", confirm = "train_droid", trained = "trained_droid",
+	  confirmSid = "s_3f00169", yes = { "s_d9cced1f", "trained_droid" }, no = { "s_9b34069d", "training_menu" } },
+}
+
+E.TRAINED_SID = "s_895e16f4"
+E.LEAVE_REPLY = "s_fabecb04"
+E.GM_REPLY = "s_6b158a0e"
+E.OFF_TRACK_REPLY = "s_1583743c"
+
+-- Engine XP prices of the four tier 2 skills, from the SWG skills.tab excerpt (fixtures/skill/skills.pilot_rebel_navy_02.tab)
+function E.useSkillCosts()
+	local costs = {}
+
+	for _, rec in ipairs(H.fixture("skill/skills.pilot_rebel_navy_02.tab").records) do
+		local name = rec:get("NAME")
+
+		if name ~= nil and name:match("^pilot_rebel_navy_%a+_02$") then
+			costs[name] = rec:num("XP_COST")
+		end
+	end
+
+	H.Engine.config.skillXpCosts = costs
+
+	return costs
+end
+
+local loadedB = false
+
+local function try(label, fn)
+	local ok, err = pcall(fn)
+
+	if not ok then
+		C.loadErrors[#C.loadErrors + 1] = label .. ": " .. tostring(err)
+	end
+end
+
+-- The server's load of Eker's template and handler (after the squadron files). A missing production file is recorded, not raised.
+function E.loadConversation()
+	C.load()
+
+	if loadedB then
+		return
+	end
+
+	loadedB = true
+	try("eker_convo.lua", function() H.loadMobile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua") end)
+	try("ekerConvoHandler.lua", function() H.loadScreenplay("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua") end)
+end
+
+-- Fails with the load problems when the template or handler could not be loaded (a readable red phase)
+function E.requireConversation(lu)
+	E.loadConversation()
+	lu.assertNotNil(H.conversationTemplateTable(E.TEMPLATE), E.TEMPLATE .. " is not registered by addConversationTemplate (crimson-phoenix-tier2-eker-convo). Load problems: " .. E.problems())
+	lu.assertNotNil(rawget(_G, E.HANDLER), E.HANDLER .. " is not defined (crimson-phoenix-tier2-eker-convo). Load problems: " .. E.problems())
+end
+
+function E.handler() return rawget(_G, E.HANDLER) end
+
+-- Major Eker at the Yavin 4 labor outpost (yavin4_labor_outpost.lua:18)
+function E.npc() return H.newNpc({ name = "Major Eker", zone = "yavin4", x = -3.9, z = 0.6, y = 1.2, parentID = 3035372 }) end
+
+-- Talks to Eker from the first screen. choices as for H.converse.
+function E.talk(player, choices)
+	E.requireConversation(require("luaunit"))
+
+	return H.converse({ template = E.TEMPLATE, player = player, npc = E.npc(), choices = choices })
+end
+
+-- The id of the first screen of a fresh talk
+function E.firstScreen(player) return E.talk(player)[1].id end
+
+-- Starts a conversation as if the pilot had just chosen a link to screen `startId`, then follows `choices` (reply sids, 0-based indexes or hooks).
+-- Reaches screens no first screen leads to; runScreenHandlers runs for every screen shown, the way the real session does.
+function E.drive(player, startId, choices)
+	E.requireConversation(require("luaunit"))
+
+	local tmpl = H.conversationTemplate(E.TEMPLATE)
+	local handler = E.handler()
+	local npc = E.npc()
+	local session = H.Fakes.newConversationSession(npc)
+	local transcript = {}
+
+	player.conversationSession = session
+
+	local function show(screen)
+		local options = {}
+
+		for i, o in ipairs(screen.options) do
+			options[i] = { text = o.text, link = o.link }
+		end
+
+		transcript[#transcript + 1] = { id = screen.id, text = screen.dialogText, options = options, params = screen.params, stop = screen.stopConversation }
+	end
+
+	local screen = LuaConversationTemplate(tmpl):getScreen(startId)
+
+	if screen == nil then
+		error("screen '" .. startId .. "' is not in " .. E.TEMPLATE, 2)
+	end
+
+	screen = handler:runScreenHandlers(tmpl, player, npc, 0, screen)
+
+	if screen == nil then
+		error("runScreenHandlers returned no screen for '" .. startId .. "'", 2)
+	end
+
+	session.lastScreen = screen
+	show(screen)
+
+	local i = 1
+
+	while i <= #(choices or {}) and not screen.stopConversation do
+		local choice = choices[i]
+
+		i = i + 1
+
+		if type(choice) == "function" then
+			choice(player)
+		else
+			if type(choice) == "string" then
+				local found
+
+				for k, o in ipairs(screen.options) do
+					if o.text == choice or o.text:sub(-#choice - 1) == ":" .. choice then
+						found = k - 1
+						break
+					end
+				end
+
+				if found == nil then
+					local have = {}
+
+					for k, o in ipairs(screen.options) do
+						have[k] = tostring(o.text)
+					end
+
+					error("screen '" .. screen.id .. "' has no option '" .. choice .. "'; options are: " .. table.concat(have, ", "), 2)
+				end
+
+				choice = found
+			end
+
+			screen = handler:getNextConversationScreen(tmpl, player, choice, npc)
+
+			if screen ~= nil then
+				screen = handler:runScreenHandlers(tmpl, player, npc, choice, screen)
+			end
+
+			session.lastScreen = screen
+
+			if screen == nil then
+				break
+			end
+
+			show(screen)
+		end
+	end
+
+	return transcript
+end
+
+E.ids = C.ids
+E.optionSids = C.optionSids
+E.linksOf = C.linksOf
+
+-- the Rebel standing of the pilot
+function E.standing(player) return player.ghost.factionStanding.rebel or 0 end
+
+-- giveItem templates received by the pilot, in order
+function E.items(player)
+	local out = {}
+
+	for _, call in ipairs(H.Engine.callsTo("giveItem")) do
+		if call[1] == player.inventory then
+			out[#out + 1] = call[2]
+		end
+	end
+
+	return out
+end
+
+-- The EKER_PILOT_KEY value of the pilot ("1", "2", "3") or nil
+function E.flag(player) return H.getQuestStatus(player, E.EKER_PILOT_KEY) end
+
+-- The tier 2 skills (of the four) the pilot holds, in E.TRAIN order
+function E.held2(player)
+	local out = {}
+
+	for _, t in ipairs(E.TRAIN) do
+		if CreatureObject(player):hasSkill(t.skill) then
+			out[#out + 1] = t.skill
+		end
+	end
+
+	return out
+end
+
+-- Spies the startQuest of the eight quest tables so no real quest runs; returns { global -> calls }
+function E.spyStarts()
+	local spies = {}
+
+	for _, global in ipairs(E.GLOBALS) do
+		spies[global] = H.spyOn(E.quest(global), "startQuest")
+	end
+
+	return spies
+end
+
+function E.startedCount(spies)
+	local out = {}
+
+	for global, calls in pairs(spies) do
+		if #calls > 0 then
+			out[global] = #calls
+		end
+	end
+
+	return out
+end
 
 return E

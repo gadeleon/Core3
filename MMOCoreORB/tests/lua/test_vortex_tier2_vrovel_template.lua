@@ -514,7 +514,7 @@ function TestVrovelFixtures:setUp() H.reset() end
 -- AC-2: the ratchet entry and the count (69 files)
 function TestVrovelFixtures:test_fixture_counts_holds_vrovels_file_with_247_ids_as_the_69th_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[V.STF], 247, "FIXTURE_COUNTS[" .. V.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 72, "FIXTURE_COUNTS entries") -- 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 73, "FIXTURE_COUNTS entries") -- 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo
 end
 
 -- AC-2: nothing is allowed to be unresolved

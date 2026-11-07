@@ -1255,3 +1255,24 @@ the `TIER2_*` constants and `resetEkerQuests`. Part B (`crimson-phoenix-tier2-ek
   `_runtime` (A-3 to A-5 through the fakes), `_surrender` (A-6), `_pins` (I-10, against `02666328b3` through `git`; skips once HEAD moves).
 - Existing tests this feature edited: `test_smuggler_tier2_data.lua` (SWG coverage: 385 -> 392 matched names, 401 -> 408 distinct `questName`s), `test_vortex_tier2_missions_inspection.lua`
   (the INSPECTION sweep now allows `inspect_yavin_rebel_15`) and `test_master_trainer_rebel_surrender.lua` (a Crimson Phoenix surrender runs Socuna's, Eker's, then Burke's reset).
+
+### Crimson Phoenix tier 2: Major Eker's conversation (crimson-phoenix-tier2-eker-convo)
+
+Part B of Crimson Phoenix tier 2: `eker_convo_template` (161 screens, all 302 pre-NGE client lines of `conversation/yavin_rebel_trainer_2`) and `ekerConvoHandler`, wired into
+`eker.lua` and the two include lists. The conversation grants Part A's four chains and three duties, pays the four rewards once, takes the hand-in of Socuna's graduates (EKER_PILOT_KEY
+"1" -> "2", "3" with the mission 4 reward), sells the four tier 2 skills (two-step, 60,000 XP each, no credits, pilot tier 2 -> 3) and has SWG's Developer/Tester branch for privileged players.
+- Fixtures: `fixtures/script/conversation/yavin_rebel_trainer_2.java` (byte copy of SWG-Source, 7,177 lines, the answer key) and
+  `fixtures/string/en/conversation/yavin_rebel_trainer_2.sids` (generated: `PYTHONDONTWRITEBYTECODE=1 python3 -I tests/lua/tools/gen_client_sids.py conversation/yavin_rebel_trainer_2`; 304 ids).
+  `FIXTURE_COUNTS` has 73 entries since this feature.
+- Data files (not tests): `crimson_tier2_eker_screens_data.lua` (Appendix A, 161 rows, `{ id, sid, animation, stop, options, cond, tag, h, je }`), `crimson_tier2_eker_client_text.lua`
+  (id -> English text of the client file, read once from `/tre`), and the Part B section of `crimson_tier2_data.lua`: `E.TEMPLATE` / `E.HANDLER`, `E.SCREENS`, `E.MISSIONS`, `E.START_SCREENS`,
+  `E.REWARD_SCREENS`, `E.DUTY_SCREENS`, `E.HANDIN_SCREENS`, `E.NAME_SCREENS`, `E.TRAIN`, `E.loadConversation()` / `E.requireConversation(lu)`, `E.talk` / `E.drive` / `E.firstScreen`
+  (as `V.talk` for Vrovel), `E.spyStarts()`, `E.flag`, `E.held2`, `E.standing`, `E.items`, `E.useSkillCosts()`. `E.pilot` gained `t1` (tier 1 skills held), `t3` (the `_03` skills),
+  `state` ("won" / "failed" / "active" / "attempted" for mission `missions + 1`) and `privileged` (the GM branch).
+- Tests: `_wiring` (AC-1, the handler helpers), `_template` (AC-2, I-1, I-2: Appendix A, complete literals, trailing comments, java graph, ratchet, fixtures), `_gates` (AC-3, I-3: E0-E27, C-1,
+  purity), `_handin` (AC-4, I-7), `_missions` (AC-5), `_rewards` (AC-6, I-4), `_training` (AC-7, I-6), `_duties` (AC-8), `_gm` (AC-9), `_regressions` (AC-10: no `viopaSmuggler`, no foreign
+  status key, surrender), `_pins` (I-8, against `2a839b9d1c` through `git`; skips once HEAD moves).
+- The java answer key has 129 (NPC line, reply) pairs of client ids with a client first successor and 130 triples, because the off-track reply has two successors (SWG:633); the static
+  template keeps 129 triples and the handler's C-1 link keeps the other one.
+- Existing tests this feature edited: the 14 `FIXTURE_COUNTS` assertions (72 -> 73, `space_convo_client_strings_data.lua` gains the entry and the header line) and the two include-line
+  assertions of `test_crimson_tier1_data.lua` (lines 79 and 124 are now live).

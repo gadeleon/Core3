@@ -1,0 +1,14 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.313694	0.732265	0.604470	-0.084278	-0.655563	0.750423	-3007.75	-5718.25	4617.25	nav_name|4|naboo_escort_tier2_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.167346	0.825258	0.539392	0.275149	0.564463	-0.778251	2302.75	2604.25	-3458.75	nav_name|4|naboo_escort_tier2_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.333307	0.418198	0.844995	-0.162968	0.908308	-0.385250	2101.16	2448.33	-2498.10	nav_name|4|vortex_mission_3_recovery_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.704553	0.709639	-0.004270	-0.709576	0.704553	0.010361	1630.25	2722.75	-3773.50	nav_name|4|naboo_escort_tier2_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.415403	0.908462	-0.046224	0.902117	-0.417957	-0.107222	2437.09	-873.53	2907.45	nav_name|4|vortex_mission_3_recovery_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.015122	0.999880	0.003271	-0.190378	0.000332	-0.981711	1893.01	-808.78	-39.71	nav_name|4|vortex_mission_3_recovery_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.230286	0.972409	0.037276	0.959892	-0.233283	0.155518	323.02	348.67	3303.49	nav_name|4|vortex_mission_3_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.226635	0.669383	-0.707505	0.198676	0.742905	0.639234	-2596.76	126.44	3005.46	nav_name|4|vortex_mission_3_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.551217	0.686474	0.474250	-0.318053	-0.698359	0.641200	-969.75	-905.75	-814.25	nav_name|4|naboo_escort_tier2_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.175752	0.397531	-0.900600	0.307720	0.846812	0.433840	-3100.00	-1800.00	600.00	nav_name|4|vortex_mission_3_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.329298	0.880951	0.339836	-0.803487	-0.450480	0.389199	240.00	1911.25	-3160.75	nav_name|4|naboo_escort_tier2_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.788751	0.613717	0.034982	0.614137	-0.789197	-0.001650	-990.97	331.83	3100.21	nav_name|4|vortex_mission_3_3|$|	script.space.quest_logic.quest_nav_point

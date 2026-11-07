@@ -1095,3 +1095,24 @@ scratch script). Her template is `kiizete_convo_template`, her handler the globa
 - Existing tests this feature edited: the `FIXTURE_COUNTS` entry count 67 -> 68 in nine files (`test_space_convo_client_strings.lua`, `_arkon`, `_imler_a`, `_imler_b`,
   `test_space_trainer_rewards_conformance.lua`, `test_storm_tier2_nym_template.lua`, `test_storm_tier4_strings.lua`, `test_inquisition_tier4_strings.lua`,
   `test_inquisition_tier3_barlow_strings.lua`); only the number and its trailing comment changed.
+
+### Vortex tier 2: Brother Vrovel's missions (vortex-tier2-vrovel-missions)
+
+Part A of Vortex tier 2 (the quest tables, the INSPECTION split and the surrender reset; no conversation, so nothing can grant the quests in game yet). Part B
+(`vortex-tier2-vrovel`: the conversation, handler, training, rewards and standing) extends the data file below.
+
+Answer key: the 9 SWG `datatables/spacequest/<type>/vortex_mission_*.tab` files (byte copies under `fixtures/spacequest/<type>/`: escort 1 and 2, inspect 1 and 4,
+destroy_surpriseattack 1, recovery 3, escort_duty 5, destroy_duty 6, recovery_duty 7) and the two `fixtures/spacequest/inspect_cargo/vortex_mission_1.tab` / `_4.tab` cargo tables (D-1: the
+brief's 11 tables are 9 quests plus these 2 cargo tables). Excerpts (header rows 1-2 plus the listed rows, byte-copied): `fixtures/space_mobile/space_mobile.vortex_tier2_inspect.tab` (SMT rows
+1903, 1906) and `fixtures/space_zones/buildout/space_{lok,yavin4,dantooine}.vortex_tier2_points.tab` (the 29 nav points and 2 spawners, truncated toward zero in Core3).
+
+- `vortex_tier2_data.lua` (not a test file): the 9 globals and their identity, `V.expected()` (every key of every table, Appendix B), the points per zone, the `TIER2_*` constants, the status keys,
+  `V.pilot{...}` (a V3-FX graduate with `missions` won, `t2` tier 2 skills and an `active` member; extends `vortex_tier1_data.lua`'s builder), `V.flyer(zone)`, `V.setState` / `V.state`.
+- **The INSPECTION split (SC-1, D-2):** `SpaceInspectScreenplay` counts every cargo-carrying `/inspect` of an active INSPECTION inspect under `<playerID>:<className>:inspectCount:` and, at
+  `sideQuestInspectCount`, ends the inspect `sideQuestDelay` seconds later (silent completion, split alert, the child starts 1 s after). `test_vortex_tier2_missions_inspection.lua` drives it through
+  `inspect_scenario.lua` (`I.fresh("vortex_mission_1")`) with `H.inspect` and the event clock, and proves an existing COMPLETION inspect (`tatooine_imperial_tier3_2`) and a sweep of every other inspect
+  table are unchanged (I-9). No harness change was needed.
+- Tests: `_data` (A-1, A-2: oracle, wiring, whole tables and key sets, conformance, cargo), `_inspection` (A-3, I-9), `_runtime` (A-4, A-5: mission 1 through the real chain, missions 2-4, the duties),
+  `_surrender` (A-6), `_pins` (I-10, against `517639a71c` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: `test_smuggler_tier2_data.lua` (the coverage counts 355 -> 362 and 339 -> 346, and the test name) and `test_master_trainer_rebel_surrender.lua` (the Vortex
+  surrender order now `resetV3fxQuests`, `resetVrovelQuests`, `burke`).

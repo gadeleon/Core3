@@ -18,6 +18,7 @@ vortex_mission_1_shuttle = ShipAgent:new {
 	imperialFactionReward = -25,
 	rebelFactionReward = 13,
 	questLoot = "vortex_mission_1",
+	cargoString = "ship_signature_data", -- SWG space_mobile cargo vortex_mission_1; inspect quest vortex_mission_1 (feature vortex-tier2-vrovel-missions)
 	appearance = "imperial_officer",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

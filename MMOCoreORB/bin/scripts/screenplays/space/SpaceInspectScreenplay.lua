@@ -145,6 +145,8 @@ function SpaceInspectScreenplay:cleanUpQuestData(pPlayer)
 	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
 	dropObserver(INSPECTEDSHIP, self.className, "inspectedShip", pPlayer)
 	dropObserver(SHIPDOCKED, self.className, "dockedShip", pPlayer)
+
+	deleteData(SceneObject(pPlayer):getObjectID() .. ":" .. self.className .. ":inspectCount:")
 end
 
 function SpaceInspectScreenplay:completeQuest(pPlayer, notifyClient)
@@ -404,6 +406,11 @@ function SpaceInspectScreenplay:inspectedShip(pPlayer, pTargetShip, cargoHash)
 		return 1
 	end
 
+	-- INSPECTION split: every inspection of a ship with cargo counts
+	if (self.sideQuest and self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.INSPECTION and pTargetShip ~= nil) then
+		createEvent(0, self.className, "countInspection", pPlayer, "")
+	end
+
 	if (pTargetShip == nil or not self:isQuestCargo(cargoHash)) then
 		return 0
 	end
@@ -425,4 +432,42 @@ function SpaceInspectScreenplay:dockedShip(pPlayer, pTargetShip, cargoHash)
 	createEvent(0, self.className, "cargoRecovered", pPlayer, tostring(SceneObject(pTargetShip):getObjectID()))
 
 	return 1
+end
+
+function SpaceInspectScreenplay:countInspection(pPlayer)
+	-- Event: counts an inspection and schedules the INSPECTION split once the count is reached
+	if (pPlayer == nil or not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	local countKey = SceneObject(pPlayer):getObjectID() .. ":" .. self.className .. ":inspectCount:"
+	local count = readData(countKey) + 1
+
+	writeData(countKey, count)
+
+	if (count == self.sideQuestInspectCount) then
+		createEvent(self.sideQuestDelay * 1000, self.className, "triggerInspectionSplit", pPlayer, "")
+	end
+end
+
+-- INSPECTION split type (SpaceQuestLogic SIDE_QUEST_SPLIT_TYPES.INSPECTION).
+-- inspectedShip counts every inspection of a ship with cargo in <pid>:<className>:inspectCount: (cleared by cleanUpQuestData);
+-- when the count reaches sideQuestInspectCount, countInspection schedules this event sideQuestDelay seconds later.
+-- (The file header above lists only waypointVector: it is frozen by a test pin, so this key is documented here.)
+-- Event: ends the inspect and starts the side quest
+function SpaceInspectScreenplay:triggerInspectionSplit(pPlayer)
+	if (pPlayer == nil or not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	-- A new run started inside the delay has not earned the split
+	if (readData(SceneObject(pPlayer):getObjectID() .. ":" .. self.className .. ":inspectCount:") < self.sideQuestInspectCount) then
+		return
+	end
+
+	self:completeQuest(pPlayer, "false")
+
+	SpaceHelpers:sendQuestAlert(pPlayer, "@spacequest/" .. self.questType .. "/" .. self.questName .. ":split_quest_alert")
+
+	createEvent(1000, self.sideQuestType .. "_" .. self.sideQuestName, "startQuest", pPlayer, "")
 end

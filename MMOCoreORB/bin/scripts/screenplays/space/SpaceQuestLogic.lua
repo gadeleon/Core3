@@ -21,6 +21,7 @@ SpaceQuestLogic = ScreenPlay:new {
 		BIDIRECTIONAL = 3,
 		PATROL_POINT = 4,
 		ATTACK_WAVE = 5,
+		INSPECTION = 6,
 	},
 
 	-- Flags used to tie side quest to parent quest
@@ -57,6 +58,9 @@ SpaceQuestLogic = ScreenPlay:new {
 
 	-- Attack waves the player must destroy before an ATTACK_WAVE split (SWG escort triggerOn)
 	sideQuestAttackWave = 0,
+
+	-- Cargo inspections the player must make before an INSPECTION split (SWG inspect triggerOn)
+	sideQuestInspectCount = 0,
 }
 
 registerScreenPlay("SpaceQuestLogic", false)

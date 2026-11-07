@@ -261,7 +261,8 @@ TestVrovelInspectionCompat = {}
 
 function TestVrovelInspectionCompat:setUp() H.reset() end
 
--- I-9: no other inspect table uses the INSPECTION split or sets a count
+-- I-9: no other inspect table uses the INSPECTION split or sets a count. Exactly two inspects do: inspect_vortex_mission_1 and, since
+-- crimson-phoenix-tier2-eker (VM FV-2's "only other SWG inspect of this shape"), inspect_yavin_rebel_15 (test_crimson_tier2_missions_inspection.lua pins it)
 function TestVrovelInspectionCompat:test_no_other_inspect_table_uses_the_inspection_split_or_sets_a_count()
 	V.quest(V.I1)
 
@@ -270,7 +271,7 @@ function TestVrovelInspectionCompat:test_no_other_inspect_table_uses_the_inspect
 	for _, name in ipairs(H.questGlobals()) do
 		local q = rawget(_G, name)
 
-		if q.questType == "inspect" and name ~= V.I1 then
+		if q.questType == "inspect" and name ~= V.I1 and name ~= "inspect_yavin_rebel_15" then
 			inspects[#inspects + 1] = name
 
 			lu.assertNotEquals(q.sideQuestSplitType, 6, name .. ": sideQuestSplitType must not be INSPECTION")

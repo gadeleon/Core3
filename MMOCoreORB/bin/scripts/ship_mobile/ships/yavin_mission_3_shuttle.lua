@@ -18,6 +18,7 @@ yavin_mission_3_shuttle = ShipAgent:new {
 	imperialFactionReward = -25,
 	rebelFactionReward = 13,
 	questLoot = "yavin_mission_3",
+	cargoString = "bomb_trigger", -- SWG space_mobile cargo yavin_mission_3; inspect quest yavin_rebel_15 counts it (feature crimson-phoenix-tier2-eker)
 	appearance = "imperial_officer",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

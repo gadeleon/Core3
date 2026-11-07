@@ -18,6 +18,7 @@ yavin_mission_2_shuttle = ShipAgent:new {
 	imperialFactionReward = -25,
 	rebelFactionReward = 13,
 	questLoot = "yavin_mission_2",
+	cargoString = "patrol_routes", -- SWG space_mobile cargo yavin_mission_2; inspect quest yavin_rebel_14 (feature crimson-phoenix-tier2-eker)
 	appearance = "imperial_officer",
 	tauntAttackChance = 0.1,
 	tauntDefendChance = 0.05,

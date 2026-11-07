@@ -1239,3 +1239,19 @@ Answer keys (byte copies of SWG-Source unless noted): `fixtures/script/conversat
 - Existing tests this feature edited: the 13 `FIXTURE_COUNTS` assertions (71 -> 72, `space_convo_client_strings_data.lua` gains the entry and the header line), `test_master_trainer_rebel_surrender.lua`
   (a Crimson Phoenix surrender now runs `resetSocunaQuests` before Burke's), `black_epsilon_tier4_data.lua` and `vortex_tier1_data.lua` (their squadron loaders now load
   `CrimsonPhoenixSquadronScreenplay`, which `surrenderPilot` indexes), and `test_smuggler_tier2_data.lua` (the SWG coverage count: 379 -> 385 matched names, 395 -> 401 distinct `questName`s).
+
+### Crimson Phoenix tier 2: Major Eker's missions (crimson-phoenix-tier2-eker)
+
+Part A of Crimson Phoenix tier 2: the 8 quest tables behind SWG's 7 `yavin_rebel_*` names (4 missions and 3 duties, no conversation yet), the two inspect shuttles' `cargoString`,
+the `TIER2_*` constants and `resetEkerQuests`. Part B (`crimson-phoenix-tier2-eker-convo`) adds Major Eker's conversation and extends `crimson_tier2_data.lua`.
+- Fixtures (byte copies of SWG-Source, `cp`; excerpts made with `sed -n`): the 8 quest tables under `fixtures/spacequest/<type>/yavin_rebel_*.tab`, the three `inspect_cargo` tables
+  `yavin_mission_2`, `yavin_mission_3` and `yavin_rebel_14`, `fixtures/space_mobile/space_mobile.crimson_tier2_inspect.tab` (header rows plus SWG rows 1944, 1945) and the buildout
+  excerpts `fixtures/space_zones/buildout/space_{yavin4,lok}.crimson_tier2_points.tab` (header rows plus the 17 + 4 nav point rows and the two inspect spawner rows).
+- `crimson_tier2_data.lua`: `E.GLOBALS` / `E.IDENTITY`, `E.expected()` (Appendix B, every key of every table), `E.POINTS` / `E.SPAWNERS`, the 8 `TIER2_*` constants
+  (`E.QUEST_STRINGS`), `E.CHAINS` (mission 3 is the two-quest chain inspect 15 then surprise 15), `E.pilot{missions, t2, active, graduated, ...}` (extends `crimson_tier1_data.lua`'s
+  `C.pilot`: a tier 1 graduate with optional tier 2 state), `E.setState` / `E.state`, `E.flyer`.
+- Mission 3 reuses the shared INSPECTION split of `vortex-tier2-vrovel-missions` unchanged: `inspect_yavin_rebel_15` is a chain head (reward fields, no parent) with delay 5. Tests:
+  `_data` (wiring, whole tables, conformance, cargo from the real ship files), `_inspection` (A-3 windows and aborts on the real split; I-9: exactly two inspects use it),
+  `_runtime` (A-3 to A-5 through the fakes), `_surrender` (A-6), `_pins` (I-10, against `02666328b3` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: `test_smuggler_tier2_data.lua` (SWG coverage: 385 -> 392 matched names, 401 -> 408 distinct `questName`s), `test_vortex_tier2_missions_inspection.lua`
+  (the INSPECTION sweep now allows `inspect_yavin_rebel_15`) and `test_master_trainer_rebel_surrender.lua` (a Crimson Phoenix surrender runs Socuna's, Eker's, then Burke's reset).

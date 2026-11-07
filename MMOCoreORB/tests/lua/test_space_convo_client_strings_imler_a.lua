@@ -331,7 +331,7 @@ end
 function TestF6aImlerStaticUnresolved:test_fixture_counts_still_hold_the_60_referenced_files_including_corellia_privateer_tier4()
 	local referenced = CS.referencedFiles(CS.spaceConversationSources())
 
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 67, "FIXTURE_COUNTS entries") -- 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 68, "FIXTURE_COUNTS entries") -- 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider, 68 since vortex-tier1-kiizete
 	lu.assertEquals(referenced, sortedKeys(KD.FIXTURE_COUNTS), "string files referenced by the space conversation sources")
 	lu.assertNotNil(KD.FIXTURE_COUNTS["conversation/corellia_privateer_tier4"], "FIXTURE_COUNTS entry of Turoldine's file")
 end

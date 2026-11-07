@@ -1070,3 +1070,28 @@ eight `fixtures/spacequest/<type>/naboo_rebel_*.tab` byte copies. V3-FX's templa
 - `test_vortex_tier1_pins.lua` pins the shared edits against commit `42353a3eff` and skips once HEAD moves.
 - Existing tests this feature edited: the Vortex loader of `black_epsilon_tier4_data.lua`, the surrender order of `test_master_trainer_rebel_surrender.lua` (V3-FX's reset, then Burke's) and the coverage
   counts of `test_smuggler_tier2_data.lua` (355 distinct names, 339 SWG names).
+
+### Vortex tier 1: Kiizete (vortex-tier1-kiizete)
+
+Answer key: SWG `naboo_rebel_tier1_kiizete.java` (JK; `fixtures/script/conversation/`, byte copy of the 3,314-line file) parsed by `Swgjava.parse` (61 NPC lines: first-appearance
+animation, reply list, end flag and the `successorsOf(line, reply)` edge per link, FK-2) plus `vortex_tier1_kiizete_screens_data.lua` (Appendix A, 61 rows generated from the spec table by a
+scratch script). Her template is `kiizete_convo_template`, her handler the global `kiizeteConvoHandler` (colon methods: `isImperial`, `isOnFirstMission`, `hasWonMissionOne`,
+`hasFailedMissionOne`); she stands next to V3-FX in the Moenia gazebo (`naboo_moenia.lua:109`). She grants nothing: there is no quest table, reward or skill in this feature.
+
+- `vortex_tier1_kiizete_data.lua` (not a test file): `K.SCREENS`, the two flag keys, `K.load()` (V3-FX's pieces first, then hers; a missing file is recorded in `K.loadErrors`, not raised),
+  `K.player{...}` (= `vortex_tier1_data.lua` `V.pilot`), `K.npc()`, `K.gate(player)` (asks `getInitialScreen`, which must be side-effect free, I-3), `K.talk` / `K.opens` / `K.drive`
+  (`H.converse` from the first screen / from a given screen), `K.flagValue`, `K.observerCount`, `K.logout` (`H.fireObservers(LOGGEDOUT, player)`), `K.runningMission1()` (a pilot whose
+  mission 1 V3-FX's accept screen really started, for `failQuest` / `abortQuest`) and `K.snapshot(player)` (journal, quest status, skills, standing, credits, items, every recorded engine
+  call but `createObserver`, shared memory, observers).
+- **Session flags (D-4):** SWG's `utils.setScriptVar` flags `imp_isasking` / `q1_discussed` are shared-memory keys `<playerID> .. VortexSquadronScreenplay.KIIZETE_*_KEY`, written when the screen
+  is displayed (`runScreenHandlers`, never `getInitialScreen`), and a non-persistent LOGGEDOUT observer (`VortexSquadronScreenplay:onKiizeteLoggedOut`, returns 1 to drop itself) deletes both. The
+  harness already had `createObserver` / `hasObserver` / `H.fireObservers` (a handler returning 1 is removed); the tests read the persistence argument through `H.Engine.luaToInteger`
+  (the four-argument form is 0) and count registrations with `H.Engine.observerCount`. No harness change was needed.
+- `vortex_tier1_kiizete_client_text.lua`: id -> text of the 114-entry client table (read-only from `/tre` with the `gen_client_sids.py` archive reader), used for the trailing comments and the
+  two `%NU` lines. `fixtures/string/en/conversation/naboo_rebel_tier1_kiizete.sids` (114 ids) is new: `space_convo_client_strings_data.lua` gains the 68th `FIXTURE_COUNTS` entry.
+- Tests: `_wiring` (AC-1), `_template` (AC-2, the oracles, the java graph, the ratchet), `_gates` (AC-3, AC-6: G1-G8, the helpers, mission 1 failed / aborted / lost through the real quests),
+  `_flags` (AC-4, AC-5), `_walks` (AC-7, AC-8, AC-9: every row, an exhaustive walk from each gate, the name token, "nothing else moves" and V3-FX unaffected), `_pins` (I-6, against
+  `91d09cb422` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: the `FIXTURE_COUNTS` entry count 67 -> 68 in nine files (`test_space_convo_client_strings.lua`, `_arkon`, `_imler_a`, `_imler_b`,
+  `test_space_trainer_rewards_conformance.lua`, `test_storm_tier2_nym_template.lua`, `test_storm_tier4_strings.lua`, `test_inquisition_tier4_strings.lua`,
+  `test_inquisition_tier3_barlow_strings.lua`); only the number and its trailing comment changed.

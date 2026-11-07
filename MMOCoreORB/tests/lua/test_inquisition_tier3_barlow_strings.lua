@@ -53,7 +53,7 @@ function TestBarlowStrings:test_fixture_counts_has_barlows_file_with_172_ids_and
 	end
 
 	lu.assertEquals(KD.FIXTURE_COUNTS[FILE], 172, "FIXTURE_COUNTS[" .. FILE .. "]")
-	lu.assertEquals(n, 68, "FIXTURE_COUNTS entries") -- 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider, 68 since vortex-tier1-kiizete
+	lu.assertEquals(n, 69, "FIXTURE_COUNTS entries") -- 60 since storm-tier1-akal-colzet, 61 since storm-tier2-oberhaur, 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider, 68 since vortex-tier1-kiizete, 69 since vortex-tier2-vrovel
 end
 
 -- AC-4: nothing is allowed to be unresolved

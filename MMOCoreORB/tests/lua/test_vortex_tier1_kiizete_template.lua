@@ -422,9 +422,9 @@ local KD = require("space_convo_client_strings_data")
 function TestVortexKiizeteRatchet:setUp() H.reset() end
 
 -- AC-2: the new entry with its 114 ids
-function TestVortexKiizeteRatchet:test_fixture_counts_holds_kiizetes_file_with_114_ids_as_the_68th_entry()
+function TestVortexKiizeteRatchet:test_fixture_counts_holds_kiizetes_file_with_114_ids_in_the_69_entry_table()
 	lu.assertEquals(KD.FIXTURE_COUNTS[K.STF], 114, "FIXTURE_COUNTS[" .. K.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 68, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 69, "FIXTURE_COUNTS entries") -- 69 since vortex-tier2-vrovel
 end
 
 -- AC-2: the sources that reference string files include Kiizete's file, so the ratchet's referenced == FIXTURE_COUNTS check can hold

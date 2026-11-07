@@ -93,7 +93,7 @@ function TestVortexKiizeteWiring:test_the_template_include_is_uncommented_at_lin
 	lu.assertEquals(lines[92], '--includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 92")
 	lu.assertEquals(lines[93], '--includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93")
 	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 94")
-	lu.assertEquals(lines[95], '--includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95")
+	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95: uncommented by vortex-tier2-vrovel")
 end
 
 -- AC-1, D-10: the handler include sits uncommented at line 145; the squadron include still loads first; lines 138-144 are unchanged
@@ -109,7 +109,7 @@ function TestVortexKiizeteWiring:test_the_handler_include_is_uncommented_at_line
 	lu.assertEquals(lines[141], '--includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 141")
 	lu.assertEquals(lines[142], '--includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142")
 	lu.assertEquals(lines[143], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 143")
-	lu.assertEquals(lines[144], '--includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144")
+	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144: uncommented by vortex-tier2-vrovel")
 end
 
 -- AC-1: the squadron object has the two keys of Content contract 1

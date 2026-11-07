@@ -83,6 +83,7 @@ function Fakes.newGhost(opts)
 		squadronType = opts.squadronType or 0,
 		experience = opts.experience or {},
 		pilotTier = opts.pilotTier or 0,
+		privileged = opts.privileged == true,  -- LuaPlayerObject::isPrivileged (the admin flag); default false
 		factionStanding = {},
 		waypoints = {},         -- live waypoints (fake waypoint objects), oldest first
 		removedWaypoints = {},  -- waypoints removed through removeWaypoint
@@ -172,6 +173,7 @@ function FakeGhost:isSquadronType(t) return self.squadronType == t end
 function FakeGhost:setSquadronType(t) self.squadronType = t end
 function FakeGhost:getSquadronType() return self.squadronType end
 function FakeGhost:getExperience(xpType) return self.experience[xpType] or 0 end
+function FakeGhost:isPrivileged() return self.privileged == true end
 function FakeGhost:getPilotTier() return self.pilotTier end
 function FakeGhost:incrementPilotTier() self.pilotTier = self.pilotTier + 1 end
 -- LuaPlayerObject::setPilotTier / resetPilotTier (the trainer reset functions call them; space-quest-inspect-cargo).
@@ -222,7 +224,7 @@ FakeCreature.__index = FakeCreature
 -- certifiedShip (bool), screenPlayStates (table name->state), ghost (fake ghost; created if nil
 -- unless isNpc), isNpc (bool).
 -- Ghost opts (passed through): squadronType, experience ({space_combat_general = n}), activeQuests,
--- completedQuests, pilotTier (number, default 0), factionStanding ({rebel = n}).
+-- completedQuests, pilotTier (number, default 0), factionStanding ({rebel = n}), privileged (true: ghost:isPrivileged() returns true).
 -- questStatus: { ["<suffix>"] = value } stored as getQuestStatus("<objectID><suffix>"), the key
 -- shape the Havoc/CorSec handlers use (player object id first).
 -- species: number returned by getSpecies (default 0 = human; use SPECIES_ITHORIAN, SPECIES_WOOKIEE, ...).

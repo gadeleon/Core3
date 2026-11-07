@@ -8,7 +8,8 @@
 --   V.POINTS / V.SPAWNERS      Data mapping 2: the 29 nav points and 2 spawners, per zone, Core3 x, z, y
 --   V.QUEST_STRINGS            Content contract 2: the 9 TIER2_* constants
 --   V.pilot{...}               a Vortex pilot who graduated V3-FX, optionally with tier 2 state (extends vortex_tier1_data.lua's builder)
--- Part B (vortex-tier2-vrovel, Brother Vrovel's conversation) extends this file.
+-- Part B (vortex-tier2-vrovel, Brother Vrovel's conversation) extends this file below "Part B": template and handler names, the constants copied
+-- from its spec (TRAIN, START/REWARD/DUTY/HANDIN/NAME screens), V.pilot's extra options, and V.talk / V.drive for Vrovel's template.
 
 local H = require("harness")
 local V1 = require("vortex_tier1_data")
@@ -399,6 +400,11 @@ end
 --   graduated  VORTEX_PILOT_KEY value (default "2")
 --   pilotTier  ghost pilot tier (default 2, or 3 with four tier 2 skills)
 --   inShip, zone, standing, inventory, ...: passed to vortex_tier1_data.lua's V.pilot
+--   t1         number of tier 1 skills held (default 4)
+--   state      the state of mission missions+1 (Part B): "won" (every chain member complete, :attempted, reward unpaid) | "failed" (:attempted, nothing
+--              complete, nothing active) | "active" (:attempted, the head active) | "attempted" (just :attempted)
+--   privileged ghost:isPrivileged() returns true (the GM branch, Q-1 = A)
+--   graduated = false leaves VORTEX_PILOT_KEY unset; true writes "1"
 function V.pilot(o)
 	o = o or {}
 	V1.load()
@@ -409,9 +415,9 @@ function V.pilot(o)
 		base[k] = v
 	end
 
-	base.missions, base.t2, base.active, base.v1 = nil, nil, nil, nil
+	base.missions, base.t2, base.active, base.v1, base.state, base.t1, base.privileged = nil, nil, nil, nil, nil, nil, nil
 	base.paid = o.v1 or 4
-	base.tier = 4
+	base.tier = o.t1 or 4
 	base.graduated = o.graduated == nil and "2" or o.graduated
 	base.pilotTier = o.pilotTier or ((o.t2 or 0) >= 4 and 3 or 2)
 	base.skills = {}
@@ -435,8 +441,26 @@ function V.pilot(o)
 		H.setQuestStatus(player, V.STATUS[n] .. ":reward", "1")
 	end
 
+	local n = (o.missions or 0) + 1
+
+	if o.state ~= nil and V.CHAINS[n] ~= nil then
+		H.setQuestStatus(player, V.STATUS[n] .. ":attempted", "1")
+
+		if o.state == "won" then
+			for _, global in ipairs(V.CHAINS[n]) do
+				V.setState(player, global, "complete")
+			end
+		elseif o.state == "active" then
+			V.setState(player, V.CHAINS[n][1], "active")
+		end
+	end
+
 	if o.active then
 		V.setState(player, o.active, "active")
+	end
+
+	if player.ghost ~= nil then
+		player.ghost.privileged = o.privileged == true
 	end
 
 	return player
@@ -451,6 +475,318 @@ function V.flyer(zone)
 		pilot = "rebel",
 		ship = { x = -7000, z = -7000, y = -7000, factionHash = getHashCode("rebel") },
 	})
+end
+
+---------------------------------------------------------------------------------------------
+-- Part B: Brother Vrovel's conversation (vortex-tier2-vrovel)
+-- Spec: .claude/work/vortex-tier2-vrovel/01-spec.md (Content contract 3, Data mapping 1, Conversation flow 1 to 3.4, Appendix A).
+---------------------------------------------------------------------------------------------
+
+V.TEMPLATE = "vrovel_convo_template"
+V.HANDLER = "vrovelConvoHandler"
+V.STF = "conversation/dantooine_rebel_trainer_2"
+V.PREFIX = "@conversation/dantooine_rebel_trainer_2:"
+
+V.TEMPLATE_FILE = "mobile/conversations/space/rebel/vortex_squadron/vrovel_convo.lua"
+V.HANDLER_FILE = "screenplays/space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua"
+V.NPC_FILE = "mobile/space/vrovel.lua"
+V.SPACE_CONVERSATIONS = "mobile/conversations/space/space_conversations.lua"
+V.SCREENPLAYS = "screenplays/space/screenplays.lua"
+
+V.XP_COST = 60000
+
+-- Appendix A (vortex_tier2_vrovel_screens_data.lua, generated from the spec table by a scratch script)
+V.SCREENS = require("vortex_tier2_vrovel_screens_data")
+
+function V.screenRow(id)
+	for _, row in ipairs(V.SCREENS) do
+		if row.id == id then
+			return row
+		end
+	end
+end
+
+-- The Appendix A screen ids (131), sorted
+function V.screenIds()
+	local out = {}
+
+	for i, row in ipairs(V.SCREENS) do
+		out[i] = row.id
+	end
+
+	table.sort(out)
+	return out
+end
+
+-- Content contract 3: the four story missions. head = the chain head, wonType / wonName = the J2 won check, offer / failed / won = the gate screens
+V.MISSIONS = {
+	{ n = 1, head = V.E1, wonType = "destroy_surpriseattack", wonName = "vortex_mission_1", offer = "m1_offer", failed = "m1_failed", won = "m1_won", standing = 75 },
+	{ n = 2, head = V.E2, wonType = "escort", wonName = "vortex_mission_2", offer = "m2_offer", failed = "m2_failed", won = "m2_won", standing = 75 },
+	{ n = 3, head = V.R3, wonType = "recovery", wonName = "vortex_mission_3", offer = "m3_offer", failed = "m3_failed", won = "m3_won", standing = 75 },
+	{ n = 4, head = V.I4, wonType = "inspect", wonName = "vortex_mission_4", offer = "m4_offer", failed = "m4_failed", won = "m4_won", standing = 75 },
+}
+
+-- screen -> mission (a start screen sets :attempted and starts the head)
+V.START_SCREENS = {
+	m1_accept = 1, m1_retry = 1, gm_mission1 = 1, gm_mission1_plain = 1,
+	m2_accept = 2, m2_retry = 2, gm_mission2 = 2,
+	m3_accept_yes_sir = 3, m3_accept_terminate = 3, m3_accept_very = 3, m3_accept_wartime = 3, m3_accept_understood = 3, m3_retry = 3, gm_mission3 = 3,
+	m4_accept = 4, m4_retry = 4, gm_mission4 = 4,
+}
+
+-- screen -> mission (pays once; n = 4 also writes flag "3")
+V.REWARD_SCREENS = {
+	m1_won = 1,
+	m2_pay_rest = 2, m2_pay_bonus = 2,
+	m3_won = 3,
+	m4_pay_close_call = 4, m4_pay_impressed = 4,
+}
+
+V.DUTY_SCREENS = {
+	duty_escort = V.DUTY5, gm_escort_duty = V.DUTY5,
+	duty_recovery = V.DUTY7, gm_recovery_duty = V.DUTY7,
+	duty_destroy = V.DUTY6, gm_destroy_duty = V.DUTY6,
+}
+
+V.HANDIN_SCREENS = { "handin_dont_salute", "handin_promise", "handin_pay" }
+
+-- every Appendix A screen whose text has %TU or %NU (54)
+V.NAME_SCREENS = {
+	"ezkiel_handoff", "grounded", "non_member", "on_mission", "handin", "m4_failed_nonsense", "m4_retry", "m4_won", "m4_pay_close_call", "m4_offer",
+	"m4_short_version", "m4_later", "m4_madness", "m4_desperate", "m4_accept", "m3_won", "m3_lucky", "m3_spend_bonus", "m3_failed", "m3_coward", "m3_offer",
+	"m3_wonder", "m3_accept_wartime", "m3_save_him", "m3_accept_yes_sir", "m3_this_is_war", "m3_accept_terminate", "m3_accept_very", "m3_accept_understood",
+	"m3_reconsider", "m2_won", "m2_pay_rest", "m2_failed", "m2_confession", "m2_retry", "m2_recover", "m2_offer", "m2_why_crystals", "m2_accept",
+	"m2_not_playing", "m2_coward", "m1_won", "m1_attitude", "m1_trust_misplaced", "m1_offer", "m1_no_time", "m1_urgent", "m1_accept", "training_offer",
+	"training_declined", "duty_offer", "duty_escort", "duty_recovery", "duty_destroy",
+}
+
+-- Conversation flow 3.4: TRAIN_CHOICES in table order. yes / no = { reply sid, link }
+V.TRAIN = {
+	{ x = "starships", skill = "pilot_rebel_navy_starships_02", reply = "s_c6c91897", confirm = "train_starships", trained = "trained_starships",
+	  confirmSid = "s_4b9a2c6f", yes = { "s_6bb0cb94", "trained_starships" }, no = { "s_4c1dac60", "training_menu" }, trainedSid = "s_1b8807cc" },
+	{ x = "weapons", skill = "pilot_rebel_navy_weapons_02", reply = "s_98d991e7", confirm = "train_weapons", trained = "trained_weapons",
+	  confirmSid = "s_80f24a30", yes = { "s_bb87cc7c", "trained_weapons" }, no = { "s_65c36194", "training_later" }, trainedSid = "s_1b8807cc" },
+	{ x = "procedures", skill = "pilot_rebel_navy_procedures_02", reply = "s_73ccefde", confirm = "train_procedures", trained = "trained_procedures",
+	  confirmSid = "s_92ddd562", yes = { "s_d5ff7cb2", "trained_procedures" }, no = { "s_d8fef41", "training_later" }, trainedSid = "s_820a0ee7" },
+	{ x = "droid", skill = "pilot_rebel_navy_droid_02", reply = "s_3c4ff185", confirm = "train_droid", trained = "trained_droid",
+	  confirmSid = "s_d88c653e", yes = { "s_98bb41ea", "trained_droid" }, no = { "s_ef759e6d", "training_menu" }, trainedSid = "s_820a0ee7" },
+}
+
+V.LEAVE_REPLY = "s_75a6ca67"
+V.GM_REPLY = "s_6b158a0e"
+
+-- The Rebel faction constants the pilots are built with (vortex_tier1_data.lua V.load defines the globals)
+V.NOVICE = V1.NOVICE
+
+-- Engine XP prices of the four tier 2 skills, from the SWG skills.tab excerpt (fixtures/skill/skills.pilot_rebel_navy_02.tab)
+function V.useSkillCosts()
+	local costs = {}
+
+	for _, rec in ipairs(H.fixture("skill/skills.pilot_rebel_navy_02.tab").records) do
+		local name = rec:get("NAME")
+
+		if name ~= nil and name:match("^pilot_rebel_navy_%a+_02$") then
+			costs[name] = rec:num("XP_COST")
+		end
+	end
+
+	H.Engine.config.skillXpCosts = costs
+
+	return costs
+end
+
+local loadedB = false
+
+local function try(label, fn)
+	local ok, err = pcall(fn)
+
+	if not ok then
+		V1.loadErrors[#V1.loadErrors + 1] = label .. ": " .. tostring(err)
+	end
+end
+
+-- The server's load of Vrovel's template and handler (after the squadron files). A missing production file is recorded, not raised.
+function V.loadConversation()
+	V1.load()
+
+	if loadedB then
+		return
+	end
+
+	loadedB = true
+	try("vrovel_convo.lua", function() H.loadMobile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua") end)
+	try("vrovelConvoHandler.lua", function() H.loadScreenplay("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua") end)
+end
+
+-- Fails with the load problems when the template or handler could not be loaded (a readable red phase)
+function V.requireConversation(lu)
+	V.loadConversation()
+	lu.assertNotNil(H.conversationTemplateTable(V.TEMPLATE), V.TEMPLATE .. " is not registered by addConversationTemplate (vortex-tier2-vrovel). Load problems: " .. V.problems())
+	lu.assertNotNil(rawget(_G, V.HANDLER), V.HANDLER .. " is not defined (vortex-tier2-vrovel). Load problems: " .. V.problems())
+end
+
+function V.handler() return rawget(_G, V.HANDLER) end
+
+-- Brother Vrovel at the abandoned Rebel base
+function V.npc() return H.newNpc({ name = "Brother Vrovel", zone = "dantooine", x = -1.1, z = 1.0, y = 0.5 }) end
+
+-- Talks to Vrovel from the first screen. choices as for H.converse.
+function V.talk(player, choices)
+	V.requireConversation(require("luaunit"))
+
+	return H.converse({ template = V.TEMPLATE, player = player, npc = V.npc(), choices = choices })
+end
+
+-- The id of the first screen of a fresh talk
+function V.firstScreen(player) return V.talk(player)[1].id end
+
+-- Starts a conversation as if the pilot had just chosen a link to screen `startId`, then follows `choices` (reply sids, 0-based indexes or hooks).
+-- Reaches screens no first screen leads to; runScreenHandlers runs for every screen shown, the way the real session does.
+function V.drive(player, startId, choices)
+	V.requireConversation(require("luaunit"))
+
+	local tmpl = H.conversationTemplate(V.TEMPLATE)
+	local handler = V.handler()
+	local npc = V.npc()
+	local session = H.Fakes.newConversationSession(npc)
+	local transcript = {}
+
+	player.conversationSession = session
+
+	local function show(screen)
+		local options = {}
+
+		for i, o in ipairs(screen.options) do
+			options[i] = { text = o.text, link = o.link }
+		end
+
+		transcript[#transcript + 1] = { id = screen.id, text = screen.dialogText, options = options, params = screen.params, stop = screen.stopConversation }
+	end
+
+	local screen = LuaConversationTemplate(tmpl):getScreen(startId)
+
+	if screen == nil then
+		error("screen '" .. startId .. "' is not in " .. V.TEMPLATE, 2)
+	end
+
+	screen = handler:runScreenHandlers(tmpl, player, npc, 0, screen)
+
+	if screen == nil then
+		error("runScreenHandlers returned no screen for '" .. startId .. "'", 2)
+	end
+
+	session.lastScreen = screen
+	show(screen)
+
+	local i = 1
+
+	while i <= #(choices or {}) and not screen.stopConversation do
+		local choice = choices[i]
+
+		i = i + 1
+
+		if type(choice) == "function" then
+			choice(player)
+		else
+			if type(choice) == "string" then
+				local found
+
+				for k, o in ipairs(screen.options) do
+					if o.text == choice or o.text:sub(-#choice - 1) == ":" .. choice then
+						found = k - 1
+						break
+					end
+				end
+
+				if found == nil then
+					local have = {}
+
+					for k, o in ipairs(screen.options) do
+						have[k] = tostring(o.text)
+					end
+
+					error("screen '" .. screen.id .. "' has no option '" .. choice .. "'; options are: " .. table.concat(have, ", "), 2)
+				end
+
+				choice = found
+			end
+
+			screen = handler:getNextConversationScreen(tmpl, player, choice, npc)
+
+			if screen ~= nil then
+				screen = handler:runScreenHandlers(tmpl, player, npc, choice, screen)
+			end
+
+			session.lastScreen = screen
+
+			if screen == nil then
+				break
+			end
+
+			show(screen)
+		end
+	end
+
+	return transcript
+end
+
+V.ids = V1.ids
+V.optionSids = V1.optionSids
+V.linksOf = V1.linksOf
+
+-- the Rebel standing of the pilot
+function V.standing(player) return player.ghost.factionStanding.rebel or 0 end
+
+-- giveItem templates received by the pilot, in order
+function V.items(player)
+	local out = {}
+
+	for _, call in ipairs(H.Engine.callsTo("giveItem")) do
+		if call[1] == player.inventory then
+			out[#out + 1] = call[2]
+		end
+	end
+
+	return out
+end
+
+-- The VORTEX_PILOT_KEY value of the pilot ("1", "2", "3") or nil
+function V.flag(player) return H.getQuestStatus(player, V.VORTEX_PILOT_KEY) end
+
+-- The tier 2 skills (of the four) the pilot holds, in V.TRAIN order
+function V.held2(player)
+	local out = {}
+
+	for _, t in ipairs(V.TRAIN) do
+		if CreatureObject(player):hasSkill(t.skill) then
+			out[#out + 1] = t.skill
+		end
+	end
+
+	return out
+end
+
+-- Spies the startQuest of the nine quest tables so no real quest runs; returns { global -> calls }
+function V.spyStarts()
+	local spies = {}
+
+	for _, global in ipairs(V.GLOBALS) do
+		spies[global] = H.spyOn(V.quest(global), "startQuest")
+	end
+
+	return spies
+end
+
+function V.startedCount(spies)
+	local out = {}
+
+	for global, calls in pairs(spies) do
+		if #calls > 0 then
+			out[global] = #calls
+		end
+	end
+
+	return out
 end
 
 return V

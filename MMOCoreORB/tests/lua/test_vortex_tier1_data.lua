@@ -387,10 +387,10 @@ function TestVortexT1Wiring:test_the_template_include_is_uncommented_at_line_94_
 	lu.assertEquals(lines[91], "-- Vortex Squadron", "space_conversations.lua line 91 (the comment heading)")
 	lu.assertEquals(lines[92], '--includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 92 stays commented")
 	lu.assertEquals(lines[93], '--includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93 stays commented")
-	lu.assertEquals(lines[95], '--includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95 stays commented")
+	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95: uncommented by vortex-tier2-vrovel")
 end
 
--- AC-1: the handler include sits uncommented at line 143 of screenplays.lua, the other three stay commented, no line moved
+-- AC-1: the handler include sits uncommented at line 143 of screenplays.lua, Evin and Ezkiel stay commented, Vrovel uncommented by vortex-tier2-vrovel, no line moved
 function TestVortexT1Wiring:test_the_handler_include_is_uncommented_at_line_143_and_the_other_three_stay_commented()
 	local text = readFile(H.SCRIPTS .. "screenplays/space/screenplays.lua")
 	local lines = linesOf(text)
@@ -401,7 +401,7 @@ function TestVortexT1Wiring:test_the_handler_include_is_uncommented_at_line_143_
 	lu.assertEquals(lines[139], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 139 (the squadron include)")
 	lu.assertEquals(lines[141], '--includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 141 stays commented")
 	lu.assertEquals(lines[142], '--includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142 stays commented")
-	lu.assertEquals(lines[144], '--includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144 stays commented")
+	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144: uncommented by vortex-tier2-vrovel")
 end
 
 ---------------------------------------------------------------------------------------------

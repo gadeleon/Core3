@@ -90,7 +90,7 @@ end
 | `H.conversationTemplate(name)` | Fake C++ template (`pConvTemplate`) for it |
 | `H.conversationProblems(name)` | Dead option links, duplicate/missing screen ids; `{}` = OK |
 | `H.converse{template, player, npc, choices, handler}` | Drive a conversation like `ConversationObserver`; returns `{ {id, text, options, params, stop}, ... }`. Each choice is a 0-based option index, an option sid (`"s_6222b64d"`, matched against the screen just shown; errors listing the options if absent) or a function `hook(player)` that runs between screens without consuming a step (use it to change state mid-conversation) |
-| `H.newPlayer{...}` / `H.newNpc{...}` | Fake creatures. Player opts: `name, skills, pilot ("neutral"/"rebel"/"imperial"), faction, certifiedShip, activeQuests, completedQuests, squadronType, experience, screenPlayStates, pilotTier (default 0), gender (0 male default, 1 female), factionStanding ({rebel = n}), questStatus ({["<suffix>"] = v}, stored under the player's object id), species (number `getSpecies` returns, default 0 = human; `SPECIES_ITHORIAN`, ...), inventory (true: `getSlottedObject("inventory")` returns a container, so `SpaceHelpers:spaceItemReward` calls `giveItem`; items land in `player.inventory.items`; `inventory = {limit = n}` or `inventoryFull = true` models a full inventory: `giveItem` without the 4th (overload) argument then returns nil and lists the template in `player.inventory.destroyed`, with it the item lands past the limit)` |
+| `H.newPlayer{...}` / `H.newNpc{...}` | Fake creatures. Player opts: `name, skills, pilot ("neutral"/"rebel"/"imperial"), faction, certifiedShip, activeQuests, completedQuests, squadronType, experience, screenPlayStates, pilotTier (default 0), gender (0 male default, 1 female), factionStanding ({rebel = n}), privileged (true: `PlayerObject:isPrivileged()` returns true, the admin flag; default false), questStatus ({["<suffix>"] = v}, stored under the player's object id), species (number `getSpecies` returns, default 0 = human; `SPECIES_ITHORIAN`, ...), inventory (true: `getSlottedObject("inventory")` returns a container, so `SpaceHelpers:spaceItemReward` calls `giveItem`; items land in `player.inventory.items`; `inventory = {limit = n}` or `inventoryFull = true` models a full inventory: `giveItem` without the 4th (overload) argument then returns nil and lists the template in `player.inventory.destroyed`, with it the item lands past the limit)` |
 | `H.getQuestStatus(player, suffix)` / `H.setQuestStatus(player, suffix, v)` | Read/write the engine `getQuestStatus` store for `<objectID><suffix>`, the key shape handlers use. Values are strings (`setQuestStatus(k, 1)` reads back `"1"`); absent reads `nil` |
 | `H.spyOn(obj, "method", snapshotFn?)` | Replace a method with a recorder; returns `calls` (`{self, args, snapshot}` per call). The original is not called. `snapshotFn(self, ...)` runs at call time to capture "before" state. `H.reset()` restores every spy |
 | `H.questGlobals()` | Sorted names of every global space quest table (has `questType`, `questName`, `startQuest`), e.g. to spy on all of them |
@@ -1116,3 +1116,20 @@ brief's 11 tables are 9 quests plus these 2 cargo tables). Excerpts (header rows
   `_surrender` (A-6), `_pins` (I-10, against `517639a71c` through `git`; skips once HEAD moves).
 - Existing tests this feature edited: `test_smuggler_tier2_data.lua` (the coverage counts 355 -> 362 and 339 -> 346, and the test name) and `test_master_trainer_rebel_surrender.lua` (the Vortex
   surrender order now `resetV3fxQuests`, `resetVrovelQuests`, `burke`).
+
+### Vortex tier 2: Brother Vrovel's conversation (vortex-tier2-vrovel)
+
+Part B of Vortex tier 2: the conversation (131 screens), the handler, the hand-in from V3-FX, the grants and re-grants of Part A's four chains, rewards with Rebel standing, two-step free-choice
+training of the four `_02` skills (bought with 60,000 XP each, no credits), the duties, the Developer/Tester branch (privileged players only) and the hand-off to Brother Ezkiel.
+
+Answer keys: `fixtures/script/conversation/dantooine_rebel_trainer_2.java` (J2, byte copy), `fixtures/string/en/conversation/dantooine_rebel_trainer_2.sids` (247 ids, generated with
+`gen_client_sids.py`), `fixtures/skill/skills.pilot_rebel_navy_02.tab` (SKT rows 1, 2, 606, 610, 614, 618, byte-copied), `vortex_tier2_vrovel_screens_data.lua` (Appendix A) and
+`vortex_tier2_vrovel_client_text.lua` (id -> English text, read from `/tre`).
+
+- `vortex_tier2_data.lua` (Part B section): `V.TEMPLATE` / `V.HANDLER`, `V.SCREENS`, `V.MISSIONS`, the START/REWARD/DUTY/HANDIN/NAME screen tables, `V.TRAIN`, `V.pilot{...}` with the extra options
+  `t1` (tier 1 skills held), `state` (`won` / `failed` / `active` / `attempted` for mission `missions + 1`), `privileged`, `graduated = false` (no flag); `V.talk` / `V.drive`, `V.spyStarts` /
+  `V.startedCount` (spy the nine `startQuest`s), `V.flag`, `V.held2`, `V.items`, `V.standing`, `V.useSkillCosts` (the 60,000 XP price from the excerpt).
+- **Harness (Q-1 = A):** `FakeGhost:isPrivileged()` returns `self.privileged == true`; `H.newPlayer{privileged = true}` sets it (default false).
+- Tests: `_template` (AC-2: Appendix A, strings, java graph, ratchet, fixtures), `_wiring` (AC-1), `_gates` (AC-3, I-3), `_handin` (AC-4, I-7), `_missions` (AC-5, I-5), `_rewards` (AC-6, I-4),
+  `_training` (AC-7, I-6), `_duties` (AC-8), `_gm` (AC-9), `_surrender` (AC-10), `_pins` (I-8, against `ddf7518f24` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: the 10 `FIXTURE_COUNTS` assertions (68 -> 69) and the 4 Vrovel include-line assertions in `test_vortex_tier1_data.lua` / `test_vortex_tier1_kiizete_wiring.lua`.

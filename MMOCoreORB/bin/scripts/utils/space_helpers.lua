@@ -529,7 +529,8 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 	elseif (pilotSquadron == CRIMSON_PHOENIX_SQUADRON) then
 		pilotProfession = "rebelPilot"
 
-		-- TODO: Add CrimsonPhoenixSquadronScreenplay reset functions
+		-- Tier 1
+		CrimsonPhoenixSquadronScreenplay:resetSocunaQuests(pPlayer)
 
 	-- Imperial Pilots
 	elseif (pilotSquadron == BLACK_EPSILON_SQUADRON) then
@@ -731,6 +732,21 @@ function SpaceHelpers:addCrimsonSquadWaypoint(pPlayer)
 	end
 
 	PlayerObject(pGhost):addWaypoint("tatooine", "@npc_spawner_n:da_la_socuna", "@npc_spawner_n:da_la_socuna", -3002, 0, 2202, WAYPOINT_BLUE, true, true, 0)
+end
+
+-- @param pPlayer pointer adds waypoint to Major Eker, the Crimson Phoenix Squadron Tier2 Trainer (tatooine_rebel_trainer_1.java giveMajorEkerWaypoint)
+function SpaceHelpers:addEkerWaypoint(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	local pGhost = CreatureObject(pPlayer):getPlayerObject()
+
+	if (pGhost == nil) then
+		return
+	end
+
+	PlayerObject(pGhost):addWaypoint("yavin4", "@npc_spawner_n:eker", "@npc_spawner_n:eker", -6969, 0, -5667, WAYPOINT_BLUE, true, true, 0)
 end
 
 -- @param pPlayer pointer adds waypoint to the starting imperial pilot coordinator

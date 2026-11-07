@@ -30,6 +30,7 @@
 -- vortex-tier2-vrovel: Brother Vrovel's conversation/dantooine_rebel_trainer_2 (247 ids, served from patch_12_00.tre) is new and fully resolved (the 69th file); KNOWN_GAPS stays {}.
 -- vortex-tier3-ezkiel: Brother Ezkiel's conversation/naboo_rebel_tier3 (226 ids, served from patch_12_00.tre) is new and fully resolved (the 70th file); KNOWN_GAPS stays {}.
 -- vortex-tier4-extok-evin-convo: Brother Extok Evin's conversation/naboo_rebel_tier4 (222 ids, served from patch_12_00.tre) is new and fully resolved (the 71st file); KNOWN_GAPS stays {}.
+-- crimson-phoenix-tier1-da-la-socuna: Commander Da'la Socuna's conversation/tatooine_rebel_trainer_1 (329 ids, served from patch_12_00.tre) is new and fully resolved (the 72nd file); KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -106,6 +107,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/tatooine_privateer_trainer_1"] = 152,
 	["conversation/tatooine_privateer_trainer_2"] = 55,
 	["conversation/tatooine_privateer_trainer_shamdon"] = 102,
+	["conversation/tatooine_rebel_trainer_1"] = 329,
 	["space/space_loot"] = 20,
 }
 

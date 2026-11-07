@@ -309,7 +309,7 @@ function V.load()
 		rawset(_G, "FACTIONREBEL", getHashCode("rebel"))
 	end
 
-	for _, name in ipairs({ "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay", "BlackEpsilonSquadronScreenplay", "InquisitionSquadronScreenplay", "StormSquadronScreenplay", "VortexSquadronScreenplay" }) do
+	for _, name in ipairs({ "CorsecSquadronScreenplay", "RsfSquadronScreenplay", "HavocSquadronScreenplay", "BlackEpsilonSquadronScreenplay", "InquisitionSquadronScreenplay", "StormSquadronScreenplay", "VortexSquadronScreenplay", "CrimsonPhoenixSquadronScreenplay" }) do
 		-- a squadron another loader already ran stays as it is: loading twice would register it twice
 		if rawget(_G, name) == nil then
 			try(name, function() H.loadSquadron(name) end)

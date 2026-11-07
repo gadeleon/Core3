@@ -532,6 +532,9 @@ function SpaceHelpers:surrenderPilot(pPlayer)
 		-- Tier 1
 		CrimsonPhoenixSquadronScreenplay:resetSocunaQuests(pPlayer)
 
+		-- Tier 2
+		CrimsonPhoenixSquadronScreenplay:resetEkerQuests(pPlayer)
+
 	-- Imperial Pilots
 	elseif (pilotSquadron == BLACK_EPSILON_SQUADRON) then
 		pilotProfession = "imperialPilot"

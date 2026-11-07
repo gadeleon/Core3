@@ -151,8 +151,10 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_is_called_once_for
 	H.spyOn(VortexSquadronScreenplay, "resetVrovelQuests", function() order[#order + 1] = "resetVrovelQuests" end)
 	lu.assertEquals(type(VortexSquadronScreenplay.resetEzkielQuests), "function", "VortexSquadronScreenplay:resetEzkielQuests (screenplays/space/squadrons/VortexSquadronScreenplay.lua) is missing (vortex-tier3-ezkiel-missions)")
 	H.spyOn(VortexSquadronScreenplay, "resetEzkielQuests", function() order[#order + 1] = "resetEzkielQuests" end)
+	lu.assertEquals(type(VortexSquadronScreenplay.resetEvinQuests), "function", "VortexSquadronScreenplay:resetEvinQuests (screenplays/space/squadrons/VortexSquadronScreenplay.lua) is missing (vortex-tier4-extok-evin)")
+	H.spyOn(VortexSquadronScreenplay, "resetEvinQuests", function() order[#order + 1] = "resetEvinQuests" end)
 
-	local expectedOrder = { vortex = { "resetV3fxQuests", "resetVrovelQuests", "resetEzkielQuests", "burke" }, crimson = { "burke" } }
+	local expectedOrder = { vortex = { "resetV3fxQuests", "resetVrovelQuests", "resetEzkielQuests", "resetEvinQuests", "burke" }, crimson = { "burke" } }
 
 	for _, squadron in ipairs({ "vortex", "crimson" }) do
 		order = {}
@@ -163,7 +165,7 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_is_called_once_for
 		SpaceHelpers:surrenderPilot(p)
 		lu.assertEquals(#reset, before + 1, squadron .. ": resetBurkeQuests calls")
 		lu.assertEquals(reset[#reset].args[1], p, squadron .. ": the reset gets the pilot")
-		lu.assertEquals(order, expectedOrder[squadron], squadron .. ": the order of the resets (Vortex: V3-FX's, Brother Vrovel's (vortex-tier2-vrovel-missions), Brother Ezkiel's (vortex-tier3-ezkiel-missions), then Burke's; Crimson Phoenix has none yet)")
+		lu.assertEquals(order, expectedOrder[squadron], squadron .. ": the order of the resets (Vortex: V3-FX's, Brother Vrovel's (vortex-tier2-vrovel-missions), Brother Ezkiel's (vortex-tier3-ezkiel-missions), Brother Extok Evin's (vortex-tier4-extok-evin), then Burke's; Crimson Phoenix has none yet)")
 	end
 end
 

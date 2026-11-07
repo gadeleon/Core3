@@ -1,0 +1,8 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.624290	0.667459	0.405907	0.595996	0.071037	0.799839	-996.00	-2105.54	4791.39	nav_name|4|naboo_rebel_tier3_rescue_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.181867	-0.602439	-0.777169	-0.293268	-0.721151	0.627643	2160.77	5246.07	-5746.41	nav_name|4|naboo_rebel_tier4_1_rescue_duty_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.181867	-0.602439	-0.777169	-0.293268	-0.721151	0.627643	1936.19	4693.83	-5265.76	nav_name|4|naboo_rebel_tier4_1_rescue_duty_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.207700	-0.665916	-0.716531	-0.272884	-0.663981	0.696178	1513.46	3657.55	-4302.73	nav_name|4|naboo_rebel_tier4_1_rescue_duty_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.136675	-0.520686	-0.842738	-0.282924	-0.794769	0.536933	2490.13	5986.80	-6356.31	nav_name|4|naboo_rebel_tier4_1_rescue_duty_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.136675	-0.520686	-0.842738	-0.282924	-0.794769	0.536933	2685.74	6536.24	-6727.45	nav_name|4|naboo_rebel_tier4_1_rescue_duty_1|$|	script.space.quest_logic.quest_nav_point

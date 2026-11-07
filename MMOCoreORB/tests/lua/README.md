@@ -1170,3 +1170,22 @@ Answer keys: `fixtures/script/conversation/naboo_rebel_tier3.java` (J3, byte cop
   `_training` (AC-7, AC-8, I-6, I-7), `_surrender` (AC-9), `_pins` (I-8, against `97592afabc` through `git`; skips once HEAD moves).
 - Existing tests this feature edited: the 11 `FIXTURE_COUNTS` assertions (69 -> 70; the header comment of `test_space_convo_client_strings.lua` too) and the 6 Ezkiel include-line assertions in
   `test_vortex_tier1_data.lua` / `test_vortex_tier1_kiizete_wiring.lua` / `test_vortex_tier2_vrovel_wiring.lua` (the Evin assertions beside them are unchanged).
+
+
+### Vortex tier 4: Brother Extok Evin's missions (vortex-tier4-extok-evin)
+
+Part A of Vortex tier 4: Brother Extok Evin's 17 quest tables for 13 SWG names (13 story tables in four missions, and the four duties, which share the name `naboo_rebel_tier4_1` with the
+mission 1 survival head), the 17 `TIER4_QUEST_STRING_*` constants, `TIER4_MET_KEY` and `resetEvinQuests` (surrender order V3-FX, Vrovel, Ezkiel, Evin, Burke).
+Every mission head splits both ways (`BIDIRECTIONAL`, success and failure child, 5 s); surprise 2_b splits on success (10 s) into assassinate 2_c in another zone (`space_dathomir`).
+There is no conversation in Part A (Evin keeps `conversationTemplate = ""` and his include lines stay commented); nothing grants these quests in game until Part B.
+
+Answer keys (byte copies of SWG-Source): the 17 `fixtures/spacequest/<type>/naboo_rebel_tier4_*.tab` (the five `naboo_rebel_tier4_1` ones sit under `survival/`, `destroy_duty/`, `escort_duty/`,
+`recovery_duty/`, `rescue_duty/`) and `fixtures/space_zones/buildout/space_{endor,yavin4,dathomir,dantooine}.vortex_tier4_points.tab` (header rows plus the 57 nav point rows, `sed -n <row>p`).
+
+- `vortex_tier4_data.lua`: `E.GLOBALS` / `E.IDENTITY` / `E.CHAINS` (`E.M1` .. `E.M4`, getSpaceQuestChain order) / `E.BRANCHES` / `E.DUTIES`, `E.QUEST_STRINGS`, `E.MET_KEY`, `E.statusKeys()` (the 9 keys),
+  `E.POINTS`, `E.expected()` (every key of each table, spec literals), `E.REWARDS`, `E.setState` / `E.state` (by type and name, so the same-name tables stay apart), `E.keysNamed(player, name)`,
+  `E.pilot{...}` (extends `vortex_tier3_data.lua`'s `W.pilot`: `evin` = missions won, `evinKeys`, `met`, `evinActive`, `duty`), `E.flyer(zone)`. Part B extends it.
+- Tests: `_data` (A-1, A-2: oracle, wiring, whole tables and key sets, conformance; the conformance tests also run against the spec literals, `TestEvinSpecLiterals`), `_runtime` (A-3 to A-5: both branches of
+  every split through the fakes, the cross-zone split into `space_dathomir`, the duties and the same-name journal entries), `_surrender` (A-6), `_pins` (I-9, against `e248380bfd` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: `test_smuggler_tier2_data.lua` (the coverage counts 382 -> 395 and 366 -> 379, and the test name) and `test_master_trainer_rebel_surrender.lua` (the Vortex surrender order now
+  `resetV3fxQuests`, `resetVrovelQuests`, `resetEzkielQuests`, `resetEvinQuests`, `burke`).

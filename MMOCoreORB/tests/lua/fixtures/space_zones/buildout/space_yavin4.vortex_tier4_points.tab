@@ -1,0 +1,14 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.746184	-0.039101	0.664591	-0.660563	0.080769	0.746413	-6830.00	4677.60	3510.91	nav_name|4|naboo_rebel_tier4_2_assassin_6|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.031908	0.057191	-0.997853	0.665974	0.743234	0.063893	5626.40	6460.68	-4707.77	nav_name|4|naboo_rebel_tier4_1_escort_duty_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.036883	0.063734	-0.997285	0.877048	0.476270	0.062873	4619.25	5351.94	-4806.03	nav_name|4|naboo_rebel_tier4_1_escort_duty_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.746184	-0.039101	0.664591	-0.660563	0.080769	0.746413	3918.03	4348.99	-3225.97	nav_name|4|naboo_rebel_tier4_2_assassin_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.746184	-0.039101	0.664591	-0.660563	0.080769	0.746413	-1519.55	4604.33	2034.66	nav_name|4|naboo_rebel_tier4_2_assassin_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.229413	0.105819	0.967560	0.742974	0.623137	-0.244313	2234.02	4412.25	-2915.14	nav_name|4|naboo_rebel_tier4_2_a_battle_point|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.746184	-0.039101	0.664591	-0.660563	0.080769	0.746413	1131.22	4477.65	-2086.63	nav_name|4|naboo_rebel_tier4_2_assassin_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.746184	-0.039101	0.664591	-0.660563	0.080769	0.746413	-48.83	4539.84	-344.54	nav_name|4|naboo_rebel_tier4_2_assassin_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.392917	0.269601	-0.879165	0.703083	0.528137	0.476178	3491.28	4797.94	-4904.38	nav_name|4|naboo_rebel_tier4_1_escort_duty_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.746184	-0.039101	0.664591	-0.660563	0.080769	0.746413	2563.59	4412.95	-3307.66	nav_name|4|naboo_rebel_tier4_2_assassin_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.387116	0.265496	-0.882980	0.646286	0.604882	0.465222	2494.04	3767.01	-5614.44	nav_name|4|naboo_rebel_tier4_1_escort_duty_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.453410	0.236183	-0.859440	0.665944	0.551117	0.502781	2096.00	3236.00	-6065.00	nav_name|4|naboo_rebel_tier4_1_escort_duty_1|$|	script.space.quest_logic.quest_nav_point

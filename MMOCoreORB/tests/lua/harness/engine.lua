@@ -849,6 +849,19 @@ function grantStarterShip(pPlayer, faction)
 	record("grantStarterShip", pPlayer, faction)
 end
 
+-- DirectorManager::playClientEffectLoc(pObject, effectFile, zoneName, x, z, y, cellID): the binding reads exactly seven values off the Lua stack
+-- (-7 .. -1), so any other argument count reads garbage; the stub raises instead (vortex-tier1-v3-fx). Recorded with the arguments the script passed:
+-- `H.Engine.callsTo("playClientEffectLoc")` entries are { player, file, zone, x, z, y, cell, n = 7 }.
+function playClientEffectLoc(...)
+	local n = select("#", ...)
+
+	if n ~= 7 then
+		error("playClientEffectLoc needs exactly 7 arguments (object, effect file, zone, x, z, y, cell id), got " .. n .. "; the binding reads seven stack slots", 2)
+	end
+
+	record("playClientEffectLoc", ...)
+end
+
 -- Creature templates (mobile/*.lua): Creature:new { ... } then CreatureTemplates:addCreatureTemplate(t, name).
 CreatureTemplates = {
 	addCreatureTemplate = function(_, template, name)

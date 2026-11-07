@@ -1044,3 +1044,29 @@ non-pilot default (`pilot = false` strips every skill). **A first screen runs it
 itself, which must be pure (I-9). `test_storm_tier4_pins.lua` pins "nothing else moves" against `288da0c8ea` through `git` and skips once HEAD moves.
 - Existing tests this feature edited (all listed in the test plan): the 67th `FIXTURE_COUNTS` entry (`space_convo_client_strings_data.lua` and eight test files) and the include-adjacency anchors
   of `test_storm_tier3_wiring.lua`, `test_storm_tier2_alozen_data.lua`, `test_storm_tier2_nym_wiring.lua`, `test_storm_tier2_data.lua` and `test_master_trainer_{imperial,rebel}_wiring.lua`.
+
+### Vortex tier 1: V3-FX (vortex-tier1-v3-fx)
+
+Answer key: SWG `naboo_rebel_trainer_1.java` (J; `fixtures/script/conversation/`, byte copy of the 16,121-line file) plus the spec's Data mapping 3 (twins, rejoins, drops, pre-NGE-only lines) and the
+eight `fixtures/spacequest/<type>/naboo_rebel_*.tab` byte copies. V3-FX's template is `v3fx_convo_template`, his handler the global `v3fxConvoHandler`; the NPC stands in the Moenia gazebo
+(`V.NPC_AT`, the `naboo_moenia.lua:108` spawn).
+
+- `vortex_tier1_data.lua` (not a test file): the 8 globals, `V.expected()` (Appendix B, every key; no table defines a function), the 16 points and 5 spawners, `V.TRAIN` (one-click topics, male and female
+  trained screens), `V.VORTEX_PILOT_KEY`, the load helper (`V.load()` skips a squadron another loader already ran) and the player builder
+  `V.pilot{pilot ("rebel" default | "neutral" | "imperial" | false), faction, squadron, standing (Rebel), ship, paid = k, state = "won" | "failed" | "active" | "attempted", tier, skills, xp, graduated, datapad, duty,
+  species, gender, pilotTier, inventory, inventoryFull, inShip, zone}`. `V.talk` / `V.drive` / `V.firstScreen` drive `H.converse` from the first screen or from a given screen; `V.sparks()` lists the
+  recorded `playClientEffectLoc` calls.
+- `vortex_tier1_screens_data.lua`: Appendix A (137 rows) generated from the spec table by a scratch script (the training screens hold all four topics with the male links, the handler rebuilds them);
+  `vortex_tier1_client_text.lua`: id -> text of the 236-entry client table (read-only from `/tre`), used for the trailing comments and the four `%TU` lines.
+- `fixtures/string/en/conversation/naboo_rebel_trainer_1.sids` (236 ids) already existed (Kreezo's handler uses one of its lines), so `FIXTURE_COUNTS` keeps its 67 entries; the tests assert the entry and an
+  empty `KNOWN_GAPS`. `fixtures/space_zones/buildout/space_naboo.vortex_tier1_points.tab` is the two header rows plus the 16 nav points and 5 spawners (byte copies, BO order);
+  `fixtures/skill/skills.pilot_rebel_navy_01.tab` the header rows, the novice box and the four `_01` skills (7500 XP each) of SWG `skills.tab`.
+- Harness: `playClientEffectLoc(object, effect, zone, x, z, y, cell)` records its arguments (`H.Engine.callsTo("playClientEffectLoc")`, `args.n == 7`) and raises on any other argument count, as the C++
+  binding reads exactly seven stack slots. `H.newNpc{zone, x, z, y, parentID}` answers `getZoneName`, `getPositionX/Z/Y` and `getParentID`. `test_vortex_tier1_harness_stub.lua` checks both and the Rebel
+  broker's waypoint to the droid.
+- The gate order is the spec's G table: the lost-ship line (G8) comes after the membership gate (G7), unlike Storm. Mission 1 is won only when the patrol and its surprise attack are both complete; a lost
+  surprise attack is a mission 1 failure (D-6). SWG pays and restarts on the gate screens: `missionN_won` pays on display and `missionN_failed` restarts the mission on display (D-10), so the accept routes
+  under a failure screen are refused while the chain runs (the real-run test counts the `startQuest` calls). `tier_done` writes `VORTEX_PILOT_KEY = "1"` on display.
+- `test_vortex_tier1_pins.lua` pins the shared edits against commit `42353a3eff` and skips once HEAD moves.
+- Existing tests this feature edited: the Vortex loader of `black_epsilon_tier4_data.lua`, the surrender order of `test_master_trainer_rebel_surrender.lua` (V3-FX's reset, then Burke's) and the coverage
+  counts of `test_smuggler_tier2_data.lua` (355 distinct names, 339 SWG names).

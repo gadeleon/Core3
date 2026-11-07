@@ -144,6 +144,12 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_is_called_once_for
 	lu.assertEquals(reset[1].args[1], player, "the reset gets the pilot")
 	lu.assertEquals(order, { "resetKreezoQuests", "resetViopaQuests", "resetAqzowQuests", "resetArkonQuests", "burke" }, "the order of the resets (Arkon's, then Burke's)")
 
+	-- vortex-tier1-v3-fx: a Vortex pilot's surrender runs V3-FX's reset first, then Burke's; Crimson Phoenix has none yet
+	lu.assertEquals(type(VortexSquadronScreenplay.resetV3fxQuests), "function", "VortexSquadronScreenplay:resetV3fxQuests (screenplays/space/squadrons/VortexSquadronScreenplay.lua) is missing")
+	H.spyOn(VortexSquadronScreenplay, "resetV3fxQuests", function() order[#order + 1] = "resetV3fxQuests" end)
+
+	local expectedOrder = { vortex = { "resetV3fxQuests", "burke" }, crimson = { "burke" } }
+
 	for _, squadron in ipairs({ "vortex", "crimson" }) do
 		order = {}
 
@@ -153,7 +159,7 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_is_called_once_for
 		SpaceHelpers:surrenderPilot(p)
 		lu.assertEquals(#reset, before + 1, squadron .. ": resetBurkeQuests calls")
 		lu.assertEquals(reset[#reset].args[1], p, squadron .. ": the reset gets the pilot")
-		lu.assertEquals(order, { "burke" }, squadron .. ": no other reset runs (Vortex and Crimson Phoenix have none yet)")
+		lu.assertEquals(order, expectedOrder[squadron], squadron .. ": the order of the resets (Vortex: V3-FX's, then Burke's; Crimson Phoenix has none yet)")
 	end
 end
 

@@ -25,6 +25,7 @@
 -- storm-tier2-alozen: Field Commander Alozen's conversation/tatooine_imperial_trainer_2b (124 ids, served from the pre-NGE client tables) is new and fully resolved (the 65th file; red until her template and handler exist); KNOWN_GAPS stays {}.
 -- storm-tier3-denner: Captain Denner's conversation/tatooine_imperial_tier3 (281 ids, served from patch_12_00.tre) is new and fully resolved (the 66th file); KNOWN_GAPS stays {}.
 -- storm-tier4-kilnstrider: Admiral Kilnstrider's conversation/tatooine_imperial_tier4 (176 ids, served from patch_12_00.tre) is new and fully resolved (the 67th file); KNOWN_GAPS stays {}.
+-- vortex-tier1-v3-fx: V3-FX's conversation/naboo_rebel_trainer_1 (236 ids, served from patch_12_00.tre) is fully resolved; it was already one of the 67 files (Kreezo's handler uses its s_a42932d7), so FIXTURE_COUNTS keeps its 67 entries and KNOWN_GAPS stays {}.
 
 local D = {}
 

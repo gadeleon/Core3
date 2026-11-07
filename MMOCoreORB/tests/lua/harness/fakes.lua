@@ -251,6 +251,8 @@ function Fakes.newCreature(opts)
 		isNpc = opts.isNpc or false,
 		conversationSession = nil,
 		zone = opts.zone or "",
+		x = opts.x, z = opts.z, y = opts.y, -- position (getPositionX/Z/Y, getWorldPosition*); a creature in a ship reports the ship's
+		parentID = opts.parentID,          -- getParentID (the cell id; nil reads 0)
 		messageLog = {},     -- { t = ms, msg = string or fake StringIdChatParameter }
 		tauntLog = {},       -- { t = ms, msg, ship } from ShipAiAgent:tauntPlayer
 		effects = {},        -- { t = ms, file = string } from playEffect
@@ -369,9 +371,14 @@ function FakeCreature:getSlottedObject(slot)
 end
 
 -- A player inside a ship reports the ship's position, like the server's world position.
-function FakeCreature:getWorldPositionX() return self.rootParent and self.rootParent.x or 0 end
-function FakeCreature:getWorldPositionZ() return self.rootParent and self.rootParent.z or 0 end
-function FakeCreature:getWorldPositionY() return self.rootParent and self.rootParent.y or 0 end
+function FakeCreature:getWorldPositionX() return self.rootParent and self.rootParent.x or self.x or 0 end
+function FakeCreature:getWorldPositionZ() return self.rootParent and self.rootParent.z or self.z or 0 end
+function FakeCreature:getWorldPositionY() return self.rootParent and self.rootParent.y or self.y or 0 end
+-- SceneObject::getPositionX/Z/Y and getParentID of an NPC (opts.x, opts.z, opts.y, opts.parentID of H.newNpc; vortex-tier1-v3-fx, the droid's sparks)
+function FakeCreature:getPositionX() return self.x or 0 end
+function FakeCreature:getPositionZ() return self.z or 0 end
+function FakeCreature:getPositionY() return self.y or 0 end
+function FakeCreature:getParentID() return self.parentID or 0 end
 
 function FakeCreature:playEffect(file, arg)
 	self.effects[#self.effects + 1] = { t = Fakes.now(), file = file, arg = arg }

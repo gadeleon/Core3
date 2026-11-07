@@ -28,6 +28,7 @@
 -- vortex-tier1-v3-fx: V3-FX's conversation/naboo_rebel_trainer_1 (236 ids, served from patch_12_00.tre) is fully resolved; it was already one of the 67 files (Kreezo's handler uses its s_a42932d7), so FIXTURE_COUNTS keeps its 67 entries and KNOWN_GAPS stays {}.
 -- vortex-tier1-kiizete: Kiizete's conversation/naboo_rebel_tier1_kiizete (114 ids, served from patch_12_00.tre) is new and fully resolved (the 68th file); KNOWN_GAPS stays {}.
 -- vortex-tier2-vrovel: Brother Vrovel's conversation/dantooine_rebel_trainer_2 (247 ids, served from patch_12_00.tre) is new and fully resolved (the 69th file); KNOWN_GAPS stays {}.
+-- vortex-tier3-ezkiel: Brother Ezkiel's conversation/naboo_rebel_tier3 (226 ids, served from patch_12_00.tre) is new and fully resolved (the 70th file); KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -77,6 +78,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/naboo_privateer_trainer_2"] = 123,
 	["conversation/naboo_rebel_trainer_1"] = 236,
 	["conversation/naboo_rebel_tier1_kiizete"] = 114,
+	["conversation/naboo_rebel_tier3"] = 226,
 	["conversation/privateer_broker"] = 79,
 	["conversation/pvp_station_imperial"] = 18,
 	["conversation/pvp_station_rebel"] = 20,

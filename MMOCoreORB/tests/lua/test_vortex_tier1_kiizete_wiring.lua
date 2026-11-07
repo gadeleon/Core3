@@ -91,7 +91,7 @@ function TestVortexKiizeteWiring:test_the_template_include_is_uncommented_at_lin
 	lu.assertEquals(lines[96], 'includeFile("conversations/space/rebel/vortex_squadron/kiizete_convo.lua")', "space_conversations.lua line 96")
 	lu.assertEquals(lines[91], "-- Vortex Squadron", "space_conversations.lua line 91")
 	lu.assertEquals(lines[92], '--includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 92")
-	lu.assertEquals(lines[93], '--includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93")
+	lu.assertEquals(lines[93], 'includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93: uncommented by vortex-tier3-ezkiel")
 	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 94")
 	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95: uncommented by vortex-tier2-vrovel")
 end
@@ -107,7 +107,7 @@ function TestVortexKiizeteWiring:test_the_handler_include_is_uncommented_at_line
 	lu.assertEquals(lines[139], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 139 (the squadron include loads first)")
 	lu.assertEquals(lines[140], "", "screenplays.lua line 140")
 	lu.assertEquals(lines[141], '--includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 141")
-	lu.assertEquals(lines[142], '--includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142")
+	lu.assertEquals(lines[142], 'includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142: uncommented by vortex-tier3-ezkiel")
 	lu.assertEquals(lines[143], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 143")
 	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144: uncommented by vortex-tier2-vrovel")
 end

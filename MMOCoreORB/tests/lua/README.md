@@ -1150,3 +1150,23 @@ Answer keys (byte copies of SWG-Source): the 20 `fixtures/spacequest/<type>/nabo
 - Existing tests this feature edited: `test_smuggler_tier2_data.lua` (the coverage counts 362 -> 382 and 346 -> 366, and the test name) and `test_master_trainer_rebel_surrender.lua` (the Vortex
   surrender order now `resetV3fxQuests`, `resetVrovelQuests`, `resetEzkielQuests`, `burke`).
 
+
+### Vortex tier 3: Brother Ezkiel's conversation (vortex-tier3-ezkiel)
+
+Part B of Vortex tier 3: Brother Ezkiel's conversation (131 screens, J3 `naboo_rebel_tier3.java` with pre-NGE client lines only), the handler, the mobile's mask and template, the two include lines.
+It grants Part A's four mission heads (M1 and M4 re-granted on their failure lines, M2 and M3 on their replies), pays each mission once (25000 credits, a ship component, +100 Rebel standing),
+and gives one free tier 3 skill per won mission in one click (free choice; the fourth raises pilot tier 3 -> 4). The ready gate is tier 2 complete + `VORTEX_PILOT_KEY` set + Vrovel's
+`vortex_mission_4:reward` (Q-B1 = A). Ezkiel writes no flag.
+
+Answer keys: `fixtures/script/conversation/naboo_rebel_tier3.java` (J3, byte copy), `fixtures/string/en/conversation/naboo_rebel_tier3.sids` (226 ids, generated with `gen_client_sids.py`),
+`vortex_tier3_ezkiel_screens_data.lua` (Appendix A, copied from the spec by a script; it also carries the spec's notes and the option marks `[R]/[T]/[b]`) and
+`vortex_tier3_ezkiel_client_text.lua` (id -> English text, read from `/tre`).
+
+- `vortex_tier3_data.lua` (Part B section): `W.TEMPLATE` / `W.HANDLER` / `W.PREFIX`, `W.SCREENS`, `W.MISSIONS`, `W.TRAIN`, the START/REWARD/NAME screen tables, `W.NGE_IDS`, `W.reach` / `W.walkTo`
+  (the static links), `W.loadConversation()` / `W.requireConversation(lu)`, `W.talk` / `W.drive` (reward and start screens run their display actions), `W.spyStarts` / `W.startedList`,
+  `W.startAll()` (register the 20 tables for a real start), `W.nonPilot{...}`, `W.readyFor(n)`, `W.rewardPilot(n)`, `W.statusDiff`. `W.pilot{...}` gains `t3` as a list of `W.TRAIN` indexes (any
+  subset) and `partial = k` (the first k quests of the next mission complete, nothing running: a middle member failed).
+- Tests: `_template` (AC-2: Appendix A, strings, java graph, ratchet, fixtures), `_wiring` (AC-1), `_gates` (AC-3, I-3), `_offers` (AC-4, AC-5, I-5), `_rewards` (AC-6, I-4),
+  `_training` (AC-7, AC-8, I-6, I-7), `_surrender` (AC-9), `_pins` (I-8, against `97592afabc` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: the 11 `FIXTURE_COUNTS` assertions (69 -> 70; the header comment of `test_space_convo_client_strings.lua` too) and the 6 Ezkiel include-line assertions in
+  `test_vortex_tier1_data.lua` / `test_vortex_tier1_kiizete_wiring.lua` / `test_vortex_tier2_vrovel_wiring.lua` (the Evin assertions beside them are unchanged).

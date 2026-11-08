@@ -159,8 +159,10 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_is_called_once_for
 	H.spyOn(CrimsonPhoenixSquadronScreenplay, "resetSocunaQuests", function() order[#order + 1] = "resetSocunaQuests" end)
 	lu.assertEquals(type(CrimsonPhoenixSquadronScreenplay.resetEkerQuests), "function", "CrimsonPhoenixSquadronScreenplay:resetEkerQuests (screenplays/space/squadrons/CrimsonPhoenixSquadronScreenplay.lua) is missing (crimson-phoenix-tier2-eker)")
 	H.spyOn(CrimsonPhoenixSquadronScreenplay, "resetEkerQuests", function() order[#order + 1] = "resetEkerQuests" end)
+	lu.assertEquals(type(CrimsonPhoenixSquadronScreenplay.resetUlvawopQuests), "function", "CrimsonPhoenixSquadronScreenplay:resetUlvawopQuests (screenplays/space/squadrons/CrimsonPhoenixSquadronScreenplay.lua) is missing (crimson-phoenix-tier3-ulvawop-missions)")
+	H.spyOn(CrimsonPhoenixSquadronScreenplay, "resetUlvawopQuests", function() order[#order + 1] = "resetUlvawopQuests" end)
 
-	local expectedOrder = { vortex = { "resetV3fxQuests", "resetVrovelQuests", "resetEzkielQuests", "resetEvinQuests", "burke" }, crimson = { "resetSocunaQuests", "resetEkerQuests", "burke" } }
+	local expectedOrder = { vortex = { "resetV3fxQuests", "resetVrovelQuests", "resetEzkielQuests", "resetEvinQuests", "burke" }, crimson = { "resetSocunaQuests", "resetEkerQuests", "resetUlvawopQuests", "burke" } }
 
 	for _, squadron in ipairs({ "vortex", "crimson" }) do
 		order = {}
@@ -171,7 +173,7 @@ function TestMasterTrainerRebelSurrender:test_the_burke_reset_is_called_once_for
 		SpaceHelpers:surrenderPilot(p)
 		lu.assertEquals(#reset, before + 1, squadron .. ": resetBurkeQuests calls")
 		lu.assertEquals(reset[#reset].args[1], p, squadron .. ": the reset gets the pilot")
-		lu.assertEquals(order, expectedOrder[squadron], squadron .. ": the order of the resets (Vortex: V3-FX's, Brother Vrovel's (vortex-tier2-vrovel-missions), Brother Ezkiel's (vortex-tier3-ezkiel-missions), Brother Extok Evin's (vortex-tier4-extok-evin), then Burke's; Crimson Phoenix: Da'la Socuna's, Major Eker's (crimson-phoenix-tier2-eker), then Burke's)")
+		lu.assertEquals(order, expectedOrder[squadron], squadron .. ": the order of the resets (Vortex: V3-FX's, Brother Vrovel's (vortex-tier2-vrovel-missions), Brother Ezkiel's (vortex-tier3-ezkiel-missions), Brother Extok Evin's (vortex-tier4-extok-evin), then Burke's; Crimson Phoenix: Da'la Socuna's, Major Eker's (crimson-phoenix-tier2-eker), Arnecio Ulvaw'op's (crimson-phoenix-tier3-ulvawop-missions), then Burke's)")
 	end
 end
 

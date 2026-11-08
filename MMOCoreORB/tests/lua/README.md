@@ -1276,3 +1276,20 @@ Part B of Crimson Phoenix tier 2: `eker_convo_template` (161 screens, all 302 pr
   template keeps 129 triples and the handler's C-1 link keeps the other one.
 - Existing tests this feature edited: the 14 `FIXTURE_COUNTS` assertions (72 -> 73, `space_convo_client_strings_data.lua` gains the entry and the header line) and the two include-line
   assertions of `test_crimson_tier1_data.lua` (lines 79 and 124 are now live).
+
+### Crimson Phoenix tier 3: Arnecio Ulvaw'op's missions (crimson-phoenix-tier3-ulvawop-missions)
+
+Part A of Crimson Phoenix tier 3: the 17 `tatooine_rebel_tier3_*` quest tables (4 missions, no duties, no conversation yet), the four suspect ships' `cargoString`, the `TIER3_*` constants and
+`resetUlvawopQuests`. Part B (`crimson-phoenix-tier3-ulvawop`) adds Arnecio Ulvaw'op's conversation and extends `crimson_tier3_data.lua`. Two chains cross a zone: mission 2 hands off from
+Dathomir (surprise attack 2_a) to Dantooine (assassinate 2_b starts when the pilot enters `space_dantooine`), and mission 3's delivery picks up in Lok and delivers in Dathomir (`deliveryZone`).
+- Fixtures (byte copies of SWG-Source, `cp`; excerpts made with `sed -n`): the 17 quest tables under `fixtures/spacequest/<type>/tatooine_rebel_tier3_*.tab`, the `inspect_cargo` table
+  `tatooine_tier3_2_inspect` (CRLF kept), `fixtures/space_mobile/space_mobile.crimson_tier3_inspect.tab` (header rows plus SWG rows 1755-1758) and the buildout excerpts
+  `fixtures/space_zones/buildout/space_{dathomir,dantooine,endor,lok}.crimson_tier3_points.tab` (header rows plus 23 + 7 + 12 + 1 nav point rows and the two suspect spawner rows in Dathomir).
+- `crimson_tier3_data.lua`: `T.GLOBALS` / `T.IDENTITY`, `T.M1` .. `T.M4` / `T.CHAINS`, `T.expected()` (Appendix B, every key of every table), `T.POINTS` / `T.SPAWNERS`, the 17 `TIER3_*` constants
+  (`T.QUEST_STRINGS`), `T.statusKeys()`, `T.pilot{missions, t3, active, state, graduated, ...}` (extends `crimson_tier2_data.lua`'s `E.pilot`: an Eker graduate with optional tier 3 state),
+  `T.setState` / `T.state`, `T.flyer`.
+- Split delays follow SWG's `triggerDelay + 5` (a missing column reads 0) for COMPLETION splits and plain `triggerDelay` for the one PATROL_POINT split (patrol 4_a, point 3, 4 s).
+- Tests: `_data` (wiring, whole tables, conformance, cargo from the real ship files, the two stale comment lines), `_runtime` (A-3, A-4 through the fakes, including the cross-zone assassinate start
+  and the Lok-to-Dathomir delivery through `delivery_scenario.lua`), `_surrender` (A-5), `_pins` (I-9, against `2d26b3e0a3` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: `test_smuggler_tier2_data.lua` (SWG coverage: 392 -> 409 matched names, 408 -> 425 distinct `questName`s) and `test_master_trainer_rebel_surrender.lua`
+  (a Crimson Phoenix surrender runs Socuna's, Eker's, Ulvaw'op's, then Burke's reset). `FIXTURE_COUNTS` stays at 73 entries (Part B makes it 74).

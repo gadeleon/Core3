@@ -1,0 +1,9 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.973718	0.223760	-0.042483	-0.223158	-0.900013	0.374402	-2871.23	-5018.63	4524.72	nav_name|4|tatooine_rebel_tier3_2_c_battlepoint|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.694061	-0.132200	-0.707674	0.094414	0.991220	-0.092571	3723.78	-3570.50	2929.97	nav_name|4|tatooine_tier3_2_b_escape_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.694061	-0.132200	-0.707674	0.094414	0.991220	-0.092571	4217.83	-2877.76	2337.23	nav_name|4|tatooine_tier3_2_b_escape_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.695097	-0.120344	-0.708772	0.085520	0.992731	-0.084688	2850.00	-4260.00	3800.00	nav_name|4|tatooine_tier3_2_b_escape_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.694061	-0.132200	-0.707674	0.094414	0.991220	-0.092571	4768.93	-2089.90	1703.59	nav_name|4|tatooine_tier3_2_b_escape_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.694061	-0.132200	-0.707674	0.094414	0.991220	-0.092571	5546.03	-1155.28	820.24	nav_name|4|tatooine_tier3_2_b_escape_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.694061	-0.132200	-0.707674	0.094414	0.991220	-0.092571	6572.66	-120.77	-68.45	nav_name|4|tatooine_tier3_2_b_escape_6|$|	script.space.quest_logic.quest_nav_point

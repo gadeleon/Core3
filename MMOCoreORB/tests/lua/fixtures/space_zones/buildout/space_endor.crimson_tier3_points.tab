@@ -1,0 +1,14 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.669628	0.734065	-0.112902	0.261754	0.375522	0.889083	1485.80	488.90	5203.95	nav_name|4|tatooine_rebel_tier3_4_escort_6|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.669628	0.734065	-0.112902	0.261754	0.375522	0.889083	-1156.72	-2480.81	5935.60	nav_name|4|tatooine_rebel_tier3_4_escort_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.669628	0.734065	-0.112902	0.261754	0.375522	0.889083	4.62	-1362.79	6827.71	nav_name|4|tatooine_rebel_tier3_4_escort_5|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.354706	-0.534166	0.767366	-0.363989	-0.677093	-0.639576	-5046.23	-4899.14	-6558.37	nav_name|4|tatooine_rebel_tier3_4_a_patrol_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.021109	-0.096001	0.995157	-0.787259	0.611954	0.075733	-5851.52	-4452.58	-6545.98	nav_name|4|tatooine_rebel_tier3_4_a_patrol_4|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.881025	0.059189	0.469352	-0.470321	-0.216384	-0.855556	-4648.92	-4197.75	-5804.77	nav_name|4|tatooine_rebel_tier3_4_a_patrol_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.657957	0.474767	0.584542	-0.750809	-0.353654	-0.557867	-4200.00	-4000.00	-5000.00	nav_name|4|tatooine_rebel_tier3_4_a_patrol_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.669628	0.734065	-0.112902	0.261754	0.375522	0.889083	-1562.79	-3260.88	4734.91	nav_name|4|tatooine_rebel_tier3_4_escort_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.669628	0.734065	-0.112902	0.261754	0.375522	0.889083	-2000.00	-4256.00	3250.00	nav_name|4|tatooine_rebel_tier3_4_escort_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.669628	0.734065	-0.112902	0.261754	0.375522	0.889083	-1798.13	-3966.41	3935.62	nav_name|4|tatooine_rebel_tier3_4_escort_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.878269	-0.366274	0.307389	0.476736	0.720442	-0.503672	-73.18	584.01	-1550.47	nav_name|4|tatooine_rebel_tier3_4_d_battlepoint|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.020755	-0.902242	0.430731	0.528011	0.355949	0.771041	-2344.17	-1799.44	-1343.79	nav_name|4|tatooine_rebel_tier3_4_c_delivery|$|	script.space.quest_logic.quest_nav_point

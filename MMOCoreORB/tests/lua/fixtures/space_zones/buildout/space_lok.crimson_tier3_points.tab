@@ -1,0 +1,3 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.231866	-0.456208	-0.859135	0.005519	-0.882573	0.470143	-3950.00	-1000.00	3800.00	nav_name|4|tatooine_rebel_tier3_3_pickup|$|	script.space.quest_logic.quest_nav_point

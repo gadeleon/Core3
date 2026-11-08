@@ -551,7 +551,7 @@ registerScreenPlay("destroy_duty_yavin_rebel_9", true)
 
 --[[
 	Tier 3 -- Arnecio Ulvaw'op (Dathomir, science outpost; Dathomir, Dantooine, Lok and Endor systems)
-	Trainer: Arnecio Ulvaw'op (no conversation yet), Dathomir science outpost (screenplays/cities/dathomir_science_outpost.lua:64). 17 quest tables for the 17 SWG-Source names tatooine_rebel_tier3_1..4 and their splits (recovery, delivery, survival, escort, inspect, destroy_surpriseattack, assassinate, space_battle, patrol, delivery_no_pickup), from datatables/spacequest and tatooine_rebel_tier3.java; feature crimson-phoenix-tier3-ulvawop-missions
+	Trainer: Arnecio Ulvaw'op (conversation ulvawopConvoHandler), Dathomir science outpost (screenplays/cities/dathomir_science_outpost.lua:64). 17 quest tables for the 17 SWG-Source names tatooine_rebel_tier3_1..4 and their splits (recovery, delivery, survival, escort, inspect, destroy_surpriseattack, assassinate, space_battle, patrol, delivery_no_pickup), from datatables/spacequest and tatooine_rebel_tier3.java; feature crimson-phoenix-tier3-ulvawop-missions
 	Mission 2 hands off from Dathomir to Dantooine (assassinate tatooine_rebel_tier3_2_b); mission 3's delivery picks up in Lok and delivers in Dathomir (deliveryZone)
 ]]
 

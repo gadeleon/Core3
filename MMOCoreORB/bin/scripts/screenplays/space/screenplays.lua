@@ -123,7 +123,7 @@ includeFile("space/squadrons/CrimsonPhoenixSquadronScreenplay.lua")
 
 includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")
 includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")
---includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")
+includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")
 --includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")
 
 -- Havoc Squadron (Arkon)

@@ -1293,3 +1293,25 @@ Dathomir (surprise attack 2_a) to Dantooine (assassinate 2_b starts when the pil
   and the Lok-to-Dathomir delivery through `delivery_scenario.lua`), `_surrender` (A-5), `_pins` (I-9, against `2d26b3e0a3` through `git`; skips once HEAD moves).
 - Existing tests this feature edited: `test_smuggler_tier2_data.lua` (SWG coverage: 392 -> 409 matched names, 408 -> 425 distinct `questName`s) and `test_master_trainer_rebel_surrender.lua`
   (a Crimson Phoenix surrender runs Socuna's, Eker's, Ulvaw'op's, then Burke's reset). `FIXTURE_COUNTS` stays at 73 entries (Part B makes it 74).
+
+### Crimson Phoenix tier 3: Arnecio Ulvaw'op's conversation (crimson-phoenix-tier3-ulvawop)
+
+Part B of Crimson Phoenix tier 3: the conversation of Arnecio Ulvaw'op (144 screens, pre-NGE client lines only, 261 of 261 client lines), one-click free-choice free tier 3 training (one skill
+per won mission, pilot tier 3 -> 4 on the fourth), the Q-B1 ready gate (tier 2 complete + `EKER_PILOT_KEY` set + Eker's `yavin_rebel_16:reward`), the Q-B2 hand-off gate (`isReadyForTier4`, no
+waypoint) to General Ufwol (not ported), and the wiring of his mobile (conversable, invulnerable) and the two include lines.
+- Fixtures: `fixtures/script/conversation/tatooine_rebel_tier3.java` (byte copy of SWG-Source `script/conversation/tatooine_rebel_tier3.java`, 9,437 lines, the answer key) and
+  `fixtures/string/en/conversation/tatooine_rebel_tier3.sids` (generated: `PYTHONDONTWRITEBYTECODE=1 python3 -I tests/lua/tools/gen_client_sids.py conversation/tatooine_rebel_tier3`; 263 ids).
+  `FIXTURE_COUNTS` has 74 entries since this feature.
+- Data files (not tests): `crimson_tier3_ulvawop_screens_data.lua` (Appendix A, 144 rows, `{ id, sid, animation, stop, options = { { reply sid, link, mark } }, cond, tag, h, name, note, ju }`;
+  `mark` is the spec's `[R]` / `[T]` / `[b]` note on a link, empty for the 109 JU triples of client lines), `crimson_tier3_ulvawop_client_text.lua` (id -> English text, read once from `/tre`),
+  and the Part B section of `crimson_tier3_data.lua`: `T.TEMPLATE` / `T.HANDLER` / `T.STF` / `T.PREFIX`, `T.SCREENS`, `T.MISSIONS`, `T.TRAIN`, `T.DECLINE_REPLY`, `T.START_SCREENS` (16),
+  `T.REWARD_SCREENS`, `T.NAME_SCREENS`, `T.reach` / `T.walkTo` / `T.acceptScreens`, `T.loadConversation()` / `T.requireConversation(lu)`, `T.talk` / `T.drive` / `T.firstScreen`, `T.spyStarts()`,
+  `T.startAll()`, `T.rewardPilot(n)` / `T.readyFor(n)` / `T.nonPilot()`, `T.flag`, `T.held3`, `T.standing`, `T.items`. `T.pilot` gained `t3` as a list of `T.TRAIN` indexes (any subset), `partial`
+  (the first k members of the next chain complete, nothing running) and `ekerMissions` (3 leaves Eker's mission 4 unpaid).
+- Tests: `_wiring` (AC-1, tables and helpers, the two comment lines), `_template` (AC-2, I-1, I-2: Appendix A, complete literals, trailing comments, java graph, ratchet, fixtures), `_gates`
+  (AC-3, I-3: E0-E21, the helpers), `_offers` (AC-4, AC-5: walks, starts, failures and retries), `_rewards` (AC-6, I-4), `_training` (AC-7, AC-8, AC-9: training, the 24 skill orders, the hand-off,
+  Eker's graduate), `_surrender` (AC-9), `_pins` (I-8, against `de3d94ba21` through `git`; skips once HEAD moves).
+- The java answer key has 140 client NPC lines and 109 (NPC line, reply, next line) triples of client ids; Appendix A keeps all 109 as its unmarked links and replaces the NGE slots with 28 marked
+  links (27 in the four briefings, one in the hand-off).
+- Existing tests this feature edited: the 15 `FIXTURE_COUNTS` assertions (73 -> 74, `space_convo_client_strings_data.lua` gains the entry and the header line), the two include-line
+  assertions of `test_crimson_tier1_data.lua` and of `test_crimson_tier2_eker_wiring.lua` (lines 81 and 126 are now live).

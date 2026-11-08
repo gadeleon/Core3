@@ -534,12 +534,14 @@ end
 -- A Crimson Phoenix pilot who finished tier 2 (the four tier 1 and four tier 2 skills, EKER_PILOT_KEY "3", Eker's four missions paid, his fourth reward
 -- yavin_rebel_16:reward set, pilot tier 3). Options:
 --   missions   k: Ulvaw'op's missions 1..k won (every chain member complete), :attempted and :reward set (default 0)
---   t3         number of tier 3 skills held (default 0; the _03 skills in the tier 1 training order)
+--   t3         number of tier 3 skills held (default 0; the _03 skills in the tier 1 training order), or a list of T.TRAIN indexes (any subset; Part B)
 --   active     global of a tier 3 member left active in the journal
+--   partial    k: the first k quests of mission missions+1 are complete, :attempted set, nothing active (a middle member failed; Part B)
 --   state      the state of mission missions+1: "won" | "failed" | "active" | "attempted" (as crimson_tier2_data.lua's E.pilot)
 --   pilotTier  ghost pilot tier (default 3, or 4 with four tier 3 skills)
 --   graduated  EKER_PILOT_KEY value (default "3"; false leaves it unset)
---   every other option is crimson_tier2_data.lua's E.pilot (t1, inShip, zone, standing, inventory, ...)
+--   ekerMissions  k: Eker's missions 1..k paid (default 4; 3 leaves yavin_rebel_16:reward unset; Part B)
+--   every other option is crimson_tier2_data.lua's E.pilot (t2, t1, inShip, zone, standing, faction, pilot, squadron, datapad, inventory, ...)
 function T.pilot(o)
 	o = o or {}
 	C.load()
@@ -550,12 +552,31 @@ function T.pilot(o)
 		base[k] = v
 	end
 
-	base.missions, base.t3, base.active, base.state = nil, nil, nil, nil
+	base.missions, base.t3, base.active, base.state, base.partial, base.ekerMissions = nil, nil, nil, nil, nil, nil
 	base.t2 = o.t2 or 4
-	base.t3 = o.t3
 	base.graduated = o.graduated == nil and "3" or o.graduated
-	base.pilotTier = o.pilotTier or ((o.t3 or 0) >= 4 and 4 or 3)
-	base.missions = 4 -- Eker's missions paid (E.STATUS, yavin_rebel_16:reward)
+
+	-- t3 is a count (the first k skills in the tier 1 training order) or, since Part B, a list of indexes into T.TRAIN (any subset)
+	local t3count = 0
+
+	if type(o.t3) == "table" then
+		t3count = #o.t3
+		base.skills = {}
+
+		for _, skill in ipairs(o.skills or {}) do
+			base.skills[#base.skills + 1] = skill
+		end
+
+		for _, idx in ipairs(o.t3) do
+			base.skills[#base.skills + 1] = (C.TRAIN[idx].skill:gsub("_01$", "_03"))
+		end
+	else
+		t3count = o.t3 or 0
+		base.t3 = o.t3
+	end
+
+	base.pilotTier = o.pilotTier or (t3count >= 4 and 4 or 3)
+	base.missions = o.ekerMissions == nil and 4 or o.ekerMissions -- Eker's missions paid (E.STATUS, yavin_rebel_16:reward)
 
 	local player = E.pilot(base)
 
@@ -582,6 +603,15 @@ function T.pilot(o)
 		end
 	end
 
+	-- Part B: partial = k: the first k quests of mission missions+1 are complete and nothing is active (the chain broke after them: a member failed)
+	if o.partial ~= nil and T.CHAINS[n] ~= nil then
+		H.setQuestStatus(player, T.STATUS[n] .. ":attempted", "1")
+
+		for k = 1, o.partial do
+			T.setState(player, T.CHAINS[n][k], "complete")
+		end
+	end
+
 	if o.active then
 		T.setState(player, o.active, "active")
 	end
@@ -598,6 +628,419 @@ function T.flyer(zone)
 		pilot = "rebel",
 		ship = { x = -7000, z = -7000, y = -7000, factionHash = getHashCode("rebel") },
 	})
+end
+
+---------------------------------------------------------------------------------------------
+-- Part B: Arnecio Ulvaw'op's conversation (crimson-phoenix-tier3-ulvawop)
+-- Spec: .claude/work/crimson-phoenix-tier3-ulvawop/01-spec.md (Content contract 2-4, Data mapping 1-2, Conversation flow 1-4, Appendix A).
+-- Everything here is copied from the spec; the screens table comes from the spec's Appendix A by a scratch script (crimson_tier3_ulvawop_screens_data.lua).
+--   T.TEMPLATE / T.HANDLER / T.STF / T.PREFIX / T.JAVA and the file names of the template, handler, NPC, SC and SPL
+--   T.SCREENS / T.screenRow / T.screenIds / T.reach / T.walkTo   Appendix A (the static links)
+--   T.MISSIONS / T.TRAIN / T.START_SCREENS / T.REWARD_SCREENS / T.NAME_SCREENS / T.DECLINE_REPLY   the handler's tables (Content contract 2)
+--   T.loadConversation() / T.requireConversation(lu) / T.handler()   the server's load of Ulvaw'op's template and handler (load errors are recorded)
+--   T.npc / T.talk / T.firstScreen / T.drive   H.converse from the first screen / from a given screen (the reward and start screens run their display actions)
+--   T.spyStarts / T.startedList / T.attempted / T.paid / T.standing / T.items / T.flag / T.held3 / T.statusDiff / T.rewardPilot / T.readyFor / T.nonPilot / T.startAll
+---------------------------------------------------------------------------------------------
+
+T.TEMPLATE = "ulvawop_convo_template"
+T.HANDLER = "ulvawopConvoHandler"
+T.STF = "conversation/tatooine_rebel_tier3"
+T.PREFIX = "@conversation/tatooine_rebel_tier3:"
+T.JAVA = "script/conversation/tatooine_rebel_tier3.java"
+
+T.TEMPLATE_FILE = "mobile/conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua"
+T.HANDLER_FILE = "screenplays/space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua"
+T.NPC_FILE = "mobile/space/arnecio_ulvaw_op.lua"
+T.EKER_HANDLER_FILE = "screenplays/space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua"
+T.SPACE_CONVERSATIONS = "mobile/conversations/space/space_conversations.lua"
+T.SCREENPLAYS = "screenplays/space/screenplays.lua"
+
+T.TEMPLATE_INCLUDE = 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")'
+T.HANDLER_INCLUDE = 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")'
+
+T.STANDING = 100
+T.TIER2_M4_REWARD = "yavin_rebel_16:reward" -- Eker's mission 4 reward key (Q-B1 = A)
+
+T.SCREENS = require("crimson_tier3_ulvawop_screens_data")
+
+function T.screenRow(id)
+	for _, row in ipairs(T.SCREENS) do
+		if row.id == id then
+			return row
+		end
+	end
+end
+
+-- The Appendix A screen ids (144), sorted
+function T.screenIds()
+	local out = {}
+
+	for i, row in ipairs(T.SCREENS) do
+		out[i] = row.id
+	end
+
+	table.sort(out)
+	return out
+end
+
+-- Content contract 2: MISSIONS (head, chain end constant, status key name, screens, zone of the head)
+T.MISSIONS = {}
+
+local END_STRINGS = { "TIER3_QUEST_STRING_1_SIDE3", "TIER3_QUEST_STRING_2_SIDE3", "TIER3_QUEST_STRING_3_SIDE3", "TIER3_QUEST_STRING_4_SIDE4" }
+
+for n = 1, 4 do
+	T.MISSIONS[n] = {
+		n = n, head = T.HEADS[n], endString = END_STRINGS[n], status = T.STATUS[n], offer = "m" .. n .. "_offer", failed = "m" .. n .. "_failed",
+		reward = "m" .. n .. "_reward", zone = T.IDENTITY[T.HEADS[n]].zone, item = T.ITEMS[n],
+	}
+end
+
+-- Content contract 2: TRAIN_CHOICES in menu order. skl = the client skill name (skl_n) that maps the topic reply to the skill (FU-1); trained = the screen the topic links to;
+-- trainedSid = its line
+T.TRAIN = {
+	{ x = "starships", skill = "pilot_rebel_navy_starships_03", reply = "s_c43eb58", trained = "trained_starships", trainedSid = "s_3b851af5", skl = "Space Superiority Fighters" },
+	{ x = "weapons", skill = "pilot_rebel_navy_weapons_03", reply = "s_9b989e16", trained = "trained_weapons", trainedSid = "s_738d24fd", skl = "Equipment C: Advanced Alliance Starship Component Use" },
+	{ x = "procedures", skill = "pilot_rebel_navy_procedures_03", reply = "s_3a9f883c", trained = "trained_procedures", trainedSid = "s_7da64d88", skl = "Advanced Space Combat" },
+	{ x = "droid", skill = "pilot_rebel_navy_droid_03", reply = "s_473d09d8", trained = "trained_droid", trainedSid = "s_aa4f6738", skl = "System Balance Programming" },
+}
+
+T.DECLINE_REPLY = "s_337aea88"
+
+-- Content contract 2: START_SCREENS (16), screen -> mission
+T.START_SCREENS = {
+	m1_accept_d5bf212f = 1, m1_retry_652ff698 = 1, m1_retry_a53ea74c = 1,
+	m2_accept_b1479cf9 = 2, m2_retry_59552474 = 2, m2_retry_3eeaed57 = 2,
+	m3_accept_94a2001c = 3, m3_accept_573af66b = 3, m3_accept_89962192 = 3, m3_accept_404b8a10 = 3, m3_retry_5973a2b6 = 3, m3_retry_665b67d1 = 3,
+	m4_accept_7b3fb40b = 4, m4_accept_2493aca3 = 4, m4_retry_d6643019 = 4, m4_retry_9df42b04 = 4,
+}
+
+-- Content contract 2: REWARD_SCREENS (they are also the training screens), screen -> mission
+T.REWARD_SCREENS = { m1_reward = 1, m2_reward = 2, m3_reward = 3, m4_reward = 4 }
+
+-- Content contract 2: NAME_SCREENS (4)
+T.NAME_SCREENS = { "grounded", "m1_offer", "m1_8a88463d", "m3_83b7fee0" }
+
+-- The accept screens of mission n (START_SCREENS without the retry screens)
+function T.acceptScreens(n)
+	local out = {}
+
+	for id, mission in pairs(T.START_SCREENS) do
+		if mission == n and id:find("_accept_", 1, true) then
+			out[#out + 1] = id
+		end
+	end
+
+	table.sort(out)
+	return out
+end
+
+-- Breadth-first search over the static links of Appendix A from `start`: id -> { ids = {screen ids from start}, replies = {reply sids} }.
+-- `avoid` (set of screen ids) are never entered.
+function T.reach(start, avoid)
+	local found = { [start] = { ids = { start }, replies = {} } }
+	local queue = { start }
+
+	while #queue > 0 do
+		local id = table.remove(queue, 1)
+		local cur = found[id]
+
+		for _, o in ipairs(T.screenRow(id).options) do
+			if found[o[2]] == nil and not (avoid and avoid[o[2]]) then
+				local ids, replies = { table.unpack(cur.ids) }, { table.unpack(cur.replies) }
+
+				ids[#ids + 1] = o[2]
+				replies[#replies + 1] = o[1]
+				found[o[2]] = { ids = ids, replies = replies }
+				queue[#queue + 1] = o[2]
+			end
+		end
+	end
+
+	return found
+end
+
+-- The shortest reply path (and the screens shown) from `from` to `to`; nil when there is none
+function T.walkTo(from, to, avoid)
+	local hit = T.reach(from, avoid)[to]
+
+	if hit == nil then
+		return nil
+	end
+
+	return hit.replies, hit.ids
+end
+
+local function try(label, fn)
+	local ok, err = pcall(fn)
+
+	if not ok then
+		C.loadErrors[#C.loadErrors + 1] = label .. ": " .. tostring(err)
+	end
+end
+
+local loadedB = false
+
+-- The server's load of Ulvaw'op's template and handler (after the squadron files). A missing production file is recorded in the load problems, not raised.
+function T.loadConversation()
+	T.load()
+
+	if loadedB then
+		return
+	end
+
+	loadedB = true
+	try("ulvawop_convo.lua", function() H.loadMobile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua") end)
+	try("ulvawopConvoHandler.lua", function() H.loadScreenplay("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua") end)
+end
+
+-- Fails with the load problems when the template or handler could not be loaded (a readable red phase)
+function T.requireConversation(lu)
+	T.loadConversation()
+	lu.assertNotNil(H.conversationTemplateTable(T.TEMPLATE), T.TEMPLATE .. " is not registered by addConversationTemplate (crimson-phoenix-tier3-ulvawop). Load problems: " .. T.problems())
+	lu.assertNotNil(rawget(_G, T.HANDLER), T.HANDLER .. " is not defined (crimson-phoenix-tier3-ulvawop). Load problems: " .. T.problems())
+end
+
+function T.handler()
+	T.loadConversation()
+
+	return H.expectGlobal(T.HANDLER, "Ulvaw'op's conversation handler (crimson-phoenix-tier3-ulvawop). Load problems: " .. T.problems())
+end
+
+-- Arnecio Ulvaw'op in the Dathomir science outpost (screenplays/cities/dathomir_science_outpost.lua:64)
+function T.npc() return H.newNpc({ name = "Arnecio Ulvaw'op", zone = "dathomir", x = 4.06, z = 0.62, y = 2.34, parentID = 2835570 }) end
+
+local function requireLoaded()
+	T.loadConversation()
+
+	if H.conversationTemplateTable(T.TEMPLATE) == nil or rawget(_G, T.HANDLER) == nil then
+		error("Ulvaw'op's conversation is not loaded (crimson-phoenix-tier3-ulvawop). Load problems: " .. T.problems(), 3)
+	end
+end
+
+-- Talks to Ulvaw'op from the first screen. choices as for H.converse (0-based indexes, option sids, hooks).
+function T.talk(player, choices)
+	requireLoaded()
+
+	return H.converse({ template = T.TEMPLATE, player = player, npc = T.npc(), choices = choices })
+end
+
+function T.firstScreen(player) return T.talk(player)[1].id end
+
+-- Starts a conversation as if the pilot had just chosen a link to screen `startId`, then follows `choices` (reply sids, 0-based indexes or hooks).
+-- Reaches screens no first screen leads to; runScreenHandlers runs for every screen shown, the way the real session does.
+function T.drive(player, startId, choices)
+	requireLoaded()
+
+	local tmpl = H.conversationTemplate(T.TEMPLATE)
+	local handler = rawget(_G, T.HANDLER)
+	local npc = T.npc()
+	local session = H.Fakes.newConversationSession(npc)
+	local transcript = {}
+
+	player.conversationSession = session
+
+	local function show(screen)
+		local options = {}
+
+		for i, o in ipairs(screen.options) do
+			options[i] = { text = o.text, link = o.link }
+		end
+
+		transcript[#transcript + 1] = { id = screen.id, text = screen.dialogText, options = options, params = screen.params, stop = screen.stopConversation }
+	end
+
+	local screen = LuaConversationTemplate(tmpl):getScreen(startId)
+
+	if screen == nil then
+		error("screen '" .. startId .. "' is not in " .. T.TEMPLATE, 2)
+	end
+
+	screen = handler:runScreenHandlers(tmpl, player, npc, 0, screen)
+
+	if screen == nil then
+		error("runScreenHandlers returned no screen for '" .. startId .. "'", 2)
+	end
+
+	session.lastScreen = screen
+	show(screen)
+
+	local i = 1
+
+	while i <= #(choices or {}) and not screen.stopConversation do
+		local choice = choices[i]
+
+		i = i + 1
+
+		if type(choice) == "function" then
+			choice(player)
+		else
+			if type(choice) == "string" then
+				local found
+
+				for k, o in ipairs(screen.options) do
+					if o.text == choice or o.text:sub(-#choice - 1) == ":" .. choice then
+						found = k - 1
+						break
+					end
+				end
+
+				if found == nil then
+					local have = {}
+
+					for k, o in ipairs(screen.options) do
+						have[k] = tostring(o.text)
+					end
+
+					error("screen '" .. screen.id .. "' has no option '" .. choice .. "'; options are: " .. table.concat(have, ", "), 2)
+				end
+
+				choice = found
+			end
+
+			screen = handler:getNextConversationScreen(tmpl, player, choice, npc)
+
+			if screen ~= nil then
+				screen = handler:runScreenHandlers(tmpl, player, npc, choice, screen)
+			end
+
+			session.lastScreen = screen
+
+			if screen == nil then
+				break
+			end
+
+			show(screen)
+		end
+	end
+
+	return transcript
+end
+
+T.ids = C.ids
+T.optionSids = C.optionSids
+T.linksOf = C.linksOf
+
+-- Spies startQuest on all 17 tables (H.spyOn does not call the original); returns { global -> calls }
+function T.spyStarts()
+	local spies = {}
+
+	for _, global in ipairs(T.GLOBALS) do
+		spies[global] = H.spyOn(T.quest(global), "startQuest")
+	end
+
+	return spies
+end
+
+-- "global xN" strings of the quests whose startQuest was called, in T.GLOBALS order
+function T.startedList(spies)
+	local out = {}
+
+	for _, global in ipairs(T.GLOBALS) do
+		if spies[global] ~= nil and #spies[global] > 0 then
+			out[#out + 1] = global .. " x" .. #spies[global]
+		end
+	end
+
+	return out
+end
+
+function T.attempted(player, n) return H.getQuestStatus(player, T.STATUS[n] .. ":attempted") end
+
+function T.paid(player, n) return H.getQuestStatus(player, T.STATUS[n] .. ":reward") end
+
+-- the Rebel standing of the pilot
+function T.standing(player) return player.ghost.factionStanding.rebel or 0 end
+
+-- giveItem templates received by the pilot, in order
+function T.items(player)
+	local out = {}
+
+	for _, call in ipairs(H.Engine.callsTo("giveItem")) do
+		if call[1] == player.inventory then
+			out[#out + 1] = call[2]
+		end
+	end
+
+	return out
+end
+
+-- The EKER_PILOT_KEY value of the pilot ("1", "2", "3") or nil
+function T.flag(player) return H.getQuestStatus(player, T.EKER_PILOT_KEY) end
+
+-- The tier 3 skills (of the four) the pilot holds, in T.TRAIN order
+function T.held3(player)
+	local out = {}
+
+	for _, t in ipairs(T.TRAIN) do
+		if CreatureObject(player):hasSkill(t.skill) then
+			out[#out + 1] = t.skill
+		end
+	end
+
+	return out
+end
+
+function T.free() return H.Engine.callsTo("awardSkill") end
+function T.bought() return H.Engine.callsTo("skillManagerAwardSkill") end
+
+-- The status keys (suffixes after the player id) whose value differs between two snapshots of Fakes.questStatus (M.snapshot(player).status)
+function T.statusDiff(player, before, after)
+	local id, out = tostring(player.objectID), {}
+
+	for key, value in pairs(after) do
+		if before[key] ~= value then
+			out[#out + 1] = (key:sub(1, #id) == id) and key:sub(#id + 1) or key
+		end
+	end
+
+	for key in pairs(before) do
+		if after[key] == nil then
+			out[#out + 1] = (key:sub(1, #id) == id) and key:sub(#id + 1) or key
+		end
+	end
+
+	table.sort(out)
+	return out
+end
+
+-- "mission n is won and unpaid, missions 1..n-1 are paid with their skills chosen (count n - 1)": the pilot a reward screen opens for
+function T.rewardPilot(n, extra)
+	local o = { missions = n - 1, t3 = n - 1, state = "won" }
+
+	for k, v in pairs(extra or {}) do
+		o[k] = v
+	end
+
+	return T.pilot(o)
+end
+
+-- "missions 1..n-1 won and paid with their skills chosen": the pilot mission n is offered to
+function T.readyFor(n, extra)
+	local o = { missions = n - 1, t3 = n - 1 }
+
+	for k, v in pairs(extra or {}) do
+		o[k] = v
+	end
+
+	return T.pilot(o)
+end
+
+-- A pilot who is not a pilot at all (no pilot skill, no squadron)
+function T.nonPilot(extra)
+	local o = { pilot = false, squadron = false, t1 = 0, t2 = 0, ekerMissions = 0, graduated = false }
+
+	for k, v in pairs(extra or {}) do
+		o[k] = v
+	end
+
+	return T.pilot(o)
+end
+
+-- Starts all 17 quest tables (registers them, the way the runtime tests do) so a real startQuest can run
+function T.startAll()
+	for _, global in ipairs(T.GLOBALS) do
+		T.quest(global):start()
+	end
 end
 
 return T

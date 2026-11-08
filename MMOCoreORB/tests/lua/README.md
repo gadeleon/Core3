@@ -1315,3 +1315,21 @@ waypoint) to General Ufwol (not ported), and the wiring of his mobile (conversab
   links (27 in the four briefings, one in the hand-off).
 - Existing tests this feature edited: the 15 `FIXTURE_COUNTS` assertions (73 -> 74, `space_convo_client_strings_data.lua` gains the entry and the header line), the two include-line
   assertions of `test_crimson_tier1_data.lua` and of `test_crimson_tier2_eker_wiring.lua` (lines 81 and 126 are now live).
+### Crimson Phoenix tier 4: General Ufwol's missions (crimson-phoenix-tier4-ufwol-missions)
+
+Part A of Crimson Phoenix tier 4, the last tier of the last squadron: the 17 `tatooine_rebel_tier4_*` quest tables (13 names: four missions with their success and failure splits, plus the four
+duties, which all share the name `tatooine_rebel_tier4_1` with the mission 1 battle head), the `TIER4_*` constants, `TIER4_MET_KEY` and `resetUfwolQuests`. There is no conversation and nothing
+grants these quests in game until Part B (`crimson-phoenix-tier4-ufwol`), which extends `crimson_tier4_data.lua` below a "Part B" marker. Every mission head is BIDIRECTIONAL (5 s both ways), patrol
+1_b is the one PATROL_POINT split (point 5, 5 s, to surprise 1_c), recovery 2 is the first BIDIRECTIONAL recovery, and two chains cross zones: delivery 2_a picks up in Dathomir and delivers in
+Yavin 4 (`deliveryZone`), and assassinate 4 (Endor) fails into battle 4_b (Dathomir), which sets up when the pilot enters `space_dathomir`.
+- Fixtures (byte copies of SWG-Source, `cp`; excerpts made with `sed -n`): the 17 quest tables under `fixtures/spacequest/<type>/tatooine_rebel_tier4_*.tab` (two path components tell the five
+  same-name tables apart) and the buildout excerpts `fixtures/space_zones/buildout/space_{dathomir,endor,dantooine,yavin4}.crimson_tier4_points.tab` (header rows plus 33 + 24 + 4 + 1 nav point
+  rows). `tatooine_rebel_tier5` (never granted) is not copied. No `.sids` fixture, so `FIXTURE_COUNTS` stays at 74 entries (Part B makes it 75).
+- `crimson_tier4_data.lua`: `U.GLOBALS` / `U.IDENTITY`, `U.M1` .. `U.M4` / `U.CHAINS` / `U.DUTIES` / `U.BRANCHES`, `U.expected()` (Appendix B, every key of every table), `U.POINTS` (62 nav
+  points), the 17 `TIER4_*` constants (`U.QUEST_STRINGS`), `U.MET_KEY`, `U.statusKeys()` (the 9 reset keys), `U.pilot{ufwol, ufwolKeys, met, ufwolActive, duty, ...}` (extends
+  `crimson_tier3_data.lua`'s `T.pilot`: a tier 3 graduate with optional tier 4 state), `U.setState` / `U.state` / `U.keysNamed`, `U.flyer`.
+- Tests: `_data` (wiring, whole tables, conformance run against both the production tables and the spec literals), `_runtime` (A-3, A-4, A-5: both branches of every head, the patrol split, the
+  cross-zone delivery through `delivery_scenario.lua`, the cross-zone failure split, the duties), `_surrender` (A-6), `_pins` (I-9, against `9f1d5ca210` through `git`; skips once HEAD moves).
+- Existing tests this feature edited: `test_smuggler_tier2_data.lua` (SWG coverage: 409 -> 422 matched names, 425 -> 438 distinct `questName`s) and `test_master_trainer_rebel_surrender.lua`
+  (a Crimson Phoenix surrender runs Socuna's, Eker's, Ulvaw'op's, Ufwol's, then Burke's reset).
+

@@ -1,0 +1,6 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.649292	-0.698751	0.300277	-0.079796	-0.455232	-0.886790	3309.20	3932.73	4319.07	nav_name|4|tatooine_rebel_tier4_1_rescue_duty_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.649292	-0.698751	0.300277	-0.079796	-0.455232	-0.886790	3374.50	4305.29	5044.83	nav_name|4|tatooine_rebel_tier4_1_rescue_duty_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.649550	-0.697123	0.303486	-0.069683	-0.452059	-0.889262	3489.29	4963.18	6327.48	nav_name|4|tatooine_rebel_tier4_1_rescue_duty_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.315706	0.128567	0.940107	0.610267	-0.786183	-0.097423	4016.80	2618.82	3838.55	nav_name|4|tatooine_rebel_tier4_1_rescue_duty_4|$|	script.space.quest_logic.quest_nav_point

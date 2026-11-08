@@ -424,7 +424,7 @@ function TestVortexKiizeteRatchet:setUp() H.reset() end
 -- AC-2: the new entry with its 114 ids
 function TestVortexKiizeteRatchet:test_fixture_counts_holds_kiizetes_file_with_114_ids_in_the_69_entry_table()
 	lu.assertEquals(KD.FIXTURE_COUNTS[K.STF], 114, "FIXTURE_COUNTS[" .. K.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 74, "FIXTURE_COUNTS entries") -- 69 since vortex-tier2-vrovel, 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 75, "FIXTURE_COUNTS entries") -- 69 since vortex-tier2-vrovel, 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol
 end
 
 -- AC-2: the sources that reference string files include Kiizete's file, so the ratchet's referenced == FIXTURE_COUNTS check can hold

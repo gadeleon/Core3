@@ -469,7 +469,7 @@ function TestUfwolWiring:test_the_tier_4_section_and_mission_comments_are_presen
 
 	for _, want in ipairs({
 		"Tier 4 -- General Ufwol (Rori, Rebel outpost; Dathomir, Endor, Yavin 4 and Dantooine systems)",
-		"Trainer: General Ufwol (no conversation yet), Rori Rebel outpost (screenplays/cities/rori_rebel_outpost.lua:49). 17 quest tables for the 13 SWG-Source names tatooine_rebel_tier4_1..4",
+		"Trainer: General Ufwol (conversation ufwolConvoHandler), Rori Rebel outpost (screenplays/cities/rori_rebel_outpost.lua:49). 17 quest tables for the 13 SWG-Source names tatooine_rebel_tier4_1..4",
 		"feature crimson-phoenix-tier4-ufwol-missions",
 		"Mission 2's delivery picks up in Dathomir and delivers in Yavin 4 (deliveryZone); mission 4's failure split hands off from Endor to Dathomir (space_battle tatooine_rebel_tier4_4_b)",
 		"-- Mission 1: Space battle > Assassinate (won) or Patrol > Surprise attack (lost)",
@@ -483,6 +483,9 @@ function TestUfwolWiring:test_the_tier_4_section_and_mission_comments_are_presen
 	}) do
 		lu.assertNotNil(text:find(want, 1, true), "CrimsonPhoenixSquadronScreenplay.lua lacks the text: " .. want)
 	end
+
+	-- crimson-phoenix-tier4-ufwol: the header names the conversation now
+	lu.assertNil(text:find("General Ufwol (no conversation yet)", 1, true), "CSP:1132 still says 'General Ufwol (no conversation yet)'")
 end
 
 ---------------------------------------------------------------------------------------------

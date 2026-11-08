@@ -158,7 +158,7 @@ function TestUlvawopWiring:test_the_template_include_is_uncommented_once_at_line
 	lu.assertEquals(lines[78], "-- Crimson Phoenix Squadron", "space_conversations.lua line 78")
 	lu.assertEquals(lines[79], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 79 (Eker unchanged)")
 	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 80 (Socuna unchanged)")
-	lu.assertEquals(lines[82], '--includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82 (Ufwol) stays commented")
+	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82 (Ufwol) uncommented by crimson-phoenix-tier4-ufwol")
 	lu.assertEquals(#lines, 120, "space_conversations.lua: no line moved (119 lines and the final newline)")
 end
 
@@ -172,7 +172,7 @@ function TestUlvawopWiring:test_the_handler_include_is_uncommented_once_at_line_
 	lu.assertEquals(lines[122], 'includeFile("space/squadrons/CrimsonPhoenixSquadronScreenplay.lua")', "screenplays.lua line 122 (the squadron include loads first)")
 	lu.assertEquals(lines[124], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 124 (Eker unchanged)")
 	lu.assertEquals(lines[125], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 125 (Socuna unchanged)")
-	lu.assertEquals(lines[127], '--includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127 (Ufwol) stays commented")
+	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127 (Ufwol) uncommented by crimson-phoenix-tier4-ufwol")
 	lu.assertEquals(#lines, 189, "screenplays.lua: no line moved (188 lines and the final newline)")
 end
 

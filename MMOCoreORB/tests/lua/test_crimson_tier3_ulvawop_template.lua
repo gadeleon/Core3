@@ -643,7 +643,7 @@ function TestUlvawopFixtures:setUp() H.reset() end
 -- AC-2: the ratchet entry and the count (74 files)
 function TestUlvawopFixtures:test_fixture_counts_holds_ulvawops_file_with_263_ids_as_the_74th_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[T.STF], 263, "FIXTURE_COUNTS[" .. T.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 74, "FIXTURE_COUNTS entries")
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 75, "FIXTURE_COUNTS entries") -- 75 since crimson-phoenix-tier4-ufwol
 end
 
 -- AC-2: nothing is allowed to be unresolved

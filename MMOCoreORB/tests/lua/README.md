@@ -1333,3 +1333,25 @@ Yavin 4 (`deliveryZone`), and assassinate 4 (Endor) fails into battle 4_b (Datho
 - Existing tests this feature edited: `test_smuggler_tier2_data.lua` (SWG coverage: 409 -> 422 matched names, 425 -> 438 distinct `questName`s) and `test_master_trainer_rebel_surrender.lua`
   (a Crimson Phoenix surrender runs Socuna's, Eker's, Ulvaw'op's, Ufwol's, then Burke's reset).
 
+
+### Crimson Phoenix tier 4: General Ufwol's conversation (crimson-phoenix-tier4-ufwol)
+
+Part B of Crimson Phoenix tier 4 and the last feature of the squadron port: General Ufwol's conversation (`ufwol_convo_template`, 136 screens, and `ufwolConvoHandler`) on top of Part A's quest tables.
+Gate order is JF's with the Ulvaw'op hand-off as the ready gate (Q-B1 = A), the first meeting moved ahead of the rewards (D-9), and a grounded gate JF does not have (D-8, user): a Crimson pilot
+with negative Rebel standing or a non-Rebel faction is refused with s_4a4a0211 in a screen of its own (`grounded`, E5, after the squadron gate). Failure lines re-grant their mission on display,
+the training is one click at 1,000,000 XP (Q-B2 = A), missions alternate with skills, and the graduate is sent to Admiral Burke.
+- Fixtures: `fixtures/script/conversation/tatooine_rebel_tier4.java` (byte copy of the SWG file, `cmp`-verified), `fixtures/string/en/conversation/tatooine_rebel_tier4.sids` (generated, 221 ids:
+  `PYTHONDONTWRITEBYTECODE=1 python3 -B tests/lua/tools/gen_client_sids.py conversation/tatooine_rebel_tier4` from `MMOCoreORB/`), and `fixtures/buildout/rori/rori_6_1_ws.crimson_tier4_ufwol.tab`
+  (`sed -n '1p;2p;100p;102p;103p'` of SWG `datatables/buildout/rori/rori_6_1_ws.tab`, CRLF kept). `skills.pilot_rebel_navy_04.tab` is Vortex's. `FIXTURE_COUNTS` is now 75 entries.
+- Data files (not tests): `crimson_tier4_ufwol_screens_data.lua` (Appendix A, 136 rows, from the spec by script), `crimson_tier4_ufwol_client_text.lua` (id -> English text, read-only STF dump of
+  `patch_12_00.tre`), and `crimson_tier4_data.lua` below its "Part B" marker: the template/handler constants, `U.MISSIONS` / `U.TRAIN` / `U.DUTY_SCREENS` / `U.START_SCREENS` / `U.REWARD_SCREENS` /
+  `U.NAME_SCREENS`, `U.NGE_MAP` (the 108 NGE ids with their class T/R/b/P), `U.OFFER_PATHS` (Appendix D), `U.javaRewards()` (the JF reward oracle), the `U.talk` / `U.drive` helpers and a fuller
+  `U.pilot{flag, ulvawopM4Paid, t4, master, mission, paid, squadron, otherQuest, ...}` with `U.offerPilot` / `U.rewardPilot` / `U.trainee` / `U.graduate`. The API mirrors vortex_tier4_data.lua's Part B.
+  `U.restore()` undoes the recorders in reverse order (a recorder installed twice restores the original).
+- Tests: `_wiring` (AC-1: handler tables, mobile template, include lines, spawn against the RBO excerpt, the three comment edits), `_template` (AC-2: the oracle of Appendix A against the JF graph,
+  the NGE map, the client strings and the ratchet; the built template), `_gates` (AC-3: every gate row, grounded, purity, JF's won/failed rules, the helpers), `_flow` (AC-4: meeting, briefing, duties,
+  off track), `_offers` (AC-5, AC-6: every offer route, accepts, re-grant on display), `_rewards` (AC-7, against JF), `_training` (AC-8, all 24 orders), `_graduation` (AC-9, I-7, AC-10 surrender),
+  `_pins` (I-9, against `fbb648f5e5` through `git`; skips once HEAD moves). Measured: JF has 171 NPC lines; its (NPC line, reply, next NPC line) triples of client ids are 89 (the spec says 90),
+  88 kept as static links plus the one `off_track` link C-2 produces.
+- Existing tests this feature edited: the ratchet count 74 -> 75 in 16 files (and `test_space_convo_client_strings.lua`'s header), the SC:82 / SPL:127 include assertions of the tier 1, 2 and 3 tests (now
+  uncommented), and the tier 4 header text in `test_crimson_tier4_missions_data.lua`.

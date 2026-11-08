@@ -33,6 +33,7 @@
 -- crimson-phoenix-tier1-da-la-socuna: Commander Da'la Socuna's conversation/tatooine_rebel_trainer_1 (329 ids, served from patch_12_00.tre) is new and fully resolved (the 72nd file); KNOWN_GAPS stays {}.
 -- crimson-phoenix-tier2-eker-convo: Major Eker's conversation/yavin_rebel_trainer_2 (304 ids, served from patch_12_00.tre) is new and fully resolved (the 73rd file); KNOWN_GAPS stays {}.
 -- crimson-phoenix-tier3-ulvawop: Arnecio Ulvaw'op's conversation/tatooine_rebel_tier3 (263 ids, served from patch_12_00.tre) is new and fully resolved (the 74th file); KNOWN_GAPS stays {}.
+-- crimson-phoenix-tier4-ufwol: General Ufwol's conversation/tatooine_rebel_tier4 (221 ids, served from patch_12_00.tre) is new and fully resolved (the 75th file); KNOWN_GAPS stays {}.
 
 local D = {}
 
@@ -110,6 +111,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/tatooine_privateer_trainer_2"] = 55,
 	["conversation/tatooine_privateer_trainer_shamdon"] = 102,
 	["conversation/tatooine_rebel_tier3"] = 263,
+	["conversation/tatooine_rebel_tier4"] = 221,
 	["conversation/tatooine_rebel_trainer_1"] = 329,
 	["conversation/yavin_rebel_trainer_2"] = 304,
 	["space/space_loot"] = 20,

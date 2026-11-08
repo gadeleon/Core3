@@ -93,7 +93,7 @@ function TestEkerWiring:test_the_template_include_is_uncommented_once_at_line_79
 	lu.assertEquals(lines[78], "-- Crimson Phoenix Squadron", "space_conversations.lua line 78")
 	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 80 (Socuna unchanged)")
 	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 81 uncommented by crimson-phoenix-tier3-ulvawop")
-	lu.assertEquals(lines[82], '--includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82 stays commented")
+	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82 uncommented by crimson-phoenix-tier4-ufwol")
 end
 
 -- AC-1, Content contract 1: the handler include sits uncommented at line 124, after the squadron include; Socuna's stays at 125; the other two stay commented
@@ -106,7 +106,7 @@ function TestEkerWiring:test_the_handler_include_is_uncommented_once_at_line_124
 	lu.assertEquals(lines[124], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 124")
 	lu.assertEquals(lines[125], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 125 (Socuna unchanged)")
 	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 126 uncommented by crimson-phoenix-tier3-ulvawop")
-	lu.assertEquals(lines[127], '--includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127 stays commented")
+	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127 uncommented by crimson-phoenix-tier4-ufwol")
 end
 
 -- AC-1: Part B adds no status key and does not touch the squadron object's flag key

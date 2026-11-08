@@ -576,7 +576,7 @@ function TestEkerFixtures:setUp() H.reset() end
 -- AC-2: the ratchet entry and the count (73 files)
 function TestEkerFixtures:test_fixture_counts_holds_ekers_file_with_304_ids_as_the_73rd_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[E.STF], 304, "FIXTURE_COUNTS[" .. E.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 74, "FIXTURE_COUNTS entries") -- 74 since crimson-phoenix-tier3-ulvawop
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 75, "FIXTURE_COUNTS entries") -- 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol
 end
 
 -- AC-2: nothing is allowed to be unresolved

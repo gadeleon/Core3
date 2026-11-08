@@ -382,9 +382,7 @@ function TestCrimsonT1Wiring:test_the_template_include_is_uncommented_at_line_80
 
 	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 81: uncommented by crimson-phoenix-tier3-ulvawop")
 
-	for _, n in ipairs({ 82 }) do
-		lu.assertTrue((lines[n] or ""):match("^%-%-%s*includeFile%(\"conversations/space/rebel/crimson_phoenix_squadron/[a-z_]+%.lua\"%)$") ~= nil, "space_conversations.lua line " .. n .. ": still a commented Crimson Phoenix placeholder" .. " (" .. tostring(lines[n]) .. ")")
-	end
+	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82: uncommented by crimson-phoenix-tier4-ufwol")
 end
 
 -- AC-1: the handler include sits uncommented at line 125 of screenplays.lua, the other three stay commented, no line moved
@@ -399,9 +397,7 @@ function TestCrimsonT1Wiring:test_the_handler_include_is_uncommented_at_line_125
 
 	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 126: uncommented by crimson-phoenix-tier3-ulvawop")
 
-	for _, n in ipairs({ 127 }) do
-		lu.assertTrue((lines[n] or ""):match("^%-%-%s*includeFile%(\"space/conversations/rebel/crimson_phoenix_squadron/[A-Za-z]+ConvoHandler%.lua\"%)$") ~= nil, "screenplays.lua line " .. n .. ": still a commented Crimson Phoenix placeholder" .. " (" .. tostring(lines[n]) .. ")")
-	end
+	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127: uncommented by crimson-phoenix-tier4-ufwol")
 end
 
 -- Scope (broker check): the broker's waypoint names Da'la Socuna and the trainer that stands at the Mos Espa cantina is the one with the conversation

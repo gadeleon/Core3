@@ -79,7 +79,7 @@ includeFile("conversations/space/rebel/willham_burke_convo.lua")
 includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")
 includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")
 includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")
---includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")
+includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")
 
 -- Havoc Squadron (Arkon)
 includeFile("conversations/space/rebel/havoc_squadron/kreezo_convo.lua")

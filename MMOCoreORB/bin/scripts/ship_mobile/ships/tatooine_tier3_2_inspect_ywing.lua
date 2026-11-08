@@ -20,6 +20,7 @@ tatooine_tier3_2_inspect_ywing = ShipAgent:new {
 	color2 = 4,
 	texture = 1,
 	questLoot = "tatooine_tier3_2_inspect",
+	cargoString = "thermal_bomb", -- SWG space_mobile cargo tatooine_tier3_2_inspect (inspect_cargo row thermal_bomb, 2 of 7 rows); inspect quest tatooine_rebel_tier3_2 (feature crimson-phoenix-tier3-ulvawop-missions)
 	appearance = "rebel_officer",
 
 	tauntType = "rebel_low",

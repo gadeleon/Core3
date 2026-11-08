@@ -1,4 +1,4 @@
--- Commander Da'la Socuna (Crimson Phoenix Squadron tier 1, Mos Espa cantina) conversation handler; ported from SWG-Source tatooine_rebel_trainer_1.java with the pre-NGE client lines (feature crimson-phoenix-tier1-da-la-socuna). Training is one click per skill, free choice (pre-NGE); the promotion screen hands off to Major Eker (tier 2, not ported yet) through CrimsonPhoenixSquadronScreenplay.EKER_PILOT_KEY.
+-- Commander Da'la Socuna (Crimson Phoenix Squadron tier 1, Mos Espa cantina) conversation handler; ported from SWG-Source tatooine_rebel_trainer_1.java with the pre-NGE client lines (feature crimson-phoenix-tier1-da-la-socuna). Training is one click per skill, free choice (pre-NGE); the promotion screen hands off to Major Eker (tier 2, ekerConvoHandler) through CrimsonPhoenixSquadronScreenplay.EKER_PILOT_KEY.
 local SpaceHelpers = require("utils.space_helpers")
 
 socunaConvoHandler = conv_handler:new {}

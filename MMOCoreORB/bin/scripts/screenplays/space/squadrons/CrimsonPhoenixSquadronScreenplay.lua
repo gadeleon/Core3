@@ -1129,7 +1129,7 @@ registerScreenPlay("space_battle_tatooine_rebel_tier3_4_d", true)
 
 --[[
 	Tier 4 -- General Ufwol (Rori, Rebel outpost; Dathomir, Endor, Yavin 4 and Dantooine systems)
-	Trainer: General Ufwol (no conversation yet), Rori Rebel outpost (screenplays/cities/rori_rebel_outpost.lua:49). 17 quest tables for the 13 SWG-Source names tatooine_rebel_tier4_1..4, their success and failure splits and the four tier 4 duties (space_battle, assassinate, patrol, destroy_surpriseattack, recovery, delivery, survival, destroy_duty, escort_duty, recovery_duty, rescue_duty), from datatables/spacequest and tatooine_rebel_tier4.java; feature crimson-phoenix-tier4-ufwol-missions
+	Trainer: General Ufwol (conversation ufwolConvoHandler), Rori Rebel outpost (screenplays/cities/rori_rebel_outpost.lua:49). 17 quest tables for the 13 SWG-Source names tatooine_rebel_tier4_1..4, their success and failure splits and the four tier 4 duties (space_battle, assassinate, patrol, destroy_surpriseattack, recovery, delivery, survival, destroy_duty, escort_duty, recovery_duty, rescue_duty), from datatables/spacequest and tatooine_rebel_tier4.java; feature crimson-phoenix-tier4-ufwol-missions
 	Mission 2's delivery picks up in Dathomir and delivers in Yavin 4 (deliveryZone); mission 4's failure split hands off from Endor to Dathomir (space_battle tatooine_rebel_tier4_4_b)
 ]]
 

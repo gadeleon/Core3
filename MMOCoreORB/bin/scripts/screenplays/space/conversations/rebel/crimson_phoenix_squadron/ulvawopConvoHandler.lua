@@ -1,4 +1,4 @@
--- Arnecio Ulvaw'op (Crimson Phoenix Squadron tier 3) conversation handler; ported from SWG-Source tatooine_rebel_tier3.java (JU). One-click, free-choice free training and the hand-off to General Ufwol (not ported yet): pre-NGE client lines (feature crimson-phoenix-tier3-ulvawop).
+-- Arnecio Ulvaw'op (Crimson Phoenix Squadron tier 3) conversation handler; ported from SWG-Source tatooine_rebel_tier3.java (JU). One-click, free-choice free training and the hand-off to General Ufwol (tier 4, ufwolConvoHandler): pre-NGE client lines (feature crimson-phoenix-tier3-ulvawop).
 local SpaceHelpers = require("utils.space_helpers")
 
 ulvawopConvoHandler = conv_handler:new {}

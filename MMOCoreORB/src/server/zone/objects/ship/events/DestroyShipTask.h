@@ -3,6 +3,7 @@
 
 #include "server/zone/SpaceZone.h"
 #include "server/zone/objects/ship/ShipObject.h"
+#include "server/zone/objects/ship/events/HyperspaceToLocationTask.h"
 #include "server/zone/objects/ship/ComponentSlots.h"
 #include "server/zone/objects/ship/ShipComponentFlag.h"
 #include "server/zone/managers/space/SpaceManager.h"
@@ -25,6 +26,44 @@ public:
 
 		sequenceStamp = System::getMiliTime();
 		iteration = 0;
+	}
+
+	static bool isBattlefieldZone(const String& zoneName) {
+		return zoneName == "space_light1" || zoneName == "space_heavy1";
+	}
+
+	bool returnFromBattlefield(ShipObject* ship, CreatureObject* pilot, const String& zoneName) {
+		if (pilot == nullptr || !isBattlefieldZone(zoneName)) {
+			return false;
+		}
+
+		String returnZone = ship->getBattlefieldReturnZone();
+
+		if (returnZone.isEmpty() || isBattlefieldZone(returnZone)) {
+			return false;
+		}
+
+		auto zoneServer = ship->getZoneServer();
+
+		if (zoneServer == nullptr) {
+			return false;
+		}
+
+		auto destination = zoneServer->getZone(returnZone);
+
+		if (destination == nullptr || !destination->isSpaceZone() || ship->isHyperspacing()) {
+			return false;
+		}
+
+		ship->resetShipFaction();
+		ship->setHyperspacing(true);
+
+		Vector3 location = ship->getBattlefieldReturnLocation();
+
+		auto task = new HyperspaceToLocationTask(pilot, ship, returnZone, location, HyperspaceToLocationTask::WARP_ITERATION);
+		task->schedule(6000 + System::random(2000));
+
+		return true;
 	}
 
 	void run() {
@@ -72,6 +111,11 @@ public:
 				auto spaceManager = zone->getSpaceManager();
 
 				if (spaceManager == nullptr) {
+					return;
+				}
+
+				// Destroyed in Kessel or Deep Space: return to the entry station the pilot came from (SWG battlefield.locRespawnLocation)
+				if (returnFromBattlefield(ship, pilot, zone->getZoneName())) {
 					return;
 				}
 

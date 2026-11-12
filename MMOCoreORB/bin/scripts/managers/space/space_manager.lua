@@ -59,7 +59,7 @@ space_dantooine = {
 		{templateFile = "spacestation_imperial", x = -2629.72, z = 3585.8, y = 3269.39, ow = 0.103184, ox = 0.031749, oy = 0.936596, oz = -0.333365, parentid = 0},
 		{templateFile = "spacestation_imperial", x = 178.72, z = -4785.06, y = -6403.03, ow = 0.977105, ox = 0, oy = 0.212757, oz = 0, parentid = 0},
 		{templateFile = "spacestation_dantooine", x = 1358.93, z = -741.97, y = -5901.79, ow = 0.907314, ox = 0.110455, oy = 0.394484, oz = -0.0946762, parentid = 0},
-		{templateFile = "spacestation_rebel", x = -4200, z = -3000, y = -6000, ow = 1, ox = 0, oy = 0, oz = 0, parentid = 0},
+		{templateFile = "spacestation_rebel_entry", x = -4200, z = -3000, y = -6000, ow = 1, ox = 0, oy = 0, oz = 0, parentid = 0},
 		{templateFile = "spacestation_rebel", x = 5522.87, z = 3202, y = 5997.74, ow = -0.236536, ox = -0.031538, oy = 0.954028, oz = -0.181344, parentid = 0},
 		{templateFile = "spacestation_rebel", x = -3979.37, z = 5423.26, y = -4565.81, ow = 0.917577, ox = 0.0791015, oy = 0.387597, oz = -0.0395508, parentid = 0}
 	}
@@ -77,7 +77,7 @@ space_dathomir = {
 space_endor = {
 	spaceStations = {
 		{templateFile = "spacestation_imperial", x = 5773.37, z = -6359.57, y = 6976.04, ow = 0.197218, ox = -0.0157777, oy = 0.978199, oz = 0.0631097, parentid = 0},
-		{templateFile = "spacestation_imperial", x = 6200, z = 5000, y = 6000, ow = 1, ox = 0, oy = 0, oz = 0, parentid = 0},
+		{templateFile = "spacestation_imperial_entry", x = 6200, z = 5000, y = 6000, ow = 1, ox = 0, oy = 0, oz = 0, parentid = 0},
 		{templateFile = "spacestation_imperial", x = -5716.48, z = 7198.22, y = 2009.09, ow = 0.781614, ox = 0.307908, oy = 0.505286, oz = -0.197377, parentid = 0},
 		{templateFile = "spacestation_endor", x = -5268.23, z = -1500.23, y = 5209.39, ow = 0.919533, ox = 0.151784, oy = -0.359617, oz = 0.0457911, parentid = 0}
 	}

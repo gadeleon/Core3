@@ -713,6 +713,8 @@ includeFile("racetracks/racetracks.lua")
 
 --Space
 includeFile("space/screenplays.lua")
+includeFile("space/spacestations/battlefield_entry.lua")
+includeFile("space/spacestations/battlefield_entry_conv_handlers.lua")
 
 --Spawner
 includeFile("spawner/screenplays.lua")

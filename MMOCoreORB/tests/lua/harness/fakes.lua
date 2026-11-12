@@ -338,6 +338,11 @@ function FakeCreature:getSpecies() return self.species or 0 end
 function FakeCreature:isNeutralPilot() return self.pilot == "neutral" end
 function FakeCreature:isRebelPilot() return self.pilot == "rebel" end
 function FakeCreature:isImperialPilot() return self.pilot == "imperial" end
+-- LuaTangibleObject::isRebel / isImperial: faction is the Factions crc (FACTIONREBEL 0x16148850, FACTIONIMPERIAL 0xDB4ACC54)
+Fakes.FACTIONREBEL = 0x16148850
+Fakes.FACTIONIMPERIAL = 0xDB4ACC54
+function FakeCreature:isRebel() return self.faction == Fakes.FACTIONREBEL end
+function FakeCreature:isImperial() return self.faction == Fakes.FACTIONIMPERIAL end
 function FakeCreature:hasCertifiedShip(...) return self.certifiedShip end
 function FakeCreature:playMusicMessage(file) self.music[#self.music + 1] = file end
 function FakeCreature:getConversationSession() return self.conversationSession end
@@ -504,6 +509,16 @@ function FakeShip:getPilot() return self.pilot end
 function FakeShip:getPilotID() return self.pilot and self.pilot.objectID or 0 end
 function FakeShip:getShipFactionHash() return self.factionHash end
 function FakeShip:setHyperspacing(b) self.hyperspacing = b end
+-- LuaSceneObject::checkInConversationRange (station comms); outOfRange = true models a ship too far away
+function FakeShip:checkInConversationRange(pNpc) return not self.outOfRange end
+-- LuaShipObject::setBattlefieldReturnPoint (battlefield entry stations): counted
+function FakeShip:setBattlefieldReturnPoint() self.battlefieldReturnSet = (self.battlefieldReturnSet or 0) + 1 end
+-- LuaShipObject::warpToLocation (battlefield entry stations): recorded, returns true
+function FakeShip:warpToLocation(pPlayer, zone, x, z, y)
+	self.warpCalls = self.warpCalls or {}
+	self.warpCalls[#self.warpCalls + 1] = { player = pPlayer, zone = zone, x = x, z = z, y = y }
+	return true
+end
 -- LuaShipObject::getShipFactionString (SpaceHelpers:getPlayerShipFactionString); defaults to "rebel"
 function FakeShip:getShipFactionString() return self.shipFactionString or "rebel" end
 

@@ -5,6 +5,8 @@
 #include "server/zone/objects/intangible/ShipControlDevice.h"
 #include "server/zone/objects/intangible/tasks/StoreShipTask.h"
 #include "server/zone/objects/ship/events/DestroyShipTask.h"
+#include "server/zone/objects/ship/events/HyperspaceToLocationTask.h"
+#include "server/zone/Zone.h"
 
 const char LuaShipObject::className[] = "LuaShipObject";
 
@@ -28,6 +30,8 @@ Luna<LuaShipObject>::RegType LuaShipObject::Register[] = {
 	{ "isLowerTurretFunctional", &LuaShipObject::isLowerTurretFunctional },
 	{ "getShipName", &LuaShipObject::getShipName },
 	{ "setHyperspacing", &LuaShipObject::setHyperspacing },
+	{ "warpToLocation", &LuaShipObject::warpToLocation },
+	{ "setBattlefieldReturnPoint", &LuaShipObject::setBattlefieldReturnPoint },
 	{ "getShipFactionString", &LuaShipObject::getShipFactionString },
 	{ "setShipFactionString", &LuaShipObject::setShipFactionString },
 	{ "getShipFactionHash", &LuaShipObject::getShipFactionHash },
@@ -348,6 +352,76 @@ int LuaShipObject::setHyperspacing(lua_State* L) {
 	Locker lock(realObject);
 
 	realObject->setHyperspacing(val);
+
+	return 0;
+}
+
+// warpToLocation(pPlayer, zoneName, x, z, y): warps the ship and everyone aboard to a point in an enabled space
+// zone with no hyperspace sequence (SWG warpPlayer), e.g. the Kessel and Deep Space battlefield entry stations.
+// Reuses the zone switch of HyperspaceToLocationTask. Returns true if the warp was started.
+int LuaShipObject::warpToLocation(lua_State* L) {
+	int numberOfArguments = lua_gettop(L) - 1;
+
+	if (numberOfArguments != 5) {
+		realObject->error() << "Improper number of arguments in LuaShipObject::warpToLocation.";
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	CreatureObject* player = (CreatureObject*)lua_touserdata(L, -5);
+	String zoneName = lua_tostring(L, -4);
+	float x = lua_tonumber(L, -3);
+	float z = lua_tonumber(L, -2);
+	float y = lua_tonumber(L, -1);
+
+	auto zoneServer = realObject->getZoneServer();
+
+	if (player == nullptr || zoneServer == nullptr) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	auto newZone = zoneServer->getZone(zoneName);
+
+	if (newZone == nullptr || !newZone->isSpaceZone()) {
+		player->sendSystemMessage("You are unable to hyperspace to that location at this time.");
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	Locker lock(realObject);
+
+	if (realObject->isHyperspacing()) {
+		StringIdChatParameter param;
+		param.setStringId("@space/space_interaction:hyperspace_in_progress");
+		player->sendSystemMessage(param);
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	realObject->setHyperspacing(true);
+
+	HyperspaceToLocationTask* task = new HyperspaceToLocationTask(player, realObject, zoneName, Vector3(x, y, z), HyperspaceToLocationTask::WARP_ITERATION);
+	task->schedule(500);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// setBattlefieldReturnPoint(): remembers the ship's current zone and position as where it returns to if it is destroyed
+// in Kessel or Deep Space (DestroyShipTask). Called by the battlefield entry stations just before the warp.
+int LuaShipObject::setBattlefieldReturnPoint(lua_State* L) {
+	auto zone = realObject->getZone();
+
+	if (zone == nullptr) {
+		return 0;
+	}
+
+	Locker lock(realObject);
+
+	Vector3 position = realObject->getPosition();
+
+	realObject->setBattlefieldReturnPoint(zone->getZoneName(), position);
 
 	return 0;
 }

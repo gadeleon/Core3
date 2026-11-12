@@ -627,7 +627,7 @@ function TestEzkielFixtures:setUp() H.reset() end
 -- AC-2: the ratchet entry and the count (70 files)
 function TestEzkielFixtures:test_fixture_counts_holds_ezkiels_file_with_226_ids_as_the_70th_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[W.STF], 226, "FIXTURE_COUNTS[" .. W.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 75, "FIXTURE_COUNTS entries") -- 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 78, "FIXTURE_COUNTS entries") -- 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
 end
 
 -- AC-2: nothing is allowed to be unresolved

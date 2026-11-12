@@ -924,7 +924,7 @@ function TestUfwolFixtures:setUp() H.reset() end
 -- AC-2: the ratchet entry and the count (71 files)
 function TestUfwolFixtures:test_fixture_counts_holds_ufwols_file_with_221_ids_as_the_75th_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[E.STF], 221, "FIXTURE_COUNTS[" .. E.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 75, "FIXTURE_COUNTS entries") -- 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 78, "FIXTURE_COUNTS entries") -- 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
 end
 
 -- AC-2: nothing is allowed to be unresolved

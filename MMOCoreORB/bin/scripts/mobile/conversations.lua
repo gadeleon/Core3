@@ -303,6 +303,7 @@ includeFile("conversations/racetracks/nashalconversation.lua")
 
 -- Space
 includeFile("conversations/space/space_conversations.lua")
+includeFile("conversations/space/battlefield_entry_stations.lua")
 
 -- Record Keepers
 includeFile("conversations/record_keepers/planet_record_keeper_dantooine_conv.lua")

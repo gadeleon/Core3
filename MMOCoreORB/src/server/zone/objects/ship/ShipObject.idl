@@ -80,6 +80,11 @@ class ShipObject extends TangibleObject {
 	@dereferenced
 	protected SpaceLaunchPoint launchPoint;
 
+	// Where a ship destroyed in Kessel or Deep Space returns to: the space zone and position the pilot left from at a
+	// battlefield entry station (SWG battlefield.locRespawnLocation). The zone is stored as the launch point's zone name.
+	@dereferenced
+	protected SpaceLaunchPoint battlefieldReturnPoint;
+
 	@weakReference
 	protected SceneObject pilotChair;
 
@@ -1856,6 +1861,22 @@ class ShipObject extends TangibleObject {
 	public native boolean isStarterShip();
 
 	public native boolean isSorosuubSpaceYacht();
+
+	public void setBattlefieldReturnPoint(final string zoneName, @dereferenced Vector3 location) {
+		battlefieldReturnPoint.setGroundZoneName(zoneName);
+		battlefieldReturnPoint.setLocation(location.getX(), location.getZ(), location.getY());
+	}
+
+	@dereferenced
+	public string getBattlefieldReturnZone() {
+		return battlefieldReturnPoint.getGoundZoneName();
+	}
+
+	@local
+	@dereferenced
+	public Vector3 getBattlefieldReturnLocation() {
+		return battlefieldReturnPoint.getLocation();
+	}
 
 	public void setSpaceLaunchZone(string zoneName) {
 		launchPoint.setGroundZoneName(zoneName);

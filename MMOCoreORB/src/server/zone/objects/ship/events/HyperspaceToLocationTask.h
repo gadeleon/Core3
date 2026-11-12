@@ -20,12 +20,16 @@ class HyperspaceToLocationTask : public Task {
 	int iteration;
 
 public:
-	HyperspaceToLocationTask(CreatureObject* pl, ShipObject* ship, const String& zoneName, const Vector3& location) : Task() {
+	// Iteration WARP_ITERATION skips the hyperspace route, orientation and countdown and goes straight to the
+	// zone switch: a warp (SWG warpPlayer), as the Kessel and Deep Space battlefield entry stations use.
+	static const int WARP_ITERATION = 10;
+
+	HyperspaceToLocationTask(CreatureObject* pl, ShipObject* ship, const String& zoneName, const Vector3& location, int startIteration = 0) : Task() {
 		play = pl;
 		this->zoneName = zoneName;
 		this->location = location;
 		this->ship = ship;
-		iteration = 0;
+		iteration = startIteration;
 	}
 
 	void run() {

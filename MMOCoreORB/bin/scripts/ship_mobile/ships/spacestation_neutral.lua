@@ -23,9 +23,9 @@ spacestation_neutral = ShipAgent:new {
 
 	customShipAiMap = "spaceStations",
 
-	conversationTemplate = "",
-	conversationMobile = "",
-	conversationMessage = "", --Too Far Message
+	conversationTemplate = "battlefield_entry_neutral_convotemplate",
+	conversationMobile = "object/mobile/shared_space_comm_hutt_02.iff",
+	conversationMessage = "@conversation/battlefield_entry_station_neutral:s_3b257674", -- Too Far Message
 }
 
 ShipAgentTemplates:addShipAgentTemplate(spacestation_neutral, "spacestation_neutral")

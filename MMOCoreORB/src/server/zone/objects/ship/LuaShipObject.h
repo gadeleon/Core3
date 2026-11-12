@@ -39,6 +39,8 @@ public:
 	int isLowerTurretFunctional(lua_State* L);
 	int getShipName(lua_State* L);
 	int setHyperspacing(lua_State* L);
+	int warpToLocation(lua_State* L);
+	int setBattlefieldReturnPoint(lua_State* L);
 	int getShipFactionString(lua_State* L);
 	int setShipFactionString(lua_State* L);
 	int getShipFactionHash(lua_State* L);

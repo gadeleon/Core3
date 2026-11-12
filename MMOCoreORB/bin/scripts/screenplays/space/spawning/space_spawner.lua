@@ -362,6 +362,8 @@ function SpaceSpawnerScreenPlay:spawnShipAgent(pNil, indexString)
 
 	ShipAiAgent(pShipAgent):setDespawnOnNoPlayerInRange(false)
 
+	self:applyFactionOverrides(pShipAgent)
+
 	createObserver(SHIPDESTROYED, self.screenplayName, "staticShipDestroyed", pShipAgent)
 
 	if (spawnPatrolType == SHIP_AI_FIXED_PATROL or spawnPatrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
@@ -437,6 +439,8 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 		if pLeadShip ~= nil then
 			ShipAiAgent(pLeadShip):setDespawnOnNoPlayerInRange(false)
 
+			self:applyFactionOverrides(pLeadShip)
+
 			createObserver(SHIPDESTROYED, self.screenplayName, "squadronShipDestroyed", pLeadShip)
 
 			-- Create squadron
@@ -492,6 +496,8 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 
 		ShipAiAgent(pShipAgent):setDespawnOnNoPlayerInRange(false)
 
+		self:applyFactionOverrides(pShipAgent)
+
 		-- Add Observers
 		createObserver(SHIPDESTROYED, self.screenplayName, "squadronShipDestroyed", pShipAgent)
 
@@ -538,6 +544,28 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 
 		::continue::
 	end
+end
+
+-- Optional per-zone faction tweak: removeEnemyFactions = {<ship spaceFaction> = {<faction>, ...}} on a spawner drops those
+-- factions from the enemy list of every ship of that space faction it spawns. Template names are unchanged, so kill counts
+-- by template (master missions) still match.
+function SpaceSpawnerScreenPlay:applyFactionOverrides(pShipAgent)
+	if (pShipAgent == nil or self.removeEnemyFactions == nil) then
+		return
+	end
+
+	local removals = self.removeEnemyFactions[ShipObject(pShipAgent):getShipFactionString()]
+
+	if (removals == nil) then
+		return
+	end
+
+	for i = 1, #removals, 1 do
+		ShipAiAgent(pShipAgent):removeSpaceFactionEnemy(getHashCode(removals[i]))
+	end
+
+	-- The ship entered the zone (and sent its per-viewer aggressive status) before this ran
+	TangibleObject(pShipAgent):broadcastPvpStatusBitmask()
 end
 
 function SpaceSpawnerScreenPlay:assignFixedPatrolpoints(pShipAgent, totalToAdd, patrolPoints)

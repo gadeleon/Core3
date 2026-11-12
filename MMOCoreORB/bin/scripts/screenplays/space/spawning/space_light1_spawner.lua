@@ -5,6 +5,14 @@ SpaceLight1Spawner = SpaceSpawnerScreenPlay:new {
 
 	spaceZone = "space_light1",
 
+	-- Pre-CU Kessel (user recollection, 2026-11-12): Rebel ships are not aggressive (yellow) to Smuggler's Alliance
+	-- pilots, who fly as hutt from tier 3 (valarian at tier 2), while Imperials stay aggressive (red). SWG-Source's
+	-- NGE-era space_mobile.tab lists hutt among every tier 5 Rebel ship's enemies; that stays true in other zones.
+	-- The ships remain attackable (hutt is not a Rebel ally).
+	removeEnemyFactions = {
+		rebel = {"hutt"},
+	},
+
 	shipSpawns = {
 		{spawnName = "rebel_tier5Patrol_12", spawnType = SHIP_SPAWN_SINGLE, x = -3199, z = -6013, y = 5343, patrolType = SHIP_AI_SINGLE_PATROL_ROTATION, minRespawn = 100, maxRespawn = 300, minSpawnDistance = 64, maxSpawnDistance = 128, totalSpawns = 6,
 			patrolsToAssign = 5, fixedPatrolPoints = {"rebel_tier5Patrol_12_00", "rebel_tier5Patrol_12_01", "rebel_tier5Patrol_12_02", "rebel_tier5Patrol_12_03", "rebel_tier5Patrol_12_04", "rebel_tier5Patrol_12_05", "rebel_tier5Patrol_12_06", "rebel_tier5Patrol_12_07"},

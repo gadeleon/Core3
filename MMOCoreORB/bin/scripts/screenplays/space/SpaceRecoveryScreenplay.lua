@@ -457,6 +457,10 @@ function SpaceRecoveryScreenplay:spawnRecoveryShip(pPlayer)
 		-- Assign to Squadron of main ship
 		ShipAiAgent(pEscortShip):assignToSquadron(pShipAgent)
 
+		-- SWG escorts guard their charge and only fight the player; keep faction rules from turning them on it
+		-- (e.g. Imperial TIEs list blacksun as an enemy but escort a Black Sun transport)
+		self:allyEscortWithRecoveryShip(pEscortShip, pShipAgent)
+
 		-- Assign the flight path
 		self:assignEscortPoints(pEscortShip, availablePoints)
 
@@ -481,6 +485,28 @@ function SpaceRecoveryScreenplay:spawnRecoveryShip(pPlayer)
 
 	-- Mission update
 	CreatureObject(pPlayer):sendSystemMessage("@spacequest/" .. self.questType .. "/" .. self.questName .. ":arrival_phase_2")
+end
+
+function SpaceRecoveryScreenplay:allyEscortWithRecoveryShip(pEscortShip, pRecoveryShip)
+	if (pEscortShip == nil or pRecoveryShip == nil) then
+		return
+	end
+
+	local recoveryFactionHash = ShipObject(pRecoveryShip):getShipFactionHash()
+	local escortFactionHash = ShipObject(pEscortShip):getShipFactionHash()
+
+	if (recoveryFactionHash == escortFactionHash) then
+		return
+	end
+
+	if (recoveryFactionHash ~= 0) then
+		ShipAiAgent(pEscortShip):removeSpaceFactionEnemy(recoveryFactionHash)
+		ShipAiAgent(pEscortShip):addSpaceFactionAlly(recoveryFactionHash)
+	end
+
+	if (escortFactionHash ~= 0) then
+		ShipAiAgent(pRecoveryShip):removeSpaceFactionEnemy(escortFactionHash)
+	end
 end
 
 function SpaceRecoveryScreenplay:assignEscortPoints(pShipAgent, flightPath)

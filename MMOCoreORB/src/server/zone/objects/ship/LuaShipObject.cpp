@@ -167,10 +167,20 @@ int LuaShipObject::repairShip(lua_State* L) {
 
 	Locker clock(player, realObject);
 
-	TransactionLog logCash(player, realObject, TrxCode::SHIPPINGSYSTEM, totalCost, true);
+	// SWG space_crafting.canAffordShipRepairs checks money.MT_TOTAL: cash first, then bank
+	int fromCash = Math::min(totalCost, player->getCashCredits());
+	int fromBank = totalCost - fromCash;
+
+	if (fromCash > 0) {
+		TransactionLog logCash(player, realObject, TrxCode::SHIPPINGSYSTEM, fromCash, true);
+	}
+
+	if (fromBank > 0) {
+		TransactionLog logBank(player, realObject, TrxCode::SHIPPINGSYSTEM, fromBank, false);
+	}
 
 	// Deduct cost from player
-	player->subtractCashCredits(totalCost);
+	player->subtractCredits(totalCost);
 
 	return 0;
 }

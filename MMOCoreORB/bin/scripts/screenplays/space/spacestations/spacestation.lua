@@ -84,7 +84,8 @@ function SpaceStationScreenPlay:hasCreditsForRepair(pPlayer, pShip, repairPercen
 		return false
 	end
 
-	local playerCash = CreatureObject(pPlayer):getCashCredits()
+	-- SWG space_crafting.canAffordShipRepairs: cash and bank together (money.MT_TOTAL); LuaShipObject::repairShip charges cash first
+	local playerCash = CreatureObject(pPlayer):getCashCredits() + CreatureObject(pPlayer):getBankCredits()
 
 	if (self.DEBUG_STATION_REPAIR) then
 		print("hasCreditsForRepair -- Repair Percentage: " .. repairPercent .. " Total repair cost estimate = " .. totalCost .. " Player Cash Balance: " .. playerCash)
@@ -135,7 +136,8 @@ function SpaceStationScreenPlay:repairShip(pPlayer, pShip, repairPercent, pSpace
 		return
 	end
 
-	local playerCash = CreatureObject(pPlayer):getCashCredits()
+	-- SWG space_crafting.canAffordShipRepairs: cash and bank together (money.MT_TOTAL); LuaShipObject::repairShip charges cash first
+	local playerCash = CreatureObject(pPlayer):getCashCredits() + CreatureObject(pPlayer):getBankCredits()
 
 	if (self.DEBUG_STATION_REPAIR) then
 		print("Repairing Ship -- Total Cost: " .. totalCost .. " Repair Percent: " .. repairPercent .. " Player Cash: " .. playerCash)

@@ -172,6 +172,11 @@ public:
 					Locker memberLock(shipMember, shipObject);
 
 					shipMember->sendObjectsToOwner(true);
+
+					// Only the ship switches zones now, so passengers never pass through
+					// PlayerSpaceZoneComponent::switchZone; fire its ZONESWITCHED here so
+					// zone-entry observers (space quests) still see the jump.
+					shipMember->notifyObservers(ObserverEventType::ZONESWITCHED, nullptr, zoneName.hashCode());
 				} catch (...) {
 					shipMember->error() << "Failed to send scene objects during hyperspace - ShipID: " << shipObject->getObjectID() << " Ship Member ID: " << shipMember->getObjectID();
 				}

@@ -82,6 +82,28 @@ function SpaceMasterDestroyScreenplay:dropObservers(pPlayer)
 	end
 end
 
+-- The four master missions (squadrons/MasterTrainerScreenplay.lua), looked up when a player logs in
+SpaceMasterDestroyScreenplay.MISSIONS = {
+	"destroy_master_imperial_1", "destroy_master_imperial_2", "destroy_master_rebel_1", "destroy_master_rebel_2",
+}
+
+-- Called by PlayerTriggers:playerLoggedIn, which runs before the LOGGEDIN observers fire. A journal entry can outlive its
+-- persistent observers (lost from the observers database, for example by a Berkeley DB recovery); without them no kill
+-- counts. Recreating them here lets the restored onLoggedIn observer run in the same login.
+function SpaceMasterDestroyScreenplay.restoreObservers(pPlayer)
+	if (pPlayer == nil) then
+		return
+	end
+
+	for i = 1, #SpaceMasterDestroyScreenplay.MISSIONS, 1 do
+		local mission = _G[SpaceMasterDestroyScreenplay.MISSIONS[i]]
+
+		if (mission ~= nil and SpaceHelpers:isSpaceQuestActive(pPlayer, mission.questType, mission.questName)) then
+			mission:ensureObservers(pPlayer)
+		end
+	end
+end
+
 function SpaceMasterDestroyScreenplay:clearProgress(pPlayer)
 	deleteScreenPlayData(pPlayer, self.className, "killCount")
 	deleteStringData(self:lastKillKey(pPlayer))

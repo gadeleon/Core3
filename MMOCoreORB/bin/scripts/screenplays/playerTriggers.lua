@@ -6,6 +6,9 @@ function PlayerTriggers:playerLoggedIn(pPlayer)
 	end
 	ServerEventAutomation:playerLoggedIn(pPlayer)
 	BestineElection:playerLoggedIn(pPlayer)
+	if (SpaceMasterDestroyScreenplay ~= nil) then
+		SpaceMasterDestroyScreenplay.restoreObservers(pPlayer)
+	end
 end
 
 function PlayerTriggers:playerLoggedOut(pPlayer)

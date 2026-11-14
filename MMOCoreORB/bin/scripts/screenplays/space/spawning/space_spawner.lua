@@ -366,20 +366,24 @@ function SpaceSpawnerScreenPlay:spawnShipAgent(pNil, indexString)
 
 	createObserver(SHIPDESTROYED, self.screenplayName, "staticShipDestroyed", pShipAgent)
 
-	if (spawnPatrolType == SHIP_AI_FIXED_PATROL or spawnPatrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
+	if (spawnPatrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
+		-- SWG patrolNoRecycle: the whole route, first point to last (patrolsToAssign is not used), then shipDestinationReached
+		ShipAiAgent(pShipAgent):setFixedPatrol()
+
+		for _, patrolName in ipairs(spawnTable.fixedPatrolPoints) do
+			ShipAiAgent(pShipAgent):addFixedPatrolPoint(patrolName, false)
+		end
+
+		createObserver(DESTINATIONREACHED, self.screenplayName, "shipDestinationReached", pShipAgent)
+
+		ShipAiAgent(pShipAgent):setSinglePatrolRotation()
+	elseif (spawnPatrolType == SHIP_AI_FIXED_PATROL) then
 		ShipAiAgent(pShipAgent):setFixedPatrol()
 
 		local totalToAdd = spawnTable.patrolsToAssign
 		local patrolPoints = spawnTable.fixedPatrolPoints
 
 		self:assignFixedPatrolpoints(pShipAgent, totalToAdd, patrolPoints)
-
-		-- These patrol ships will have an end desination to despawn or have a task (dock etc)
-		if (spawnPatrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
-			createObserver(DESTINATIONREACHED, self.screenplayName, "shipDestinationReached", pShipAgent)
-
-			ShipAiAgent(pShipAgent):setSinglePatrolRotation()
-		end
 	elseif (spawnPatrolType == SHIP_AI_GUARD_PATROL) then
 		ShipAiAgent(pShipAgent):setMinimumGuardPatrol(spawnTable.minPatrol)
 		ShipAiAgent(pShipAgent):setMaximumGuardPatrol(spawnTable.maxPatrol)
@@ -428,6 +432,7 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 	local squadFormation = self.squadronsShips[squadronName][1]
 	local squadronShipList = self.squadronsShips[squadronName][2]
 	local pLeadShip = nil
+	local squadronIDs = {}
 
 	-- Spawn Lead ShipAiAgent
 	if (spawnListSize > 1) then
@@ -449,28 +454,7 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 			ShipAiAgent(pLeadShip):createSquadron(squadFormation)
 
 			-- Set the patrol types
-			if (patrolType == SHIP_AI_FIXED_PATROL or patrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
-				ShipAiAgent(pLeadShip):setFixedPatrol()
-
-				local totalToAdd = spawnTable.patrolsToAssign
-				local patrolPoints = spawnTable.fixedPatrolPoints
-
-				self:assignFixedPatrolpoints(pLeadShip, totalToAdd, patrolPoints)
-
-				-- These patrol ships will have an end desination to despawn or have a task (dock etc)
-				if (patrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
-					createObserver(DESTINATIONREACHED, self.screenplayName, "squadronDestinationReached", pLeadShip)
-
-					ShipAiAgent(pLeadShip):setSinglePatrolRotation()
-				end
-			elseif (patrolType == SHIP_AI_GUARD_PATROL) then
-				ShipAiAgent(pLeadShip):setMinimumGuardPatrol(spawnTable.minPatrol)
-				ShipAiAgent(pLeadShip):setMaximumGuardPatrol(spawnTable.maxPatrol)
-
-				ShipAiAgent(pLeadShip):setGuardPatrol()
-			else
-				ShipAiAgent(pLeadShip):setRandomPatrol()
-			end
+			self:setLeadShipPatrol(pLeadShip, spawnTable)
 
 			local leadShipID = SceneObject(pLeadShip):getObjectID()
 
@@ -479,6 +463,7 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 			writeStringData(leadShipID .. ":SpawnerName:", spawnTable.spawnName)
 
 			self:trackShip(spawnTable.spawnName, leadShipID)
+			squadronIDs[#squadronIDs + 1] = tostring(leadShipID)
 		else
 			Logger:log(self.screenplayName .. " -- ERROR: Failed to spawn Lead Squadron Ship: " .. leadShipName .. " Squadron Name: " .. squadronName, LT_ERROR)
 		end
@@ -505,6 +490,8 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 		-- Add Observers
 		createObserver(SHIPDESTROYED, self.screenplayName, "squadronShipDestroyed", pShipAgent)
 
+		local isLeader = false
+
 		-- If the lead ship exists, sign it to the same squadron, it will not need to have any flags set on it
 		if (pLeadShip ~= nil) then
 			ShipAiAgent(pShipAgent):assignToSquadron(pLeadShip)
@@ -514,23 +501,20 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 			ShipAiAgent(pShipAgent):createSquadron(squadFormation)
 
 			pLeadShip = pShipAgent
+			isLeader = true
 		end
 
-		-- Set the patrol types
-		if (patrolType == SHIP_AI_FIXED_PATROL) then
+		-- Set the patrol types. The first ship of the list leads when the spawner names no lead ship: it gets the route
+		-- (a single patrol rotation included, as the lead ship above), the others follow the squadron.
+		if (isLeader) then
+			self:setLeadShipPatrol(pShipAgent, spawnTable)
+		elseif (patrolType == SHIP_AI_FIXED_PATROL) then
 			ShipAiAgent(pShipAgent):setFixedPatrol()
 
 			local totalToAdd = spawnTable.patrolsToAssign
 			local patrolPoints = spawnTable.fixedPatrolPoints
 
 			self:assignFixedPatrolpoints(pShipAgent, totalToAdd, patrolPoints)
-
-			-- These patrol ships will have an end desination to despawn or have a task (dock etc)
-			if (patrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
-				createObserver(DESTINATIONREACHED, self.screenplayName, "squadronDestinationReached", pShipAgent)
-
-				ShipAiAgent(pShipAgent):setSinglePatrolRotation()
-			end
 		elseif (patrolType == SHIP_AI_GUARD_PATROL) then
 			ShipAiAgent(pShipAgent):setMinimumGuardPatrol(spawnTable.minPatrol)
 			ShipAiAgent(pShipAgent):setMaximumGuardPatrol(spawnTable.maxPatrol)
@@ -552,8 +536,44 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 		writeStringData(agentID .. ":SpawnerName:", spawnTable.spawnName)
 
 		self:trackShip(spawnTable.spawnName, agentID)
+		squadronIDs[#squadronIDs + 1] = tostring(agentID)
 
 		::continue::
+	end
+
+	-- The squadron's ships, kept on the lead ship for squadronDestinationReached
+	if (pLeadShip ~= nil) then
+		writeStringData(SceneObject(pLeadShip):getObjectID() .. ":SquadronMembers:", table.concat(squadronIDs, ","))
+	end
+end
+
+-- Patrol of a squadron's lead ship. SHIP_AI_SINGLE_PATROL_ROTATION is SWG's patrolNoRecycle: the whole route, first
+-- point to last (patrolsToAssign is not used), then squadronDestinationReached sends the squadron away and schedules
+-- the respawn.
+function SpaceSpawnerScreenPlay:setLeadShipPatrol(pLeadShip, spawnTable)
+	local patrolType = spawnTable.patrolType
+
+	if (patrolType == SHIP_AI_SINGLE_PATROL_ROTATION) then
+		ShipAiAgent(pLeadShip):setFixedPatrol()
+
+		for _, patrolName in ipairs(spawnTable.fixedPatrolPoints) do
+			ShipAiAgent(pLeadShip):addFixedPatrolPoint(patrolName, false)
+		end
+
+		createObserver(DESTINATIONREACHED, self.screenplayName, "squadronDestinationReached", pLeadShip)
+
+		ShipAiAgent(pLeadShip):setSinglePatrolRotation()
+	elseif (patrolType == SHIP_AI_FIXED_PATROL) then
+		ShipAiAgent(pLeadShip):setFixedPatrol()
+
+		self:assignFixedPatrolpoints(pLeadShip, spawnTable.patrolsToAssign, spawnTable.fixedPatrolPoints)
+	elseif (patrolType == SHIP_AI_GUARD_PATROL) then
+		ShipAiAgent(pLeadShip):setMinimumGuardPatrol(spawnTable.minPatrol)
+		ShipAiAgent(pLeadShip):setMaximumGuardPatrol(spawnTable.maxPatrol)
+
+		ShipAiAgent(pLeadShip):setGuardPatrol()
+	else
+		ShipAiAgent(pLeadShip):setRandomPatrol()
 	end
 end
 
@@ -886,24 +906,45 @@ function SpaceSpawnerScreenPlay:squadronDestinationReached(pLeadShipAgent)
 		return 1
 	end
 
-	--[[
-	local agentID = SceneObject(pLeadShipAgent):getObjectID()
-	local tableNum = readData(agentID .. ":SpawnerIndex:")
+	local leadID = SceneObject(pLeadShipAgent):getObjectID()
+	local tableNum = readData(leadID .. ":SpawnerIndex:")
+	local membersKey = leadID .. ":SquadronMembers:"
+	local members = readStringData(membersKey) or ""
 
-	print("squadronDestinationReached called... Agent ID: " .. agentID .. " Spawn Table Index: " .. tableNum)
+	deleteStringData(membersKey)
 
-	-- Delete the data so it does not leak
-	deleteData(agentID .. ":SpawnerIndex:")
-	deleteStringData(agentID .. ":SpawnerName:")
+	-- SWG space_ai leaderSpawnerArrival: every member of the squadron leaves through hyperspace
+	for id in string.gmatch(members, "[^,]+") do
+		local pShip = getSceneObject(tonumber(id))
 
-	local squadronShips = ShipAiAgent(pLeadShipAgent):getSquadronMembers()
+		if (pShip ~= nil and (SceneObject(pShip):getZoneName() or "") ~= "" and not ShipObject(pShip):isShipDestroyed()) then
+			-- No respawn from these removals: the one below covers the squadron
+			dropObserver(SHIPDESTROYED, self.screenplayName, "squadronShipDestroyed", pShip)
 
-	for i = 1, #squadronship, 1 do
+			if (id ~= tostring(leadID)) then
+				dropObserver(DESTINATIONREACHED, self.screenplayName, "squadronDestinationReached", pShip)
+			end
 
-		-- Make sure the destoyed observers are removed
+			deleteData(id .. ":SpawnerIndex:")
+			deleteStringData(id .. ":SpawnerName:")
 
+			ShipObject(pShip):setHyperspacing(true)
+
+			local hyperspaceLocation = ShipObject(pShip):getSpawnPointInFrontOfShip(1000, 5000)
+
+			SceneObject(pShip):setPosition(hyperspaceLocation[1], hyperspaceLocation[2], hyperspaceLocation[3])
+
+			createEvent(1000, "SpaceHelpers", "delayedDestroyShipAgent", pShip, "")
+		end
 	end
-	]]
+
+	if (tableNum == nil or tableNum == 0 or self.shipSpawns[tableNum] == nil) then
+		return 1
+	end
+
+	local spawnTable = self.shipSpawns[tableNum]
+
+	createEvent(getRandomNumber(spawnTable.minRespawn, spawnTable.maxRespawn) * 1000, self.screenplayName, "spawnShipSquadron", nil, tostring(tableNum))
 
 	return 1
 end

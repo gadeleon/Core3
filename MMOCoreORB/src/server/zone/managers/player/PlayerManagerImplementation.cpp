@@ -2277,7 +2277,8 @@ void PlayerManagerImplementation::disseminateSpaceExperience(ShipAiAgent* destru
 			continue;
 		}
 
-		if (entry->getTotalDamage() < 0.5f) {
+		// SWG space_combat.java: attackers above 5% of the ship's total damage share the XP (MINIMUM_DAMAGE_THRESHOLD), at any distance
+		if (entry->getTotalDamage() <= totalDamage * 0.05f) {
 			continue;
 		}
 
@@ -2288,11 +2289,6 @@ void PlayerManagerImplementation::disseminateSpaceExperience(ShipAiAgent* destru
 		}
 
 		Locker shipLock(playerShip, destructedObject);
-
-		// Range check
-		if (!destructedObject->isInRange3dZoneless(playerShip, ZoneServer::SPACECLOSEOBJECTRANGE)) {
-			continue;
-		}
 
 		auto playersOnBoard = playerShip->getPlayersOnBoard();
 		int totalPlayers = playersOnBoard.size();

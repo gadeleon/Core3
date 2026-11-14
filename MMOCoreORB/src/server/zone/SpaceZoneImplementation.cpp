@@ -2,6 +2,7 @@
 				Copyright <SWGEmu>
 		See file COPYING for copying conditions.*/
 
+#include "server/zone/objects/ship/SpaceUpdateRange.h"
 #include "server/zone/SpaceZone.h"
 #include "server/zone/Zone.h"
 #include "server/zone/ZoneProcessServer.h"
@@ -464,7 +465,7 @@ float SpaceZoneImplementation::getBoundingRadius() {
 }
 
 float SpaceZoneImplementation::getZoneObjectRange() {
-	return ZoneServer::SPACECLOSEOBJECTRANGE;
+	return SpaceUpdateRange::atLeastShipRange(ZoneServer::SPACECLOSEOBJECTRANGE);
 }
 
 SpaceZone* SpaceZoneImplementation::asSpaceZone() {

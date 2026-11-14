@@ -3,6 +3,7 @@
 		See file COPYING for copying conditions.
 */
 
+#include "server/zone/objects/ship/SpaceUpdateRange.h"
 #include "ComponentSlots.h"
 #include "ShipComponentFlag.h"
 #include "system/lang/UnicodeString.h"
@@ -2337,7 +2338,7 @@ float ShipObjectImplementation::getOutOfRangeDistance(uint64 specialRangeID) {
 		}
 	}
 
-	return ZoneServer::SPACECLOSEOBJECTRANGE;
+	return SpaceUpdateRange::getShipRange();
 }
 
 float ShipObjectImplementation::getInRangeDistance(bool lightUpdate) {
@@ -2345,7 +2346,7 @@ float ShipObjectImplementation::getInRangeDistance(bool lightUpdate) {
 		return ZoneServer::SPACESTATIONRANGE;
 	}
 
-	return ZoneServer::SPACECLOSEOBJECTRANGE;
+	return SpaceUpdateRange::getShipRange();
 }
 
 bool ShipObjectImplementation::isShipDisabled() {

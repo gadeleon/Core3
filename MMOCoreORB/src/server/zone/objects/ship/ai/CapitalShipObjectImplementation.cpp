@@ -3,6 +3,7 @@
 		See file COPYING for copying conditions.
 */
 
+#include "server/zone/objects/ship/SpaceUpdateRange.h"
 #include "server/zone/objects/ship/ai/CapitalShipObject.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/Zone.h"
@@ -14,8 +15,8 @@ float CapitalShipObjectImplementation::getOutOfRangeDistance(uint64 specialRange
 	auto zone = getZoneUnsafe();
 
 	if (zone != nullptr && zone->getZoneCRC() == STRING_HASHCODE("space_light1") && getServerObjectCRC() == STRING_HASHCODE("object/ship/corvette.iff")) {
-		return KESSEL_CORVETTE_RANGE;
+		return SpaceUpdateRange::atLeastShipRange(KESSEL_CORVETTE_RANGE);
 	}
 
-	return ZoneServer::CAPITALSHIPRANGE;
+	return SpaceUpdateRange::atLeastShipRange(ZoneServer::CAPITALSHIPRANGE);
 }

@@ -2,6 +2,7 @@
  * ShipAiAgentImplementation.cpp
  */
 
+#include "server/zone/objects/ship/SpaceUpdateRange.h"
 #include <engine/core/ManagedReference.h>
 #include <server/zone/CloseObjectsVector.h>
 #include <engine/util/u3d/Vector3.h>
@@ -2255,7 +2256,7 @@ String ShipAiAgentImplementation::getShipAgentTemplateName() {
 }
 
 float ShipAiAgentImplementation::getOutOfRangeDistance(uint64 specialRangeID) {
-	return ZoneServer::SPACECLOSEOBJECTRANGE;
+	return SpaceUpdateRange::getShipRange();
 }
 
 float ShipAiAgentImplementation::getInRangeDistance(bool lightUpdate) {
@@ -2263,7 +2264,7 @@ float ShipAiAgentImplementation::getInRangeDistance(bool lightUpdate) {
 		return getOutOfRangeDistance();
 	}
 
-	return ZoneServer::SPACECLOSEOBJECTRANGE;
+	return SpaceUpdateRange::getShipRange();
 }
 
 void ShipAiAgentImplementation::updateZone(bool lightUpdate, bool sendPackets) {

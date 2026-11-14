@@ -3593,7 +3593,7 @@ void DirectorManager::activateEvent(ScreenPlayTask* task) {
 		startScreenPlay.callFunction();
 	} catch (Exception& e) {
 		StringBuffer msg;
-		msg << "exception while running lua task " << play << ":" << key;
+		msg << "exception while running lua task " << play << ":" << key << " - " << e.getMessage();
 		error(msg.toString());
 
 		e.printStackTrace();

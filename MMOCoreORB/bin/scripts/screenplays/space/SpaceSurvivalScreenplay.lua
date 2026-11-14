@@ -323,9 +323,11 @@ function SpaceSurvivalScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		return 0
 	end
 
+	if (zoneNameHash == getHashCode(SceneObject(pPlayer):getZoneName())) then return 0 end
+
 	local playerID = SceneObject(pPlayer):getObjectID()
 
-	-- Any zone change once the player has arrived (leaving, or the respawn after a ship is destroyed) fails the quest
+	-- Any zone change once the player has arrived (leaving the zone) fails the quest
 	if (readData(self:dataKey(playerID, "arrived")) == 1) then
 		SpaceHelpers:sendQuestUpdate(pPlayer, "@space/quest:survival_abandoned")
 		self:failQuest(pPlayer, "false")
@@ -512,4 +514,9 @@ function SpaceSurvivalScreenplay:firstAttack(pPlayer, args)
 	SpaceHelpers:sendQuestUpdate(pPlayer, self:messagePath("first_attack"))
 
 	createEvent(self.firstWaveDelay * 1000, self.className, "launchWave", pPlayer, args)
+end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceSurvivalScreenplay:isRunInProgress(pPlayer)
+	return readData(self:dataKey(SceneObject(pPlayer):getObjectID(), "arrived")) == 1
 end

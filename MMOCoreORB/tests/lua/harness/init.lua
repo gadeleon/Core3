@@ -322,6 +322,41 @@ function H.abortMission(player, questType, questName)
 	return mission
 end
 
+-- The C++ dispatch of DestroyShipTask case 0 (space-quest-player-ship-destroyed, C2/C8): every space mission on the
+-- player's datapad (snapshotted first, a handler may remove its own mission) is told by calling
+-- <questType>_<questName>:playerShipDestroyed(player) directly, in datapad order. It is a fake of the C++ only and
+-- repeats no Lua logic. A mission whose quest global or handler is missing fails the test with a clear message (the
+-- server would log a LuaPanicException for the missing global and go on). Returns the names called.
+function H.playerShipDestroyed(player)
+	H.boot()
+
+	local snapshot = {}
+
+	for _, item in ipairs(player.datapad.items) do
+		if item.questType ~= nil and item.questType ~= "" and item.questName ~= nil then
+			snapshot[#snapshot + 1] = item.questType .. "_" .. item.questName
+		end
+	end
+
+	local called = {}
+
+	for _, name in ipairs(snapshot) do
+		local quest = rawget(_G, name)
+
+		assert(quest ~= nil, "H.playerShipDestroyed: expected global '" .. name .. "' (DestroyShipTask calls <questType>_<questName>:playerShipDestroyed)")
+
+		if type(quest.playerShipDestroyed) ~= "function" then
+			require("luaunit").fail("expected " .. name .. ":playerShipDestroyed to be a function "
+				.. "(SpaceQuestLogic:playerShipDestroyed in screenplays/space/SpaceQuestLogic.lua, the hook DestroyShipTask calls)")
+		end
+
+		quest:playerShipDestroyed(player)
+		called[#called + 1] = name
+	end
+
+	return called
+end
+
 ---------------------------------------------------------------------------------------------
 -- Loading production scripts
 ---------------------------------------------------------------------------------------------

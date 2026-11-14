@@ -300,21 +300,40 @@ local function assertFailedNotEnded(label, sc, paid)
 	lu.assertEquals(music, 1, label .. ": the fail music played once")
 end
 
--- AC-7a
-function TestDutyFailures:test_a_same_zone_switch_after_setup_fails_the_duty_after_the_observer_in_every_stage()
+-- AC-7a (space-quest-player-ship-destroyed): the ship death fails the duty at once, in every stage; the respawn switch that
+-- follows (a same-zone switch) is inert
+function TestDutyFailures:test_a_ship_death_fails_the_duty_in_every_stage_and_the_respawn_switch_adds_nothing()
 	for _, stage in ipairs(STATE_NAMES) do
 		local sc, objs = STATES[stage]()
 		local paid = #sc:payments()
 		local completion = sc:spyCompletion()
 
-		H.zoneSwitch(sc.player, DR.ZONE)
-		lu.assertTrue(sc:active(), stage .. ": nothing fails inside the observer")
-		lu.assertEquals(DR.count(sc:events(), "title", "failed"), 0, stage .. ": no quest_failed inside the observer")
-
+		H.playerShipDestroyed(sc.player)
 		H.advance(0)
 		assertFailedNotEnded(stage, sc, paid)
 		assertCleaned(stage, sc, objs)
 		lu.assertEquals(#completion.space + #completion.quest, 0, stage .. ": the journal is never completed")
+
+		local mark = #H.messageLog(sc.player)
+
+		H.zoneSwitch(sc.player, DR.ZONE)
+		H.advance(secs(10))
+		lu.assertEquals(#H.messageLog(sc.player), mark, stage .. ": the respawn switch sends nothing")
+		assertFailedNotEnded(stage, sc, paid)
+	end
+end
+
+-- AC-7a: a same-zone switch alone leaves a set-up duty alone in every stage
+function TestDutyFailures:test_a_same_zone_switch_alone_does_not_fail_the_duty_in_any_stage()
+	for _, stage in ipairs(STATE_NAMES) do
+		local sc = STATES[stage]()
+		local mark = #sc:events()
+
+		H.zoneSwitch(sc.player, DR.ZONE)
+		H.advance(0)
+		lu.assertTrue(sc:active(), stage .. ": still active")
+		lu.assertEquals(DR.count(sc:events(), "title", "failed"), 0, stage .. ": no quest_failed")
+		lu.assertEquals(DR.count(sc:events(), "title", "ended"), 0, stage .. ": no quest_ended")
 	end
 end
 
@@ -419,7 +438,7 @@ end
 function TestDutyFailures:test_after_a_failure_the_duty_can_be_started_again_with_cycle_zero()
 	local sc = STATES.secondRescue()
 
-	H.zoneSwitch(sc.player, DR.ZONE)
+	H.playerShipDestroyed(sc.player)
 	H.advance(0)
 	lu.assertFalse(sc:active(), "failed")
 	lu.assertEquals(sc:keyNames(), {}, "no key (cycle included) remains")

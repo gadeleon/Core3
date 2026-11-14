@@ -531,9 +531,14 @@ for _, name in ipairs(listLua("bin/scripts/screenplays/space")) do
 	-- storm-tier2-oberhaur: SpaceInspectScreenplay treats an empty validSpawns as "any spawner" (test_storm_tier2_pins.lua pins that change).
 	-- storm-tier3-denner-missions R-2: SpaceDutyEscortScreenplay's resetDutyMission clears the wave counter (one deleteData line; test_storm_tier3_missions_surrender/escort_wave tests cover it, the storm pins only list the changed files).
 	-- space-quest-exclusive-aggro: SpaceAssassinate, SpaceBattle, SpaceDutyDestroy and SpaceSurpriseAttack gain only addExclusiveAggro lines after setMissionOwner (test_exclusive_aggro_sites.lua covers them; Escort and Recovery are already excluded above).
-	if name:match("^Space.*Screenplay%.lua$") and name ~= "SpacePatrolScreenplay.lua" and name ~= "SpaceEscortScreenplay.lua" and name ~= "SpaceRecoveryScreenplay.lua"
+	-- space-quest-player-ship-destroyed: SpaceDestroyScreenplay and SpaceDutyPatrolScreenplay gain only the isRunInProgress function, SpaceRescueScreenplay
+	-- and SpaceSurvivalScreenplay that function plus the same-zone guard and reworded comments (test_player_ship_destroyed_pins.lua pins those hunks);
+	-- SpaceDutyRescueScreenplay only rewords two comments about the respawn.
+	if name:match("^Space.*Screenplay%.lua$") and name ~= "SpaceDestroyScreenplay.lua" and name ~= "SpaceDutyPatrolScreenplay.lua" and name ~= "SpaceRescueScreenplay.lua"
+		and name ~= "SpaceSurvivalScreenplay.lua" and name ~= "SpacePatrolScreenplay.lua" and name ~= "SpaceEscortScreenplay.lua" and name ~= "SpaceRecoveryScreenplay.lua"
 		and name ~= "SpaceDeliveryScreenplay.lua" and name ~= "SpaceInspectScreenplay.lua" and name ~= "SpaceDutyEscortScreenplay.lua"
-		and name ~= "SpaceAssassinateScreenplay.lua" and name ~= "SpaceBattleScreenplay.lua" and name ~= "SpaceDutyDestroyScreenplay.lua" and name ~= "SpaceSurpriseAttackScreenplay.lua" then
+		and name ~= "SpaceAssassinateScreenplay.lua" and name ~= "SpaceBattleScreenplay.lua" and name ~= "SpaceDutyDestroyScreenplay.lua" and name ~= "SpaceSurpriseAttackScreenplay.lua"
+		and name ~= "SpaceDutyRescueScreenplay.lua" then
 		TestCorsecWaypointsFilePins["test_" .. name:gsub("%.lua$", "") .. "_is_byte_identical_to_the_base"] = function()
 			local path = W.SPACE_DIR .. name
 			local text = W.readFile(path)

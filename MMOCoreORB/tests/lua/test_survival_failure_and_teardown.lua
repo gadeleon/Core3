@@ -199,16 +199,16 @@ function TestSurvivalAbandon:test_leaving_for_another_zone_after_arrival_fails_t
 	lu.assertFalse(sc:complete(), "and not complete")
 end
 
--- AC-9 (decision D-5)
-function TestSurvivalAbandon:test_a_same_zone_switch_after_arrival_counts_as_abandoning_too()
+-- AC-8 (space-quest-player-ship-destroyed, D-14): the respawn after a ship death is a same-zone switch; it is inert
+function TestSurvivalAbandon:test_a_same_zone_switch_after_arrival_leaves_the_run_alone()
 	local sc = arrived()
 
 	H.zoneSwitch(sc.player, sc.o.zone)
 	H.advance(secs(5))
 
-	lu.assertEquals(S.count(sc:events(), "survival_abandoned", "update"), 1, "respawn after ship destruction is a same-zone switch")
-	lu.assertFalse(sc:active(), "journal quest no longer active")
-	lu.assertFalse(sc:complete(), "and not complete")
+	lu.assertEquals(S.count(sc:events(), "survival_abandoned", "update"), 0, "no survival_abandoned update")
+	lu.assertTrue(sc:active(), "journal quest still active")
+	lu.assertEquals(#S.createEvents("failQuest"), 0, "no failQuest event")
 end
 
 -- AC-9

@@ -168,10 +168,13 @@ function TestSpaceBattleSetup:test_the_yacht_never_sets_up_but_a_ship_after_the_
 	lu.assertEquals(#sc:waypoints(), 0, "no setup in the yacht at start")
 	lu.assertFalse(sc:taskComplete(0), "task 0 not complete in the yacht")
 
+	-- a landing and a launch (a switch to the zone the pilot is in is inert since space-quest-player-ship-destroyed D-14)
+	H.zoneSwitch(sc.player, "corellia")
 	H.zoneSwitch(sc.player, o.zone)
 	H.advance(secs(5))
 	lu.assertEquals(#sc:waypoints(), 0, "no setup after a zone switch that keeps the yacht")
 
+	H.zoneSwitch(sc.player, "corellia")
 	H.zoneSwitch(sc.player, o.zone, { ship = { x = o.point.x, z = o.point.z, y = o.point.y } })
 	H.advance(secs(1))
 	lu.assertEquals(#sc:waypoints(), 1, "set up once the player flies a ship")

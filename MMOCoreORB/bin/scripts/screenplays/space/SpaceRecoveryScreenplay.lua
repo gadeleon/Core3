@@ -1332,3 +1332,8 @@ function SpaceRecoveryScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)
 
 	return 0
 end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceRecoveryScreenplay:isRunInProgress(pPlayer)
+	return SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)
+end

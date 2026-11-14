@@ -332,3 +332,8 @@ function SpaceDestroyScreenplay:notifyDestroyedShip(pPlayer, pShipAgent)
 
 	return 0
 end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceDestroyScreenplay:isRunInProgress(pPlayer)
+	return SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0) and SpaceHelpers:isSpaceQuestTaskActive(pPlayer, self.questType, self.questName, 1)
+end

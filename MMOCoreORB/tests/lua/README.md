@@ -1365,3 +1365,27 @@ load of the feature, the station and the Smuggler Pilot, collecting load errors 
 `fixtures/baseline/spacestation_tatooine.pre-palace.lua` (commit 6364c03585), so the 29 old screens can be diffed without git.
 Fakes added for it: global `sendMail(sender, subject, body, recipient)` (exactly 4 strings, recorded as `H.Engine.callsTo("sendMail")`), `FakeShip:getTotalShipDamage()`
 (`ship.totalDamage`, default 0) and `FakeCreature:getCashCredits()` (`creature.cashCredits`, default 0) / `getBankCredits()` (the sum of `addBankCredits`).
+
+### Ship death fails the crew's space quests (space-quest-player-ship-destroyed)
+
+- `H.playerShipDestroyed(player)` is the one fake of `DestroyShipTask` case 0: it snapshots the datapad missions that have a quest type and
+  name and calls `<questType>_<questName>:playerShipDestroyed(player)` on each, in datapad order, returning the names called. It repeats no Lua
+  logic, and fails with a message when a mission's global or handler is missing (the server would log a `LuaPanicException`).
+  `test_harness_player_ship_destroyed.lua` checks the fake with throwaway quest tables.
+- `psd_scenario.lua` (not a test file) builds states for every registered quest (CorSec, RSF, Havoc, Crimson, Vortex, Smuggler, Black Epsilon,
+  Inquisition, Storm, master missions and the Tatooine palace quests): `PSD.quests()`, `PSD.baseOf(q)` (the quest type table in its class chain),
+  `PSD.byClass()`, the C4 table `PSD.CLASSES` (`progress` writes the journal task or shared-memory key that means "run in progress", `before` the
+  states just before it), `PSD.accepted(q)` (a pilot outside the quest zone who started q), `PSD.inProgress(q, player)`, `PSD.isolateRelated(q)`
+  (recorders on the parent, side and failure split quests), `PSD.dutyPatrol()` (SWG's patrol_duty has no quest: a test instance, drop it in
+  `tearDown`) and message helpers (`PSD.failMessages`, `PSD.leaks`, `PSD.musicCount`). The full runs of the 16 types are the
+  `abort_cleanup_scenario.lua` builders; call `H.reset()` before a second `AC.build` of the recovery types in one test.
+- `psd_pins.lua` compares a quest type file with the commit before the feature (`8745e3440d`) after dropping what the feature adds (comments, the
+  `isRunInProgress` block, the same-zone guard line); the older byte-identical pins of `SpaceDestroyScreenplay`, `SpaceDutyPatrolScreenplay`,
+  `SpaceRescueScreenplay` and `SpaceSurvivalScreenplay` use it now.
+- A switch to the zone the pilot is in is inert for Battle, Inspect, Rescue (+duty), Delivery (+no pickup) and Survival. Tests that used
+  `H.zoneSwitch(player, zone)` to the same zone as "a way to abandon" or "to change the ship" go through another zone (a ground zone for a
+  landing and a launch) instead.
+- Fixtures: `fixtures/script/space/quest_logic/{destroy_duty,patrol,patrol_duty,escort_duty,escort,recovery_duty,player_spacequest}.java` and
+  `fixtures/script/library/space_quest.java`, copies of SWG-Source (CRLF line ends; `test_player_ship_destroyed_conformance.lua` normalizes them).
+- The C++ side: `src/tests/PlayerShipDestroyedNoticeTest.cpp` (gtest of `PlayerShipDestroyedNotice.h`; `*test*` is gitignored, so `git add -f`)
+  and `test_player_ship_destroyed_cpp_wiring.lua`, which reads `DestroyShipTask.h` as text (like `test_abort_cleanup_cpp_order.lua`).

@@ -152,7 +152,8 @@ end
 
 --]]
 
--- Leaving the zone ends the duty, the same zone (the respawn after a destroyed ship) goes to the base handling
+-- Leaving the zone ends the duty; other switches go to the base handling, which ignores a same-zone switch (the respawn after a
+-- destroyed ship; the death itself fails the duty through SpaceQuestLogic:playerShipDestroyed)
 function SpaceDutyRescueScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 	if (pPlayer == nil) then
 		return 0
@@ -176,7 +177,7 @@ end
 
 --]]
 
--- A respawn is a failure, not a leave
+-- The duty fails instead of being abandoned (a same-zone respawn no longer reaches this; ship death fails through playerShipDestroyed)
 function SpaceDutyRescueScreenplay:abandonRun(pPlayer, args)
 	if (not self:isCurrentRun(pPlayer, args)) then
 		return

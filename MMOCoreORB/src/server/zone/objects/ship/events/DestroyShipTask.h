@@ -4,6 +4,10 @@
 #include "server/zone/SpaceZone.h"
 #include "server/zone/objects/ship/ShipObject.h"
 #include "server/zone/objects/ship/events/HyperspaceToLocationTask.h"
+#include "server/zone/objects/ship/events/PlayerShipDestroyedNotice.h"
+#include "server/zone/managers/director/DirectorManager.h"
+#include "server/zone/objects/mission/MissionObject.h"
+#include "engine/lua/LuaPanicException.h"
 #include "server/zone/objects/ship/ComponentSlots.h"
 #include "server/zone/objects/ship/ShipComponentFlag.h"
 #include "server/zone/managers/space/SpaceManager.h"
@@ -26,6 +30,10 @@ public:
 
 		sequenceStamp = System::getMiliTime();
 		iteration = 0;
+	}
+
+	static uint64 getSeatID(CreatureObject* seat) {
+		return seat != nullptr ? seat->getObjectID() : 0;
 	}
 
 	static bool isBattlefieldZone(const String& zoneName) {
@@ -91,6 +99,8 @@ public:
 
 		switch (iteration++) {
 			case 0: {
+				bool wasDestroying = ship->isDestroying();
+
 				ship->clearOptionBit(OptionBitmask::WINGS_OPEN, true);
 
 				if (ship->isBoosterActive()) {
@@ -100,6 +110,83 @@ public:
 
 				auto msg = new DestroyShipMessage(ship->getObjectID(), System::random(100) * 0.01f);
 				ship->broadcastMessage(msg, false);
+
+				// SWG sendDestructionNotification: the officers' space quests hear of the death at once, not at the respawn
+				if (PlayerShipDestroyedNotice::shouldNotify(ship->isPlayerShip(), wasDestroying)) {
+					Vector<uint64> officerIDs = PlayerShipDestroyedNotice::getOfficerIDs(ship->isPobShip(), getSeatID(ship->getPilot()), getSeatID(ship->getShipOperator()), getSeatID(ship->getTurretOperatorTop()), getSeatID(ship->getTurretOperatorBottom()));
+					auto zoneServer = ship->getZoneServer();
+
+					for (int i = 0; i < officerIDs.size(); i++) {
+						uint64 officerID = officerIDs.get(i);
+
+						Core::getTaskManager()->executeTask([zoneServer, officerID] () {
+							if (zoneServer == nullptr) {
+								return;
+							}
+
+							ManagedReference<SceneObject*> object = zoneServer->getObject(officerID);
+
+							if (object == nullptr || !object->isPlayerCreature()) {
+								return;
+							}
+
+							CreatureObject* member = object->asCreatureObject();
+
+							if (member == nullptr) {
+								return;
+							}
+
+							Locker lock(member);
+
+							Vector<String> screenplays;
+							ManagedReference<SceneObject*> datapad = member->getDatapad();
+
+							if (datapad != nullptr) {
+								for (int j = 0; j < datapad->getContainerObjectsSize(); j++) {
+									ManagedReference<SceneObject*> item = datapad->getContainerObject(j);
+
+									if (item == nullptr || !item->isMissionObject()) {
+										continue;
+									}
+
+									MissionObject* mission = cast<MissionObject*>(item.get());
+
+									if (mission == nullptr) {
+										continue;
+									}
+
+									String name = PlayerShipDestroyedNotice::getQuestScreenplay(mission->getQuestType(), mission->getQuestName());
+
+									if (!name.isEmpty()) {
+										screenplays.add(name);
+									}
+								}
+							}
+
+							Lua* lua = DirectorManager::instance()->getLuaInstance();
+
+							if (lua == nullptr) {
+								return;
+							}
+
+							for (int j = 0; j < screenplays.size(); j++) {
+								const String& name = screenplays.get(j);
+
+								// A missing quest global or a Lua error must not stop the other quests
+								try {
+									Reference<LuaFunction*> playerShipDestroyed = lua->createFunction(name, "playerShipDestroyed", 0);
+
+									*playerShipDestroyed << member;
+									playerShipDestroyed->callFunction();
+								} catch (const LuaPanicException& panic) {
+									member->error() << "PlayerShipDestroyedLambda: playerShipDestroyed failed for " << name << ": " << panic.getMessage();
+								} catch (Exception& e) {
+									member->error() << "PlayerShipDestroyedLambda: playerShipDestroyed exception for " << name << ": " << e.getMessage();
+								}
+							}
+						}, "PlayerShipDestroyedLambda");
+					}
+				}
 
 				if (pilot == nullptr && ship->getPersistenceLevel() == 0) {
 					ship->destroyObjectFromWorld(true);

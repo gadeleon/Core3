@@ -76,9 +76,10 @@ TestSpaceBattleAbandon = {}
 
 function TestSpaceBattleAbandon:setUp() H.reset() end
 
+-- space-quest-player-ship-destroyed D-14: a switch to the quest zone again (the respawn after a ship death) is inert,
+-- so it is no longer a way to abandon; the loops below abandon through another zone only
 local SWITCHES = {
 	{ "another zone", function(sc) return B.THIRD_ZONE end },
-	{ "the quest zone again (a respawn)", function(sc) return sc.o.zone end },
 }
 
 -- AC-9, I-6
@@ -282,6 +283,34 @@ function TestSpaceBattleTeardown:test_clean_up_quest_data_takes_the_player_and_i
 	lu.assertTrue(pcall(function() sc.quest:cleanUpQuestData(sc.player) end), "cleanUpQuestData(pPlayer) on a player with no run")
 end
 
+-- AC-8 (space-quest-player-ship-destroyed, D-14): the respawn after a ship death is a same-zone switch; it is inert
+TestSpaceBattleRespawn = {}
+
+function TestSpaceBattleRespawn:setUp() H.reset() end
+
+function TestSpaceBattleRespawn:test_a_switch_to_the_quest_zone_again_leaves_the_run_alone_before_and_after_the_arrivals()
+	for _, name in ipairs({ B.WIN, B.LOSE, B.ALLIES_FIRST }) do
+		for _, stage in ipairs({ "after setup", "both forces arrived" }) do
+			local sc = B.fresh(name):setup()
+			local label = name .. " / " .. stage
+
+			if stage == "both forces arrived" then
+				sc:both()
+			end
+
+			local sent = messageCount(sc)
+
+			H.zoneSwitch(sc.player, sc.o.zone)
+			H.advance(0)
+
+			lu.assertTrue(sc:active(), label .. ": still active")
+			lu.assertEquals(messageCount(sc), sent, label .. ": nothing was sent")
+			lu.assertEquals(B.count(sc:events(), "battle_abandoned", "update"), 0, label .. ": no battle_abandoned update")
+			lu.assertEquals(#sc:waypoints(), 1, label .. ": the waypoint is untouched")
+		end
+	end
+end
+
 TestSpaceBattleStaleEvents = {}
 
 function TestSpaceBattleStaleEvents:setUp() H.reset() end
@@ -295,10 +324,11 @@ function TestSpaceBattleStaleEvents:test_events_of_an_abandoned_run_do_nothing_a
 
 	local run1Allies = sc:allies()
 
-	-- abandon (a same-zone respawn) and start again right away
-	H.zoneSwitch(sc.player, o.zone)
+	-- abandon (a switch to another zone) and start again right away
+	H.zoneSwitch(sc.player, B.THIRD_ZONE)
 	H.advance(0)
 	lu.assertFalse(sc:active(), "precondition: run 1 was abandoned")
+	H.zoneSwitch(sc.player, o.zone) -- back to the quest zone for run 2
 
 	sc:setup() -- run 2 at t = 60 s
 	lu.assertEquals(sc.tSetup, secs(60), "run 2 starts at 60 s")

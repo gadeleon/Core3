@@ -140,15 +140,18 @@ function TestDeliveryAbandon:test_leaving_the_zone_during_the_delivery_leg_aband
 	lu.assertFalse(sc:active(), "quest failed")
 end
 
--- AC-9, D-5: a respawn after ship destruction is a same-zone switch
-function TestDeliveryAbandon:test_a_same_zone_switch_after_setup_also_abandons_the_quest()
+-- AC-8 (space-quest-player-ship-destroyed, D-14): the respawn after a ship death is a same-zone switch; it is inert
+-- (the death itself failed the quest through playerShipDestroyed)
+function TestDeliveryAbandon:test_a_same_zone_switch_after_setup_leaves_the_run_alone()
 	local sc = fresh(ENDOR):start():arrive()
+	local sent = #sc:events()
 
 	H.zoneSwitch(sc.player, sc.o.zone)
 	H.advance(secs(5))
 
-	lu.assertEquals(D.count(sc:events(), "mission_abandoned", "update"), 1, "mission_abandoned update")
-	lu.assertFalse(sc:active(), "quest failed")
+	lu.assertEquals(D.count(sc:events(), "mission_abandoned", "update"), 0, "no mission_abandoned update")
+	lu.assertTrue(sc:active(), "the quest is still active")
+	lu.assertEquals(#sc:events(), sent, "nothing was sent by the same-zone switch")
 end
 
 -- AC-9

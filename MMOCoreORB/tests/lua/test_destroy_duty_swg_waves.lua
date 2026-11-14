@@ -942,8 +942,8 @@ function TestDestroyDutySwgWaves:test_leaving_the_zone_mid_wave_ends_the_duty_as
 	lu.assertEquals(problems, {}, "duties whose leave-zone outcome is not the SWG abandon")
 end
 
--- AC-6a: a destroyed ship reaches the duty as a switch to a ground zone
-function TestDestroyDutySwgWaves:test_a_switch_to_a_ground_zone_the_way_a_ship_death_looks_ends_the_duty_as_won_too()
+-- AC-6a: a switch to a ground zone (a launch, a landing) is leaving the quest zone too
+function TestDestroyDutySwgWaves:test_a_switch_to_a_ground_zone_ends_the_duty_as_won_too()
 	local problems = each(function(global) return leaveProblem(global, "a_mid_wave", "corellia") end)
 
 	lu.assertEquals(problems, {}, "duties that did not end as won on a switch to a ground zone")
@@ -1253,4 +1253,102 @@ function TestDestroyDutySwgWaves:test_every_string_id_the_wing_taunt_and_abandon
 	end)
 
 	lu.assertEquals(problems, {}, "duties that send a string id the pre-CU client lacks")
+end
+
+---------------------------------------------------------------------------------------------
+-- space-quest-player-ship-destroyed AC-9: a destroyed player ship fails the duty (Mission Failed), pays nothing
+-- (the death calls <questType>_<name>:playerShipDestroyed, H.playerShipDestroyed; the respawn switch is inert)
+---------------------------------------------------------------------------------------------
+
+local function shipDeathProblem(global, state)
+	local q, player = STATES[state](global)
+
+	local alive = {}
+
+	for _, ship in ipairs(H.spawnedShips()) do
+		if not ship.destroyed then alive[#alive + 1] = ship end
+	end
+
+	local bank = player.bankCredits
+	local mark, musicMark = #H.messageLog(player), #player.music
+	local areaID = readData(keyOf(q, player, "targetArea:"))
+
+	H.playerShipDestroyed(player)
+	pump(10000, global .. " ship death")
+
+	local failed, bad = 0, {}
+
+	for _, token in ipairs(tokensSince(player, mark)) do
+		if token == SPACE_QUEST .. "quest_failed TO=" .. prefix(q) .. "title" then
+			failed = failed + 1
+		else
+			bad[#bad + 1] = token
+		end
+	end
+
+	if failed ~= 1 then return "[" .. state .. "] " .. failed .. " quest_failed messages with the duty title, expected 1" end
+	if #bad > 0 then return "[" .. state .. "] other messages after the death: " .. joined(bad) end
+
+	local fails = 0
+
+	for i = musicMark + 1, #player.music do
+		if player.music[i] == FAIL_MUSIC then fails = fails + 1 else return "[" .. state .. "] unexpected music " .. tostring(player.music[i]) end
+	end
+
+	if fails ~= 1 then return "[" .. state .. "] the fail music played " .. fails .. " times, expected 1" end
+	if isActive(player, q) then return "[" .. state .. "] the journal entry is still active" end
+	if isComplete(player, q) then return "[" .. state .. "] the journal entry is complete (the duty must fail, not end as won)" end
+	if #player.datapad.items ~= 0 then return "[" .. state .. "] " .. #player.datapad.items .. " datapad mission(s) left" end
+	if areaID ~= nil and areaID ~= 0 and getSceneObject(areaID) ~= nil then return "[" .. state .. "] the target area still exists" end
+	if H.hasObserver(ZONESWITCHED, q.className, "enteredZone", player) then return "[" .. state .. "] the ZONESWITCHED observer is still there" end
+
+	for _, key in ipairs(DUTY_KEYS) do
+		if not dataGone(keyOf(q, player, key)) then return "[" .. state .. "] key " .. key .. " left" end
+	end
+
+	if #readStringVectorSharedMemory(player.objectID .. q.className .. ":attackShips:") ~= 0 then return "[" .. state .. "] attackShips: left" end
+
+	for _, ship in ipairs(alive) do
+		if not ship.destroyed then return "[" .. state .. "] an attack ship is still in the world" end
+	end
+
+	if player.bankCredits ~= bank then return "[" .. state .. "] the bank changed by " .. (player.bankCredits - bank) end
+
+	-- the respawn (a switch to the zone the pilot is in) and two hours later add nothing
+	local after = #H.messageLog(player)
+
+	H.zoneSwitch(player, player.zone)
+	pump(7200 * 1000, global .. " 2 h")
+
+	if #H.messageLog(player) ~= after then return "[" .. state .. "] a message arrived after the death: " .. joined(tokensSince(player, after)) end
+	if player.bankCredits ~= bank then return "[" .. state .. "] credits arrived later" end
+
+	return nil
+end
+
+-- AC-9
+for _, state in ipairs(STATE_NAMES) do
+	TestDestroyDutySwgWaves["test_a_ship_death_in_state_" .. state .. "_fails_every_duty_with_mission_failed_and_no_pay"] = function()
+		local problems = each(function(global) return shipDeathProblem(global, state) end)
+
+		lu.assertEquals(#DUTIES, 31, "the 31 destroy duties")
+
+		-- a missing hook fails all 31 the same way: show the first two and the count
+		if #problems > 2 then
+			problems = { problems[1], problems[2], string.format("... %d duties in all", #problems) }
+		end
+
+		lu.assertEquals(problems, {}, "duties whose ship death in state " .. state .. " is not the SWG fail")
+	end
+end
+
+-- AC-9: the comment at the leave-zone branch no longer claims that losing the ship ends the duty as won
+function TestDestroyDutySwgWaves:test_the_leave_zone_comment_no_longer_mentions_losing_the_ship()
+	local f = assert(io.open(H.SCRIPTS .. "screenplays/space/SpaceDutyDestroyScreenplay.lua", "r"))
+	local text = f:read("a")
+
+	f:close()
+	lu.assertNil(text:find("losing the ship", 1, true), "SpaceDutyDestroyScreenplay.lua still says 'losing the ship'")
+	lu.assertNotNil(text:find("-- Leaving the zone ends the duty as won without pay (destroy_duty.java:100-108)", 1, true),
+		"the comment of the leave-zone branch (C7)")
 end

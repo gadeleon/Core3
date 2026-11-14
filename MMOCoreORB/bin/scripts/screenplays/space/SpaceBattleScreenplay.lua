@@ -369,9 +369,11 @@ function SpaceBattleScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		return 1
 	end
 
+	if (zoneNameHash == getHashCode(SceneObject(pPlayer):getZoneName())) then return 0 end
+
 	local playerID = SceneObject(pPlayer):getObjectID()
 
-	-- Any zone change once the run is set up (leaving, or the respawn after a ship is destroyed) abandons it
+	-- Any zone change once the run is set up (leaving the zone) abandons it
 	if (readData(self:dataKey(playerID, "runID")) ~= 0) then
 		createEvent(0, self.className, "abandonRun", pPlayer, self:getRunToken(playerID))
 		return 0
@@ -731,4 +733,9 @@ function SpaceBattleScreenplay:warpOut(pPlayer, args)
 
 	CreatureObject(pPlayer):sendSystemMessage("@space/quest:warpout_failure")
 	self:failQuest(pPlayer, "true")
+end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceBattleScreenplay:isRunInProgress(pPlayer)
+	return readData(self:dataKey(SceneObject(pPlayer):getObjectID(), "runID")) ~= 0
 end

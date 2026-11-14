@@ -171,15 +171,16 @@ for _, case in ipairs(S.CASES) do
 	end
 end
 
--- AC-2, I-8: SDS is byte-identical to the commit before the A-1 hunks
-function TestMasterMissionQuestTypeType:test_space_destroy_screenplay_is_byte_identical_to_the_stock_commit()
-	local rc, out = shell("git show " .. SDS_STOCK_COMMIT .. ":MMOCoreORB/" .. SDS_FILE)
+-- AC-2, I-8: SDS is the stock commit before the A-1 hunks. space-quest-player-ship-destroyed (C4) adds exactly one function to it,
+-- SpaceDestroyScreenplay:isRunInProgress; nothing else may differ.
+function TestMasterMissionQuestTypeType:test_space_destroy_screenplay_is_the_stock_commit_plus_only_the_run_check()
+	local problems, why = require("psd_pins").problems(SDS_STOCK_COMMIT, SDS_FILE, { runCheck = "SpaceDestroyScreenplay" })
 
-	if rc ~= 0 then
-		lu.skip("git cannot show " .. SDS_STOCK_COMMIT .. ": " .. out)
+	if problems == nil then
+		lu.skip("git cannot show " .. SDS_STOCK_COMMIT .. ": " .. tostring(why))
 	end
 
-	lu.assertTrue(readFile(SDS_FILE) == out, SDS_FILE .. " differs from " .. SDS_STOCK_COMMIT)
+	lu.assertEquals(problems, {}, SDS_FILE .. " differs from " .. SDS_STOCK_COMMIT .. " by more than the isRunInProgress function")
 end
 
 -- AC-2, I-8: no file under bin/scripts mentions the opt-in field any more

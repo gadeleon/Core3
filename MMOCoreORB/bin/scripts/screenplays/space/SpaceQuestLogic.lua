@@ -118,6 +118,32 @@ end
 
 ]]
 
+-- SWG player_spacequest.playerShipDestroyed -> notifyMissions -> <type>.playerShipDestroyed; called by DestroyShipTask
+function SpaceQuestLogic:playerShipDestroyed(pPlayer)
+	if (pPlayer == nil or not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	if (not self:isRunInProgress(pPlayer)) then
+		return
+	end
+
+	SpaceHelpers:sendMissionFailed(pPlayer, "@spacequest/" .. self.questType .. "/" .. self.questName .. ":title")
+	CreatureObject(pPlayer):playMusicMessage("sound/music_themequest_fail_criminal.snd")
+
+	self:failShipDestroyed(pPlayer)
+end
+
+-- SWG in_progress (space_quest._setQuestInProgress); a type that can fail on ship death overrides it
+function SpaceQuestLogic:isRunInProgress(pPlayer)
+	return false
+end
+
+-- The type's silent fail: teardown, parent/side fail and the failure split (SWG setQuestFailed canSplit = true)
+function SpaceQuestLogic:failShipDestroyed(pPlayer)
+	self:failQuest(pPlayer, "false")
+end
+
 function SpaceQuestLogic:startQuest(pPlayer, pNpc)
 
 end

@@ -254,14 +254,17 @@ function TestSmugglerT4CrossZone:test_leaving_dantooine_after_the_crossing_fails
 	end
 end
 
--- AC-3, D-13: only pickup zone -> delivery zone counts: a respawn in lok, or a switch into dantooine from another zone, fails
-function TestSmugglerT4CrossZone:test_a_respawn_in_lok_or_a_switch_into_dantooine_from_another_zone_fails_the_quest()
+-- AC-3: only pickup zone -> delivery zone counts as the crossing; a switch into dantooine from another zone fails.
+-- (space-quest-player-ship-destroyed D-14 reverses the old D-13 half: a respawn in lok, a same-zone switch lok -> lok on
+-- leg 2, is inert now, the ship death itself failed the quest through playerShipDestroyed.)
+function TestSmugglerT4CrossZone:test_a_respawn_in_lok_leaves_the_run_alone_and_a_switch_into_dantooine_from_another_zone_fails_the_quest()
 	local sc = fresh(ONE_A):toFirstDock()
 
 	sc:atDock(secs(2))
 	H.zoneSwitch(sc.player, "space_lok")
 	H.advance(0)
-	lu.assertFalse(sc:active(), "a respawn in the same zone (lok -> lok) on leg 2 ends the quest")
+	lu.assertTrue(sc:active(), "a respawn in the same zone (lok -> lok) on leg 2 does not end the quest")
+	lu.assertEquals(D.count(sc:events(), "mission_abandoned", "update"), 0, "no mission_abandoned update for the respawn")
 
 	sc = fresh(ONE_A):toFirstDock()
 	sc:atDock(secs(2))

@@ -370,20 +370,23 @@ function TestInspectZoneSwitch:test_a_switch_to_another_zone_after_setup_abandon
 	end
 end
 
--- AC-6
-function TestInspectZoneSwitch:test_a_switch_to_the_same_zone_after_setup_a_respawn_abandons_the_quest_too()
+-- AC-8 (space-quest-player-ship-destroyed, D-14): the respawn after a ship death is a same-zone switch; it is inert
+function TestInspectZoneSwitch:test_a_switch_to_the_same_zone_after_setup_a_respawn_leaves_the_quest_alone()
 	for _, name in ipairs(I.NAMES) do
 		local sc = I.fresh(name):toSetup()
+		local before = sc:snapshot()
+		local waypoints = #sc:waypoints()
+		local observers = sc:observers()
 
 		H.zoneSwitch(sc.player, sc.o.zone)
-		lu.assertTrue(sc:active(), label(name) .. ": still active right after the observer ran")
-
 		H.advance(0)
 
-		lu.assertEquals(#sc:msgs(I.MSG_ABANDONED), 1, label(name) .. ": inspect_abandoned sent once")
-		lu.assertFalse(sc:active(), label(name) .. ": the quest is not active")
-		lu.assertEquals(#sc:waypoints(), 0, label(name) .. ": waypoints removed")
-		lu.assertEquals(sc:observers(), { zone = 0, inspect = 0, dock = 0 }, label(name) .. ": observers dropped")
+		lu.assertEquals(sc:snapshot(), before, label(name) .. ": nothing changed")
+
+		lu.assertEquals(#sc:msgs(I.MSG_ABANDONED), 0, label(name) .. ": no inspect_abandoned")
+		lu.assertTrue(sc:active(), label(name) .. ": the quest is still active")
+		lu.assertEquals(#sc:waypoints(), waypoints, label(name) .. ": waypoints untouched")
+		lu.assertEquals(sc:observers(), observers, label(name) .. ": observers untouched")
 	end
 end
 

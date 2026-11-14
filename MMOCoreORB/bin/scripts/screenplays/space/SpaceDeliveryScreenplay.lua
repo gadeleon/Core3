@@ -430,9 +430,11 @@ function SpaceDeliveryScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		return 0
 	end
 
+	if (zoneNameHash == getHashCode(SceneObject(pPlayer):getZoneName())) then return 0 end
+
 	local playerID = SceneObject(pPlayer):getObjectID()
 
-	-- Any zone change once the run is set up (leaving, or the respawn after a ship is destroyed) fails the quest
+	-- Any zone change once the run is set up (leaving the zone) fails the quest
 	if (readData(self:dataKey(playerID, "runID")) ~= 0) then
 		-- Except the jump from the pickup zone to a different delivery zone on the delivery leg
 		if (self:isZoneCrossing(pPlayer, playerID, zoneNameHash)) then
@@ -834,4 +836,9 @@ function SpaceDeliveryScreenplay:getWaveZone(pPlayer)
 	end
 
 	return self.questZone
+end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceDeliveryScreenplay:isRunInProgress(pPlayer)
+	return readData(self:dataKey(SceneObject(pPlayer):getObjectID(), "runID")) ~= 0
 end

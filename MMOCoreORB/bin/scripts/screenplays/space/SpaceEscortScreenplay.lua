@@ -128,7 +128,7 @@ function SpaceEscortScreenplay:completeQuest(pPlayer, notifyClient)
 	end
 end
 
-function SpaceEscortScreenplay:failQuest(pPlayer, notifyClient)
+function SpaceEscortScreenplay:failQuest(pPlayer, notifyClient, skipFailureSplit)
 	if (pPlayer == nil) then
 		Logger:log(self.questName .. " Type: " .. self.questType .. " -- Failed to failQuest due to pPlayer being nil.", LT_ERROR)
 		return
@@ -170,7 +170,7 @@ function SpaceEscortScreenplay:failQuest(pPlayer, notifyClient)
 		createEvent(200, self.sideQuestType .. "_" .. self.sideQuestName, "failQuest", pPlayer, "false")
 	end
 
-	if (self.sideQuest and (self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.FAILURE or self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL)) then
+	if (not skipFailureSplit and self.sideQuest and (self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.FAILURE or self.sideQuestSplitType == self.SIDE_QUEST_SPLIT_TYPES.BIDIRECTIONAL)) then
 		self:triggerFailureSplitQuest(pPlayer)
 	end
 end
@@ -1073,4 +1073,14 @@ function SpaceEscortScreenplay:notifyAttackShipDestroyed(pShipAgent, pKillerShip
 	writeData(missionOwnerID .. ":" .. self.className .. ":" .. ":EscortKillCount:", totalKills)
 
 	return 1
+end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceEscortScreenplay:isRunInProgress(pPlayer)
+	return SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)
+end
+
+-- SWG escort_duty.java:741 questFailed(self, false): a ship death fails the escort without the failure split
+function SpaceEscortScreenplay:failShipDestroyed(pPlayer)
+	self:failQuest(pPlayer, "false", true)
 end

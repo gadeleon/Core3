@@ -657,7 +657,7 @@ function SpaceDutyDestroyScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		-- Find a target location
 		createEvent(2000, self.className, "getTargetLocation", pPlayer, "true")
 	elseif (zoneNameHash ~= spaceQuestHash and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then
-		-- Leaving the zone (or losing the ship) ends the duty as won without pay (destroy_duty.java:100-108)
+		-- Leaving the zone ends the duty as won without pay (destroy_duty.java:100-108)
 		createEvent(2000, self.className, "abandonDuty", pPlayer, "")
 	end
 
@@ -992,4 +992,9 @@ function SpaceDutyDestroyScreenplay:notifyAttackShipDestroyed(pShipAgent, pKille
 	end
 
 	return 1
+end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceDutyDestroyScreenplay:isRunInProgress(pPlayer)
+	return SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)
 end

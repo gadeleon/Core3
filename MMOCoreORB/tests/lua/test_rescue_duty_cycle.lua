@@ -888,7 +888,7 @@ end
 
 -- R-1: ending the duty before the next arrival pays nothing and leaves nothing
 function TestDutyPostArrivalKills:test_leaving_before_the_next_arrival_pays_nothing_and_leaves_no_key()
-	for _, ending in ipairs({ "leave", "respawn", "reset" }) do
+	for _, ending in ipairs({ "leave", "ship death", "reset" }) do
 		H.reset()
 
 		local sc, wave = arrivalWithWave(0)
@@ -901,7 +901,10 @@ function TestDutyPostArrivalKills:test_leaving_before_the_next_arrival_pays_noth
 		if ending == "leave" then
 			H.zoneSwitch(sc.player, DR.ELSEWHERE)
 			H.advance(0)
-		elseif ending == "respawn" then
+		elseif ending == "ship death" then
+			-- space-quest-player-ship-destroyed: the death fails the duty at once (the respawn switch is inert)
+			H.playerShipDestroyed(sc.player)
+			H.advance(0)
 			H.zoneSwitch(sc.player, DR.ZONE)
 			H.advance(0)
 		else

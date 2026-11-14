@@ -26,3 +26,8 @@ registerScreenPlay("SpaceDutyPatrolScreenplay", false)
 		Space Duty Patrol Quest Functions
 
 --]]
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceDutyPatrolScreenplay:isRunInProgress(pPlayer)
+	return false
+end

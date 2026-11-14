@@ -388,6 +388,8 @@ function SpaceInspectScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		return 1
 	end
 
+	if (zoneNameHash == getHashCode(SceneObject(pPlayer):getZoneName())) then return 0 end
+
 	if (SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then
 		createEvent(0, self.className, "abandonInspection", pPlayer, "")
 
@@ -470,4 +472,9 @@ function SpaceInspectScreenplay:triggerInspectionSplit(pPlayer)
 	SpaceHelpers:sendQuestAlert(pPlayer, "@spacequest/" .. self.questType .. "/" .. self.questName .. ":split_quest_alert")
 
 	createEvent(1000, self.sideQuestType .. "_" .. self.sideQuestName, "startQuest", pPlayer, "")
+end
+
+-- Ship death fails the run only once it is in progress (SWG in_progress); the same condition as leaving the zone
+function SpaceInspectScreenplay:isRunInProgress(pPlayer)
+	return SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)
 end

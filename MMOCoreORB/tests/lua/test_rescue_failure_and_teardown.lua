@@ -167,16 +167,17 @@ function TestRescueAbandon:test_a_zone_switch_after_setup_abandons_the_quest_aft
 	end
 end
 
--- AC-8b, D-5: a respawn after ship destruction is a same-zone switch
-function TestRescueAbandon:test_a_same_zone_switch_after_setup_also_abandons_the_quest()
+-- AC-8 (space-quest-player-ship-destroyed, D-14): the respawn after a ship death is a same-zone switch; it is inert
+function TestRescueAbandon:test_a_same_zone_switch_after_setup_leaves_the_run_alone()
 	local sc = R.fresh(REP):toWaiting()
+	local sent = #sc:events()
 
 	H.zoneSwitch(sc.player, sc.o.zone)
-	lu.assertTrue(sc:active(), "nothing fails inside the observer")
 	H.advance(0)
 
-	lu.assertEquals(R.count(sc:events(), "rescue_abandoned", "update"), 1, "rescue_abandoned update")
-	lu.assertFalse(sc:active(), "quest failed")
+	lu.assertEquals(R.count(sc:events(), "rescue_abandoned", "update"), 0, "no rescue_abandoned update")
+	lu.assertTrue(sc:active(), "the quest is still active")
+	lu.assertEquals(#sc:events(), sent, "nothing was sent by the same-zone switch")
 end
 
 -- AC-8b

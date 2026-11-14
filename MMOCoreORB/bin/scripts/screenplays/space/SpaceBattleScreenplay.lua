@@ -496,6 +496,7 @@ function SpaceBattleScreenplay:forceArrives(pPlayer, args)
 				ShipAiAgent(pShip):addSpaceFactionAlly(playerFactionHash)
 			else
 				ShipAiAgent(pShip):addSpaceFactionEnemy(playerFactionHash)
+				ShipAiAgent(pShip):addExclusiveAggro(pPlayer)
 			end
 
 			if (pLeader == nil) then

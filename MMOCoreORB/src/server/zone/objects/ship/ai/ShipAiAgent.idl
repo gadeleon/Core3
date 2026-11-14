@@ -203,6 +203,9 @@ class ShipAiAgent extends FighterShipObject {
 	@dereferenced
 	protected transient Vector<unsigned long> enemyShipList;
 
+	@dereferenced
+	protected transient Vector<unsigned long> exclusiveAggroIDs;
+
 	unsigned long missionOwnerID;
 
 	protected transient boolean dockable;
@@ -478,6 +481,16 @@ class ShipAiAgent extends FighterShipObject {
 
 	@dirty
 	public native boolean isEnemyShip(unsigned long shipID);
+
+	public native boolean addExclusiveAggro(unsigned long playerID);
+
+	public native boolean removeExclusiveAggro(unsigned long playerID);
+
+	@dirty
+	public native boolean hasExclusiveAggroID(unsigned long playerID);
+
+	@dirty
+	public native boolean hasExclusiveAggro(CreatureObject player);
 
 	@dirty
 	public native boolean isPlayerFactionAlly(CreatureObject player);

@@ -123,6 +123,7 @@ function SpaceAttackWaves:spawnWave(pPlayer, pAnchorShip, shipList)
 			local agentID = SceneObject(pShipAgent):getObjectID()
 
 			ShipAiAgent(pShipAgent):setMissionOwner(pPlayer)
+			ShipAiAgent(pShipAgent):addExclusiveAggro(pPlayer)
 
 			if (#shipList >= self.squadronMinSize) then
 				if (pLeader == nil) then

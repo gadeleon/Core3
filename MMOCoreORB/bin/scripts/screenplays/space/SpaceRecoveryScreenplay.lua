@@ -407,6 +407,7 @@ function SpaceRecoveryScreenplay:spawnRecoveryShip(pPlayer)
 
 	-- Set as a mission-specific ship locked to the mission holder
 	ShipAiAgent(pShipAgent):setMissionOwner(pPlayer)
+	ShipAiAgent(pShipAgent):addExclusiveAggro(pPlayer)
 
 	-- Set Fixed Patrol and escort flags
 	ShipAiAgent(pShipAgent):setFixedPatrol()
@@ -450,6 +451,7 @@ function SpaceRecoveryScreenplay:spawnRecoveryShip(pPlayer)
 
 		-- Set as a mission-specific ship locked to the mission holder
 		ShipAiAgent(pEscortShip):setMissionOwner(pPlayer)
+		ShipAiAgent(pEscortShip):addExclusiveAggro(pPlayer)
 
 		-- Set Fixed Patrol and escort flags
 		ShipAiAgent(pEscortShip):setFixedPatrol()
@@ -687,6 +689,7 @@ function SpaceRecoveryScreenplay:continueRecovery(pRecoveryShip)
 	-- Remove as enemy
 	TangibleObject(pRecoveryShip):clearPvpStatusBit(AGGRESSIVE)
 	ShipAiAgent(pRecoveryShip):removeEnemyShip(SceneObject(pPlayerShip):getObjectID())
+	ShipAiAgent(pRecoveryShip):removeExclusiveAggro(pPlayer)
 
 	-- Give Ship Escort Flag
 	ShipAiAgent(pRecoveryShip):setEscort()
@@ -869,6 +872,7 @@ function SpaceRecoveryScreenplay:spawnAttackWave(pRecoveryShip)
 
 		-- Set as a mission-specific ship locked to the mission holder
 		ShipAiAgent(pShipAgent):setMissionOwner(pPlayer)
+		ShipAiAgent(pShipAgent):addExclusiveAggro(pPlayer)
 
 		-- Set as a wave attack ship
 		ShipAiAgent(pShipAgent):setWaveAttack()

@@ -372,6 +372,8 @@ void TangibleObjectImplementation::sendPvpStatusTo(CreatureObject* player) {
 				newPvpStatusBitmask |= ObjectFlag::ENEMY;
 			} else if (playerRoot != nullptr && thisShipAgent->isEnemyShip(playerRoot->getObjectID())) {
 				newPvpStatusBitmask |= ObjectFlag::ENEMY;
+			} else if (thisShipAgent->hasExclusiveAggro(player)) {
+				newPvpStatusBitmask |= ObjectFlag::ENEMY;
 			}
 		}
 	} else if (isShipObject() && attackable && aggressive) {

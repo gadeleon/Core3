@@ -623,6 +623,7 @@ function SpaceEscortScreenplay:spawnAttackWave(pEscortAgent)
 
 		-- Set as a mission-specific ship locked to the mission holder
 		ShipAiAgent(pShipAgent):setMissionOwner(pPlayer)
+		ShipAiAgent(pShipAgent):addExclusiveAggro(pPlayer)
 
 		-- Set as a wave attack ship
 		ShipAiAgent(pShipAgent):setWaveAttack()

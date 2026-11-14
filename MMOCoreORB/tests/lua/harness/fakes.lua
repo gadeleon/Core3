@@ -563,6 +563,8 @@ function Fakes.newShipAgent(opts)
 		isSquadronLeader = false,
 		squadronLeader = nil,  -- pointer given to assignToSquadron
 		missionOwner = nil,
+		aggroLog = {},         -- ordered { name, args } of setMissionOwner, addExclusiveAggro, removeExclusiveAggro
+		exclusiveAggro = {},   -- [player objectID] = true (addExclusiveAggro, space-quest-exclusive-aggro)
 		dockable = false,      -- setDockable / isDockable
 		dockableCalls = {},    -- every value given to setDockable, in order
 		factionAllies = {},    -- hashes from addSpaceFactionAlly
@@ -582,7 +584,42 @@ function Fakes.newShipAgent(opts)
 	return register(a)
 end
 
-function FakeAgent:setMissionOwner(pPlayer) self.missionOwner = pPlayer end
+function FakeAgent:setMissionOwner(pPlayer)
+	self.missionOwner = pPlayer
+	self.aggroLog[#self.aggroLog + 1] = { name = "setMissionOwner", args = table.pack(pPlayer) }
+end
+-- LuaShipAiAgent::addExclusiveAggro / removeExclusiveAggro / hasExclusiveAggro (space-quest-exclusive-aggro).
+-- The bindings take exactly one player creature (anything else is logged or ignored by the server), so the fakes
+-- raise. The set is keyed by the player's object id (`exclusiveAggro[id] = true`); every add and remove is appended
+-- to `aggroLog` together with setMissionOwner (not callLog: the rescue escort tests compare the whole callLog),
+-- even one that changes nothing. test_exclusive_aggro_fakes.lua checks the names against LuaShipAiAgent.cpp.
+local function exclusiveAggroPlayer(name, ...)
+	local n = select("#", ...)
+	local pPlayer = ...
+
+	if n ~= 1 or type(pPlayer) ~= "table" or pPlayer.__kind ~= "CreatureObject" or type(pPlayer.isPlayerCreature) ~= "function" or not pPlayer:isPlayerCreature() then
+		error(name .. ": exactly 1 argument (a player creature)", 3)
+	end
+
+	return pPlayer
+end
+function FakeAgent:addExclusiveAggro(...)
+	local pPlayer = exclusiveAggroPlayer("addExclusiveAggro", ...)
+
+	self.exclusiveAggro[pPlayer.objectID] = true
+	self.aggroLog[#self.aggroLog + 1] = { name = "addExclusiveAggro", args = table.pack(...) }
+end
+function FakeAgent:removeExclusiveAggro(...)
+	local pPlayer = exclusiveAggroPlayer("removeExclusiveAggro", ...)
+
+	self.exclusiveAggro[pPlayer.objectID] = nil
+	self.aggroLog[#self.aggroLog + 1] = { name = "removeExclusiveAggro", args = table.pack(...) }
+end
+function FakeAgent:hasExclusiveAggro(...)
+	local pPlayer = exclusiveAggroPlayer("hasExclusiveAggro", ...)
+
+	return self.exclusiveAggro[pPlayer.objectID] == true
+end
 function FakeAgent:getMissionOwnerID() return self.missionOwner and self.missionOwner.objectID or 0 end
 function FakeAgent:addSpaceFactionEnemy(hash) self.factionEnemies[#self.factionEnemies + 1] = hash end
 -- LuaShipAiAgent::engageShipTarget (LuaShipAiAgent.cpp:388-418) needs exactly one argument, a ship object;

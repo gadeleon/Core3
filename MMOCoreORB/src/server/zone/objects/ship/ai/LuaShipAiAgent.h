@@ -53,6 +53,9 @@ public:
 	int removeSpaceFactionEnemy(lua_State* L);
 	int setEscortSpeed(lua_State* L);
 	int setMissionOwner(lua_State* L);
+	int addExclusiveAggro(lua_State* L);
+	int removeExclusiveAggro(lua_State* L);
+	int hasExclusiveAggro(lua_State* L);
 	int getMissionOwnerID(lua_State* L);
 	int setDockable(lua_State* L);
 	int isDockable(lua_State* L);

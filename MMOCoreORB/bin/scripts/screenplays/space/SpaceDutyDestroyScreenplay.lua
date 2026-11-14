@@ -399,6 +399,7 @@ function SpaceDutyDestroyScreenplay:spawnAttackWave(pPlayer)
 
 			-- Set as a mission-specific ship locked to the mission holder
 			ShipAiAgent(pBossLevelAgent):setMissionOwner(pPlayer)
+			ShipAiAgent(pBossLevelAgent):addExclusiveAggro(pPlayer)
 
 			local bossID = SceneObject(pBossLevelAgent):getObjectID()
 
@@ -458,6 +459,7 @@ function SpaceDutyDestroyScreenplay:spawnAttackWave(pPlayer)
 
 			-- Set as a mission-specific ship locked to the mission holder
 			ShipAiAgent(pShipAgent):setMissionOwner(pPlayer)
+			ShipAiAgent(pShipAgent):addExclusiveAggro(pPlayer)
 
 			local agentID = SceneObject(pShipAgent):getObjectID()
 

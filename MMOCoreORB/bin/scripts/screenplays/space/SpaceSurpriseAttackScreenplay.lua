@@ -243,6 +243,7 @@ function SpaceSurpriseAttackScreenplay:spawnSurpriseAttack(pPilot)
 			if (pShipAgent ~= nil) then
 				-- Set as a mission-specific ship locked to the mission holder
 				ShipAiAgent(pShipAgent):setMissionOwner(pPilot)
+				ShipAiAgent(pShipAgent):addExclusiveAggro(pPilot)
 
 				-- Setup the patrol
 				ShipAiAgent(pShipAgent):setMinimumGuardPatrol(100)

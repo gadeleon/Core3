@@ -58,6 +58,9 @@ Luna<LuaShipAiAgent>::RegType LuaShipAiAgent::Register[] = {
 	{ "isDockable", &LuaShipAiAgent::isDockable },
 	{ "repairShipAgent", &LuaShipAiAgent::repairShipAgent },
 	{ "removeEnemyShip", &LuaShipAiAgent::removeEnemyShip },
+	{ "addExclusiveAggro", &LuaShipAiAgent::addExclusiveAggro },
+	{ "removeExclusiveAggro", &LuaShipAiAgent::removeExclusiveAggro },
+	{ "hasExclusiveAggro", &LuaShipAiAgent::hasExclusiveAggro },
 	{ "setConversationMobile", &LuaShipAiAgent::setConversationMobile },
 	{ "swapSpaceFactionAssociations", &LuaShipAiAgent::swapSpaceFactionAssociations },
 	{ "clearPatrolPoints", &LuaShipAiAgent::clearPatrolPoints },
@@ -522,6 +525,72 @@ int LuaShipAiAgent::setMissionOwner(lua_State* L) {
 	realObject->setMissionOwner(player);
 
 	return 0;
+}
+
+int LuaShipAiAgent::addExclusiveAggro(lua_State* L) {
+	int numberOfArguments = lua_gettop(L) - 1;
+
+	if (numberOfArguments != 1) {
+		realObject->error() << "Improper number of arguments in LuaShipAiAgent::addExclusiveAggro.";
+		return 0;
+	}
+
+	CreatureObject* player = (CreatureObject*) lua_touserdata(L, -1);
+
+	if (player == nullptr || !player->isPlayerCreature()) {
+		return 0;
+	}
+
+	Locker lock(realObject);
+
+	if (realObject->addExclusiveAggro(player->getObjectID())) {
+		realObject->broadcastPvpStatusBitmask();
+	}
+
+	return 0;
+}
+
+int LuaShipAiAgent::removeExclusiveAggro(lua_State* L) {
+	int numberOfArguments = lua_gettop(L) - 1;
+
+	if (numberOfArguments != 1) {
+		realObject->error() << "Improper number of arguments in LuaShipAiAgent::removeExclusiveAggro.";
+		return 0;
+	}
+
+	CreatureObject* player = (CreatureObject*) lua_touserdata(L, -1);
+
+	if (player == nullptr || !player->isPlayerCreature()) {
+		return 0;
+	}
+
+	Locker lock(realObject);
+
+	if (realObject->removeExclusiveAggro(player->getObjectID())) {
+		realObject->broadcastPvpStatusBitmask();
+	}
+
+	return 0;
+}
+
+int LuaShipAiAgent::hasExclusiveAggro(lua_State* L) {
+	int numberOfArguments = lua_gettop(L) - 1;
+
+	if (numberOfArguments != 1) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	CreatureObject* player = (CreatureObject*) lua_touserdata(L, -1);
+
+	if (player == nullptr || !player->isPlayerCreature()) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	lua_pushboolean(L, realObject->hasExclusiveAggro(player));
+
+	return 1;
 }
 
 int LuaShipAiAgent::getMissionOwnerID(lua_State* L) {

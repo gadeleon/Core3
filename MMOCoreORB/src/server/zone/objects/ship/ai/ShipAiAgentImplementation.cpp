@@ -23,6 +23,7 @@
 #include "server/zone/objects/ship/ai/btspace/BehaviorSpace.h"
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/objects/ship/ai/ShipAiAgent.h"
+#include "server/zone/objects/ship/ai/ShipFactionAttackRule.h"
 #include "server/zone/objects/ship/ShipComponentFlag.h"
 #include "server/zone/Zone.h"
 #include "server/zone/ZoneServer.h"
@@ -1697,6 +1698,82 @@ bool ShipAiAgentImplementation::isEnemyShip(uint64 shipID) {
 	return enemyShipList.contains(shipID);
 }
 
+bool ShipAiAgentImplementation::addExclusiveAggro(uint64 playerID) {
+	if (playerID == 0) {
+		return false;
+	}
+
+	Locker locker(&enemyListMutex);
+
+	if (exclusiveAggroIDs.contains(playerID)) {
+		return false;
+	}
+
+	exclusiveAggroIDs.add(playerID);
+	return true;
+}
+
+bool ShipAiAgentImplementation::removeExclusiveAggro(uint64 playerID) {
+	Locker locker(&enemyListMutex);
+
+	if (!exclusiveAggroIDs.contains(playerID)) {
+		return false;
+	}
+
+	exclusiveAggroIDs.removeElement(playerID);
+	return true;
+}
+
+bool ShipAiAgentImplementation::hasExclusiveAggroID(uint64 playerID) {
+	Locker locker(&enemyListMutex);
+
+	return exclusiveAggroIDs.contains(playerID);
+}
+
+bool ShipAiAgentImplementation::hasExclusiveAggro(CreatureObject* player) {
+	if (player == nullptr) {
+		return false;
+	}
+
+	Vector<uint64> ids;
+
+	{
+		Locker locker(&enemyListMutex);
+
+		if (exclusiveAggroIDs.size() == 0) {
+			return false;
+		}
+
+		if (exclusiveAggroIDs.contains(player->getObjectID())) {
+			return true;
+		}
+
+		ids = exclusiveAggroIDs;
+	}
+
+	auto zoneServer = getZoneServer();
+
+	if (zoneServer == nullptr) {
+		return false;
+	}
+
+	for (int i = 0; i < ids.size(); i++) {
+		auto listed = cast<CreatureObject*>(zoneServer->getObject(ids.get(i)).get());
+
+		if (listed == nullptr) {
+			continue;
+		}
+
+		auto group = listed->getGroup();
+
+		if (group != nullptr && group->hasMember(player)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool ShipAiAgentImplementation::isPlayerFactionAlly(CreatureObject* player) {
 	if (player == nullptr) {
 		return false;
@@ -1902,7 +1979,18 @@ bool ShipAiAgentImplementation::isAttackableBy(TangibleObject* attackerTano) {
 
 	auto attackerSpaceFaction = attackerShip->getShipFaction();
 
-	if (attackerSpaceFaction > 0 && alliedFactions.contains(attackerSpaceFaction) && !enemyFactions.contains(attackerSpaceFaction)) {
+	bool exclusive = false;
+
+	if (attackerShip->isPlayerShip()) {
+		auto exclusiveOwner = attackerShip->getOwner().get();
+
+		exclusive = exclusiveOwner != nullptr && hasExclusiveAggro(exclusiveOwner);
+	}
+
+	bool factionAllied = attackerSpaceFaction > 0 && alliedFactions.contains(attackerSpaceFaction);
+	bool factionEnemy = attackerSpaceFaction > 0 && enemyFactions.contains(attackerSpaceFaction);
+
+	if (ShipFactionAttackRule::blocksAttack(exclusive, attackerSpaceFaction, factionAllied, factionEnemy)) {
 		return false;
 	}
 

@@ -23,7 +23,8 @@ SpaceDutyDestroyScreenplay = SpaceQuestLogic:new {
 	parentQuestName = "",
 
 	-- Screenplay Specific Variables
-	totalLevels = 0, -- Amount of levels a player has to complete to finish mission
+	totalLevels = 0, -- Mirrors the .tab levelsPerDuty column; the flow does not use it (see levelsPerDuty)
+	levelsPerDuty = 5, -- Every destroy duty runs 5 levels, as SWG hard-codes it (destroy_duty.java:61)
 	totalRounds = 0, -- Total Rounds for each of the levels
 	totalWaves = 0, -- Total waves at each location
 
@@ -46,7 +47,7 @@ registerScreenPlay("SpaceDutyDestroyScreenplay", false)
 		- Each Round has multiple waves. Defined as: totalWaves
 		- Once all of the waves are eliminated, the round increments. Defined as: totalRounds
 		- After all rounds are completed a boss ship is spawned.
-		- Once the boss is killed, the level is complete and increments for the total amount of levels. Defined as: totalLevels
+		- Once the boss is killed, the level is complete; after levelsPerDuty (5) levels the duty is complete, whatever the .tab says (SWG destroy_duty.java:61; pay and rounds stay Core3's, feature space-destroy-duty-five-levels)
 --]]
 
 function SpaceDutyDestroyScreenplay:startQuest(pPlayer, pNpc)
@@ -241,7 +242,14 @@ function SpaceDutyDestroyScreenplay:completeQuest(pPlayer, notifyClient)
 	deleteData(playerID .. ":" .. self.className .. ":DestroyKillCount:")
 
 	-- Complete System Message
-	CreatureObject(pPlayer):sendSystemMessage("@spacequest/destroy_duty/" .. self.questName .. ":complete")
+	self:sendDutyUpdate(pPlayer, "complete")
+end
+
+function SpaceDutyDestroyScreenplay:sendDutyUpdate(pPlayer, stringID)
+	local messageString = LuaStringIdChatParameter("@spacequest/destroy_duty/" .. self.questName .. ":duty_update")
+	messageString:setTO("@spacequest/destroy_duty/" .. self.questName .. ":" .. stringID)
+
+	CreatureObject(pPlayer):sendSystemMessage(messageString:_getObject())
 end
 
 function SpaceDutyDestroyScreenplay:getTargetLocation(pPlayer, initial)
@@ -723,7 +731,7 @@ function SpaceDutyDestroyScreenplay:notifyBossShipDestroyed(pBossShip, pKillerSh
 		local rewardCredits = self.creditReward * 3
 
 		-- Duty Mission is complete
-		if (currentLevel == self.totalLevels) then
+		if (currentLevel >= self.levelsPerDuty) then
 			if (self.DEBUG_SPACE_DUTY_DESTROY) then
 				print(self.className .. ":notifyBossShipDestroyed - Duty Mission Complete")
 			end
@@ -746,7 +754,7 @@ function SpaceDutyDestroyScreenplay:notifyBossShipDestroyed(pBossShip, pKillerSh
 		-- Start next level of rounds
 		else
 			if (self.DEBUG_SPACE_DUTY_DESTROY) then
-				print(self.className .. ":notifyBossShipDestroyed - Duty Mission Level Finished, Starting Next Level -- Current Level: " .. currentLevel .. " out of " .. self.totalLevels .. " Total Levels.")
+				print(self.className .. ":notifyBossShipDestroyed - Duty Mission Level Finished, Starting Next Level -- Current Level: " .. currentLevel .. " out of " .. self.levelsPerDuty .. " Total Levels.")
 			end
 
 			-- Update the level
@@ -770,8 +778,8 @@ function SpaceDutyDestroyScreenplay:notifyBossShipDestroyed(pBossShip, pKillerSh
 			-- Find the next target location
 			createEvent(6000, self.className, "getTargetLocation", pPlayer, "false")
 
-			-- "destroy_duty_level_boss_dead", " \\#pcontrast3 > \\#00ff00 The enemy commander has been defeated! \\#pcontrast3 < \\#pcontrast3 > \\#ff0000 In response, more enemy ships have entered the sector! \\#pcontrast3 <"
-			createEvent(2000, "SpaceHelpers", "sendDelayedMessage", pPlayer, "@space/quest:destroy_duty_level_boss_dead")
+			-- Commander defeated, more ships enter the sector
+			self:sendDutyUpdate(pPlayer, "level_boss_dead")
 		end
 	end
 
@@ -905,6 +913,7 @@ function SpaceDutyDestroyScreenplay:notifyAttackShipDestroyed(pShipAgent, pKille
 
 				-- Round is complete, give next location
 			else
+				self:sendDutyUpdate(pPlayer, "level_increase")
 				if (self.DEBUG_SPACE_DUTY_DESTROY) then
 					print(self.className .. ":notifyAttackShipDestroyed - Round not complete - " .. currentRound .. " of " .. self.totalRounds .. " Total Rounds.")
 				end

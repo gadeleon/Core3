@@ -317,7 +317,7 @@ function TestDutyRetake:test_every_destroy_duty_starts_again_after_the_final_bos
 
 		ShipAiAgent(boss):setMissionOwner(p)
 		writeStringVectorSharedMemory(p.objectID .. q.className .. ":attackShips:", { SceneObject(boss):getObjectID() })
-		writeData(p.objectID .. ":" .. q.className .. ":CurrentLevel:", q.totalLevels - 1)
+		writeData(p.objectID .. ":" .. q.className .. ":CurrentLevel:", SpaceDutyDestroyScreenplay.levelsPerDuty - 1)
 		createObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", boss)
 
 		H.destroyShip(boss, p.rootParent)

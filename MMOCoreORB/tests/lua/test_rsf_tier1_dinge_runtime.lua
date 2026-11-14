@@ -296,27 +296,31 @@ local function playLevel(q, player, killed, level)
 	return nil
 end
 
--- AC-8 (a): the whole duty, two levels with a boss each, to the completion
-function TestRsfTier1DingeDestroyDuty6:test_the_duty_runs_both_levels_with_their_bosses_and_completes_with_pay()
+-- AC-8 (a): the whole duty, five levels (space-destroy-duty-five-levels AC-6: every destroy duty runs SpaceDutyDestroyScreenplay.levelsPerDuty
+-- levels, whatever its totalLevels says) with a boss each, to the completion
+function TestRsfTier1DingeDestroyDuty6:test_the_duty_runs_five_levels_with_their_bosses_and_completes_with_pay()
 	local q, player = startedDuty6()
 	local killed = {}
 
-	lu.assertEquals({ q.totalLevels, q.totalRounds, q.totalWaves }, { 2, 2, 2 }, D.DUTY6 .. ": precondition: levels, rounds, waves")
+	lu.assertEquals(SpaceDutyDestroyScreenplay.levelsPerDuty, 5, D.DUTY6 .. ": precondition: the base duty runs five levels")
+	lu.assertEquals({ q.totalRounds, q.totalWaves }, { 2, 2 }, D.DUTY6 .. ": precondition: rounds, waves")
 
-	local boss1 = playLevel(q, player, killed, 1)
+	for level = 1, 5 do
+		local boss = playLevel(q, player, killed, level)
 
-	lu.assertEquals(boss1 and boss1.shipName, "blacksun_marauder_tier1", D.DUTY6 .. ": the level 1 boss")
-	killNewShips(player, killed)
-	pump(7000, D.DUTY6 .. " after the level 1 boss")
-	lu.assertTrue(SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName), D.DUTY6 .. ": the duty goes on to level 2")
+		lu.assertEquals(boss and boss.shipName, "blacksun_marauder_tier1", D.DUTY6 .. ": the level " .. level .. " boss")
+		killNewShips(player, killed)
 
-	local boss2 = playLevel(q, player, killed, 2)
+		if level < 5 then
+			pump(7000, D.DUTY6 .. " after the level " .. level .. " boss")
+			lu.assertTrue(SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName), D.DUTY6 .. ": the duty goes on after the level " .. level .. " boss")
+			lu.assertFalse(isComplete(player, q), D.DUTY6 .. ": not complete after the level " .. level .. " boss")
+		end
+	end
 
-	lu.assertEquals(boss2 and boss2.shipName, "blacksun_marauder_tier1", D.DUTY6 .. ": the level 2 boss")
-	killNewShips(player, killed)
-	pump(3000, D.DUTY6 .. " after the level 2 boss")
+	pump(3000, D.DUTY6 .. " after the level 5 boss")
 
-	lu.assertFalse(SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName), D.DUTY6 .. ": the duty is over after the level 2 boss")
+	lu.assertFalse(SpaceHelpers:isSpaceQuestActive(player, q.questType, q.questName), D.DUTY6 .. ": the duty is over after the level 5 boss")
 	lu.assertTrue(isComplete(player, q), D.DUTY6 .. ": completed")
 	lu.assertTrue(player.bankCredits > 0, D.DUTY6 .. ": the pilot was paid")
 end

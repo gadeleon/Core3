@@ -93,7 +93,7 @@ end
 function TestDestroyDutyAreaTeardown:test_a_boss_kill_destroys_the_target_area()
 	local q, p, area, key = duty()
 
-	lu.assertTrue(q.totalLevels > 1, "precondition: the duty has more than one level, so the boss kill does not reach completeQuest")
+	lu.assertTrue((SpaceDutyDestroyScreenplay.levelsPerDuty or 0) > 1, "precondition: the duty has more than one level, so the boss kill does not reach completeQuest")
 
 	writeData(p.objectID .. ":" .. q.className .. ":bossLevel:", 1)
 	H.enterArea(area, p.rootParent)

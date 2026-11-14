@@ -234,6 +234,40 @@ public:
 				*spawnAdmin << zoneName;
 				*spawnAdmin << spawnName;
 				spawnAdmin->callFunction();
+			} else if (commandType.beginsWith("spacequest")) {
+				String action, questType, questName;
+				args.getStringToken(action);
+				args.getStringToken(questType);
+				args.getStringToken(questName);
+
+				if (action != "complete") {
+					throw Exception();
+				}
+
+				// The targeted player, or the admin (SpaceQuestAdmin falls back to the admin)
+				ManagedReference<SceneObject*> targetObject = server->getZoneServer()->getObject(target);
+				CreatureObject* targetPlayer = nullptr;
+
+				if (targetObject != nullptr && targetObject->isPlayerCreature()) {
+					targetPlayer = targetObject.castTo<CreatureObject*>();
+				}
+
+				auto runComplete = [&]() {
+					Lua* lua = DirectorManager::instance()->getLuaInstance();
+					Reference<LuaFunction*> complete = lua->createFunction("SpaceQuestAdmin", "complete", 0);
+					*complete << creature;
+					*complete << targetPlayer;
+					*complete << questType;
+					*complete << questName;
+					complete->callFunction();
+				};
+
+				if (targetPlayer != nullptr && targetPlayer != creature) {
+					Locker targetLock(targetPlayer, creature);
+					runComplete();
+				} else {
+					runComplete();
+				}
 			} else if (commandType.beginsWith("characterbuilder")) {
 				if (!ConfigManager::instance()->getBool("Core3.CharacterBuilderEnabled", true)) {
 					creature->sendSystemMessage("characterbuilder is not enabled on this server.");
@@ -275,6 +309,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object checklooted");
 			creature->sendSystemMessage("SYNTAX: /object characterbuilder");
 			creature->sendSystemMessage("SYNTAX: /object spacespawn <list|spawn|despawn> <zone> [spawnName]");
+			creature->sendSystemMessage("SYNTAX: /object spacequest complete <questType> <questName> (targeted player or yourself)");
 
 			return INVALIDPARAMETERS;
 		}

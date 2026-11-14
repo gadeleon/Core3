@@ -15,21 +15,31 @@ private:
 	const static int INTERVAL_TRANSFORM = 200;
 	const static int INTERVAL_FINALIZE = 5000;
 
+	// SWG player_spacequest.java cmdDock: ship_ai.unitDock(ship, target, 15.0f), 15 s at the dock, then AiShipBehaviorDock::unDock
+	// tractor-beams the ship out along the exit path, SpaceDockingManager.cpp:425-427: 5x the docking ship's radius from the dock point
+	const static int DOCKED_TIME = 15000;
+	const static int EXIT_DURATION_MAX = 30000;
+	constexpr static float EXIT_RADIUS_GAIN = 5.f;
+
 	constexpr static float SPEED_MIN = 10.f;
 	constexpr static float SPEED_MAX = 25.f;
 
 	enum DockingStage : int {
 		INITIALIZE = 0,
 		TRANSFORM = 1,
-		FINALIZE = 2,
+		DOCKED = 2,
+		EXIT = 3,
+		FINALIZE = 4,
 	};
 
 protected:
 	ManagedWeakReference<ShipObject*> shipRef;
 	ManagedWeakReference<ShipObject*> targetRef;
 	SpaceTransform dockTransform;
+	SpaceTransform exitTransform;
 
 	uint64 timeStart;
+	uint64 timeDocked;
 	uint64 timeTotal;
 
 	float rotationTime;
@@ -58,6 +68,7 @@ public:
 		targetRef = target;
 
 		timeStart = System::getMiliTime();
+		timeDocked = 0;
 		timeTotal = 0;
 
 		rotationTime = 0.f;
@@ -109,6 +120,12 @@ private:
 	void initializeDocking(ShipObject* ship, ShipObject* target);
 
 	void updateTransform(ShipObject* ship, ShipObject* target);
+
+	void holdDocked(ShipObject* ship, ShipObject* target);
+
+	void exitDock(ShipObject* ship, ShipObject* target);
+
+	void setExitTransform(ShipObject* ship, ShipObject* target);
 
 	void finalizeDocking(ShipObject* ship, ShipObject* target);
 

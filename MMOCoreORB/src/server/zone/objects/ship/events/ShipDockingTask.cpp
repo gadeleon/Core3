@@ -4,7 +4,10 @@ void ShipDockingTask::run() {
 	auto ship = shipRef.get();
 	auto target = targetRef.get();
 
-	if (getTimeElapsed() >= DURATION_MAX || !isShipValid(ship) || !isTargetValid(target) || !isDocking(ship) || !isDocking(target)) {
+	// The approach has DURATION_MAX from the start; the time at the dock and the exit have their own limit from docking
+	bool timedOut = timeDocked == 0 ? getTimeElapsed() >= DURATION_MAX : (System::getMiliTime() - timeDocked) >= (uint64)(DOCKED_TIME + EXIT_DURATION_MAX);
+
+	if (timedOut || !isShipValid(ship) || !isTargetValid(target) || !isDocking(ship) || !isDocking(target)) {
 		clearDockingState(ship, target);
 		return;
 	}
@@ -18,6 +21,12 @@ void ShipDockingTask::run() {
 		}
 		case DockingStage::TRANSFORM: {
 			return updateTransform(ship, target);
+		}
+		case DockingStage::DOCKED: {
+			return holdDocked(ship, target);
+		}
+		case DockingStage::EXIT: {
+			return exitDock(ship, target);
 		}
 		case DockingStage::FINALIZE:
 		default: {
@@ -68,8 +77,66 @@ void ShipDockingTask::updateTransform(ShipObject* ship, ShipObject* target) {
 
 	sendSystemMessage(ship, interlockStatus ? "@space/cargo:dock_achieved" : "@space/cargo:dock_abort");
 
+	if (!interlockStatus) {
+		dockingStage = FINALIZE;
+		reschedule(INTERVAL_FINALIZE);
+		return;
+	}
+
+	// Docked: stay DOCKED_TIME, then fly out (SWG AiShipBehaviorDock docked -> unDock)
+	timeDocked = System::getMiliTime();
+	dockingStage = DOCKED;
+	reschedule(DOCKED_TIME);
+}
+
+void ShipDockingTask::holdDocked(ShipObject* ship, ShipObject* target) {
+	// Leaving the dock before the time is up ends it without the transfer (SWG triggerUnDockWithFailure)
+	if (ship->getPosition().distanceTo(dockTransform.getPosition()) > Math::max(ship->getRadius() * 2.f, 10.f)) {
+		sendSystemMessage(ship, "@space/cargo:dock_abort");
+		clearDockingState(ship, target);
+		return;
+	}
+
+	auto shipTransform = ship->getShipTransform();
+
+	if (shipTransform == nullptr) {
+		dockingStage = FINALIZE;
+		return reschedule(INTERVAL_TRANSFORM);
+	}
+
+	setExitTransform(ship, target);
+
+	shipTransform->initializeTransform(ship);
+	shipTransform->setNextTransform(exitTransform, SpaceTransformType::DOCK);
+
+	dockingStage = EXIT;
+	reschedule(INTERVAL_TRANSFORM);
+}
+
+void ShipDockingTask::exitDock(ShipObject* ship, ShipObject* target) {
+	auto transform = ship->getShipTransform();
+
+	if (transform != nullptr && transform->getNextDistance() > 0.f) {
+		transform->updateTransform(ship);
+		return reschedule(INTERVAL_TRANSFORM);
+	}
+
 	dockingStage = FINALIZE;
-	reschedule(INTERVAL_FINALIZE);
+	finalizeDocking(ship, target);
+}
+
+void ShipDockingTask::setExitTransform(ShipObject* ship, ShipObject* target) {
+	const auto& dockPosition = dockTransform.getPosition();
+
+	// Out from the target through the dock point, as SWG's default exit hardpoint (dock point moved back 5x the ship's radius)
+	Vector3 direction = dockPosition - target->getPosition();
+	float length = direction.length();
+
+	direction = length > 0.f ? direction / length : Vector3(0, 0, 1);
+
+	exitTransform.setPosition(dockPosition + (direction * (ship->getRadius() * EXIT_RADIUS_GAIN)));
+	exitTransform.setRotation(dockTransform.getRotation());
+	exitTransform.setSpeed(Math::clamp((float)SPEED_MIN, ship->getEngineMaxSpeed() * 0.5f, (float)SPEED_MAX));
 }
 
 void ShipDockingTask::finalizeDocking(ShipObject* ship, ShipObject* target) {

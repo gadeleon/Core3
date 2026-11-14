@@ -68,6 +68,14 @@ public:
 			removeDroid(ship, player);
 		}
 
+		// Land at the destination this task was given (a station's landing choice): removeAllPlayersFromShip sends everyone on board
+		// to the ship's launch point, so point it at the destination first. Since 6064d1e7cb the zone and coordinates were unused and
+		// every station landing went back to the starport the ship launched from.
+		if (!zoneName.isEmpty() && zoneServer->getZone(zoneName) != nullptr) {
+			ship->setSpaceLaunchZone(zoneName);
+			ship->setSpaceLaunchLocation(coordinates);
+		}
+
 		// Make sure no players remain in the ship
 		ship->removeAllPlayersFromShip();
 

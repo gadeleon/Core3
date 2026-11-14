@@ -11,6 +11,8 @@
 #include "server/zone/managers/crafting/ComponentMap.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
 #include "server/zone/managers/director/DirectorManager.h"
+#include "server/zone/objects/ship/ShipObject.h"
+#include "server/zone/objects/ship/events/HyperspaceToLocationTask.h"
 
 
 class ObjectCommand : public QueueCommand {
@@ -217,6 +219,66 @@ public:
 				creature->sendSystemMessage("Number of Exceptionals Looted: " + String::valueOf(lootManager->getExceptionalLooted()));
 				creature->sendSystemMessage("Number of Magical Looted: " + String::valueOf(lootManager->getYellowLooted()));
 
+			} else if (commandType.beginsWith("shiprepair") || commandType.beginsWith("shipinvulnerable") || commandType.beginsWith("spaceteleport")) {
+				// Admin ship tools: act on the ship the admin is in
+				ManagedReference<SceneObject*> root = creature->getRootParent();
+				ManagedReference<ShipObject*> ship = root != nullptr ? root->asShipObject() : nullptr;
+
+				if (ship == nullptr) {
+					creature->sendSystemMessage("You must be aboard a ship to use /object " + commandType + ".");
+					return GENERALERROR;
+				}
+
+				if (commandType.beginsWith("shiprepair")) {
+					// Chassis and every installed component to full, demolished components restored, no max decay
+					Locker shipLock(ship, creature);
+					ship->repairShip(1.f, false);
+					creature->sendSystemMessage("Ship and components fully repaired.");
+				} else if (commandType.beginsWith("shipinvulnerable")) {
+					Locker shipLock(ship, creature);
+
+					if (ship->getOptionsBitmask() & OptionBitmask::INVULNERABLE) {
+						ship->clearOptionBit(OptionBitmask::INVULNERABLE, true);
+						creature->sendSystemMessage("Ship invulnerability OFF.");
+					} else {
+						ship->setOptionBit(OptionBitmask::INVULNERABLE, true);
+						creature->sendSystemMessage("Ship invulnerability ON.");
+					}
+				} else {
+					String zoneName;
+					args.getStringToken(zoneName);
+					float x = args.getFloatToken();
+					float z = args.getFloatToken();
+					float y = args.getFloatToken();
+
+					auto newZone = creature->getZoneServer()->getZone(zoneName);
+
+					if (newZone == nullptr || !newZone->isSpaceZone()) {
+						creature->sendSystemMessage("No space zone named " + zoneName + ".");
+						return INVALIDPARAMETERS;
+					}
+
+					Locker shipLock(ship, creature);
+
+					if (ship->isHyperspacing()) {
+						creature->sendSystemMessage("@space/space_interaction:hyperspace_in_progress");
+						return GENERALERROR;
+					}
+
+					// Immediate warp (no route or countdown), as the Kessel and Deep Space entry stations use
+					ship->setHyperspacing(true);
+
+					HyperspaceToLocationTask* task = new HyperspaceToLocationTask(creature, ship, zoneName, Vector3(x, y, z), HyperspaceToLocationTask::WARP_ITERATION);
+					task->schedule(500);
+
+					creature->sendSystemMessage("Warping to " + zoneName + " " + String::valueOf(x) + " " + String::valueOf(z) + " " + String::valueOf(y) + ".");
+				}
+			} else if (commandType.beginsWith("fasthyperspace")) {
+				// Toggle: this admin's /hyperspace skips the route calculation and cooldown (about 5 s countdown, HyperspaceCommand)
+				bool enable = creature->getScreenPlayState("AdminFastHyperspace") == 0;
+
+				creature->setScreenPlayState("AdminFastHyperspace", enable ? 1 : 0);
+				creature->sendSystemMessage(enable ? "Fast hyperspace ON (about 5 seconds, no cooldown)." : "Fast hyperspace OFF.");
 			} else if (commandType.beginsWith("spacespawn")) {
 				String action, zoneName, spawnName;
 				args.getStringToken(action);
@@ -309,6 +371,8 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object checklooted");
 			creature->sendSystemMessage("SYNTAX: /object characterbuilder");
 			creature->sendSystemMessage("SYNTAX: /object spacespawn <list|spawn|despawn> <zone> [spawnName]");
+			creature->sendSystemMessage("SYNTAX: /object shiprepair | shipinvulnerable | fasthyperspace");
+			creature->sendSystemMessage("SYNTAX: /object spaceteleport <spaceZone> <x> <z> <y>");
 			creature->sendSystemMessage("SYNTAX: /object spacequest complete <questType> <questName> (targeted player or yourself)");
 
 			return INVALIDPARAMETERS;

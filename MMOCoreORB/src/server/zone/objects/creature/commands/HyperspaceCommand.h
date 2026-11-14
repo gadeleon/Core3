@@ -85,7 +85,11 @@ public:
 			return GENERALERROR;
 		}
 
-		int delay = ship->getHyperspaceDelay();
+		// Admin toggle (/object fasthyperspace): no cooldown, and the route starts at its last calculation step (about 5 s countdown)
+		auto ghost = creature->getPlayerObject();
+		bool adminFast = ghost != nullptr && ghost->isPrivileged() && creature->getScreenPlayState("AdminFastHyperspace") == 1;
+
+		int delay = adminFast ? 0 : ship->getHyperspaceDelay();
 
 		if (delay > 0) {
 			param.setStringId("@space/space_interaction:hyperspace_not_ready");
@@ -98,7 +102,7 @@ public:
 		Locker lock(ship);
 		ship->setHyperspacing(true);
 
-		HyperspaceToLocationTask* task = new HyperspaceToLocationTask(creature, ship, zoneName, arrivalLocation);
+		HyperspaceToLocationTask* task = new HyperspaceToLocationTask(creature, ship, zoneName, arrivalLocation, adminFast ? 4 : 0);
 		task->schedule(500);
 
 		return SUCCESS;

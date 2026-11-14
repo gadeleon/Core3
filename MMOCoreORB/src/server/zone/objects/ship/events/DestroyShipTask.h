@@ -55,10 +55,16 @@ public:
 			return false;
 		}
 
+		// The landing station (space faction "station") of the zone the entry station is in, closest to the entry station
+		Vector3 location = ship->getBattlefieldReturnLocation();
+		auto destinationManager = destination->getSpaceManager();
+
+		if (destinationManager != nullptr) {
+			location = destinationManager->getClosestSpaceStationPosition(location, "station") + Vector3(System::random(100) - 50.f, System::random(100) - 50.f, 0.f);
+		}
+
 		ship->resetShipFaction();
 		ship->setHyperspacing(true);
-
-		Vector3 location = ship->getBattlefieldReturnLocation();
 
 		auto task = new HyperspaceToLocationTask(pilot, ship, returnZone, location, HyperspaceToLocationTask::WARP_ITERATION);
 		task->schedule(6000 + System::random(2000));

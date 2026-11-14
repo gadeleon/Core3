@@ -14,7 +14,8 @@
 	hyperspace route. Pre-CU behaviour per the user (2026-11-12): SWG-Source's combat_ship_player zoneToCommand
 	(NGE) runs a 20 s "Hyperspace calculations" countdown first; that is not used. The ship's position beside the
 	station is stored first (LuaShipObject::setBattlefieldReturnPoint): a ship destroyed in Kessel or Deep Space
-	returns there (DestroyShipTask), as SWG's battlefield.locRespawnLocation. SWG's spaceFaction.FactionOverride on
+	returns to that zone's landing station (space faction "station") closest to it (DestroyShipTask), as SWG's
+	battlefield.locRespawnLocation. SWG's spaceFaction.FactionOverride on
 	Deep Space entry is not ported (space battlefields are out of scope).
 ]]
 

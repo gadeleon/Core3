@@ -241,7 +241,7 @@ destroy_duty_corellia_privateer_6 = SpaceDutyDestroyScreenplay:new {
 
 	bossShip = "hidden_daggers_executioner_tier1",
 	shipTypes = {
-		{"hidden_daggers_eliminator_tier1", "hidden_daggers_enforcer_tier1"},
+		{"hidden_daggers_enforcer_tier1", "hidden_daggers_eliminator_tier1"},
 	},
 }
 

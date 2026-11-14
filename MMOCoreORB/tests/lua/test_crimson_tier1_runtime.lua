@@ -424,10 +424,9 @@ function TestCrimsonT1DestroyDuty:test_the_boss_wave_spawns_the_tie_boss_first()
 	lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ships[1]), I.DUTY6 .. ": the boss has the boss kill observer")
 end
 
--- AC-4 (a): level 2 brings the boss and one escort of the table
-function TestCrimsonT1DestroyDuty:test_the_level_two_boss_squad_is_the_boss_and_one_ship_of_the_table()
+-- space-destroy-duty-swg-waves AC-3: level 2 brings two commanders, both the boss ship (SWG destroy_duty.java:216-247)
+function TestCrimsonT1DestroyDuty:test_the_level_two_wing_is_two_commanders()
 	local q, player, area = startedDuty6()
-	local allowed = unionOf(I.expected()[I.DUTY6].shipTypes)
 
 	writeData(dataKey(q, player, "bossLevel:"), 1)
 	writeData(dataKey(q, player, "CurrentLevel:"), 1)
@@ -436,9 +435,12 @@ function TestCrimsonT1DestroyDuty:test_the_level_two_boss_squad_is_the_boss_and_
 
 	local ships = H.spawnedShips()
 
-	lu.assertEquals(#ships, 2, I.DUTY6 .. ": level 2 boss squad size")
-	lu.assertEquals(ships[1].shipName, "imp_tie_fighter_tier2", I.DUTY6 .. ": the boss leads")
-	lu.assertTrue(allowed[ships[2].shipName] == true, I.DUTY6 .. ": the second ship '" .. tostring(ships[2].shipName) .. "' is one of the table's ships")
+	lu.assertEquals(#ships, 2, I.DUTY6 .. ": level 2 commander wing size")
+
+	for i, ship in ipairs(ships) do
+		lu.assertEquals(ship.shipName, "imp_tie_fighter_tier2", I.DUTY6 .. ": commander " .. i .. " is the boss ship")
+		lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ship), I.DUTY6 .. ": commander " .. i .. " has the commander kill observer")
+	end
 end
 
 ---------------------------------------------------------------------------------------------

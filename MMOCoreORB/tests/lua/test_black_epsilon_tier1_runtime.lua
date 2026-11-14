@@ -307,8 +307,8 @@ function TestBlackEpsilonT1DestroyDuty:test_the_boss_wave_spawns_the_prototype_f
 	lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ships[1]), B.DUTY6 .. ": the boss has the boss kill observer")
 end
 
--- AC-4 (a): level 2 brings the boss and one escort of the table
-function TestBlackEpsilonT1DestroyDuty:test_the_level_two_boss_squad_is_the_prototype_and_one_reb_bwing_tier1()
+-- space-destroy-duty-swg-waves AC-3: level 2 brings two commanders, both the boss ship (SWG destroy_duty.java:216-247)
+function TestBlackEpsilonT1DestroyDuty:test_the_level_two_wing_is_two_commanders()
 	local q, player, area = startedDuty6()
 
 	writeData(dataKey(q, player, "bossLevel:"), 1)
@@ -316,7 +316,14 @@ function TestBlackEpsilonT1DestroyDuty:test_the_level_two_boss_squad_is_the_prot
 	H.enterArea(area, player.rootParent)
 	pump(4500, B.DUTY6 .. " spawnAttackWave (level 2 boss)")
 
-	lu.assertEquals(shipNames(H.spawnedShips()), { "reb_bwing_prototype_tier2", "reb_bwing_tier1" }, B.DUTY6 .. ": level 2 boss squad")
+	local ships = H.spawnedShips()
+
+	lu.assertEquals(#ships, 2, B.DUTY6 .. ": level 2 commander wing size")
+
+	for i, ship in ipairs(ships) do
+		lu.assertEquals(ship.shipName, "reb_bwing_prototype_tier2", B.DUTY6 .. ": commander " .. i .. " is the boss ship")
+		lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ship), B.DUTY6 .. ": commander " .. i .. " has the commander kill observer")
+	end
 end
 
 ---------------------------------------------------------------------------------------------

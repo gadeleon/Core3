@@ -47,6 +47,9 @@ registerScreenPlay("SpaceDutyDestroyScreenplay", false)
 		- Each Round has multiple waves. Defined as: totalWaves
 		- Once all of the waves are eliminated, the round increments. Defined as: totalRounds
 		- After all rounds are completed a boss ship is spawned.
+		- The commander wing at level L is L commanders, all the bossShip (SWG destroy_duty.java:209-249); each taunts dd_boss_taunt_L 3 s after it spawns (destroyduty_boss.java:15-31)
+		- Wave ships: the column cycles per ship, the row is the round index in the level (destroy_duty.java:338, 360-364, 499-507)
+		- Leaving the quest zone ends the duty as won without pay (destroy_duty.java:100-108, space_quest.java:528-590)
 		- Once the boss is killed, the level is complete; after levelsPerDuty (5) levels the duty is complete, whatever the .tab says (SWG destroy_duty.java:61; pay and rounds stay Core3's, feature space-destroy-duty-five-levels)
 --]]
 
@@ -166,6 +169,7 @@ function SpaceDutyDestroyScreenplay:failQuest(pPlayer, notifyClient)
 	deleteData(playerID .. ":" .. self.className .. ":CurrentRound:")
 	deleteData(playerID .. ":" .. self.className .. ":CurrentLevel:")
 	deleteData(playerID .. ":" .. self.className .. ":DestroyKillCount:")
+	deleteData(playerID .. ":" .. self.className .. ":bossLevel:")
 end
 
 function SpaceDutyDestroyScreenplay:resetQuest(pPlayer)
@@ -200,6 +204,7 @@ function SpaceDutyDestroyScreenplay:resetQuest(pPlayer)
 	deleteData(playerID .. ":" .. self.className .. ":CurrentRound:")
 	deleteData(playerID .. ":" .. self.className .. ":CurrentLevel:")
 	deleteData(playerID .. ":" .. self.className .. ":DestroyKillCount:")
+	deleteData(playerID .. ":" .. self.className .. ":bossLevel:")
 end
 
 function SpaceDutyDestroyScreenplay:completeQuest(pPlayer, notifyClient)
@@ -240,6 +245,7 @@ function SpaceDutyDestroyScreenplay:completeQuest(pPlayer, notifyClient)
 	deleteData(playerID .. ":" .. self.className .. ":CurrentRound:")
 	deleteData(playerID .. ":" .. self.className .. ":CurrentLevel:")
 	deleteData(playerID .. ":" .. self.className .. ":DestroyKillCount:")
+	deleteData(playerID .. ":" .. self.className .. ":bossLevel:")
 
 	-- Complete System Message
 	self:sendDutyUpdate(pPlayer, "complete")
@@ -386,13 +392,8 @@ function SpaceDutyDestroyScreenplay:spawnAttackWave(pPlayer)
 		local bossSquadSize = currentLevel
 
 		for i = 1, bossSquadSize, 1 do
-			local shipAgentString = ""
-
-			if (i == 1) then
-				shipAgentString = self.bossShip
-			else
-				shipAgentString = shipTable[1][((i - 1) % #shipTable[1]) + 1]
-			end
+			-- Every commander of the wing is the boss ship (destroy_duty.java:216-247)
+			local shipAgentString = self.bossShip
 
 			if (self.DEBUG_SPACE_DUTY_DESTROY) then
 				print(self.className .. ":spawnAttackWave -- Spawning Boss Level Ship: " .. shipAgentString)
@@ -424,10 +425,10 @@ function SpaceDutyDestroyScreenplay:spawnAttackWave(pPlayer)
 			ShipAiAgent(pBossLevelAgent):addSpaceFactionEnemy(playerFactionHash)
 			ShipAiAgent(pBossLevelAgent):engageShipTarget(pPlayerShip)
 
-			if (i == 1) then
-				-- Taunt player
-				self:tauntPlayer(pBossLevelAgent, pPlayer, true)
+			-- Each commander taunts 3 s after it spawns (destroyduty_boss.java:15-31)
+			createEvent(3000, self.className, "sendBossTaunt", pBossLevelAgent, tostring(bossSquadSize))
 
+			if (i == 1) then
 				-- Play effect for player
 				CreatureObject(pPlayer):playEffect("clienteffect/ui_quest_spawn_boss.cef", "")
 				CreatureObject(pPlayer):playMusicMessage("sound/music_com_enter_battle.snd")
@@ -452,8 +453,11 @@ function SpaceDutyDestroyScreenplay:spawnAttackWave(pPlayer)
 		local shipTableSize = #shipTable
 		local tableSet = 1
 
+		-- The row is the number of rounds completed in this level, wrapping at the first column (destroy_duty.java:499-507)
+		local shipRow = readData(playerID .. ":" .. self.className .. ":CurrentRound:") % #shipTable[1]
+
 		for i = 1, fighterCount, 1 do
-			local shipType = shipTable[tableSet][((i - 1) % #shipTable[tableSet]) + 1]
+			local shipType = shipTable[tableSet][(shipRow % #shipTable[tableSet]) + 1]
 
 			if (self.DEBUG_SPACE_DUTY_DESTROY) then
 				print(self.className .. ":spawnAttackWave -- Spawning Regular Attack Ship: " .. shipType)
@@ -560,6 +564,37 @@ function SpaceDutyDestroyScreenplay:removeAttackShips(pPlayer)
 	end
 end
 
+-- Commander taunt, delayed 3 s after the spawn (destroyduty_boss.java:15-31)
+function SpaceDutyDestroyScreenplay:sendBossTaunt(pBoss, level)
+	if (pBoss == nil) then
+		return
+	end
+
+	local pPlayer = getSceneObject(ShipAiAgent(pBoss):getMissionOwnerID())
+
+	if (pPlayer == nil or not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+	local bossID = SceneObject(pBoss):getObjectID()
+	local shipIDs = readStringVectorSharedMemory(playerID .. self.className .. ":attackShips:")
+	local found = false
+
+	for i = 1, #shipIDs, 1 do
+		if (tonumber(shipIDs[i]) == bossID) then
+			found = true
+			break
+		end
+	end
+
+	if (not found) then
+		return
+	end
+
+	ShipAiAgent(pBoss):tauntPlayer(pPlayer, "@spacequest/destroy_duty/" .. self.questName .. ":dd_boss_taunt_" .. tostring(level))
+end
+
 function SpaceDutyDestroyScreenplay:tauntPlayer(pShipAgent, pPlayer, isBoss)
 	if (pPlayer == nil or pShipAgent == nil) then
 		return
@@ -571,11 +606,8 @@ function SpaceDutyDestroyScreenplay:tauntPlayer(pShipAgent, pPlayer, isBoss)
 
 	local tauntString = "@spacequest/destroy_duty/" .. self.questName .. ":"
 
-	if (isBoss) then
-		tauntString = tauntString .. "dd_boss_taunt_" .. tostring(getRandomNumber(1, 5))
-	else
-		tauntString = tauntString .. "taunt_" .. tostring(getRandomNumber(1, 5))
-	end
+	-- Only wave taunts come through here; commander taunts are sendBossTaunt
+	tauntString = tauntString .. "taunt_" .. tostring(getRandomNumber(1, 5))
 
 	ShipAiAgent(pShipAgent):tauntPlayer(pPlayer, tauntString)
 end
@@ -625,10 +657,41 @@ function SpaceDutyDestroyScreenplay:enteredZone(pPlayer, nill, zoneNameHash)
 		-- Find a target location
 		createEvent(2000, self.className, "getTargetLocation", pPlayer, "true")
 	elseif (zoneNameHash ~= spaceQuestHash and SpaceHelpers:isSpaceQuestTaskComplete(pPlayer, self.questType, self.questName, 0)) then
-		createEvent(2000, self.className, "failQuest", pPlayer, "true")
+		-- Leaving the zone (or losing the ship) ends the duty as won without pay (destroy_duty.java:100-108)
+		createEvent(2000, self.className, "abandonDuty", pPlayer, "")
 	end
 
 	return 0
+end
+
+-- SWG destroy_duty.java:100-108 and space_quest.java:528-590, 722-736: "Duty Update: duty ended", then setQuestWon without pay
+function SpaceDutyDestroyScreenplay:abandonDuty(pPlayer)
+	if (pPlayer == nil or not SpaceHelpers:isSpaceQuestActive(pPlayer, self.questType, self.questName)) then
+		return
+	end
+
+	SpaceHelpers:sendDutyUpdate(pPlayer, "@space/quest:destroy_abandoned")
+
+	SpaceHelpers:completeSpaceQuest(pPlayer, self.questType, self.questName, false)
+
+	SpaceHelpers:sendMissionEnded(pPlayer, "@spacequest/destroy_duty/" .. self.questName .. ":title")
+
+	CreatureObject(pPlayer):playMusicMessage("sound/music_themequest_victory_rebel.snd")
+
+	SpaceHelpers:clearQuestWaypoint(pPlayer, self.className)
+
+	dropObserver(ZONESWITCHED, self.className, "enteredZone", pPlayer)
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+
+	self:destroyTargetArea(playerID)
+	self:removeAttackShips(pPlayer)
+
+	deleteData(playerID .. ":" .. self.className .. ":CurrentWave:")
+	deleteData(playerID .. ":" .. self.className .. ":CurrentRound:")
+	deleteData(playerID .. ":" .. self.className .. ":CurrentLevel:")
+	deleteData(playerID .. ":" .. self.className .. ":DestroyKillCount:")
+	deleteData(playerID .. ":" .. self.className .. ":bossLevel:")
 end
 
 function SpaceDutyDestroyScreenplay:notifyEnteredQuestArea(pActiveArea, pShip)

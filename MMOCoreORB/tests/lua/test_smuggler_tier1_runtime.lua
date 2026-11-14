@@ -475,10 +475,9 @@ for _, d in ipairs(DESTROY_DUTIES) do
 		lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ships[1]), d.global .. ": the boss has the boss kill observer")
 	end
 
-	-- AC-4 (a): level 2 boss squad
-	TestSmugglerT1DestroyDuties["test_" .. d.global .. "_the_level_two_boss_squad_is_the_boss_and_one_ship_of_the_table"] = function()
+	-- space-destroy-duty-swg-waves AC-3: level 2 brings two commanders, both the boss ship (SWG destroy_duty.java:216-247)
+	TestSmugglerT1DestroyDuties["test_" .. d.global .. "_the_level_two_wing_is_two_commanders"] = function()
 		local q, player, area = startedDestroyDuty(d.global)
-		local allowed = unionOf(S.expected()[d.global].shipTypes)
 
 		writeData(dataKey(q, player, "bossLevel:"), 1)
 		writeData(dataKey(q, player, "CurrentLevel:"), 1)
@@ -487,9 +486,12 @@ for _, d in ipairs(DESTROY_DUTIES) do
 
 		local ships = H.spawnedShips()
 
-		lu.assertEquals(#ships, 2, d.global .. ": level 2 boss squad size")
-		lu.assertEquals(ships[1].shipName, d.boss, d.global .. ": the boss leads")
-		lu.assertTrue(allowed[ships[2].shipName] == true, d.global .. ": the second ship '" .. tostring(ships[2].shipName) .. "' is one of the table's ships")
+		lu.assertEquals(#ships, 2, d.global .. ": level 2 commander wing size")
+
+		for i, ship in ipairs(ships) do
+			lu.assertEquals(ship.shipName, d.boss, d.global .. ": commander " .. i .. " is the boss ship")
+			lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ship), d.global .. ": commander " .. i .. " has the commander kill observer")
+		end
 	end
 end
 

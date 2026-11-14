@@ -472,8 +472,8 @@ destroy_duty_viopa_rebel_6 = SpaceDutyDestroyScreenplay:new {
 
 	bossShip = "imp_tie_interceptor_tier3",
 	shipTypes = {
+		{"imp_tie_fighter_tier2", "imp_tie_interceptor_tier2", "imp_tie_fighter_tier2"},
 		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
-		{"imp_tie_interceptor_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
 		{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},
 	},
 }
@@ -2000,11 +2000,8 @@ destroy_duty_corellia_rebel_tier4_1 = SpaceDutyDestroyScreenplay:new {
 
 	bossShip = "blacksun_marauder_tier4",
 	shipTypes = {
-		{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},
-		{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},
-		{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},
-		{"blacksun_fighter_s01_tier4"},
-		{"blacksun_vehement_tier4"},
+		{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},
+		{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_vehement_tier4"},
 	},
 }
 

@@ -393,10 +393,9 @@ function TestSmugglerT2DestroyDuty:test_the_boss_wave_spawns_blacksun_marauder_t
 	lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ships[1]), M.DUTY_DESTROY .. ": the boss has the boss kill observer")
 end
 
--- AC-4: level 2 boss squad
-function TestSmugglerT2DestroyDuty:test_the_level_two_boss_squad_is_the_boss_and_one_ship_of_the_table()
+-- space-destroy-duty-swg-waves AC-3: level 2 brings two commanders, both the boss ship (SWG destroy_duty.java:216-247)
+function TestSmugglerT2DestroyDuty:test_the_level_two_wing_is_two_commanders()
 	local q, player, area = startedDestroyDuty()
-	local allowed = unionOf(WANT[M.DUTY_DESTROY].shipTypes)
 
 	writeData(dataKey(q, player, "bossLevel:"), 1)
 	writeData(dataKey(q, player, "CurrentLevel:"), 1)
@@ -405,9 +404,12 @@ function TestSmugglerT2DestroyDuty:test_the_level_two_boss_squad_is_the_boss_and
 
 	local ships = H.spawnedShips()
 
-	lu.assertEquals(#ships, 2, M.DUTY_DESTROY .. ": level 2 boss squad size")
-	lu.assertEquals(ships[1].shipName, "blacksun_marauder_tier3", M.DUTY_DESTROY .. ": the boss leads")
-	lu.assertTrue(allowed[ships[2].shipName] == true, M.DUTY_DESTROY .. ": the second ship '" .. tostring(ships[2].shipName) .. "' is one of the table's ships")
+	lu.assertEquals(#ships, 2, M.DUTY_DESTROY .. ": level 2 commander wing size")
+
+	for i, ship in ipairs(ships) do
+		lu.assertEquals(ship.shipName, "blacksun_marauder_tier3", M.DUTY_DESTROY .. ": commander " .. i .. " is the boss ship")
+		lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ship), M.DUTY_DESTROY .. ": commander " .. i .. " has the commander kill observer")
+	end
 end
 
 ---------------------------------------------------------------------------------------------

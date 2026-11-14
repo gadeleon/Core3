@@ -495,6 +495,25 @@ function TestHavocTier3NameCaseFilePins:test_the_havoc_screenplay_differs_from_t
 	-- differ from the base's), so the diff against the working tree stays the three pure-insertion hunks
 	lines = removeOrphan(lines)
 
+	-- space-destroy-duty-swg-waves: viopa_rebel_6 and corellia_rebel_tier4_1 shipTypes follow the .tab columns (spec Content contract 8)
+	local function replaceBlock(from, to)
+		local text = table.concat(lines, "\n")
+		local a, b = text:find(from, 1, true)
+
+		lu.assertNotNil(a, "base block to fix not found: " .. from:sub(1, 60))
+		lu.assertNil(text:find(from, b + 1, true), "base block to fix is not unique: " .. from:sub(1, 60))
+		lines = linesOf(text:sub(1, a - 1) .. to .. text:sub(b + 1) .. "\n")
+	end
+
+	local F, I = '{"imp_tie_fighter_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},', '{"imp_tie_interceptor_tier2", "imp_tie_fighter_tier2", "imp_tie_fighter_tier2"},'
+	local B = '{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},'
+
+	replaceBlock("\t\t" .. F .. "\n\t\t" .. I .. "\n\t\t" .. F,
+		"\t\t" .. '{"imp_tie_fighter_tier2", "imp_tie_interceptor_tier2", "imp_tie_fighter_tier2"},' .. "\n\t\t" .. F .. "\n\t\t" .. F)
+	replaceBlock("\t\t" .. B .. "\n\t\t" .. B .. "\n\t\t" .. B .. '\n\t\t{"blacksun_fighter_s01_tier4"},\n\t\t{"blacksun_vehement_tier4"},',
+		'\t\t{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4"},\n'
+		.. '\t\t{"blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_fighter_s01_tier4", "blacksun_vehement_tier4"},')
+
 	local expected = os.tmpname()
 	local f = assert(io.open(expected, "wb"))
 

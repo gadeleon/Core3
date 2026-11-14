@@ -402,6 +402,9 @@ function W.corsecEdits()
 		e[992 + i] = W.patrolLine(p[1], DA, p[2], p[3], p[4], p[5])
 	end
 
+	-- space-destroy-duty-swg-waves: corellia_privateer_6 column order follows the .tab (enforcer first)
+	e[244] = '\t\t{"hidden_daggers_enforcer_tier1", "hidden_daggers_eliminator_tier1"},'
+
 	e[1373] = W.escortLine("corellia_privateer_tier4_leg_2_escort_5", D, -2682, 7408, 2855, 5)
 
 	local d = W.TUROLDINE_DUTY_POINTS

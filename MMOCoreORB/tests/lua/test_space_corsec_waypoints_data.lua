@@ -437,7 +437,7 @@ function TestCorsecWaypointsFilePins:test_CorsecSquadronScreenplay_differs_from_
 
 	lu.assertEquals(#lines, 2180, "base line count of the CorSec file")
 	lu.assertEquals(deleted, 1, "lines the spec deletes (W-7)")
-	lu.assertEquals(changed, 27, "lines the spec changes (W-1..W-5, W-8, R; the escort duty keeps four of its five lines)")
+	lu.assertEquals(changed, 28, "lines the spec changes (W-1..W-5, W-8, R; the escort duty keeps four of its five lines; space-destroy-duty-swg-waves: corellia_privateer_6 shipTypes)")
 	lu.assertEquals(#want, 2179, "expected line count of the CorSec file")
 
 	local text = W.readFile(W.CSP)

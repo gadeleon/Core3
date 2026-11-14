@@ -239,8 +239,8 @@ function TestRsfTier1DingeDestroyDuty6:test_the_boss_wave_spawns_the_marauder_fi
 	lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ships[1]), D.DUTY6 .. ": the boss has the boss kill observer")
 end
 
--- AC-8 (a): level 2 brings the boss and one escort
-function TestRsfTier1DingeDestroyDuty6:test_the_level_two_boss_squad_is_the_marauder_and_one_fighter_of_the_first_set()
+-- space-destroy-duty-swg-waves AC-3: level 2 brings two commanders, both the boss ship (SWG destroy_duty.java:216-247)
+function TestRsfTier1DingeDestroyDuty6:test_the_level_two_wing_is_two_commanders()
 	local q, player, area = startedDuty6()
 
 	writeData(dataKey(q, player, "bossLevel:"), 1)
@@ -248,7 +248,14 @@ function TestRsfTier1DingeDestroyDuty6:test_the_level_two_boss_squad_is_the_mara
 	H.enterArea(area, player.rootParent)
 	pump(4500, D.DUTY6 .. " spawnAttackWave (level 2 boss)")
 
-	lu.assertEquals(shipNames(H.spawnedShips()), { "blacksun_marauder_tier1", "blacksun_fighter_s01_tier1" }, D.DUTY6 .. ": level 2 boss squad")
+	local ships = H.spawnedShips()
+
+	lu.assertEquals(#ships, 2, D.DUTY6 .. ": level 2 commander wing size")
+
+	for i, ship in ipairs(ships) do
+		lu.assertEquals(ship.shipName, "blacksun_marauder_tier1", D.DUTY6 .. ": commander " .. i .. " is the boss ship")
+		lu.assertTrue(H.hasObserver(SHIPDESTROYED, q.className, "notifyBossShipDestroyed", ship), D.DUTY6 .. ": commander " .. i .. " has the commander kill observer")
+	end
 end
 
 -- Kills every ship spawned since the last call, with the pilot's ship as killer; returns how many

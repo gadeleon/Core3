@@ -10,6 +10,7 @@
 #include "server/zone/managers/crafting/CraftingManager.h"
 #include "server/zone/managers/crafting/ComponentMap.h"
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
+#include "server/zone/managers/director/DirectorManager.h"
 
 
 class ObjectCommand : public QueueCommand {
@@ -216,6 +217,23 @@ public:
 				creature->sendSystemMessage("Number of Exceptionals Looted: " + String::valueOf(lootManager->getExceptionalLooted()));
 				creature->sendSystemMessage("Number of Magical Looted: " + String::valueOf(lootManager->getYellowLooted()));
 
+			} else if (commandType.beginsWith("spacespawn")) {
+				String action, zoneName, spawnName;
+				args.getStringToken(action);
+				args.getStringToken(zoneName);
+
+				if (args.hasMoreTokens()) {
+					args.getStringToken(spawnName);
+				}
+
+				// SpaceSpawnerScreenPlay:admin messages the admin; spawning and despawning run in an event
+				Lua* lua = DirectorManager::instance()->getLuaInstance();
+				Reference<LuaFunction*> spawnAdmin = lua->createFunction("SpaceSpawnerScreenPlay", "admin", 0);
+				*spawnAdmin << creature;
+				*spawnAdmin << action;
+				*spawnAdmin << zoneName;
+				*spawnAdmin << spawnName;
+				spawnAdmin->callFunction();
 			} else if (commandType.beginsWith("characterbuilder")) {
 				if (!ConfigManager::instance()->getBool("Core3.CharacterBuilderEnabled", true)) {
 					creature->sendSystemMessage("characterbuilder is not enabled on this server.");
@@ -256,6 +274,7 @@ public:
 			creature->sendSystemMessage("SYNTAX: /object createarealoot <loottemplate> [<range>] [<level>]");
 			creature->sendSystemMessage("SYNTAX: /object checklooted");
 			creature->sendSystemMessage("SYNTAX: /object characterbuilder");
+			creature->sendSystemMessage("SYNTAX: /object spacespawn <list|spawn|despawn> <zone> [spawnName]");
 
 			return INVALIDPARAMETERS;
 		}

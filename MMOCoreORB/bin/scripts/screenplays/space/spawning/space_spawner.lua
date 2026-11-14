@@ -394,6 +394,8 @@ function SpaceSpawnerScreenPlay:spawnShipAgent(pNil, indexString)
 	writeData(agentID .. ":SpawnerIndex:", tableNum)
 	writeStringData(agentID .. ":SpawnerName:", spawnTable.spawnName)
 
+	self:trackShip(spawnTable.spawnName, agentID)
+
 	::continue::
 end
 
@@ -475,6 +477,8 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 			-- Store the agent data
 			writeData(leadShipID .. ":SpawnerIndex:", tableNum)
 			writeStringData(leadShipID .. ":SpawnerName:", spawnTable.spawnName)
+
+			self:trackShip(spawnTable.spawnName, leadShipID)
 		else
 			Logger:log(self.screenplayName .. " -- ERROR: Failed to spawn Lead Squadron Ship: " .. leadShipName .. " Squadron Name: " .. squadronName, LT_ERROR)
 		end
@@ -547,6 +551,8 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 		writeData(agentID .. ":SpawnerIndex:", tableNum)
 		writeStringData(agentID .. ":SpawnerName:", spawnTable.spawnName)
 
+		self:trackShip(spawnTable.spawnName, agentID)
+
 		::continue::
 	end
 end
@@ -568,6 +574,146 @@ function SpaceSpawnerScreenPlay:isEscortShip(spawnTable, shipName)
 	end
 
 	return false
+end
+
+--[[
+	Ships each spawner has in the world, for /object spacespawn despawn: shared string data
+	"SpaceSpawner:<screenplayName>:<spawnName>" holds their object IDs, comma separated. IDs of ships no longer in the
+	world are pruned whenever a ship is added.
+]]
+function SpaceSpawnerScreenPlay:trackedShipsKey(spawnName)
+	return "SpaceSpawner:" .. self.screenplayName .. ":" .. spawnName
+end
+
+function SpaceSpawnerScreenPlay:getTrackedShips(spawnName)
+	local ids = {}
+	local stored = readStringData(self:trackedShipsKey(spawnName)) or ""
+
+	for id in string.gmatch(stored, "[^,]+") do
+		local pShip = getSceneObject(tonumber(id))
+
+		if (pShip ~= nil and (SceneObject(pShip):getZoneName() or "") ~= "") then
+			ids[#ids + 1] = id
+		end
+	end
+
+	return ids
+end
+
+function SpaceSpawnerScreenPlay:trackShip(spawnName, agentID)
+	local ids = self:getTrackedShips(spawnName)
+
+	ids[#ids + 1] = tostring(agentID)
+
+	writeStringData(self:trackedShipsKey(spawnName), table.concat(ids, ","))
+end
+
+--[[
+	Admin: /object spacespawn <list|spawn|despawn> <zone> [spawnName] (ObjectCommand.h)
+		list    - the zone's spawners whose name contains spawnName (all without it), with coordinates and ships in the world
+		spawn   - spawns spawnName now (squadron or single ships), in addition to any respawn already scheduled
+		despawn - removes spawnName's ships from the world without scheduling a respawn
+	Spawn and despawn run in an event, outside the command's locks.
+]]
+function SpaceSpawnerScreenPlay:findSpawner(zoneName)
+	for _, v in pairs(_G) do
+		if (type(v) == "table" and rawget(v, "spaceZone") == zoneName and type(rawget(v, "shipSpawns")) == "table" and rawget(v, "screenplayName") ~= nil) then
+			return v
+		end
+	end
+
+	return nil
+end
+
+function SpaceSpawnerScreenPlay:findSpawnIndex(spawnName)
+	for i = 1, #self.shipSpawns, 1 do
+		if (self.shipSpawns[i].spawnName == spawnName) then
+			return i
+		end
+	end
+
+	return nil
+end
+
+function SpaceSpawnerScreenPlay:admin(pAdmin, action, zoneName, spawnName)
+	if (pAdmin == nil) then
+		return
+	end
+
+	local admin = CreatureObject(pAdmin)
+	local spawner = SpaceSpawnerScreenPlay:findSpawner(zoneName or "")
+
+	if (spawner == nil) then
+		admin:sendSystemMessage("No space spawner for zone " .. tostring(zoneName) .. ".")
+		return
+	end
+
+	if (action == "list") then
+		local filter = spawnName or ""
+		local shown = 0
+
+		for i = 1, #spawner.shipSpawns, 1 do
+			local t = spawner.shipSpawns[i]
+
+			if (filter == "" or string.find(t.spawnName, filter, 1, true) ~= nil) then
+				admin:sendSystemMessage(t.spawnName .. " at " .. t.x .. " " .. t.z .. " " .. t.y .. " - ships in the world: " .. #spawner:getTrackedShips(t.spawnName))
+				shown = shown + 1
+			end
+		end
+
+		admin:sendSystemMessage(shown .. " spawner(s) in " .. zoneName .. ".")
+		return
+	end
+
+	local index = spawner:findSpawnIndex(spawnName or "")
+
+	if (index == nil) then
+		admin:sendSystemMessage("No spawner named " .. tostring(spawnName) .. " in " .. zoneName .. ". Try /object spacespawn list " .. zoneName .. ".")
+		return
+	end
+
+	local t = spawner.shipSpawns[index]
+
+	if (action == "spawn") then
+		local method = "spawnShipAgent"
+
+		if (t.spawnType == SHIP_SPAWN_SQUADRON) then
+			method = "spawnShipSquadron"
+		end
+
+		createEvent(10, spawner.screenplayName, method, nil, tostring(index))
+		admin:sendSystemMessage("Spawning " .. t.spawnName .. " within " .. t.maxSpawnDistance .. " m of " .. t.x .. " " .. t.z .. " " .. t.y .. " in " .. zoneName .. ".")
+	elseif (action == "despawn") then
+		local count = #spawner:getTrackedShips(t.spawnName)
+
+		createEvent(10, spawner.screenplayName, "despawnTrackedShips", nil, t.spawnName)
+		admin:sendSystemMessage("Despawning " .. count .. " ship(s) of " .. t.spawnName .. " in " .. zoneName .. ". No respawn is scheduled.")
+	else
+		admin:sendSystemMessage("SYNTAX: /object spacespawn <list|spawn|despawn> <zone> [spawnName]")
+	end
+end
+
+-- Event target of the admin despawn: the observers go first so no respawn is scheduled
+function SpaceSpawnerScreenPlay:despawnTrackedShips(pNil, spawnName)
+	local ids = self:getTrackedShips(spawnName)
+
+	for i = 1, #ids, 1 do
+		local pShip = getSceneObject(tonumber(ids[i]))
+
+		if (pShip ~= nil) then
+			dropObserver(SHIPDESTROYED, self.screenplayName, "squadronShipDestroyed", pShip)
+			dropObserver(SHIPDESTROYED, self.screenplayName, "staticShipDestroyed", pShip)
+			dropObserver(DESTINATIONREACHED, self.screenplayName, "squadronDestinationReached", pShip)
+			dropObserver(DESTINATIONREACHED, self.screenplayName, "shipDestinationReached", pShip)
+
+			deleteData(ids[i] .. ":SpawnerIndex:")
+			deleteStringData(ids[i] .. ":SpawnerName:")
+
+			SceneObject(pShip):destroyObjectFromWorld()
+		end
+	end
+
+	deleteStringData(self:trackedShipsKey(spawnName))
 end
 
 -- Optional per-zone faction tweak: removeEnemyFactions = {<ship spaceFaction> = {<faction>, ...}} on a spawner drops those

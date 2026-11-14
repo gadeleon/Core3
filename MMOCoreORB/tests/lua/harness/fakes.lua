@@ -642,6 +642,17 @@ function FakeAgent:setFixedPatrol()
 	self.callLog[#self.callLog + 1] = { name = "setFixedPatrol", args = table.pack() }
 end
 
+-- LuaShipAiAgent::setRandomPatrol / setSinglePatrolRotation / setGuardPatrol (space spawner squadrons): recorded in callLog only
+-- LuaShipAiAgent::addFixedPatrolPoint(name, clearPoints): names in agent.fixedPatrolPointNames, in call order
+function FakeAgent:addFixedPatrolPoint(name, clearPoints)
+	self.fixedPatrolPointNames = self.fixedPatrolPointNames or {}
+	if clearPoints then self.fixedPatrolPointNames = {} end
+	self.fixedPatrolPointNames[#self.fixedPatrolPointNames + 1] = name
+end
+function FakeAgent:setRandomPatrol() self.callLog[#self.callLog + 1] = { name = "setRandomPatrol", args = table.pack() } end
+function FakeAgent:setSinglePatrolRotation() self.callLog[#self.callLog + 1] = { name = "setSinglePatrolRotation", args = table.pack() } end
+function FakeAgent:setGuardPatrol() self.callLog[#self.callLog + 1] = { name = "setGuardPatrol", args = table.pack() } end
+
 function FakeAgent:setEscort()
 	self.escortCalls = self.escortCalls + 1
 	self.callLog[#self.callLog + 1] = { name = "setEscort", args = table.pack() }

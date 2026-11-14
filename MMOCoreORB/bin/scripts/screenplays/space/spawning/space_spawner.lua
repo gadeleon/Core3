@@ -536,6 +536,11 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 			ShipAiAgent(pShipAgent):setRandomPatrol()
 		end
 
+		-- Escorts (spawnTable.escortShips) keep formation with the lead ship: they never chase, only return fire
+		if (self:isEscortShip(spawnTable, shipName)) then
+			ShipAiAgent(pShipAgent):setEscort()
+		end
+
 		local agentID = SceneObject(pShipAgent):getObjectID()
 
 		-- Store the agent data
@@ -544,6 +549,25 @@ function SpaceSpawnerScreenPlay:spawnShipSquadron(pNil, indexString)
 
 		::continue::
 	end
+end
+
+-- Optional per spawner: escortShips = {<ship template>, ...} lists the squadron members that fly the escort AI (ShipFlag::ESCORT,
+-- ai_space/escort.lua). They stay in formation with the lead ship and only return fire at ships that attacked them; the other
+-- members chase targets as usual. Kessel's corvette convoys use it for their gunboats.
+function SpaceSpawnerScreenPlay:isEscortShip(spawnTable, shipName)
+	local escorts = spawnTable.escortShips
+
+	if (escorts == nil) then
+		return false
+	end
+
+	for i = 1, #escorts, 1 do
+		if (escorts[i] == shipName) then
+			return true
+		end
+	end
+
+	return false
 end
 
 -- Optional per-zone faction tweak: removeEnemyFactions = {<ship spaceFaction> = {<faction>, ...}} on a spawner drops those

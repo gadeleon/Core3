@@ -54,6 +54,7 @@ SpaceLight1Spawner = SpaceSpawnerScreenPlay:new {
 		},
 		{spawnName = "corvette_convoy_rebel", spawnType = SHIP_SPAWN_SQUADRON, x = 7479, z = -7520, y = -7482, patrolType = SHIP_AI_SINGLE_PATROL_ROTATION, minRespawn = 1200, maxRespawn = 2400, minSpawnDistance = 64, maxSpawnDistance = 128, totalSpawns = 1,
 			patrolsToAssign = 5, fixedPatrolPoints = {"corvette_convoy_rebel_00", "corvette_convoy_rebel_01", "corvette_convoy_rebel_02", "corvette_convoy_rebel_03", "corvette_convoy_rebel_04", "corvette_convoy_rebel_05", "corvette_convoy_rebel_06", "corvette_convoy_rebel_07", "corvette_convoy_rebel_08", "corvette_convoy_rebel_09", "corvette_convoy_rebel_10"},
+			escortShips = {"reb_gunboat_tier5"},
 			shipSpawns = {"squad_corvette_convoy_reb"}
 		},
 		{spawnName = "rebel_tier5Patrol_03", spawnType = SHIP_SPAWN_SINGLE, x = 6500, z = 0, y = -7000, patrolType = SHIP_AI_SINGLE_PATROL_ROTATION, minRespawn = 604, maxRespawn = 1209, minSpawnDistance = 64, maxSpawnDistance = 128, totalSpawns = 6,
@@ -139,6 +140,7 @@ SpaceLight1Spawner = SpaceSpawnerScreenPlay:new {
 		},
 		{spawnName = "corvette_convoy_imperial", spawnType = SHIP_SPAWN_SQUADRON, x = 7400, z = 7500, y = 7384, patrolType = SHIP_AI_SINGLE_PATROL_ROTATION, minRespawn = 1200, maxRespawn = 2400, minSpawnDistance = 64, maxSpawnDistance = 128, totalSpawns = 1,
 			patrolsToAssign = 5, fixedPatrolPoints = {"corvette_convoy_imperial_00", "corvette_convoy_imperial_01", "corvette_convoy_imperial_02", "corvette_convoy_imperial_03", "corvette_convoy_imperial_04", "corvette_convoy_imperial_05", "corvette_convoy_imperial_06", "corvette_convoy_imperial_07", "corvette_convoy_imperial_08"},
+			escortShips = {"imp_imperial_gunboat_tier5"},
 			shipSpawns = {"squad_corvette_convoy_imp"}
 		},
 		{spawnName = "kessel_lootship_lost_reb_02", spawnType = SHIP_SPAWN_SQUADRON, x = 3451, z = -5448, y = 5950, patrolType = SHIP_AI_RANDOM_PATROL,  minRespawn = 603, maxRespawn = 1201, minSpawnDistance = 32, maxSpawnDistance = 64, minPatrol = 256, maxPatrol = 2048, totalSpawns = 1,

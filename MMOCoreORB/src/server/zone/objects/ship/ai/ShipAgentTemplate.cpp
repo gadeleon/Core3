@@ -69,7 +69,9 @@ void ShipAgentTemplate::readObject(LuaObject* templateData) {
 	pilotTemplate = templateData->getStringField("pilotTemplate").trim();
 	shipType = templateData->getStringField("shipType").trim();
 
-	experience = templateData->getIntField("experience");
+	// Tier 4+ values carry decimals (SWG space_mobile intXP, e.g. 3276.8). Lua 5.3's lua_tointeger returns 0 for a number with a
+	// fractional part, so getIntField gave those ships no experience; read a float and truncate like SWG's integer column.
+	experience = (int) templateData->getFloatField("experience");
 
 	lootChance = templateData->getFloatField("lootChance");
 	lootRolls = templateData->getIntField("lootRolls");

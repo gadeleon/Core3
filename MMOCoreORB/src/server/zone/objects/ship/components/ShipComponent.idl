@@ -10,6 +10,7 @@ include server.zone.objects.manufactureschematic.craftingvalues.CraftingValues;
 include server.zone.packets.scene.AttributeListMessage;
 import server.zone.objects.ship.ShipObject;
 import server.zone.objects.creature.CreatureObject;
+import server.zone.packets.object.ObjectMenuResponse;
 include templates.SharedObjectTemplate;
 include server.zone.objects.ship.ShipComponentData;
 include server.zone.packets.DeltaMessage;
@@ -194,6 +195,21 @@ class ShipComponent extends Component {
 
 	@local
 	public abstract native string getAppearanceName(ShipObject ship);
+
+	/**
+	 * Repair a loose component in the player's inventory with ship repair kits (SWG space/crafting/component.java):
+	 * radial "Repair - 1 Kit" (ITEM_USE) uses the first matching kit, "Repair - Full" (ITEM_ACTIVATE) uses kits until repaired.
+	 */
+	@local
+	@dirty
+	public native void fillObjectMenuResponse(ObjectMenuResponse menuResponse, CreatureObject player);
+
+	@preLocked
+	@arg1preLocked
+	public native int handleObjectMenuSelect(CreatureObject player, byte selectedID);
+
+	@local
+	public native int repairWithKits(CreatureObject player, boolean allKits);
 
 	@dirty
 	public boolean isShipComponentObject() {

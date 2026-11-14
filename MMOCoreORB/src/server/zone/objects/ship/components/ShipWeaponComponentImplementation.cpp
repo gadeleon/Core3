@@ -161,7 +161,7 @@ void ShipWeaponComponentImplementation::installAmmo(CreatureObject* pilot, ShipO
 
 		if (missile != nullptr) {
 			ammoMin = missile->getMinDamage();
-			ammoMax =  missile->getMinDamage();
+			ammoMax = missile->getMaxDamage();
 			ammoShield = missile->getShieldEffectiveness();
 			ammoArmor = missile->getArmorEffectiveness();
 			ammoRefire =  missile->getRefireRate();

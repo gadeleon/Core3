@@ -199,34 +199,34 @@ function TestUfwolWiring:test_ufwol_keeps_every_other_field()
 	lu.assertEquals(got, expected, "ufwol: template fields other than optionsBitmask and conversationTemplate")
 end
 
--- AC-1, Content contract 3: the template include sits uncommented once at line 82 (the last Crimson Phoenix line); no line moved
-function TestUfwolWiring:test_the_template_include_is_uncommented_once_at_line_82_and_no_other_line_moved()
+-- AC-1, Content contract 3: the template include sits uncommented once at line 83 (the last Crimson Phoenix line); no line moved
+function TestUfwolWiring:test_the_template_include_is_uncommented_once_at_line_83_and_no_other_line_moved()
 	local text = readFile(H.SCRIPTS .. E.SPACE_CONVERSATIONS)
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo%.lua"%)'), 1, "space_conversations.lua: ufwol_convo include occurrences (commented or not)")
 	lu.assertEquals(countMatches(text, '%-%-%s*includeFile%("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo%.lua"%)'), 0, "space_conversations.lua: commented ufwol_convo include")
-	lu.assertEquals(lines[82], E.TEMPLATE_INCLUDE, "space_conversations.lua line 82")
-	lu.assertEquals(lines[78], "-- Crimson Phoenix Squadron", "space_conversations.lua line 78")
-	lu.assertEquals(lines[79], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 79")
-	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 80")
-	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 81")
-	lu.assertEquals(#lines, 120, "space_conversations.lua: no line moved (119 lines and the final newline)")
+	lu.assertEquals(lines[83], E.TEMPLATE_INCLUDE, "space_conversations.lua line 83")
+	lu.assertEquals(lines[79], "-- Crimson Phoenix Squadron", "space_conversations.lua line 79")
+	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 80")
+	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 81")
+	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 82")
+	lu.assertEquals(#lines, 121, "space_conversations.lua: no line moved (120 lines and the final newline)")
 end
 
--- AC-1, Content contract 3: the handler include sits uncommented once at line 127; the squadron include loads first (line 122)
-function TestUfwolWiring:test_the_handler_include_is_uncommented_once_at_line_127_after_the_squadron_include()
+-- AC-1, Content contract 3: the handler include sits uncommented once at line 129; the squadron include loads first (line 124)
+function TestUfwolWiring:test_the_handler_include_is_uncommented_once_at_line_129_after_the_squadron_include()
 	local text = readFile(H.SCRIPTS .. E.SCREENPLAYS)
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler%.lua"%)'), 1, "screenplays.lua: ufwolConvoHandler include occurrences (commented or not)")
 	lu.assertEquals(countMatches(text, '%-%-%s*includeFile%("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler%.lua"%)'), 0, "screenplays.lua: commented ufwolConvoHandler include")
-	lu.assertEquals(lines[127], E.HANDLER_INCLUDE, "screenplays.lua line 127")
-	lu.assertEquals(lines[122], 'includeFile("space/squadrons/CrimsonPhoenixSquadronScreenplay.lua")', "screenplays.lua line 122 (the squadron include loads first)")
-	lu.assertEquals(lines[124], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 124")
-	lu.assertEquals(lines[125], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 125")
-	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 126")
-	lu.assertEquals(#lines, 189, "screenplays.lua: no line moved (188 lines and the final newline)")
+	lu.assertEquals(lines[129], E.HANDLER_INCLUDE, "screenplays.lua line 129")
+	lu.assertEquals(lines[124], 'includeFile("space/squadrons/CrimsonPhoenixSquadronScreenplay.lua")', "screenplays.lua line 124 (the squadron include loads first)")
+	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 126")
+	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 127")
+	lu.assertEquals(lines[128], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 128")
+	lu.assertEquals(#lines, 191, "screenplays.lua: no line moved (190 lines and the final newline)")
 end
 
 -- AC-1: the include lines name files that exist

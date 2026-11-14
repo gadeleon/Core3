@@ -1,3 +1,5 @@
+-- Smuggler Pilot outside Jabba's Palace (spawned at screenplays/poi/tatooine_jabbas_palace_mobs.lua).
+-- Conversation: smuggler_pilot_jabbas_palace_convo.lua, ported from SWG-Source generic_newbie_pilot_info_jabbas_palace.java; he takes the signed Palace Access Document (feature tatooine-station-palace-access).
 smuggler_pilot = Creature:new {
 	objectName = "@npc_spawner_n:smuggler_pilot",
 	randomNameType = NAME_GENERIC,
@@ -25,7 +27,7 @@ smuggler_pilot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = AIENABLED + JTLINTERESTING,
+	optionsBitmask = AIENABLED + JTLINTERESTING + CONVERSABLE + INVULNERABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_henchman.iff"},
@@ -35,7 +37,7 @@ smuggler_pilot = Creature:new {
 	-- Unarmed should be put on secondary unless the mobile doesn't use weapons, in which case "unarmed" should be put primary and "none" as secondary
 	primaryWeapon = "unarmed",
 	secondaryWeapon = "none",
-	conversationTemplate = "",
+	conversationTemplate = "smuggler_pilot_jabbas_palace_convo_template",
 	
 	-- primaryAttacks and secondaryAttacks should be separate skill groups specific to the weapon type listed in primaryWeapon and secondaryWeapon
 	-- Use merge() to merge groups in creatureskills.lua together. If a weapon is set to "none", set the attacks variable to empty brackets

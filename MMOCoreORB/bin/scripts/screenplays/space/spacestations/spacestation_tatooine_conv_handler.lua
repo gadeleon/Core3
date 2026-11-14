@@ -1,3 +1,8 @@
+-- Tatooine space station conversation handler.
+-- Feature tatooine-station-palace-access adds, as handler-added options only (the static screens stay as before): the Lady Valarian greeting for Smuggler squadron
+-- pilots without Jabba's Palace access (TatooineStationPalaceAccessScreenplay:isOfferEligible), the Hutt freighter duty option ("Do you have any work for me?"),
+-- the bounty start (spacestation_tatooine_valarian_accepted), the duty start (spacestation_tatooine_hutt_accepted) and the "Jabba's Palace" landing.
+-- The station's SWG script is lost: these screens are reconstructed from the client's station_tatooine.stf, not ported.
 local Logger = require("utils.logger")
 require("utils.helpers")
 
@@ -18,6 +23,10 @@ function SpacestationTatooineConvoHandler:getInitialScreen(pPlayer, pNpc, pConvT
 
 	if (not SceneObject(pShip):checkInConversationRange(pNpc)) then
 		return convoTemplate:getScreen("out_of_range")
+	end
+
+	if (TatooineStationPalaceAccessScreenplay:isOfferEligible(pPlayer)) then
+		return convoTemplate:getScreen("spacestation_tatooine_greeting_valarian")
 	end
 
 	return convoTemplate:getScreen("spacestation_tatooine_greeting")
@@ -45,6 +54,29 @@ function SpacestationTatooineConvoHandler:runScreenHandlers(pConvTemplate, pPlay
 	-- Only show request repairs if the player has enough credits for the smallest repair
 	if (screenID == "spacestation_tatooine_greeting" and SpaceStationScreenPlay:hasCreditsForRepair(pPlayer, pShip, 0.25)) then
 		pClonedConvo:addOption("@conversation/station_tatooine:s_6c8ffad8", "spacestation_tatooine_repair") -- (Request Repairs)
+	elseif (screenID == "spacestation_tatooine_greeting_valarian" and SpaceStationScreenPlay:hasCreditsForRepair(pPlayer, pShip, 0.25)) then
+		pClonedConvo:addOption("@conversation/station_tatooine:s_96bea28d", "spacestation_tatooine_repair") -- I just need repairs.
+	end
+
+	-- Work for Smuggler squadron pilots (the Hutt freighter duty), everybody else is turned away
+	if (screenID == "spacestation_tatooine_greeting") then
+		if (TatooineStationPalaceAccessScreenplay:isHuttWorkEligible(pPlayer)) then
+			pClonedConvo:addOption("@conversation/station_tatooine:s_4360fc64", "spacestation_tatooine_work_hutts") -- Do you have any work for me?
+		else
+			pClonedConvo:addOption("@conversation/station_tatooine:s_4360fc64", "spacestation_tatooine_work_refused") -- Do you have any work for me?
+		end
+	end
+
+	-- Jabba's Palace once the Smuggler Pilot outside the palace has granted access
+	if (screenID == "spacestation_tatooine_land" and TatooineStationPalaceAccessScreenplay:hasPalaceAccess(pPlayer)) then
+		pClonedConvo:addOption("@conversation/station_tatooine:s_ce4621b5", "spacestation_tatooine_land_jabba") -- Jabba's Palace.
+	end
+
+	-- Lady Valarian's bounty and the Hutt duty
+	if (screenID == "spacestation_tatooine_valarian_accepted") then
+		TatooineStationPalaceAccessScreenplay:startBounty(pPlayer, pNpc)
+	elseif (screenID == "spacestation_tatooine_hutt_accepted") then
+		TatooineStationPalaceAccessScreenplay:startHuttDuty(pPlayer, pNpc)
 	end
 
 	-- Handle Landing
@@ -56,6 +88,8 @@ function SpacestationTatooineConvoHandler:runScreenHandlers(pConvTemplate, pPlay
 		createEvent(3500, "SpaceStationScreenPlay", "landShip", pPlayer, "espa")
 	elseif (screenID == "spacestation_tatooine_land_entha_complete") then
 		createEvent(3500, "SpaceStationScreenPlay", "landShip", pPlayer, "entha")
+	elseif (screenID == "spacestation_tatooine_land_jabba_complete" and TatooineStationPalaceAccessScreenplay:hasPalaceAccess(pPlayer)) then
+		createEvent(3500, "SpaceStationScreenPlay", "landShip", pPlayer, "jabbas_palace")
 	end
 
 	-- Handle Repair Options

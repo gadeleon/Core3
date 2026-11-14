@@ -1355,3 +1355,13 @@ the training is one click at 1,000,000 XP (Q-B2 = A), missions alternate with sk
   88 kept as static links plus the one `off_track` link C-2 produces.
 - Existing tests this feature edited: the ratchet count 74 -> 75 in 16 files (and `test_space_convo_client_strings.lua`'s header), the SC:82 / SPL:127 include assertions of the tier 1, 2 and 3 tests (now
   uncommented), and the tier 4 header text in `test_crimson_tier4_missions_data.lua`.
+
+### Tatooine station palace access (tatooine-station-palace-access)
+
+`tatooine_palace_data.lua` (not a test file) holds the spec's Appendix A (15 station screens) and B (20 Smuggler Pilot screens), the oracle `P.expected()` (the five quest
+tables derived from the `.tab` fixtures and the two buildout excerpts `space_zones/buildout/space_{tatooine,yavin4}.palace_access_points.tab`), `P.load()` (the server's
+load of the feature, the station and the Smuggler Pilot, collecting load errors so a red run fails on an assertion), `P.pilot{kind = "smuggler" | "corsec" | "rsf" |
+"imperial" | "rebel" | "none", tier, name, certified, cash, damage, ship = false}` and `P.addDoc` / `P.docs` (palace access documents). The station's baseline is the byte copy
+`fixtures/baseline/spacestation_tatooine.pre-palace.lua` (commit 6364c03585), so the 29 old screens can be diffed without git.
+Fakes added for it: global `sendMail(sender, subject, body, recipient)` (exactly 4 strings, recorded as `H.Engine.callsTo("sendMail")`), `FakeShip:getTotalShipDamage()`
+(`ship.totalDamage`, default 0) and `FakeCreature:getCashCredits()` (`creature.cashCredits`, default 0) / `getBankCredits()` (the sum of `addBankCredits`).

@@ -370,34 +370,34 @@ local function linesOf(text)
 	return lines
 end
 
--- AC-1: the template include sits uncommented at line 80 of space_conversations.lua, the other three Crimson Phoenix placeholders stay commented
-function TestCrimsonT1Wiring:test_the_template_include_is_uncommented_at_line_80_and_the_other_three_stay_commented()
+-- AC-1: the template include sits uncommented at line 81 of space_conversations.lua, the other three Crimson Phoenix placeholders stay commented
+function TestCrimsonT1Wiring:test_the_template_include_is_uncommented_at_line_81_and_the_other_three_stay_commented()
 	local text = readFile(H.SCRIPTS .. "mobile/conversations/space/space_conversations.lua")
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo%.lua"%)'), 1, "space_conversations.lua: socuna_convo include occurrences (commented or not)")
-	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 80")
+	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 81")
 
-	lu.assertEquals(lines[79], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 79: uncommented by crimson-phoenix-tier2-eker-convo")
+	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 80: uncommented by crimson-phoenix-tier2-eker-convo")
 
-	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 81: uncommented by crimson-phoenix-tier3-ulvawop")
+	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 82: uncommented by crimson-phoenix-tier3-ulvawop")
 
-	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82: uncommented by crimson-phoenix-tier4-ufwol")
+	lu.assertEquals(lines[83], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 83: uncommented by crimson-phoenix-tier4-ufwol")
 end
 
--- AC-1: the handler include sits uncommented at line 125 of screenplays.lua, the other three stay commented, no line moved
-function TestCrimsonT1Wiring:test_the_handler_include_is_uncommented_at_line_125_and_the_other_three_stay_commented()
+-- AC-1: the handler include sits uncommented at line 127 of screenplays.lua, the other three stay commented, no line moved
+function TestCrimsonT1Wiring:test_the_handler_include_is_uncommented_at_line_127_and_the_other_three_stay_commented()
 	local text = readFile(H.SCRIPTS .. "screenplays/space/screenplays.lua")
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler%.lua"%)'), 1, "screenplays.lua: socunaConvoHandler include occurrences (commented or not)")
-	lu.assertEquals(lines[125], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 125")
+	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 127")
 
-	lu.assertEquals(lines[124], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 124: uncommented by crimson-phoenix-tier2-eker-convo")
+	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 126: uncommented by crimson-phoenix-tier2-eker-convo")
 
-	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 126: uncommented by crimson-phoenix-tier3-ulvawop")
+	lu.assertEquals(lines[128], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 128: uncommented by crimson-phoenix-tier3-ulvawop")
 
-	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127: uncommented by crimson-phoenix-tier4-ufwol")
+	lu.assertEquals(lines[129], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 129: uncommented by crimson-phoenix-tier4-ufwol")
 end
 
 -- Scope (broker check): the broker's waypoint names Da'la Socuna and the trainer that stands at the Mos Espa cantina is the one with the conversation

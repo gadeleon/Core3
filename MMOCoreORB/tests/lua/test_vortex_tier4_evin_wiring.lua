@@ -200,35 +200,35 @@ function TestEvinWiring:test_evin_keeps_every_other_field()
 	lu.assertEquals(got, expected, "extok_evin: template fields other than optionsBitmask and conversationTemplate")
 end
 
--- AC-1, Content contract 3: the template include sits uncommented once at line 92 (Ezkiel's follows at 93); no line moved
-function TestEvinWiring:test_the_template_include_is_uncommented_once_at_line_92_and_no_other_line_moved()
+-- AC-1, Content contract 3: the template include sits uncommented once at line 93 (Ezkiel's follows at 94); no line moved
+function TestEvinWiring:test_the_template_include_is_uncommented_once_at_line_93_and_no_other_line_moved()
 	local text = readFile(H.SCRIPTS .. E.SPACE_CONVERSATIONS)
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/vortex_squadron/evin_convo%.lua"%)'), 1, "space_conversations.lua: evin_convo include occurrences (commented or not)")
 	lu.assertEquals(countMatches(text, '%-%-%s*includeFile%("conversations/space/rebel/vortex_squadron/evin_convo%.lua"%)'), 0, "space_conversations.lua: commented evin_convo include")
-	lu.assertEquals(lines[92], E.TEMPLATE_INCLUDE, "space_conversations.lua line 92")
-	lu.assertEquals(lines[91], "-- Vortex Squadron", "space_conversations.lua line 91")
-	lu.assertEquals(lines[93], 'includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93")
-	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 94")
-	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95")
-	lu.assertEquals(lines[96], 'includeFile("conversations/space/rebel/vortex_squadron/kiizete_convo.lua")', "space_conversations.lua line 96")
+	lu.assertEquals(lines[93], E.TEMPLATE_INCLUDE, "space_conversations.lua line 93")
+	lu.assertEquals(lines[92], "-- Vortex Squadron", "space_conversations.lua line 92")
+	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 94")
+	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 95")
+	lu.assertEquals(lines[96], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 96")
+	lu.assertEquals(lines[97], 'includeFile("conversations/space/rebel/vortex_squadron/kiizete_convo.lua")', "space_conversations.lua line 97")
 end
 
--- AC-1, Content contract 3: the handler include sits uncommented once at line 141; the squadron include loads first (line 139)
-function TestEvinWiring:test_the_handler_include_is_uncommented_once_at_line_141_after_the_squadron_include()
+-- AC-1, Content contract 3: the handler include sits uncommented once at line 143; the squadron include loads first (line 141)
+function TestEvinWiring:test_the_handler_include_is_uncommented_once_at_line_143_after_the_squadron_include()
 	local text = readFile(H.SCRIPTS .. E.SCREENPLAYS)
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("space/conversations/rebel/vortex_squadron/evinConvoHandler%.lua"%)'), 1, "screenplays.lua: evinConvoHandler include occurrences (commented or not)")
 	lu.assertEquals(countMatches(text, '%-%-%s*includeFile%("space/conversations/rebel/vortex_squadron/evinConvoHandler%.lua"%)'), 0, "screenplays.lua: commented evinConvoHandler include")
-	lu.assertEquals(lines[141], E.HANDLER_INCLUDE, "screenplays.lua line 141")
-	lu.assertEquals(lines[139], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 139 (the squadron include loads first)")
-	lu.assertEquals(lines[138], "-- Vortex Squadron", "screenplays.lua line 138")
-	lu.assertEquals(lines[142], 'includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142")
-	lu.assertEquals(lines[143], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 143")
-	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144")
-	lu.assertEquals(lines[145], 'includeFile("space/conversations/rebel/vortex_squadron/kiizeteConvoHandler.lua")', "screenplays.lua line 145")
+	lu.assertEquals(lines[143], E.HANDLER_INCLUDE, "screenplays.lua line 143")
+	lu.assertEquals(lines[141], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 141 (the squadron include loads first)")
+	lu.assertEquals(lines[140], "-- Vortex Squadron", "screenplays.lua line 140")
+	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 144")
+	lu.assertEquals(lines[145], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 145")
+	lu.assertEquals(lines[146], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 146")
+	lu.assertEquals(lines[147], 'includeFile("space/conversations/rebel/vortex_squadron/kiizeteConvoHandler.lua")', "screenplays.lua line 147")
 end
 
 -- AC-1: the include lines name files that exist

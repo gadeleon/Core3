@@ -82,34 +82,34 @@ function TestVortexKiizeteWiring:test_kiizete_keeps_her_identity_fields()
 	lu.assertEquals(npc.pvpBitmask, NONE, "kiizete: pvpBitmask")
 end
 
--- AC-1, D-10: the template include sits uncommented at line 96, after the vrovel placeholder; lines 91-95 are unchanged
-function TestVortexKiizeteWiring:test_the_template_include_is_uncommented_at_line_96_and_lines_91_to_95_are_unchanged()
+-- AC-1, D-10: the template include sits uncommented at line 97, after the vrovel placeholder; lines 92-96 are unchanged
+function TestVortexKiizeteWiring:test_the_template_include_is_uncommented_at_line_97_and_lines_92_to_96_are_unchanged()
 	local text = readFile(H.SCRIPTS .. "mobile/conversations/space/space_conversations.lua")
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/vortex_squadron/kiizete_convo%.lua"%)'), 1, "space_conversations.lua: kiizete_convo include occurrences (commented or not)")
-	lu.assertEquals(lines[96], 'includeFile("conversations/space/rebel/vortex_squadron/kiizete_convo.lua")', "space_conversations.lua line 96")
-	lu.assertEquals(lines[91], "-- Vortex Squadron", "space_conversations.lua line 91")
-	lu.assertEquals(lines[92], 'includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 92: uncommented by vortex-tier4-extok-evin-convo")
-	lu.assertEquals(lines[93], 'includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 93: uncommented by vortex-tier3-ezkiel")
-	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 94")
-	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 95: uncommented by vortex-tier2-vrovel")
+	lu.assertEquals(lines[97], 'includeFile("conversations/space/rebel/vortex_squadron/kiizete_convo.lua")', "space_conversations.lua line 97")
+	lu.assertEquals(lines[92], "-- Vortex Squadron", "space_conversations.lua line 92")
+	lu.assertEquals(lines[93], 'includeFile("conversations/space/rebel/vortex_squadron/evin_convo.lua")', "space_conversations.lua line 93: uncommented by vortex-tier4-extok-evin-convo")
+	lu.assertEquals(lines[94], 'includeFile("conversations/space/rebel/vortex_squadron/ezkiel_convo.lua")', "space_conversations.lua line 94: uncommented by vortex-tier3-ezkiel")
+	lu.assertEquals(lines[95], 'includeFile("conversations/space/rebel/vortex_squadron/v3fx_convo.lua")', "space_conversations.lua line 95")
+	lu.assertEquals(lines[96], 'includeFile("conversations/space/rebel/vortex_squadron/vrovel_convo.lua")', "space_conversations.lua line 96: uncommented by vortex-tier2-vrovel")
 end
 
--- AC-1, D-10: the handler include sits uncommented at line 145; the squadron include still loads first; lines 138-144 are unchanged
-function TestVortexKiizeteWiring:test_the_handler_include_is_uncommented_at_line_145_and_lines_138_to_144_are_unchanged()
+-- AC-1, D-10: the handler include sits uncommented at line 147; the squadron include still loads first; lines 140-146 are unchanged
+function TestVortexKiizeteWiring:test_the_handler_include_is_uncommented_at_line_147_and_lines_140_to_146_are_unchanged()
 	local text = readFile(H.SCRIPTS .. "screenplays/space/screenplays.lua")
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("space/conversations/rebel/vortex_squadron/kiizeteConvoHandler%.lua"%)'), 1, "screenplays.lua: kiizeteConvoHandler include occurrences (commented or not)")
-	lu.assertEquals(lines[145], 'includeFile("space/conversations/rebel/vortex_squadron/kiizeteConvoHandler.lua")', "screenplays.lua line 145")
-	lu.assertEquals(lines[138], "-- Vortex Squadron", "screenplays.lua line 138")
-	lu.assertEquals(lines[139], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 139 (the squadron include loads first)")
-	lu.assertEquals(lines[140], "", "screenplays.lua line 140")
-	lu.assertEquals(lines[141], 'includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 141: uncommented by vortex-tier4-extok-evin-convo")
-	lu.assertEquals(lines[142], 'includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 142: uncommented by vortex-tier3-ezkiel")
-	lu.assertEquals(lines[143], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 143")
-	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 144: uncommented by vortex-tier2-vrovel")
+	lu.assertEquals(lines[147], 'includeFile("space/conversations/rebel/vortex_squadron/kiizeteConvoHandler.lua")', "screenplays.lua line 147")
+	lu.assertEquals(lines[140], "-- Vortex Squadron", "screenplays.lua line 140")
+	lu.assertEquals(lines[141], 'includeFile("space/squadrons/VortexSquadronScreenplay.lua")', "screenplays.lua line 141 (the squadron include loads first)")
+	lu.assertEquals(lines[142], "", "screenplays.lua line 142")
+	lu.assertEquals(lines[143], 'includeFile("space/conversations/rebel/vortex_squadron/evinConvoHandler.lua")', "screenplays.lua line 143: uncommented by vortex-tier4-extok-evin-convo")
+	lu.assertEquals(lines[144], 'includeFile("space/conversations/rebel/vortex_squadron/ezkielConvoHandler.lua")', "screenplays.lua line 144: uncommented by vortex-tier3-ezkiel")
+	lu.assertEquals(lines[145], 'includeFile("space/conversations/rebel/vortex_squadron/v3fxConvoHandler.lua")', "screenplays.lua line 145")
+	lu.assertEquals(lines[146], 'includeFile("space/conversations/rebel/vortex_squadron/vrovelConvoHandler.lua")', "screenplays.lua line 146: uncommented by vortex-tier2-vrovel")
 end
 
 -- AC-1: the squadron object has the two keys of Content contract 1

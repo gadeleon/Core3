@@ -435,6 +435,10 @@ function FakeCreature:failQuestMission(crc)
 	removeDatapadMission(self, crc, true)
 end
 
+-- LuaCreatureObject::getCashCredits / getBankCredits (SpaceStationScreenPlay:hasCreditsForRepair): set creature.cashCredits; the bank is the sum of addBankCredits
+function FakeCreature:getCashCredits() return self.cashCredits or 0 end
+function FakeCreature:getBankCredits() return self.bankCredits end
+
 -- Bank credits (LuaCreatureObject::addBankCredits): every call is recorded in order.
 function FakeCreature:addBankCredits(amount, notify)
 	self.bankCreditLog[#self.bankCreditLog + 1] = { t = Fakes.now(), amount = amount, notify = notify }
@@ -521,6 +525,8 @@ function FakeShip:warpToLocation(pPlayer, zone, x, z, y)
 end
 -- LuaShipObject::getShipFactionString (SpaceHelpers:getPlayerShipFactionString); defaults to "rebel"
 function FakeShip:getShipFactionString() return self.shipFactionString or "rebel" end
+-- LuaShipObject::getTotalShipDamage (station repair offers, SpaceStationScreenPlay:getRepairCost); set ship.totalDamage, default 0 = undamaged
+function FakeShip:getTotalShipDamage() return self.totalDamage or 0 end
 
 function FakeShip:setPosition(x, z, y) self.x, self.z, self.y = x, z, y end
 

@@ -83,30 +83,30 @@ function TestEkerWiring:test_eker_keeps_his_identity_fields()
 	lu.assertEquals(npc.templates, { "object/mobile/space_rebel_tier2_eker.iff" }, "eker: templates")
 end
 
--- AC-1, Content contract 1: the template include sits uncommented at line 79; Socuna's stays at 80; Ulvaw'op's and Ufwol's stay commented
-function TestEkerWiring:test_the_template_include_is_uncommented_once_at_line_79_and_ulvawop_and_ufwol_stay_commented()
+-- AC-1, Content contract 1: the template include sits uncommented at line 80; Socuna's stays at 81; Ulvaw'op's and Ufwol's stay commented
+function TestEkerWiring:test_the_template_include_is_uncommented_once_at_line_80_and_ulvawop_and_ufwol_stay_commented()
 	local text = readFile(H.SCRIPTS .. E.SPACE_CONVERSATIONS)
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("conversations/space/rebel/crimson_phoenix_squadron/eker_convo%.lua"%)'), 1, "space_conversations.lua: eker_convo include occurrences (commented or not)")
-	lu.assertEquals(lines[79], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 79")
-	lu.assertEquals(lines[78], "-- Crimson Phoenix Squadron", "space_conversations.lua line 78")
-	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 80 (Socuna unchanged)")
-	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 81 uncommented by crimson-phoenix-tier3-ulvawop")
-	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 82 uncommented by crimson-phoenix-tier4-ufwol")
+	lu.assertEquals(lines[80], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/eker_convo.lua")', "space_conversations.lua line 80")
+	lu.assertEquals(lines[79], "-- Crimson Phoenix Squadron", "space_conversations.lua line 79")
+	lu.assertEquals(lines[81], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/socuna_convo.lua")', "space_conversations.lua line 81 (Socuna unchanged)")
+	lu.assertEquals(lines[82], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ulvawop_convo.lua")', "space_conversations.lua line 82 uncommented by crimson-phoenix-tier3-ulvawop")
+	lu.assertEquals(lines[83], 'includeFile("conversations/space/rebel/crimson_phoenix_squadron/ufwol_convo.lua")', "space_conversations.lua line 83 uncommented by crimson-phoenix-tier4-ufwol")
 end
 
--- AC-1, Content contract 1: the handler include sits uncommented at line 124, after the squadron include; Socuna's stays at 125; the other two stay commented
-function TestEkerWiring:test_the_handler_include_is_uncommented_once_at_line_124_and_ulvawop_and_ufwol_stay_commented()
+-- AC-1, Content contract 1: the handler include sits uncommented at line 126, after the squadron include; Socuna's stays at 127; the other two stay commented
+function TestEkerWiring:test_the_handler_include_is_uncommented_once_at_line_126_and_ulvawop_and_ufwol_stay_commented()
 	local text = readFile(H.SCRIPTS .. E.SCREENPLAYS)
 	local lines = linesOf(text)
 
 	lu.assertEquals(countMatches(text, 'includeFile%("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler%.lua"%)'), 1, "screenplays.lua: ekerConvoHandler include occurrences (commented or not)")
-	lu.assertEquals(lines[122], 'includeFile("space/squadrons/CrimsonPhoenixSquadronScreenplay.lua")', "screenplays.lua line 122 (the squadron include loads first)")
-	lu.assertEquals(lines[124], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 124")
-	lu.assertEquals(lines[125], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 125 (Socuna unchanged)")
-	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 126 uncommented by crimson-phoenix-tier3-ulvawop")
-	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 127 uncommented by crimson-phoenix-tier4-ufwol")
+	lu.assertEquals(lines[124], 'includeFile("space/squadrons/CrimsonPhoenixSquadronScreenplay.lua")', "screenplays.lua line 124 (the squadron include loads first)")
+	lu.assertEquals(lines[126], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ekerConvoHandler.lua")', "screenplays.lua line 126")
+	lu.assertEquals(lines[127], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/socunaConvoHandler.lua")', "screenplays.lua line 127 (Socuna unchanged)")
+	lu.assertEquals(lines[128], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ulvawopConvoHandler.lua")', "screenplays.lua line 128 uncommented by crimson-phoenix-tier3-ulvawop")
+	lu.assertEquals(lines[129], 'includeFile("space/conversations/rebel/crimson_phoenix_squadron/ufwolConvoHandler.lua")', "screenplays.lua line 129 uncommented by crimson-phoenix-tier4-ufwol")
 end
 
 -- AC-1: Part B adds no status key and does not touch the squadron object's flag key

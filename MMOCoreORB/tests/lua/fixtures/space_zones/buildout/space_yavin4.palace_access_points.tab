@@ -1,0 +1,8 @@
+strObject	fltJX	fltJY	fltJZ	fltKX	fltKY	fltKZ	fltPX	fltPY	fltPZ	strObjVars	strScripts
+s	f	f	f	f	f	f	f	f	f	p	s
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.532668	-0.809672	0.246365	0.396131	-0.018721	-0.918003	801.54	6389.84	2157.29	nav_name|4|tatooine_station_hutt_palace_access_battle_point|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.590372	-0.795746	0.135091	-0.036199	-0.193308	-0.980470	992.95	6370.07	909.70	nav_name|4|tatooine_station_hutt_access_assassinate_1|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.587648	-0.797754	0.135122	0.003743	-0.164317	-0.986401	966.86	6111.68	-478.52	nav_name|4|tatooine_station_hutt_access_assassinate_2|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.851451	-0.077076	0.518740	0.417009	-0.500311	-0.758810	-1267.62	6104.43	5748.22	nav_name|4|tatooine_station_hutt_palace_access_quest_delivery_point|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	0.577493	-0.799799	0.163778	-0.124592	-0.284602	-0.950515	921.60	5801.78	-1918.60	nav_name|4|tatooine_station_hutt_access_assassinate_3|$|	script.space.quest_logic.quest_nav_point
+object/tangible/space/content_infrastructure/quest_nav_point.iff	-0.403638	-0.826403	0.392599	-0.215742	0.502979	0.836939	169.97	6390.61	-939.83	nav_name|4|tatooine_station_hutt_access_assassinate_4|$|	script.space.quest_logic.quest_nav_point

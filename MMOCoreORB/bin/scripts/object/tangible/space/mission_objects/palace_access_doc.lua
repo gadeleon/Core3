@@ -41,8 +41,10 @@
 --this exception also makes it possible to release a modified version 
 
 
+-- Palace Access Document: the Read/Sign menu comes from PalaceAccessDocMenuComponent (screenplays/space/spacestations/TatooineStationPalaceAccessScreenplay.lua),
+-- ported from SWG-Source palace_access_doc.java (feature tatooine-station-palace-access).
 object_tangible_space_mission_objects_palace_access_doc = object_tangible_space_mission_objects_shared_palace_access_doc:new {
-
+	objectMenuComponent = "PalaceAccessDocMenuComponent",
 }
 
 ObjectTemplates:addTemplate(object_tangible_space_mission_objects_palace_access_doc, "object/tangible/space/mission_objects/palace_access_doc.iff")

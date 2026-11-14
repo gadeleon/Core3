@@ -42,6 +42,7 @@ includeFile("space/spacestations/spacestation_rori_conv_handler.lua")
 includeFile("space/spacestations/spacestation_talus_conv_handler.lua")
 includeFile("space/spacestations/spacestation_tatooine_conv_handler.lua")
 includeFile("space/spacestations/spacestation_yavin4_conv_handler.lua")
+includeFile("space/spacestations/TatooineStationPalaceAccessScreenplay.lua")
 
 
 --[[
@@ -105,6 +106,7 @@ includeFile("space/conversations/neutral/smuggler_squadron/talonKarrdeConvoHandl
 includeFile("space/conversations/neutral/smuggler_squadron/shamdonKreeConvoHandler.lua")
 includeFile("space/conversations/neutral/smuggler_squadron/beissaConvoHandler.lua")
 includeFile("space/conversations/neutral/smuggler_squadron/nirameSakuteConvoHandler.lua")
+includeFile("space/conversations/neutral/smuggler_squadron/smugglerPilotJabbasPalaceConvoHandler.lua")
 
 -- RSF Squadron
 includeFile("space/squadrons/RsfSquadronScreenplay.lua")

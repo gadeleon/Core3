@@ -459,6 +459,24 @@ function createEvent(delay, screenplay, method, pObject, args)
 	c.queue[#c.queue + 1] = { due = c.now + delay, seq = c.seq, screenplay = screenplay, method = method, pObject = pObject, args = args }
 end
 
+-- sendMail(sender, subject, body, recipientFirstName): DirectorManager::sendMail checks for exactly 4 arguments and reads them as strings.
+-- Recorded as H.Engine.callsTo("sendMail") = { sender, subject, body, recipient } per call (palace access auto reward).
+function sendMail(...)
+	local n = select("#", ...)
+
+	if n ~= 4 then
+		error("harness: sendMail(sender, subject, body, recipient) takes exactly 4 arguments (DirectorManager::sendMail checkArgumentCount); got " .. n, 2)
+	end
+
+	for i = 1, 4 do
+		if type((select(i, ...))) ~= "string" then
+			error("harness: sendMail argument " .. i .. " must be a string; got " .. type((select(i, ...))), 2)
+		end
+	end
+
+	record("sendMail", ...)
+end
+
 -- cancelEvent(screenplay, method, pObject): DirectorManager::cancelEvent drops the pending events of that
 -- screenplay function on that object (exactly 3 arguments, a nil object cancels nothing).
 function cancelEvent(...)

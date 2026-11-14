@@ -368,7 +368,7 @@ function TestStormNymFixtures:test_the_ratchet_data_counts_the_three_files_and_6
 		lu.assertEquals(KD.FIXTURE_COUNTS[N.CONVOS[n].stf], N.CONVOS[n].ids, "FIXTURE_COUNTS[" .. N.CONVOS[n].stf .. "]")
 	end
 
-	lu.assertEquals(#sortedKeys(KD.FIXTURE_COUNTS), 78, "FIXTURE_COUNTS entries") -- 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider, 68 since vortex-tier1-kiizete, 69 since vortex-tier2-vrovel, 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
+	lu.assertEquals(#sortedKeys(KD.FIXTURE_COUNTS), 79, "FIXTURE_COUNTS entries") -- 64 since storm-tier2-nym-technicians, 65 since storm-tier2-alozen, 66 since storm-tier3-denner, 67 since storm-tier4-kilnstrider, 68 since vortex-tier1-kiizete, 69 since vortex-tier2-vrovel, 70 since vortex-tier3-ezkiel, 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
 	lu.assertEquals(KD.KNOWN_GAPS, {}, "KNOWN_GAPS")
 end
 

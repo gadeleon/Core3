@@ -835,7 +835,7 @@ function TestEvinFixtures:setUp() H.reset() end
 -- AC-2: the ratchet entry and the count (71 files)
 function TestEvinFixtures:test_fixture_counts_holds_evins_file_with_222_ids_as_the_71st_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[E.STF], 222, "FIXTURE_COUNTS[" .. E.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 78, "FIXTURE_COUNTS entries") -- 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 79, "FIXTURE_COUNTS entries") -- 71 since vortex-tier4-extok-evin-convo, 72 since crimson-phoenix-tier1-da-la-socuna, 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
 end
 
 -- AC-2: nothing is allowed to be unresolved

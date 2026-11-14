@@ -60,6 +60,7 @@ D.FIXTURE_COUNTS = {
 	["conversation/corellia_rebel_tier4"] = 265,
 	["conversation/corellia_rebel_trainer_1"] = 390,
 	["conversation/dantooine_rebel_trainer_2"] = 247,
+	["conversation/generic_newbie_pilot_info_jabbas_palace"] = 33, -- tatooine-station-palace-access: the Smuggler Pilot outside the palace
 	["conversation/greeter_coronet_merchant"] = 77,
 	["conversation/greeter_coronet_shipwright_impatient"] = 11,
 	["conversation/greeter_coronet_shipwright_indifferent"] = 11,

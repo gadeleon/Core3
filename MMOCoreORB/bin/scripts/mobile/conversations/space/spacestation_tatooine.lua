@@ -296,5 +296,154 @@ deny_repair_full = ConvoScreen:new {
 }
 spacestation_tatooine_convotemplate:addScreen(deny_repair_full);
 
+-- Lady Valarian's bounty, the Hutt freighter duty and the Jabba's Palace landing (feature tatooine-station-palace-access; pairings reconstructed from the client strings)
+
+spacestation_tatooine_greeting_valarian = ConvoScreen:new {
+	id = "spacestation_tatooine_greeting_valarian",
+	leftDialog = "@conversation/station_tatooine:s_e2190b5d", -- That name, I recognize that name. Oh, that's right, you're on my list to be offered some sensitive work if you're interested.
+	stopConversation = "false",
+	options = {
+		{"@conversation/station_tatooine:s_f2b8a1d8", "spacestation_tatooine_valarian_offer"}, -- What kind of work?
+		{"@conversation/station_tatooine:s_375a3c20", "spacestation_tatooine_land"}, -- I just want to land on Tatooine.
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_greeting_valarian);
+
+spacestation_tatooine_valarian_offer = ConvoScreen:new {
+	id = "spacestation_tatooine_valarian_offer",
+	leftDialog = "@conversation/station_tatooine:s_462a718b", -- Lady Valarian has placed a bounty on one of Jabba's smugglers and is looking for competent pilots to collect it. Interested?
+	stopConversation = "false",
+	options = {
+		{"@conversation/station_tatooine:s_52917b0d", "spacestation_tatooine_valarian_warning"}, -- Of course.
+		{"@conversation/station_tatooine:s_cd0dcead", "spacestation_tatooine_valarian_declined"}, -- Of course not.
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_valarian_offer);
+
+spacestation_tatooine_valarian_warning = ConvoScreen:new {
+	id = "spacestation_tatooine_valarian_warning",
+	leftDialog = "@conversation/station_tatooine:s_3cbb3f38", -- Keep in mind, the target is pretty dangerous. Looking at you, you may need some help in completing this. Anyway, if you are ready now, I will patch you up to the contact Lady Valarian gave me.
+	stopConversation = "false",
+	options = {
+		{"@conversation/station_tatooine:s_dd4bb16d", "spacestation_tatooine_valarian_accepted"}, -- Let's do it!
+		{"@conversation/station_tatooine:s_5964dabc", "spacestation_tatooine_valarian_not_now"}, -- I don't think so, maybe another time.
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_valarian_warning);
+
+spacestation_tatooine_valarian_accepted = ConvoScreen:new {
+	id = "spacestation_tatooine_valarian_accepted",
+	leftDialog = "@conversation/station_tatooine:s_12b89c7f", -- Very well, good luck. Oh, and this target you're going after, he's a clever guy. Make sure to search the cargo of his ship if you get him.  He's bound to have something interesting.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_valarian_accepted);
+
+spacestation_tatooine_valarian_not_now = ConvoScreen:new {
+	id = "spacestation_tatooine_valarian_not_now",
+	leftDialog = "@conversation/station_tatooine:s_39076454", -- Suit yourself, you were probably not the right person for the job anyway.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_valarian_not_now);
+
+spacestation_tatooine_valarian_declined = ConvoScreen:new {
+	id = "spacestation_tatooine_valarian_declined",
+	leftDialog = "@conversation/station_tatooine:s_66b68768", -- I thought so.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_valarian_declined);
+
+spacestation_tatooine_work_refused = ConvoScreen:new {
+	id = "spacestation_tatooine_work_refused",
+	leftDialog = "@conversation/station_tatooine:s_121c3b6", -- What does this look like, an unemployment agency?
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_work_refused);
+
+spacestation_tatooine_work_hutts = ConvoScreen:new {
+	id = "spacestation_tatooine_work_hutts",
+	leftDialog = "@conversation/station_tatooine:s_28b0a7fa", -- Well, if you don't mind helping the Hutts, I might have something.
+	stopConversation = "false",
+	options = {
+		{"@conversation/station_tatooine:s_3147a9c7", "spacestation_tatooine_hutt_offer"}, -- Sounds interesting, how do I get started?
+		{"@conversation/station_tatooine:s_382cb25f", "spacestation_tatooine_hutt_refused"}, -- Hutts?! I don't think so.
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_work_hutts);
+
+spacestation_tatooine_hutt_offer = ConvoScreen:new {
+	id = "spacestation_tatooine_hutt_offer",
+	leftDialog = "@conversation/station_tatooine:s_630ab375", -- Alright. The Hutts are hiring pilots to assist them in capturing freighters around the Tatooine system. If that sounds like something you want to do, I can connect you to one of them right now.
+	stopConversation = "false",
+	options = {
+		{"@conversation/station_tatooine:s_2e631d52", "spacestation_tatooine_hutt_accepted"}, -- Hook me up!
+		{"@conversation/station_tatooine:s_2f2188d5", "spacestation_tatooine_hutt_later"}, -- I will come back later.
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_hutt_offer);
+
+spacestation_tatooine_hutt_accepted = ConvoScreen:new {
+	id = "spacestation_tatooine_hutt_accepted",
+	leftDialog = "@conversation/station_tatooine:s_d7e462ff", -- Very well, give me a second.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_hutt_accepted);
+
+spacestation_tatooine_hutt_later = ConvoScreen:new {
+	id = "spacestation_tatooine_hutt_later",
+	leftDialog = "@conversation/station_tatooine:s_1dbd74da", -- Well hail me when you figure out what it is you need.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_hutt_later);
+
+spacestation_tatooine_hutt_refused = ConvoScreen:new {
+	id = "spacestation_tatooine_hutt_refused",
+	leftDialog = "@conversation/station_tatooine:s_5739799e", -- These are not times to be picky, but suit yourself.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_hutt_refused);
+
+spacestation_tatooine_land_jabba = ConvoScreen:new {
+	id = "spacestation_tatooine_land_jabba",
+	leftDialog = "@conversation/station_tatooine:s_1d21e3c0", -- Let me see if you're welcome there. I guess you are.
+	stopConversation = "false",
+	options = {
+		{"@conversation/station_tatooine:s_b9b27823", "spacestation_tatooine_land_jabba_complete"}, -- Thank you.
+		{"@conversation/station_tatooine:s_e1ef9209", "spacestation_tatooine_land_jabba_abort"}, -- Wait, I don't want to land there.
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_land_jabba);
+
+spacestation_tatooine_land_jabba_complete = ConvoScreen:new {
+	id = "spacestation_tatooine_land_jabba_complete",
+	leftDialog = "@conversation/station_tatooine:s_4650b19f", -- Watch your back.
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_land_jabba_complete);
+
+spacestation_tatooine_land_jabba_abort = ConvoScreen:new {
+	id = "spacestation_tatooine_land_jabba_abort",
+	leftDialog = "@conversation/station_tatooine:s_b26eb03c", -- Good riddance!
+	stopConversation = "true",
+	options = {
+	}
+}
+spacestation_tatooine_convotemplate:addScreen(spacestation_tatooine_land_jabba_abort);
+
 -- Add Template (EOF)
 addConversationTemplate("spacestation_tatooine_convotemplate", spacestation_tatooine_convotemplate);

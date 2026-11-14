@@ -570,7 +570,7 @@ function TestCrimsonT1Fixtures:setUp() H.reset() end
 -- AC-5: the ratchet entry and the count (72 files)
 function TestCrimsonT1Fixtures:test_fixture_counts_holds_socunas_file_with_329_ids_as_the_72nd_entry()
 	lu.assertEquals(KD.FIXTURE_COUNTS[I.STF], 329, "FIXTURE_COUNTS[" .. I.STF .. "]")
-	lu.assertEquals(count(KD.FIXTURE_COUNTS), 78, "FIXTURE_COUNTS entries") -- 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
+	lu.assertEquals(count(KD.FIXTURE_COUNTS), 79, "FIXTURE_COUNTS entries") -- 73 since crimson-phoenix-tier2-eker-convo, 74 since crimson-phoenix-tier3-ulvawop, 75 since crimson-phoenix-tier4-ufwol, 78 since battlefield-entry-stations
 end
 
 -- AC-5: nothing is allowed to be unresolved

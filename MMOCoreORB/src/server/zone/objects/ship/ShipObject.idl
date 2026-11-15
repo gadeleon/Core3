@@ -1604,7 +1604,10 @@ class ShipObject extends TangibleObject {
 	@nativeStub
 	public native boolean isShipObject();
 
-	@read
+	// @dirty, not @read: @read generates a const method, which hides SceneObject's non-const virtual isHyperspacing() instead of
+	// overriding it, so the create and destroy messages (read through SceneObject*) always sent 0 and clients never showed ships
+	// hyperspacing in (spawns) or out (warp-outs)
+	@dirty
 	public boolean isHyperspacing() {
 		return hyperspacing;
 	}

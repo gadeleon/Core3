@@ -1,9 +1,11 @@
 #include "ShipObjectTransform.h"
 #include "server/zone/objects/ship/ShipObject.h"
 #include "server/zone/objects/ship/ai/ShipAiAgent.h"
+#include "server/zone/objects/ship/ai/ShipAiSpeedRule.h"
 #include "server/zone/packets/ship/ShipUpdateTransformMessage.h"
 
 ShipObjectTransform::ShipObjectTransform(ShipObject* ship) : Object() {
+	arrivalBraking = true;
 	initializeTransform(ship);
 }
 
@@ -47,10 +49,11 @@ void ShipObjectTransform::setCurrentTransform(ShipObject* ship) {
 	deltaTime = 0.f;
 }
 
-void ShipObjectTransform::setNextTransform(const Vector3& position, float speed, int type) {
+void ShipObjectTransform::setNextTransform(const Vector3& position, float speed, int type, bool brakeOnArrival) {
 	Locker lock(&mutex);
 
 	transformType.setTransformType(type);
+	arrivalBraking = brakeOnArrival;
 
 	if (nextTransform.getPosition() == position && nextTransform.getSpeed() == speed) {
 		return;
@@ -80,6 +83,7 @@ void ShipObjectTransform::setNextTransform(const SpaceTransform& transform, int 
 	nextTransform.setVelocity(velocity);
 	nextDistance = distance;
 	transformType.setTransformType(type);
+	arrivalBraking = true;
 
 	if (transformType.getTransformType() != SpaceTransformType::DOCK) {
 		auto rotation = SpaceMath::velocityToRotation(velocity);
@@ -175,13 +179,14 @@ void ShipObjectTransform::setSpeed(ShipObject* ship) {
 
 	throttleMid = Math::max(ship->getSpeedRotationFactorOptimal(), throttleMid);
 
-	float speedMin = throttleMin * speedActual;
 	float speedMid = throttleMid * speedActual;
 	float speedMax = throttleMax * speedActual;
 
 	if (nextTransform.getSpeed() != 0.f) {
 		speedMax = Math::min(nextTransform.getSpeed(), speedMax);
 	}
+
+	float speedMin = ShipAiSpeedRule::speedFloor(throttleMin, speedActual, speedMax);
 
 	float radius = (speedCurrent * deltaTime) + POSITION_EPSILON;
 	float distance = Math::max(nextDistance - radius, 0.f);
@@ -190,13 +195,7 @@ void ShipObjectTransform::setSpeed(ShipObject* ship) {
 	if (distance > 0.f || speedCurrent > 0.f) {
 		float accelRate = Math::max(ship->getActualAccelerationRate(), 1.f);
 		float decelRate = Math::max(ship->getActualDecelerationRate(), 1.f);
-		float decelDist = (speedMax * speedMax) / decelRate;
-
-		if (distance < decelDist) {
-			speedNew = (distance / decelDist) * speedMax;
-		} else {
-			speedNew = speedMax;
-		}
+		speedNew = ShipAiSpeedRule::arrivalSpeed(distance, speedMax, decelRate, arrivalBraking);
 
 		if (nextRotation > ROTATION_EPSILON) {
 			float rotationTime = Math::clamp(0.f,SpaceMath::getRotationTime(nextTransform.getRotation(), currentTransform.getRotation(), ship->getActualYawRate(), ship->getActualPitchRate()), 5.f);

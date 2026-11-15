@@ -25,6 +25,7 @@
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/objects/ship/ai/ShipAiAgent.h"
 #include "server/zone/objects/ship/ai/ShipFactionAttackRule.h"
+#include "server/zone/objects/ship/ai/ShipAiSpeedRule.h"
 #include "server/zone/objects/ship/ShipComponentFlag.h"
 #include "server/zone/Zone.h"
 #include "server/zone/ZoneServer.h"
@@ -346,6 +347,9 @@ void ShipAiAgentImplementation::loadTemplateData(ShipAgentTemplate* agentTemp) {
 			setEnginePitchAccelerationRate(enginePitchAccel, false);
 			setEngineRollRate(engineRoll, false);
 			setEngineRollAccelerationRate(engineRollAccel, false);
+
+			chaseMinThrottle = pilotData->getChaseMinThrottle();
+			chaseSeparationTime = pilotData->getChaseSeparationTime();
 		}
 	}
 
@@ -1112,7 +1116,7 @@ void ShipAiAgentImplementation::setNextTransform() {
 	float speed = getNextSpeed();
 	int type = getTransformType();
 
-	shipTransform.setNextTransform(position, speed, type);
+	shipTransform.setNextTransform(position, speed, type, ShipAiSpeedRule::brakesOnArrival(movementState));
 	movementCount += 1;
 }
 
@@ -1135,7 +1139,7 @@ void ShipAiAgentImplementation::setSquadronTransform() {
 		type = SpaceTransformType::FORM;
 	}
 
-	shipTransform.setNextTransform(position, speed, type);
+	shipTransform.setNextTransform(position, speed, type, ShipAiSpeedRule::brakesOnArrival(movementState));
 	movementCount += 1;
 
 	if (isSquadronLeader()){
@@ -1151,10 +1155,35 @@ float ShipAiAgentImplementation::getNextSpeed() {
 	float speed = getActualMaxSpeed();
 
 	if (escortSpeed > 0.f) {
-		speed = getEscortSpeed();
+		return getEscortSpeed();
 	}
 
-	return speed;
+	if (movementState != ATTACKING && movementState != EVADING) {
+		return speed;
+	}
+
+	// SWG throttle: no distance braking in combat (AiShipBehaviorAttackFighter_Maneuver.cpp)
+	Vector3 position = getWorldPosition();
+	Vector3 toGoal = getNextPosition().getWorldPosition() - position;
+	Vector3 forward = SpaceMath::rotationToVelocity(shipTransform.getCurrentTransform().getRotation());
+	bool goalBehind = toGoal.dotProduct(forward) < 0.f;
+
+	if (movementState == EVADING) {
+		return speed * (goalBehind ? 0.5f : 1.f);
+	}
+
+	auto targetShip = getTargetShipObject().get();
+
+	if (targetShip == nullptr) {
+		return speed;
+	}
+
+	float distance = position.distanceTo(targetShip->getWorldPosition());
+	float turnRadius = ShipAiSpeedRule::largestTurnRadius(speed, getActualYawRate(), getActualPitchRate(), getActualRollRate());
+	float chaseDistance = ShipAiSpeedRule::chaseDistance(targetShip->getBoundingRadius(), getBoundingRadius(), turnRadius, getCurrentSpeed(), chaseSeparationTime);
+	bool targetIsPlayer = targetShip->asShipAiAgent() == nullptr;
+
+	return speed * ShipAiSpeedRule::pursuitThrottle(distance, chaseDistance, targetIsPlayer, goalBehind, chaseMinThrottle);
 }
 
 float ShipAiAgentImplementation::calculateActualMaxSpeed() {

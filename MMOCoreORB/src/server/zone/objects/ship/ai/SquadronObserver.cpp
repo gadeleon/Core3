@@ -9,6 +9,7 @@
 */
 
 #include "SquadronObserver.h"
+#include "server/zone/objects/ship/ai/ShipAiSpeedRule.h"
 
 // #define DEBUG_SQUADRONS
 
@@ -92,6 +93,10 @@ void SquadronObserver::updateSquadron() {
 
 	const auto& nextPosition =  leader->getNextPosition().getWorldPosition();
 	float nextSpeed = (getFormationSpeed() + leader->getActualMaxSpeed()) * 0.5f;
+
+	if (!ShipAiSpeedRule::brakesOnArrival(leader->getMovementState())) {
+		nextSpeed = leader->getNextSpeed();
+	}
 
 	squadronData.setPosition(0, nextPosition);
 	squadronData.setSpeed(0, nextSpeed);

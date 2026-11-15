@@ -39,6 +39,7 @@ protected:
 	SpaceTransformType transformType;
 	float nextDistance;
 	float nextRotation;
+	bool arrivalBraking;
 
 public:
 	ShipObjectTransform() : Object() {
@@ -47,6 +48,7 @@ public:
 
 		nextDistance = 0.f;
 		nextRotation = 0.f;
+		arrivalBraking = true;
 	}
 
 	ShipObjectTransform(ShipObject* ship);
@@ -55,7 +57,7 @@ public:
 
 	void setCurrentTransform(ShipObject* ship);
 
-	void setNextTransform(const Vector3& position, float speed = VELOCITY_MAX, int model = SpaceTransformType::AUTO);
+	void setNextTransform(const Vector3& position, float speed = VELOCITY_MAX, int model = SpaceTransformType::AUTO, bool brakeOnArrival = true);
 
 	void setNextTransform(const SpaceTransform& transform, int model = SpaceTransformType::AUTO);
 

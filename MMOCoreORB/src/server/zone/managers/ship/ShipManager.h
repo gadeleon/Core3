@@ -70,6 +70,7 @@ private:
 	void loadShipTurretLuaData();
 	void loadDroidCommands();
 	void loadShipAiAgentPilotData();
+	void loadShipAiAgentPilotTypeData();
 
 public:
 	enum {

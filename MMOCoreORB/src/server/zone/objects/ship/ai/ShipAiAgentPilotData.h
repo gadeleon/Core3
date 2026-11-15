@@ -24,6 +24,8 @@ protected:
 	float enginePitchAccel;
 	float engineRoll;
 	float engineRollAccel;
+	float chaseMinThrottle;
+	float chaseSeparationTime;
 
 public:
 	ShipAiAgentPilotData() : Object() {
@@ -41,6 +43,8 @@ public:
 		enginePitchAccel = 0.f;
 		engineRoll = 0.f;
 		engineRollAccel = 0.f;
+		chaseMinThrottle = 0.5f;
+		chaseSeparationTime = 2.f;
 	}
 
 	void readObject(LuaObject* row) {
@@ -64,6 +68,24 @@ public:
 		enginePitchAccel = row->getFloatAt(14) * Math::DEG2RAD;
 		engineRoll = row->getFloatAt(15) * Math::DEG2RAD;
 		engineRollAccel = row->getFloatAt(16) * Math::DEG2RAD;
+	}
+
+	// Row of pilotTypeData: {pilotType, fighterChaseMinThrottle, fighterChaseSeperationTime}
+	void readPilotTypeObject(LuaObject* row) {
+		if (row == nullptr || row->getTableSize() < 3) {
+			return;
+		}
+
+		chaseMinThrottle = row->getFloatAt(2);
+		chaseSeparationTime = row->getFloatAt(3);
+	}
+
+	float getChaseMinThrottle() const {
+		return chaseMinThrottle;
+	}
+
+	float getChaseSeparationTime() const {
+		return chaseSeparationTime;
 	}
 
 	String getPilotName() const {

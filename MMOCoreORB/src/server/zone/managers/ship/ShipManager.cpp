@@ -64,6 +64,7 @@ void ShipManager::initialize() {
 	loadShipTurretLuaData();
 	loadDroidCommands();
 	loadShipAiAgentPilotData();
+	loadShipAiAgentPilotTypeData();
 
 	// Load the ship spawn groups
 	loadShipSpawnGroups();
@@ -530,6 +531,51 @@ void ShipManager::loadShipAiAgentPilotData() {
 	delete lua;
 
 	info(true) << "ShipAiAgent Pilot Data Loading Complete - Total: " << pilotData.size();
+}
+
+void ShipManager::loadShipAiAgentPilotTypeData() {
+	info(true) << "Loading ShipAiAgent Pilot Type Data";
+
+	Lua* lua = new Lua();
+	lua->init();
+
+	int total = 0;
+
+	if (lua->runFile("scripts/managers/space/ship_pilot_type.lua")) {
+		LuaObject luaData = lua->getGlobalObject("pilotTypeData");
+
+		if (luaData.isValidTable() && luaData.getTableSize() > 0) {
+			for (int i = 1; i <= luaData.getTableSize(); ++i) {
+				auto row = luaData.getObjectAt(i);
+
+				if (!row.isValidTable() || row.getTableSize() < 3) {
+					row.pop();
+					continue;
+				}
+
+				String typeName = row.getStringAt(1);
+
+				HashTableIterator<String, Reference<ShipAiAgentPilotData*>> iter = pilotData.iterator();
+
+				while (iter.hasNext()) {
+					auto data = iter.getNextValue();
+
+					if (data != nullptr && data->getPilotType() == typeName) {
+						data->readPilotTypeObject(&row);
+					}
+				}
+
+				row.pop();
+				total++;
+			}
+		}
+
+		luaData.pop();
+	}
+
+	delete lua;
+
+	info(true) << "ShipAiAgent Pilot Type Data Loading Complete - Total: " << total;
 }
 
 void ShipManager::loadShipComponentObjects(ShipObject* ship) {

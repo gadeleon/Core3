@@ -88,6 +88,8 @@ class ShipAiAgent extends FighterShipObject {
 	protected float coordinateMax;
 
 	private transient float escortSpeed;
+	protected transient float chaseMinThrottle;
+	protected transient float chaseSeparationTime;
 
 	@dereferenced
 	protected transient AtomicInteger numberOfPlayersInRange;
@@ -242,6 +244,8 @@ class ShipAiAgent extends FighterShipObject {
 		maxCredits = 0;
 
 		escortSpeed = 0.f;
+		chaseMinThrottle = 0.5f;
+		chaseSeparationTime = 2.f;
 
 		imperialFactionReward = 0;
 		rebelFactionReward = 0;
@@ -923,6 +927,16 @@ class ShipAiAgent extends FighterShipObject {
 	@preLocked
 	public void setEscortSpeed(float speed) {
 		escortSpeed = speed;
+	}
+
+	@read
+	public float getChaseMinThrottle() {
+		return chaseMinThrottle;
+	}
+
+	@read
+	public float getChaseSeparationTime() {
+		return chaseSeparationTime;
 	}
 
 	public native string getShipAgentTemplateName();
